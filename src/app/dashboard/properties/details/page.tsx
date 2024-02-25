@@ -45,28 +45,28 @@ const Properties = () => {
     },
   ];
 
-  const countaccordingtoscreensize = (): number => {
-    if (window) {
-      if (window.innerWidth < 640) {
-        return 2;
-      } else if (window.innerWidth < 768) {
-        return 3;
-      } else if (window.innerWidth < 1024) {
-        return 5;
-      } else {
-        return 6;
-      }
-    } else {
-      return 6;
-    }
-  };
+  // const countaccordingtoscreensize = (): number => {
+  //   if (window) {
+  //     if (window.innerWidth < 640) {
+  //       return 2;
+  //     } else if (window.innerWidth < 768) {
+  //       return 3;
+  //     } else if (window.innerWidth < 1024) {
+  //       return 5;
+  //     } else {
+  //       return 6;
+  //     }
+  //   } else {
+  //     return 6;
+  //   }
+  // };
   const left = () => {
     if (start > 0) {
       setStart(start - 1);
     }
   };
   const right = () => {
-    if (start < items.length - countaccordingtoscreensize()) {
+    if (start < items.length - 4) {
       setStart(start + 1);
     }
   };
@@ -121,11 +121,9 @@ const Properties = () => {
               <Fa6SolidAngleLeft className="cursor-pointer" onClick={left} />
             </div>
             <div className="grow flex gap-2 overflow-x-hidden justify-center items-center">
-              {items
-                .slice(start, start + countaccordingtoscreensize())
-                .map((item, index) => (
-                  <PropertiesDeatils key={index} {...item} />
-                ))}
+              {items.slice(start, start + 4).map((item, index) => (
+                <PropertiesDeatils key={index} {...item} />
+              ))}
             </div>
 
             <div className="grid place-items-center">
@@ -143,11 +141,9 @@ const Properties = () => {
               <Fa6SolidAngleLeft className="cursor-pointer" onClick={left} />
             </div>
             <div className="grow flex gap-2 overflow-x-hidden justify-center items-center">
-              {items
-                .slice(start, start + countaccordingtoscreensize())
-                .map((item, index) => (
-                  <PropertiesDeatils key={index} {...item} />
-                ))}
+              {items.slice(start, start + 4).map((item, index) => (
+                <PropertiesDeatils key={index} {...item} />
+              ))}
             </div>
 
             <div className="grid place-items-center">
@@ -165,11 +161,9 @@ const Properties = () => {
               <Fa6SolidAngleLeft className="cursor-pointer" onClick={left} />
             </div>
             <div className="grow flex gap-2 overflow-x-hidden justify-center items-center">
-              {items
-                .slice(start, start + countaccordingtoscreensize())
-                .map((item, index) => (
-                  <PropertiesDeatils key={index} {...item} />
-                ))}
+              {items.slice(start, start + 4).map((item, index) => (
+                <PropertiesDeatils key={index} {...item} />
+              ))}
             </div>
 
             <div className="grid place-items-center">

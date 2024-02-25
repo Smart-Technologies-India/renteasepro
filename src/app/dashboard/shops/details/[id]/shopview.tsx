@@ -1,16 +1,16 @@
 "use client";
 
-import {
-  AntDesignCheckOutlined,
-  Fa6SolidAngleLeft,
-  Fa6SolidAngleRight,
-} from "@/components/icons";
-import { Button } from "@/components/ui/button";
-import { useGSAP } from "@gsap/react";
+import GetShop from "@/action/shop/getshop";
+import { AntDesignCheckOutlined } from "@/components/icons";
+import { capitalcase } from "@/utils/methods";
+import { shop } from "@prisma/client";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+interface ShowShopProps {
+  id: number;
+}
 
-const Properties = () => {
+const ShopView = (props: ShowShopProps) => {
   const items = [
     {
       name: "January",
@@ -62,6 +62,33 @@ const Properties = () => {
     },
   ];
 
+  const [isLoading, setIsLoading] = useState(true);
+  const [shop, setShop] = useState<shop>();
+  const init = async () => {
+    setIsLoading(true);
+
+    const shopresponse = await GetShop({
+      id: parseInt(props.id.toString()),
+    });
+
+    if (shopresponse.status) {
+      setShop(shopresponse.data!);
+    }
+
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
+
+  if (isLoading)
+    return (
+      <div className="h-screen w-full grid place-items-center text-3xl text-gray-600 bg-gray-200">
+        Loading...
+      </div>
+    );
+
   return (
     <div className="p-6 sm:p-10">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
@@ -69,10 +96,14 @@ const Properties = () => {
           <p className="text-xl p-2 border-b border-gray-300 font-semibold">
             Shops Details
           </p>
-          <p className="px-2 text-sm">Nani Daman Fort</p>
-          <p className="px-2 text-sm">Dhamatne</p>
-          <p className="px-2 text-sm">Daman</p>
-          <p className="px-2 text-sm">396210</p>
+          <p className="px-2 text-sm">Shop Number : {shop?.shopNumber}</p>
+          <p className="px-2 text-sm">Shop Size : {shop?.shopSize}</p>
+          <p className="px-2 text-sm">
+            Shop Floor : {capitalcase(shop?.floor.toString() ?? "")}
+          </p>
+          {shop?.meterno && (
+            <p className="px-2 text-sm">Meter Number : {shop?.meterno}</p>
+          )}
           <div className="flex gap-2 p-2 mt-2">
             <div className="grow"></div>
             <button className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 py-1 text-sm">
@@ -141,7 +172,7 @@ const Properties = () => {
   );
 };
 
-export default Properties;
+export default ShopView;
 
 interface PropertiesDeatilsProps {
   name: string;

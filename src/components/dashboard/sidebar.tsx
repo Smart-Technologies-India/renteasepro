@@ -1,12 +1,10 @@
 import { usePathname, useRouter } from "next/navigation";
 import {
-  AntDesignShopOutlined,
-  Fa6RegularBuilding,
   Fa6RegularFileLines,
   FluentMdl2Home,
   FluentMdl2ViewDashboard,
+  GgAlbum,
   MaterialSymbolsCloseSmall,
-  MaterialSymbolsLogout,
   MaterialSymbolsPersonRounded,
   RiAuctionLine,
   RiMoneyRupeeCircleLine,
@@ -96,6 +94,14 @@ const Sidebar = (props: SidebarProps) => {
           name="Users"
           path={path}
           pathcheck={"/dashboard/users"}
+        />
+      )}
+      {["ADMIN"].includes(props.role) && (
+        <MenuTab
+          icco={<GgAlbum className="text-gray-300  w-6" />}
+          name="Category"
+          path={path}
+          pathcheck={"/dashboard/category"}
         />
       )}
 

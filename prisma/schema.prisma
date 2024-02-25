@@ -16,6 +16,20 @@ enum Status {
   INACTIVE
 }
 
+enum ShopStatus {
+  NONE
+  VACANT
+  RENTED
+  AUCTION
+  MAINTENANCE
+  UNAVAILABLE
+}
+
+enum PercentageType {
+  PERCENTAGE
+  AMOUNT
+}
+
 enum Role {
   NONE
   SYSTEM
@@ -24,6 +38,21 @@ enum Role {
   ACCOUNTANT
   MANAGER
   USER
+}
+
+enum Floors {
+  OUTSIDE
+  GROUND
+  FIRST
+  SECOND
+  THIRD
+  FOURTH
+  FIFTH
+  SIXTH
+  SEVENTH
+  EIGHTH
+  NINTH
+  TENTH
 }
 
 model user {
@@ -47,4 +76,168 @@ model user {
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
   deletedAt         DateTime?
+
+  // shop category
+  shop_category_create shop_category[] @relation("shop_category_createdBy_userId")
+  shop_category_update shop_category[] @relation("shop_category_updatedBy_userId")
+  shop_category_delete shop_category[] @relation("shop_category_deletedBy_userId")
+
+  // user category
+  user_category_create user_category[] @relation("user_category_createdBy_userId")
+  user_category_update user_category[] @relation("user_category_updatedBy_userId")
+  user_category_delete user_category[] @relation("user_category_deletedBy_userId")
+
+  // property
+  property_create property[] @relation("property_createdBy_userId")
+  property_update property[] @relation("property_updatedBy_userId")
+  property_delete property[] @relation("property_deletedBy_userId")
+
+  // shop
+  shop_create shop[] @relation("shop_createdBy_userId")
+  shop_update shop[] @relation("shop_updatedBy_userId")
+  shop_delete shop[] @relation("shop_deletedBy_userId")
+
+  // bid
+  bid_create bid[] @relation("bid_createdBy_userId")
+  bid_update bid[] @relation("bid_updatedBy_userId")
+  bid_delete bid[] @relation("bid_deletedBy_userId")
+}
+
+model shop_category {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  image       String?
+  remarks     String?
+  status      Status    @default(ACTIVE)
+  createdAt   DateTime  @default(now())
+  createdBy   user      @relation("shop_category_createdBy_userId", fields: [createdById], references: [id])
+  createdById Int
+  updatedAt   DateTime  @updatedAt
+  updatedBy   user?     @relation("shop_category_updatedBy_userId", fields: [updatedById], references: [id])
+  updatedById Int?
+  deletedAt   DateTime?
+  deletedBy   user?     @relation("shop_category_deletedBy_userId", fields: [deletedById], references: [id])
+  deletedById Int?
+  shop        shop[]
+}
+
+model user_category {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  image       String?
+  remarks     String?
+  status      Status    @default(ACTIVE)
+  createdAt   DateTime  @default(now())
+  createdBy   user      @relation("user_category_createdBy_userId", fields: [createdById], references: [id])
+  createdById Int
+  updatedAt   DateTime  @updatedAt
+  updatedBy   user?     @relation("user_category_updatedBy_userId", fields: [updatedById], references: [id])
+  updatedById Int?
+  deletedAt   DateTime?
+  deletedBy   user?     @relation("user_category_deletedBy_userId", fields: [deletedById], references: [id])
+  deletedById Int?
+}
+
+model property {
+  id             Int       @id @default(autoincrement())
+  name           String
+  address        String
+  locality       String
+  pincode        String
+  city           String
+  contact_number String
+  contact_person String
+  total_shops    Int
+  total_floors   Int
+  latitude       Float
+  longitude      Float
+  description    String?
+  image          String?
+  remarks        String?
+  priority       Int
+  status         Status    @default(ACTIVE)
+  createdAt      DateTime  @default(now())
+  createdBy      user      @relation("property_createdBy_userId", fields: [createdById], references: [id])
+  createdById    Int
+  updatedAt      DateTime  @updatedAt
+  updatedBy      user?     @relation("property_updatedBy_userId", fields: [updatedById], references: [id])
+  updatedById    Int?
+  deletedAt      DateTime?
+  deletedBy      user?     @relation("property_deletedBy_userId", fields: [deletedById], references: [id])
+  deletedById    Int?
+  shop           shop[]
+}
+
+model shop {
+  id             Int           @id @default(autoincrement())
+  shop_category  shop_category @relation(fields: [shopCategoryId], references: [id])
+  shopCategoryId Int
+  property       property      @relation(fields: [propertyId], references: [id])
+  propertyId     Int
+  floor          Floors        @default(GROUND)
+  shopNumber     String
+  shopSize       String
+  meterno        String?
+  description    String?
+  image          String?
+  remarks        String?
+  status         ShopStatus    @default(VACANT)
+  createdAt      DateTime      @default(now())
+  createdBy      user          @relation("shop_createdBy_userId", fields: [createdById], references: [id])
+  createdById    Int
+  updatedAt      DateTime      @updatedAt
+  updatedBy      user?         @relation("shop_updatedBy_userId", fields: [updatedById], references: [id])
+  updatedById    Int?
+  deletedAt      DateTime?
+  deletedBy      user?         @relation("shop_deletedBy_userId", fields: [deletedById], references: [id])
+  deletedById    Int?
+  bid            bid[]
+
+  @@unique([propertyId, shopNumber])
+}
+
+model bid {
+  id                  Int            @id @default(autoincrement())
+  shop                shop           @relation(fields: [shopId], references: [id])
+  shopId              Int
+  title               String
+  description         String
+  instruction         String?
+  min_bid_amount      Int            @db.MediumInt
+  bidincrementamount  PercentageType @default(PERCENTAGE)
+  min_bid_increment   Int            @db.MediumInt
+  fees                PercentageType @default(PERCENTAGE)
+  fees_amount         Int            @db.MediumInt
+  fees_refundable     Boolean
+  emd                 PercentageType @default(PERCENTAGE)
+  emd_amount          Int            @db.MediumInt
+  emd_refundable      Boolean
+  bg                  PercentageType @default(PERCENTAGE)
+  bg_amount           Int            @db.MediumInt
+  bg_refundable       Boolean
+  docone              String
+  doconedescription   String?        @db.MediumText
+  doctwo              String
+  doctwodescription   String?        @db.MediumText
+  docthree            String
+  docthreedescription String?        @db.MediumText
+  bidstartdate        DateTime
+  bidenddate          DateTime
+  biddeclarationdate  DateTime
+  t_and_c_file_number String?        @db.MediumText
+  t_and_c_description String?        @db.MediumText
+  t_and_c_upload      String?        @db.MediumText
+  remarks             String?        @db.MediumText
+  status              Status         @default(ACTIVE)
+  createdAt           DateTime       @default(now())
+  createdBy           user           @relation("bid_createdBy_userId", fields: [createdById], references: [id])
+  createdById         Int
+  updatedAt           DateTime       @updatedAt
+  updatedBy           user?          @relation("bid_updatedBy_userId", fields: [updatedById], references: [id])
+  updatedById         Int?
+  deletedAt           DateTime?
+  deletedBy           user?          @relation("bid_deletedBy_userId", fields: [deletedById], references: [id])
+  deletedById         Int?
 }

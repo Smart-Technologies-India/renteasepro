@@ -1,13 +1,37 @@
+"use client";
+import AllPropertys from "@/action/property/allproperty";
 import {
   FluentMdl2Home,
   FluentMdl2Search,
   FluentMdl2ViewDashboard,
 } from "@/components/icons";
-import { Button } from "@/components/ui/button";
-import { Tabs, Tab, Input } from "@nextui-org/react";
+import { property } from "@prisma/client";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
-const properties = () => {
+const Properties = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [properties, setProperties] = useState<property[]>([]);
+  const init = async () => {
+    setIsLoading(true);
+    const propertyresponse = await AllPropertys({});
+    if (propertyresponse.status) {
+      setProperties(propertyresponse.data ?? []);
+    }
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
+
+  if (isLoading)
+    return (
+      <div className="h-screen w-full grid place-items-center text-3xl text-gray-600 bg-gray-200">
+        Loading...
+      </div>
+    );
+
   return (
     <div className="p-6 sm:p-10">
       <div className="flex gap-4 items-center">
@@ -21,7 +45,7 @@ const properties = () => {
           Add New Property
         </Link>
       </div>
-      <div className="mt-4 flex">
+      {/* <div className="mt-4 flex">
         <p className="border-b-2 border-blue-500 px-4 py-2 text-sm font-medium">
           All
         </p>
@@ -41,77 +65,39 @@ const properties = () => {
           Multi-Unit
         </p>
         <p className="border-b-2 border-gray-300 px-4 grow"></p>
-      </div>
-      <div className="w-80 bg-white border-2 border-gray-300 flex items-center rounded-full px-4 my-6">
+      </div> */}
+      <div className="w-80 bg-white border-2 border-gray-300 flex items-center rounded-full px-4 my-4">
         <FluentMdl2Search />
         <input
           className="  py-1 px-2 bg-transparent"
           placeholder="Search Properties"
         />
       </div>
-      <CardDetails
-        name="Nani Daman Fort"
-        address="Dhamatne"
-        icon={
-          <FluentMdl2ViewDashboard className="text-rose-500 text-2xl w-6" />
-        }
-        totalShop={10}
-      />
-      <CardDetails
-        name="Sulpadh"
-        address="Nani Daman Fort"
-        icon={
-          <FluentMdl2ViewDashboard className="text-rose-500 text-2xl w-6" />
-        }
-        totalShop={20}
-      />
-      <CardDetails
-        name="Valsad"
-        address="Nani Daman Fort"
-        icon={
-          <FluentMdl2ViewDashboard className="text-rose-500 text-2xl w-6" />
-        }
-        totalShop={30}
-      />
-      <CardDetails
-        name="Valsad"
-        address="Nani Daman Fort"
-        icon={
-          <FluentMdl2ViewDashboard className="text-rose-500 text-2xl w-6" />
-        }
-        totalShop={30}
-      />
-      <CardDetails
-        name="Valsad"
-        address="Nani Daman Fort"
-        icon={
-          <FluentMdl2ViewDashboard className="text-rose-500 text-2xl w-6" />
-        }
-        totalShop={30}
-      />
-      <CardDetails
-        name="Valsad"
-        address="Nani Daman Fort"
-        icon={
-          <FluentMdl2ViewDashboard className="text-rose-500 text-2xl w-6" />
-        }
-        totalShop={30}
-      />
-      <CardDetails
-        name="Valsad"
-        address="Nani Daman Fort"
-        icon={
-          <FluentMdl2ViewDashboard className="text-rose-500 text-2xl w-6" />
-        }
-        totalShop={30}
-      />
+
+      {properties.length == 0 && (
+        <p className="text-sm mt-4 mb-2">No Property created yet.</p>
+      )}
+
+      {properties.map((property, index) => (
+        <CardDetails
+          key={index}
+          id={property.id}
+          name={property.name}
+          address={property.locality}
+          icon={
+            <FluentMdl2ViewDashboard className="text-rose-500 text-2xl w-6" />
+          }
+          totalShop={property.total_shops}
+        />
+      ))}
     </div>
   );
 };
 
-export default properties;
+export default Properties;
 
 interface CardDetailsProps {
+  id: number;
   icon: React.ReactNode;
   name: string;
   address: string;
@@ -121,7 +107,7 @@ interface CardDetailsProps {
 const CardDetails = (props: CardDetailsProps) => {
   return (
     <Link
-      href={"/dashboard/properties/details"}
+      href={`/dashboard/properties/details/${props.id}`}
       className="rounded-md my-4 bg-white w-full p-4 flex gap-4 items-center hover:shadow-lg hover:scale-105 transition-all duration-300 cursor-pointer"
     >
       {props.icon}
