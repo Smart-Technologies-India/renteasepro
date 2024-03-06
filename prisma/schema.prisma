@@ -55,6 +55,41 @@ enum Floors {
   TENTH
 }
 
+enum RefundType {
+  REFUNDABLE
+  NONREFUNDABLE
+}
+
+enum BidTransact {
+  PENDING
+  ACCEPTED
+  REJECTED
+  INACTIVE
+}
+
+enum ExemptFor {
+  WOMEN
+  RESERVED
+  DIFFERENTLY_ABLED
+  MSME
+}
+
+enum BidPaymentType {
+  EMD
+  BG
+  FEES
+}
+
+enum SecurityDepositForm {
+  CASH
+  BANK_GUARANTEE
+  FIXED_DEPOSIT
+  CHEQUE
+  RTGS
+  NEFT
+  OTHER
+}
+
 model user {
   id                Int       @id @default(autoincrement())
   username          String    @unique
@@ -101,6 +136,57 @@ model user {
   bid_create bid[] @relation("bid_createdBy_userId")
   bid_update bid[] @relation("bid_updatedBy_userId")
   bid_delete bid[] @relation("bid_deletedBy_userId")
+
+  // rent
+  rent        rent[]
+  rent_create rent[] @relation("rent_createdBy_userId")
+  rent_update rent[] @relation("rent_updatedBy_userId")
+  rent_delete rent[] @relation("rent_deletedBy_userId")
+
+  // organization
+  organization_create organization[] @relation("organization_createdBy_userId")
+  organization_update organization[] @relation("organization_updatedBy_userId")
+  organization_delete organization[] @relation("organization_deletedBy_userId")
+
+  // bid transaction
+  bid_transact_create bid_transact[] @relation("bid_transact_createdBy_userId")
+  bid_transact_update bid_transact[] @relation("bid_transact_updatedBy_userId")
+  bid_transact_delete bid_transact[] @relation("bid_transact_deletedBy_userId")
+  bid_transact        bid_transact[]
+
+  // exempt
+  exempt_create exempt[] @relation("exempt_createdBy_userId")
+  exempt_update exempt[] @relation("exempt_updatedBy_userId")
+  exempt_delete exempt[] @relation("exempt_deletedBy_userId")
+
+  // rent transaction
+  rent_transact_create rent_transact[] @relation("rent_transact_createdBy_userId")
+  rent_transact_update rent_transact[] @relation("rent_transact_updatedBy_userId")
+  rent_transact_delete rent_transact[] @relation("rent_transact_deletedBy_userId")
+  rent_transact        rent_transact[]
+
+  // file upload
+  file_upload_create file_upload[] @relation("upload_createdBy_userId")
+  file_upload_update file_upload[] @relation("upload_updatedBy_userId")
+  file_upload_delete file_upload[] @relation("upload_deletedBy_userId")
+  file_upload        file_upload[]
+
+  // bid payment
+  bid_payment_create bid_payment[] @relation("bid_payment_createdBy_userId")
+  bid_payment_update bid_payment[] @relation("bid_payment_updatedBy_userId")
+  bid_payment_delete bid_payment[] @relation("bid_payment_deletedBy_userId")
+  bid_payment        bid_payment[]
+
+  // corrigendum
+  corrigendum_create corrigendum[] @relation("corrigendum_createdBy_userId")
+  corrigendum_update corrigendum[] @relation("corrigendum_updatedBy_userId")
+  corrigendum_delete corrigendum[] @relation("corrigendum_deletedBy_userId")
+
+  // demand node
+  demand_node_create demand_node[] @relation("demand_node_createdBy_userId")
+  demand_node_update demand_node[] @relation("demand_node_updatedBy_userId")
+  demand_node_delete demand_node[] @relation("demand_node_deletedBy_userId")
+  demand_node        demand_node[]
 }
 
 model shop_category {
@@ -141,7 +227,7 @@ model user_category {
 }
 
 model property {
-  id             Int       @id @default(autoincrement())
+  id             Int           @id @default(autoincrement())
   name           String
   address        String
   locality       String
@@ -157,87 +243,361 @@ model property {
   image          String?
   remarks        String?
   priority       Int
-  status         Status    @default(ACTIVE)
-  createdAt      DateTime  @default(now())
-  createdBy      user      @relation("property_createdBy_userId", fields: [createdById], references: [id])
+  status         Status        @default(ACTIVE)
+  createdAt      DateTime      @default(now())
+  createdBy      user          @relation("property_createdBy_userId", fields: [createdById], references: [id])
   createdById    Int
-  updatedAt      DateTime  @updatedAt
-  updatedBy      user?     @relation("property_updatedBy_userId", fields: [updatedById], references: [id])
+  updatedAt      DateTime      @updatedAt
+  updatedBy      user?         @relation("property_updatedBy_userId", fields: [updatedById], references: [id])
   updatedById    Int?
   deletedAt      DateTime?
-  deletedBy      user?     @relation("property_deletedBy_userId", fields: [deletedById], references: [id])
+  deletedBy      user?         @relation("property_deletedBy_userId", fields: [deletedById], references: [id])
   deletedById    Int?
   shop           shop[]
+  file_upload    file_upload[]
 }
 
 model shop {
-  id             Int           @id @default(autoincrement())
-  shop_category  shop_category @relation(fields: [shopCategoryId], references: [id])
+  id             Int             @id @default(autoincrement())
+  shop_category  shop_category   @relation(fields: [shopCategoryId], references: [id])
   shopCategoryId Int
-  property       property      @relation(fields: [propertyId], references: [id])
+  property       property        @relation(fields: [propertyId], references: [id])
   propertyId     Int
-  floor          Floors        @default(GROUND)
+  floor          Floors          @default(GROUND)
   shopNumber     String
   shopSize       String
   meterno        String?
   description    String?
   image          String?
   remarks        String?
-  status         ShopStatus    @default(VACANT)
-  createdAt      DateTime      @default(now())
-  createdBy      user          @relation("shop_createdBy_userId", fields: [createdById], references: [id])
+  status         ShopStatus      @default(VACANT)
+  createdAt      DateTime        @default(now())
+  createdBy      user            @relation("shop_createdBy_userId", fields: [createdById], references: [id])
   createdById    Int
-  updatedAt      DateTime      @updatedAt
-  updatedBy      user?         @relation("shop_updatedBy_userId", fields: [updatedById], references: [id])
+  updatedAt      DateTime        @updatedAt
+  updatedBy      user?           @relation("shop_updatedBy_userId", fields: [updatedById], references: [id])
   updatedById    Int?
   deletedAt      DateTime?
-  deletedBy      user?         @relation("shop_deletedBy_userId", fields: [deletedById], references: [id])
+  deletedBy      user?           @relation("shop_deletedBy_userId", fields: [deletedById], references: [id])
   deletedById    Int?
   bid            bid[]
+  rent           rent[]
+  bid_transact   bid_transact[]
+  exempt         exempt[]
+  file_upload    file_upload[]
+  rent_transact  rent_transact[]
+  bid_payment    bid_payment[]
+  demand_node    demand_node[]
 
   @@unique([propertyId, shopNumber])
 }
 
 model bid {
-  id                  Int            @id @default(autoincrement())
-  shop                shop           @relation(fields: [shopId], references: [id])
+  id                   Int            @id @default(autoincrement())
+  shop                 shop           @relation(fields: [shopId], references: [id])
+  shopId               Int
+  title                String
+  description          String
+  instruction          String?
+  min_bid_amount       Int            @db.MediumInt
+  bidincrementamount   PercentageType @default(PERCENTAGE)
+  min_bid_increment    Int            @db.MediumInt
+  fees                 PercentageType @default(PERCENTAGE)
+  fees_amount          Int            @db.MediumInt
+  fees_refundable      RefundType     @default(NONREFUNDABLE)
+  emd                  PercentageType @default(PERCENTAGE)
+  emd_amount           Int            @db.MediumInt
+  emd_refundable       RefundType     @default(REFUNDABLE)
+  bg                   PercentageType @default(PERCENTAGE)
+  bg_amount            Int            @db.MediumInt
+  bg_refundable        RefundType     @default(REFUNDABLE)
+  docone               String?
+  doconedescription    String?        @db.MediumText
+  doctwo               String?
+  doctwodescription    String?        @db.MediumText
+  docthree             String?
+  docthreedescription  String?        @db.MediumText
+  bidstartdate         DateTime
+  bidenddate           DateTime
+  biddeclarationdate   DateTime
+  t_and_c_file_number  String?        @db.MediumText
+  t_and_c_description  String?        @db.MediumText
+  t_and_c_upload       String?        @db.MediumText
+  is_woman             Boolean        @default(false)
+  is_reserved          Boolean        @default(false)
+  is_differently_abled Boolean        @default(false)
+  is_msme              Boolean        @default(false)
+  is_exemption         Boolean        @default(false)
+  remarks              String?        @db.MediumText
+  status               Status         @default(ACTIVE)
+  createdAt            DateTime       @default(now())
+  createdBy            user           @relation("bid_createdBy_userId", fields: [createdById], references: [id])
+  createdById          Int
+  updatedAt            DateTime       @updatedAt
+  updatedBy            user?          @relation("bid_updatedBy_userId", fields: [updatedById], references: [id])
+  updatedById          Int?
+  deletedAt            DateTime?
+  deletedBy            user?          @relation("bid_deletedBy_userId", fields: [deletedById], references: [id])
+  deletedById          Int?
+  bid_transact         bid_transact[]
+  exempt               exempt[]
+  file_upload          file_upload[]
+  bid_payment          bid_payment[]
+  corrigendum          corrigendum[]
+}
+
+model rent {
+  id                  Int             @id @default(autoincrement())
+  shop                shop            @relation(fields: [shopId], references: [id])
   shopId              Int
-  title               String
-  description         String
-  instruction         String?
-  min_bid_amount      Int            @db.MediumInt
-  bidincrementamount  PercentageType @default(PERCENTAGE)
-  min_bid_increment   Int            @db.MediumInt
-  fees                PercentageType @default(PERCENTAGE)
-  fees_amount         Int            @db.MediumInt
-  fees_refundable     Boolean
-  emd                 PercentageType @default(PERCENTAGE)
-  emd_amount          Int            @db.MediumInt
-  emd_refundable      Boolean
-  bg                  PercentageType @default(PERCENTAGE)
-  bg_amount           Int            @db.MediumInt
-  bg_refundable       Boolean
-  docone              String
-  doconedescription   String?        @db.MediumText
-  doctwo              String
-  doctwodescription   String?        @db.MediumText
-  docthree            String
-  docthreedescription String?        @db.MediumText
-  bidstartdate        DateTime
-  bidenddate          DateTime
-  biddeclarationdate  DateTime
-  t_and_c_file_number String?        @db.MediumText
-  t_and_c_description String?        @db.MediumText
-  t_and_c_upload      String?        @db.MediumText
-  remarks             String?        @db.MediumText
-  status              Status         @default(ACTIVE)
-  createdAt           DateTime       @default(now())
-  createdBy           user           @relation("bid_createdBy_userId", fields: [createdById], references: [id])
+  user                user            @relation(fields: [userId], references: [id])
+  userId              Int
+  rent_amount         Int             @db.MediumInt
+  rent_start_date     DateTime
+  rent_end_date       DateTime
+  due_date            Int
+  rent_agreement_file String?         @db.MediumText
+  chargeone           Int?            @db.MediumInt
+  chargetwo           Int?            @db.MediumInt
+  chargethree         Int?            @db.MediumInt
+  remarks             String?         @db.MediumText
+  status              Status          @default(ACTIVE)
+  createdAt           DateTime        @default(now())
+  createdBy           user            @relation("rent_createdBy_userId", fields: [createdById], references: [id])
   createdById         Int
-  updatedAt           DateTime       @updatedAt
-  updatedBy           user?          @relation("bid_updatedBy_userId", fields: [updatedById], references: [id])
+  updatedAt           DateTime        @updatedAt
+  updatedBy           user?           @relation("rent_updatedBy_userId", fields: [updatedById], references: [id])
   updatedById         Int?
   deletedAt           DateTime?
-  deletedBy           user?          @relation("bid_deletedBy_userId", fields: [deletedById], references: [id])
+  deletedBy           user?           @relation("rent_deletedBy_userId", fields: [deletedById], references: [id])
   deletedById         Int?
+  rent_transact       rent_transact[]
+  file_upload         file_upload[]
+  corrigendum         corrigendum[]
+}
+
+model organization {
+  id             Int       @id @default(autoincrement())
+  name           String
+  address        String?
+  gst_no         String?
+  gst_file       String?
+  pan_no         String?
+  pan_file       String?
+  msmeno         String?
+  msme_file      String?
+  contact_person String?
+  contact_number String?
+  status         Status    @default(ACTIVE)
+  createdAt      DateTime  @default(now())
+  createdBy      user      @relation("organization_createdBy_userId", fields: [createdById], references: [id])
+  createdById    Int
+  updatedAt      DateTime  @updatedAt
+  updatedBy      user?     @relation("organization_updatedBy_userId", fields: [updatedById], references: [id])
+  updatedById    Int?
+  deletedAt      DateTime?
+  deletedBy      user?     @relation("organization_deletedBy_userId", fields: [deletedById], references: [id])
+  deletedById    Int?
+}
+
+model bid_transact {
+  id                 Int           @id @default(autoincrement())
+  bid                bid           @relation(fields: [bidId], references: [id])
+  bidId              Int
+  user               user          @relation(fields: [userId], references: [id])
+  userId             Int
+  shop               shop          @relation(fields: [shopId], references: [id])
+  shopId             Int
+  amount             Int           @db.MediumInt
+  iswinningbid       Boolean?
+  bidrejected        Boolean?
+  rejectedreason     String?       @db.MediumText
+  isexempt           Boolean?
+  exemptcategory     String?       @db.MediumText
+  exemptdocurl       String?       @db.MediumText
+  biddocstatus       Boolean?
+  biddocrejectreason String?       @db.MediumText
+  transaction_date   DateTime      @default(now())
+  remarks            String?       @db.MediumText
+  status             BidTransact   @default(PENDING)
+  createdAt          DateTime      @default(now())
+  createdBy          user          @relation("bid_transact_createdBy_userId", fields: [createdById], references: [id])
+  createdById        Int
+  updatedAt          DateTime      @updatedAt
+  updatedBy          user?         @relation("bid_transact_updatedBy_userId", fields: [updatedById], references: [id])
+  updatedById        Int?
+  deletedAt          DateTime?
+  deletedBy          user?         @relation("bid_transact_deletedBy_userId", fields: [deletedById], references: [id])
+  deletedById        Int?
+  file_upload        file_upload[]
+}
+
+model exempt {
+  id                     Int             @id @default(autoincrement())
+  shop                   shop            @relation(fields: [shopId], references: [id])
+  shopId                 Int
+  bid                    bid             @relation(fields: [bidId], references: [id])
+  bidId                  Int
+  is_fees_exempt_allowed Boolean         @default(false)
+  fees_for               ExemptFor?
+  fees                   PercentageType? @default(PERCENTAGE)
+  feesamount             Int?            @db.MediumInt
+  is_bg_exempt_allowed   Boolean         @default(false)
+  bg_for                 ExemptFor?
+  bg                     PercentageType? @default(PERCENTAGE)
+  bgamount               Int?            @db.MediumInt
+  is_emd_exempt_allowed  Boolean         @default(false)
+  emd_for                ExemptFor?
+  emd                    PercentageType? @default(PERCENTAGE)
+  emdamount              Int?            @db.MediumInt
+  description            String?
+  image                  String?
+  remarks                String?
+  status                 Status          @default(ACTIVE)
+  createdAt              DateTime        @default(now())
+  createdBy              user            @relation("exempt_createdBy_userId", fields: [createdById], references: [id])
+  createdById            Int
+  updatedAt              DateTime        @updatedAt
+  updatedBy              user?           @relation("exempt_updatedBy_userId", fields: [updatedById], references: [id])
+  updatedById            Int?
+  deletedAt              DateTime?
+  deletedBy              user?           @relation("exempt_deletedBy_userId", fields: [deletedById], references: [id])
+  deletedById            Int?
+  corrigendum            corrigendum[]
+}
+
+model rent_transact {
+  id               Int       @id @default(autoincrement())
+  rent             rent      @relation(fields: [rentId], references: [id])
+  rentId           Int
+  user             user      @relation(fields: [userId], references: [id])
+  userId           Int
+  shop             shop      @relation(fields: [shopId], references: [id])
+  shopId           Int
+  formonth         Int
+  amount           Int       @db.MediumInt
+  transaction_date DateTime  @default(now())
+  paymentmode      String?
+  transactionid    String?
+  bankname         String?
+  remarks          String?   @db.MediumText
+  status           Status    @default(ACTIVE)
+  createdAt        DateTime  @default(now())
+  createdBy        user      @relation("rent_transact_createdBy_userId", fields: [createdById], references: [id])
+  createdById      Int
+  updatedAt        DateTime  @updatedAt
+  updatedBy        user?     @relation("rent_transact_updatedBy_userId", fields: [updatedById], references: [id])
+  updatedById      Int?
+  deletedAt        DateTime?
+  deletedBy        user?     @relation("rent_transact_deletedBy_userId", fields: [deletedById], references: [id])
+  deletedById      Int?
+}
+
+model bid_payment {
+  id               Int            @id @default(autoincrement())
+  bid              bid            @relation(fields: [bidId], references: [id])
+  bidId            Int
+  user             user           @relation(fields: [userId], references: [id])
+  userId           Int
+  shop             shop           @relation(fields: [shopId], references: [id])
+  shopId           Int
+  paymenttype      BidPaymentType @default(FEES)
+  amount           Int            @db.MediumInt
+  gateway_charge   String?
+  transaction_date DateTime       @default(now())
+  paymentmode      String?
+  transactionid    String?
+  bankname         String?
+  remarks          String?        @db.MediumText
+  status           Status         @default(ACTIVE)
+  createdAt        DateTime       @default(now())
+  createdBy        user           @relation("bid_payment_createdBy_userId", fields: [createdById], references: [id])
+  createdById      Int
+  updatedAt        DateTime       @updatedAt
+  updatedBy        user?          @relation("bid_payment_updatedBy_userId", fields: [updatedById], references: [id])
+  updatedById      Int?
+  deletedAt        DateTime?
+  deletedBy        user?          @relation("bid_payment_deletedBy_userId", fields: [deletedById], references: [id])
+  deletedById      Int?
+}
+
+model file_upload {
+  id            Int           @id @default(autoincrement())
+  user          user?         @relation(fields: [userId], references: [id])
+  userId        Int?
+  bid           bid?          @relation(fields: [bidId], references: [id])
+  bidId         Int?
+  shop          shop?         @relation(fields: [shopId], references: [id])
+  shopId        Int?
+  propery       property?     @relation(fields: [propertyId], references: [id])
+  propertyId    Int?
+  rent          rent?         @relation(fields: [rentId], references: [id])
+  rentId        Int?
+  bidtransact   bid_transact? @relation(fields: [bidTransactId], references: [id])
+  bidTransactId Int?
+  name          String
+  description   String?
+  path          String
+  status        Status        @default(ACTIVE)
+  createdAt     DateTime      @default(now())
+  createdBy     user          @relation("upload_createdBy_userId", fields: [createdById], references: [id])
+  createdById   Int
+  updatedAt     DateTime      @updatedAt
+  updatedBy     user?         @relation("upload_updatedBy_userId", fields: [updatedById], references: [id])
+  updatedById   Int?
+  deletedAt     DateTime?
+  deletedBy     user?         @relation("upload_deletedBy_userId", fields: [deletedById], references: [id])
+  deletedById   Int?
+}
+
+model corrigendum {
+  id          Int       @id @default(autoincrement())
+  bid         bid?      @relation(fields: [bidId], references: [id])
+  bidId       Int?
+  rent        rent?     @relation(fields: [rentId], references: [id])
+  rentId      Int?
+  exempt      exempt?   @relation(fields: [exemptId], references: [id])
+  exemptId    Int?
+  name        String
+  description String?
+  path        String
+  status      Status    @default(ACTIVE)
+  createdAt   DateTime  @default(now())
+  createdBy   user      @relation("corrigendum_createdBy_userId", fields: [createdById], references: [id])
+  createdById Int
+  updatedAt   DateTime  @updatedAt
+  updatedBy   user?     @relation("corrigendum_updatedBy_userId", fields: [updatedById], references: [id])
+  updatedById Int?
+  deletedAt   DateTime?
+  deletedBy   user?     @relation("corrigendum_deletedBy_userId", fields: [deletedById], references: [id])
+  deletedById Int?
+}
+
+model demand_node {
+  id                        Int                 @id @default(autoincrement())
+  shop                      shop                @relation(fields: [shopId], references: [id])
+  shopId                    Int
+  user                      user                @relation(fields: [userId], references: [id])
+  userId                    Int
+  demand_note_number        String?
+  demand_note_date          DateTime?
+  security_deposit_amount   Int?
+  security_deposit_form     SecurityDepositForm @default(CASH)
+  time_period               Int?
+  security_deposit_validity DateTime?
+  panelty_amount            Int?
+  advance_rent_months       Int?
+  stemp_paper_value         Int?
+  description               String?
+  remarks                   String?
+  status                    Status              @default(ACTIVE)
+  createdAt                 DateTime            @default(now())
+  createdBy                 user                @relation("demand_node_createdBy_userId", fields: [createdById], references: [id])
+  createdById               Int
+  updatedAt                 DateTime            @updatedAt
+  updatedBy                 user?               @relation("demand_node_updatedBy_userId", fields: [updatedById], references: [id])
+  updatedById               Int?
+  deletedAt                 DateTime?
+  deletedBy                 user?               @relation("demand_node_deletedBy_userId", fields: [deletedById], references: [id])
+  deletedById               Int?
 }

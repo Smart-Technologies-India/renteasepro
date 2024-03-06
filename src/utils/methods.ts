@@ -94,3 +94,37 @@ const longtext = (text: string, long: number): string => {
   }
 };
 export { longtext };
+
+const formatDateTime = (date: Date): string => {
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const seconds = date.getSeconds();
+  const meridiem = date.getHours() < 12 ? "AM" : "PM";
+
+  const formattedTime =
+    (hours % 12 || 12) +
+    ":" +
+    (minutes < 10 ? "0" : "") +
+    minutes +
+    ":" +
+    (seconds < 10 ? "0" : "") +
+    seconds +
+    " " +
+    meridiem;
+
+  return `${day}-${month}-${year} ${formattedTime}`;
+};
+
+export { formatDateTime };
+
+const formateDate = (date: Date): string => {
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+  return `${day}-${month}-${year}`;
+};
+
+export { formateDate };

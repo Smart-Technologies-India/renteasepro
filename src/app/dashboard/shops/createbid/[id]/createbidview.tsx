@@ -1,0 +1,1216 @@
+"use client";
+
+import CreateBid from "@/action/bid/bidcreate";
+import { IcBaselineCalendarMonth } from "@/components/icons";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
+import { CreateBidSchema } from "@/schema/createbid";
+import { PercentageType, RefundType } from "@prisma/client";
+import { getCookie } from "cookies-next";
+import { format } from "date-fns";
+import { useRouter } from "next/navigation";
+import { SetStateAction, useEffect, useRef, useState } from "react";
+import { toast } from "react-toastify";
+import { safeParse } from "valibot";
+import { TimePicker } from "antd";
+import axios from "axios";
+
+interface CreateBidPageProps {
+  shopid: number;
+  uploadurl: string;
+}
+
+function setTime(date: Date, timeString: string): Date {
+  // Parse the time string to get hours and minutes
+  const parts = timeString.match(/(\d+):(\d+) (am|pm)/i);
+  if (!parts) {
+    throw new Error("Invalid time format");
+  }
+  const hours = parseInt(parts[1], 10);
+  const minutes = parseInt(parts[2], 10);
+  const period = parts[3].toLowerCase();
+
+  // Convert hours to 24-hour format if necessary
+  let newHours = hours;
+  if (period === "pm" && hours < 12) {
+    newHours += 12;
+  } else if (period === "am" && hours === 12) {
+    newHours = 0;
+  }
+
+  // Create a new Date object based on the original date
+  const newDate = new Date(date.getTime());
+  // Set the new time on the new date object
+  newDate.setHours(newHours);
+  newDate.setMinutes(minutes);
+  newDate.setSeconds(0); // Optionally set seconds to 0
+  newDate.setMilliseconds(0); // Optionally set milliseconds to 0
+
+  return newDate;
+}
+
+const CreateBidPage = (props: CreateBidPageProps) => {
+  const userid: number = parseInt(getCookie("id") ?? "0");
+
+  const router = useRouter();
+  const [isLoading, setLoading] = useState<boolean>(true);
+
+  const [startDate, setStartDate] = useState<Date>();
+  const [endDate, setEndDate] = useState<Date>();
+  const [deadlineDate, setDeadlineDate] = useState<Date>();
+
+  const title = useRef<HTMLInputElement>(null);
+  const description = useRef<HTMLTextAreaElement>(null);
+  const instructions = useRef<HTMLTextAreaElement>(null);
+  const minbid = useRef<HTMLInputElement>(null);
+  const [bidinc, setBidinc] = useState<PercentageType>(PercentageType.AMOUNT);
+  const minbidinc = useRef<HTMLInputElement>(null);
+  const feesamount = useRef<HTMLInputElement>(null);
+  const [fees, setFees] = useState<PercentageType>(PercentageType.AMOUNT);
+  const [feesrefundable, setFeesrefundable] = useState<RefundType>(
+    RefundType.NONREFUNDABLE
+  );
+  const emdamount = useRef<HTMLInputElement>(null);
+  const [emd, setEmd] = useState<PercentageType>(PercentageType.AMOUNT);
+  const [emdrefundable, setEmdrefundable] = useState<RefundType>(
+    RefundType.REFUNDABLE
+  );
+
+  const bgamount = useRef<HTMLInputElement>(null);
+  const [bg, setBg] = useState<PercentageType>(PercentageType.AMOUNT);
+  const [bgrefundable, setBgrefundable] = useState<RefundType>(
+    RefundType.REFUNDABLE
+  );
+
+  enum Exempt {
+    YES = "YES",
+    NO = "NO",
+  }
+  const [exempt, setExempt] = useState<Exempt>(Exempt.NO);
+
+  const exemptfeesamount = useRef<HTMLInputElement>(null);
+  const exemptemdamount = useRef<HTMLInputElement>(null);
+  const exemptbgamount = useRef<HTMLInputElement>(null);
+
+  const [exemptfees, setExemptFees] = useState<PercentageType>(
+    PercentageType.AMOUNT
+  );
+  const [exemptemd, setExemptEmd] = useState<PercentageType>(
+    PercentageType.AMOUNT
+  );
+  const [exemptbg, setExemptbg] = useState<PercentageType>(
+    PercentageType.AMOUNT
+  );
+
+  const doctitle = useRef<HTMLInputElement>(null);
+  const docdescription = useRef<HTMLTextAreaElement>(null);
+  const filenumber = useRef<HTMLInputElement>(null);
+  const filesubject = useRef<HTMLTextAreaElement>(null);
+
+  const items = [
+    {
+      id: "forwomen",
+      label: "For Women",
+    },
+    {
+      id: "category",
+      label: "For Reserved Category",
+    },
+    {
+      id: "abled",
+      label: "For Differently Abled",
+    },
+    {
+      id: "msme",
+      label: "For MSME",
+    },
+  ] as const;
+
+  const [field, setField] = useState<string[]>([]);
+
+  const exemptitems = [
+    {
+      id: "forwomen",
+      label: "For Women",
+    },
+    {
+      id: "category",
+      label: "For Reserved Category",
+    },
+    {
+      id: "abled",
+      label: "For Differently Abled",
+    },
+    {
+      id: "msme",
+      label: "For MSME",
+    },
+  ] as const;
+
+  const [exemptfield, setExamptField] = useState<string[]>([]);
+
+  const exemptsections = [
+    {
+      id: "fees",
+      label: "Exempt Fees",
+    },
+    {
+      id: "emd",
+      label: "Exempt EMD",
+    },
+    {
+      id: "bg",
+      label: "Exempt BG",
+    },
+  ] as const;
+
+  const [exemptsectionsvalue, setExemptsectionsvalue] = useState<string[]>([]);
+
+  const init = async () => {
+    setLoading(true);
+
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
+
+  const [startTime, setStartTime] = useState<string>("");
+  const [endTime, setEndTime] = useState<string>("");
+
+  const [fileUploader, setFileUploader] = useState<File | null>(null);
+  const cFileUploader = useRef<HTMLInputElement>(null);
+
+  const create = async () => {
+    const result = safeParse(CreateBidSchema, {
+      title: title.current?.value,
+      description: description.current?.value,
+      instruction: instructions.current?.value,
+      min_bid_amount: parseInt(minbid.current?.value ?? "0"),
+      bidincrementamount: bidinc as PercentageType,
+      min_bid_increment: parseInt(minbidinc.current?.value ?? "0"),
+      fees_amount: parseInt(feesamount.current?.value ?? "0"),
+      fees: fees as PercentageType,
+      fees_refundable: feesrefundable as RefundType,
+      emd_amount: parseInt(emdamount.current?.value ?? "0"),
+      emd: emd as PercentageType,
+      emd_refundable: emdrefundable as RefundType,
+      bg_amount: parseInt(bgamount.current?.value ?? "0"),
+      bg: bg as PercentageType,
+      bg_refundable: bgrefundable as RefundType,
+      startTime: startTime,
+      endTime: endTime,
+      bidstartdate: setTime(startDate!, startTime),
+      bidenddate: setTime(endDate!, endTime),
+      biddeclarationdate: deadlineDate,
+    });
+
+    if (result.success) {
+      if (exempt === Exempt.YES && exemptfield.length == 0) {
+        return toast.error("Please select at least one exempt category");
+      }
+
+      if (exempt == Exempt.YES && exemptsectionsvalue.length == 0) {
+        return toast.error("Please select at least one exempt section");
+      }
+
+      if (exemptsectionsvalue.includes("fees") && !exemptfeesamount.current) {
+        return toast.error("Please enter exempt fees amount");
+      }
+
+      if (exemptsectionsvalue.includes("emd") && !exemptemdamount.current) {
+        return toast.error("Please enter exempt emd amount");
+      }
+
+      if (exemptsectionsvalue.includes("bg") && !exemptbgamount.current) {
+        return toast.error("Please enter exempt bg amount");
+      }
+
+      let extrafields: any = {};
+      if (exempt === Exempt.YES && exemptsectionsvalue.includes("fees")) {
+        extrafields["exempt_fees_amount"] = parseInt(
+          exemptfeesamount.current?.value ?? "0"
+        );
+        extrafields["exempt_fees"] = exemptfees;
+      }
+
+      if (exempt === Exempt.YES && exemptsectionsvalue.includes("emd")) {
+        extrafields["exempt_emd_amount"] = parseInt(
+          exemptemdamount.current?.value ?? "0"
+        );
+        extrafields["exempt_emd"] = exemptemd;
+      }
+
+      if (exempt === Exempt.YES && exemptsectionsvalue.includes("bg")) {
+        extrafields["exempt_bg_amount"] = parseInt(
+          exemptbgamount.current?.value ?? "0"
+        );
+        extrafields["exempt_bg"] = exemptbg;
+      }
+
+      const createbid = await CreateBid({
+        title: result.output.title,
+        description: result.output.description,
+        instruction: result.output.instruction,
+        min_bid_amount: result.output.min_bid_amount,
+        bidincrementamount: result.output.bidincrementamount,
+        min_bid_increment: result.output.min_bid_increment,
+        fees_amount: result.output.fees_amount,
+        fees: result.output.fees,
+        fees_refundable: result.output.fees_refundable,
+        emd_amount: result.output.emd_amount,
+        emd: result.output.emd,
+        emd_refundable: result.output.emd_refundable,
+        bg_amount: result.output.bg_amount,
+        bg: result.output.bg,
+        bg_refundable: result.output.bg_refundable,
+        bidstartdate: result.output.bidstartdate,
+        bidenddate: result.output.bidenddate,
+        biddeclarationdate: result.output.biddeclarationdate,
+        createdById: userid,
+        shopId: props.shopid,
+        is_woman: field.includes("forwomen"),
+        is_reserved: field.includes("category"),
+        is_differently_abled: field.includes("abled"),
+        is_msme: field.includes("msme"),
+        is_exemption: exempt == Exempt.YES,
+        exemptfield: exemptfield,
+        exemptsectionsvalue: exemptsectionsvalue,
+        ...extrafields,
+        is_fees_exempt_allowed:
+          exempt === Exempt.YES && exemptsectionsvalue.includes("fees"),
+        is_emd_exempt_allowed:
+          exempt === Exempt.YES && exemptsectionsvalue.includes("emd"),
+        is_bg_exempt_allowed:
+          exempt === Exempt.YES && exemptsectionsvalue.includes("bg"),
+      });
+      if (!createbid.status) return toast.error(createbid.message);
+      toast.success("Bid added successfully");
+      router.back();
+    } else {
+      let errorMessage = "";
+      if (result.issues[0].input) {
+        errorMessage = result.issues[0].message;
+      } else {
+        errorMessage = result.issues[0].path![0].key + " is required";
+      }
+      toast.error(errorMessage);
+    }
+  };
+
+  const handleFileChange = (
+    value: React.ChangeEvent<HTMLInputElement>,
+    setFun: (value: SetStateAction<File | null>) => void
+  ) => {
+    let file_size = parseInt(
+      (value!.target.files![0].size / 1024 / 1024).toString()
+    );
+    if (file_size < 5) {
+      if (value!.target.files![0].type.startsWith("image/")) {
+        setFun((val) => value!.target.files![0]);
+      } else {
+        toast.error("Please select a file.", { theme: "light" });
+      }
+    } else {
+      toast.error("File size must be less then 5 mb", { theme: "light" });
+    }
+  };
+
+  const upload = async () => {
+    const formData = new FormData();
+    formData.append("file", fileUploader!);
+    formData.append("id", props.shopid.toString());
+    formData.append("type", "bid");
+
+    console.log(fileUploader);
+
+    console.log(props.uploadurl);
+
+    const uploadfile = await axios.post(props.uploadurl, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    if (uploadfile.status != 200) {
+      return toast.error("File upload failed");
+    }
+    console.log(uploadfile.data.filePath);
+  };
+  if (isLoading)
+    return (
+      <div className="h-screen w-full grid place-items-center text-3xl text-gray-600 bg-gray-200">
+        Loading...
+      </div>
+    );
+
+  return (
+    <>
+      <div className="p-6 sm:p-10">
+        <h1 className="text-[#162f57] text-2xl font-semibold">Create Bid</h1>
+        <p className="text-sm mt-4 mb-2">
+          Get started by addding your Bid details below.
+        </p>
+
+        <div className="bg-white rounded-sm shadow-sm p-4">
+          <p className="text-gray-500 text-center">General Information</p>
+
+          <Separator />
+
+          <div className="grid items-center gap-1.5 w-full mt-4">
+            <Label htmlFor="title">Bid Title</Label>
+            <Input
+              id="title"
+              type="text"
+              className="w-full bg-gray-100"
+              ref={title}
+            />
+          </div>
+          <div className="grid items-center gap-1.5 w-full mt-4">
+            <Label htmlFor="description">Bid Description</Label>
+            <Textarea
+              id="description"
+              className="w-full bg-gray-100 h-20 resize-none"
+              ref={description}
+            />
+          </div>
+          <div className="grid items-center gap-1.5 w-full mt-4">
+            <Label htmlFor="instructions">Bid Instructions</Label>
+            <Textarea
+              id="instructions"
+              className="w-full bg-gray-100 h-20 resize-none"
+              ref={instructions}
+            />
+          </div>
+
+          <div className="flex gap-4">
+            <div className="grid items-center gap-1.5 w-full mt-4">
+              <Label htmlFor="starttime">Start Date</Label>
+
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={`w-full justify-start text-left font-normal ${
+                      !startDate ?? "text-muted-foreground"
+                    }`}
+                  >
+                    <IcBaselineCalendarMonth className="mr-2 h-4 w-4" />
+                    {startDate ? (
+                      format(startDate, "PPP")
+                    ) : (
+                      <span>Pick start date</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={startDate}
+                    onSelect={setStartDate}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <div className="grid items-center gap-1.5 w-full mt-4">
+              <Label htmlFor="minbid">Start Time</Label>
+              <TimePicker
+                minuteStep={15}
+                use12Hours
+                format="h:mm a"
+                size="large"
+                onChange={(time) => {
+                  setStartTime(time.format("h:mm a"));
+                }}
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <div className="grid items-center gap-1.5 w-full mt-4">
+              <Label htmlFor="enddatetime">End Date Time</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={`w-full justify-start text-left font-normal ${
+                      !endDate ?? "text-muted-foreground"
+                    }`}
+                  >
+                    <IcBaselineCalendarMonth className="mr-2 h-4 w-4" />
+                    {endDate ? (
+                      format(endDate, "PPP")
+                    ) : (
+                      <span>Pick end date</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={endDate}
+                    onSelect={setEndDate}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <div className="grid items-center gap-1.5 w-full mt-4">
+              <Label htmlFor="minbid">End Time</Label>
+              <TimePicker
+                minuteStep={15}
+                use12Hours
+                format="h:mm a"
+                size="large"
+                onChange={(time) => {
+                  setEndTime(time.format("h:mm a"));
+                }}
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <div className="grid items-center gap-1.5 w-full mt-4">
+              <Label htmlFor="enddatetime">Document Deadline Date</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={`w-full justify-start text-left font-normal ${
+                      !deadlineDate ?? "text-muted-foreground"
+                    }`}
+                  >
+                    <IcBaselineCalendarMonth className="mr-2 h-4 w-4" />
+                    {deadlineDate ? (
+                      format(deadlineDate, "PPP")
+                    ) : (
+                      <span>Pick deadline date</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={deadlineDate}
+                    onSelect={setDeadlineDate}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div className="grid items-center gap-1.5 w-full mt-4">
+              <Label htmlFor="exempt">Exempt</Label>
+              <RadioGroup
+                defaultValue="exempt"
+                className="flex gap-2"
+                id="exempt"
+                value={exempt}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value="YES"
+                    id="exempt1"
+                    onClick={() => setExempt(Exempt.YES)}
+                  />
+                  <Label
+                    htmlFor="exempt1"
+                    className="cursor-pointer"
+                    onClick={() => setExempt(Exempt.YES)}
+                  >
+                    YES
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value="NO"
+                    id="exempt2"
+                    onClick={() => setExempt(Exempt.NO)}
+                  />
+                  <Label
+                    htmlFor="exempt2"
+                    className="cursor-pointer"
+                    onClick={() => setExempt(Exempt.NO)}
+                  >
+                    NO
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+          </div>
+
+          {exempt === Exempt.YES && (
+            <>
+              <p className="text-gray-500 mt-4 text-center">Exempt</p>
+              <Separator />
+              <div className="flex gap-x-4 gap-y-2 flex-wrap items-center my-4">
+                <p className="text-gray-500">Select Exempt Category :</p>
+                {exemptitems.map((item, index) => (
+                  <div key={index} className="flex gap-2 items-center ">
+                    <Checkbox
+                      id={item.id.toString()}
+                      checked={exemptfield.includes(item.id)}
+                      onCheckedChange={(value) => {
+                        if (value) {
+                          setExamptField((prev) => [...prev, item.id]);
+                        } else {
+                          setExamptField((prev) =>
+                            prev.filter((x) => x !== item.id)
+                          );
+                        }
+                      }}
+                    />
+
+                    <Label
+                      className="text-sm font-normal cursor-pointer"
+                      htmlFor={item.id.toString()}
+                    >
+                      {item.label}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex gap-x-4 gap-y-2 flex-wrap items-center my-4">
+                <p className="text-gray-500">Select Exempt Section : </p>
+                {exemptsections.map((item, index) => (
+                  <div key={index} className="flex gap-2 items-center ">
+                    <Checkbox
+                      id={item.id.toString()}
+                      checked={exemptsectionsvalue.includes(item.id)}
+                      onCheckedChange={(value) => {
+                        if (value) {
+                          setExemptsectionsvalue((prev) => [...prev, item.id]);
+                        } else {
+                          setExemptsectionsvalue((prev) =>
+                            prev.filter((x) => x !== item.id)
+                          );
+                        }
+                      }}
+                    />
+
+                    <Label
+                      className="text-sm font-normal cursor-pointer"
+                      htmlFor={item.id.toString()}
+                    >
+                      {item.label}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+
+              {/* exempt fees start here */}
+              {exemptsectionsvalue.includes("fees") && (
+                <div className="flex gap-4">
+                  <div className="grid items-center gap-1.5 w-full mt-4">
+                    <Label htmlFor="exemptfeespa">Exempt Fees % / Amount</Label>
+                    <RadioGroup
+                      defaultValue="AMOUNT"
+                      className="flex gap-2"
+                      id="exemptfeespa"
+                      value={exemptfees}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem
+                          value="PERCENTAGE"
+                          id="exemptfeesp"
+                          onClick={() =>
+                            setExemptFees(PercentageType.PERCENTAGE)
+                          }
+                        />
+                        <Label
+                          htmlFor="exemptfeesp"
+                          className="cursor-pointer"
+                          onClick={() =>
+                            setExemptFees(PercentageType.PERCENTAGE)
+                          }
+                        >
+                          By Percentage
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem
+                          value="AMOUNT"
+                          id="exemptfeesa"
+                          onClick={() => setExemptFees(PercentageType.AMOUNT)}
+                        />
+                        <Label
+                          htmlFor="exemptfeesa"
+                          className="cursor-pointer"
+                          onClick={() => setExemptFees(PercentageType.AMOUNT)}
+                        >
+                          By Amount
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                  <div className="grid items-center gap-1.5 w-full mt-4">
+                    <Label htmlFor="exemptfees">Exempt Fees Amount</Label>
+                    <Input
+                      id="exemptfees"
+                      type="text"
+                      className="w-full bg-gray-100"
+                      ref={exemptfeesamount}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* exempt fees end here */}
+
+              {/* exempt emd start here */}
+              {exemptsectionsvalue.includes("emd") && (
+                <div className="flex gap-4">
+                  <div className="grid items-center gap-1.5 w-full mt-4">
+                    <Label htmlFor="exemptemdpa">Exempt EMD % / Amount</Label>
+                    <RadioGroup
+                      defaultValue="AMOUNT"
+                      className="flex gap-2"
+                      id="exemptemdpa"
+                      value={exemptemd}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem
+                          value="PERCENTAGE"
+                          id="exemptemdp"
+                          onClick={() =>
+                            setExemptEmd(PercentageType.PERCENTAGE)
+                          }
+                        />
+                        <Label
+                          htmlFor="exemptemd"
+                          className="cursor-pointer"
+                          onClick={() =>
+                            setExemptEmd(PercentageType.PERCENTAGE)
+                          }
+                        >
+                          By Percentage
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem
+                          value="AMOUNT"
+                          id="exemptemda"
+                          onClick={() => setExemptEmd(PercentageType.AMOUNT)}
+                        />
+                        <Label
+                          htmlFor="exemptemda"
+                          className="cursor-pointer"
+                          onClick={() => setExemptEmd(PercentageType.AMOUNT)}
+                        >
+                          By Amount
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                  <div className="grid items-center gap-1.5 w-full mt-4">
+                    <Label htmlFor="exemptemd">Exempt EMD Amount</Label>
+                    <Input
+                      id="exemptemd"
+                      type="text"
+                      className="w-full bg-gray-100"
+                      ref={exemptemdamount}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* exempt emd end here */}
+
+              {/* exempt bg start here */}
+              {exemptsectionsvalue.includes("bg") && (
+                <div className="flex gap-4 mb-4">
+                  <div className="grid items-center gap-1.5 w-full mt-4">
+                    <Label htmlFor="exemptbgpa">Exempt BG % / Amount</Label>
+                    <RadioGroup
+                      defaultValue="AMOUNT"
+                      className="flex gap-2"
+                      id="exemptbgpa"
+                      value={exemptbg}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem
+                          value="PERCENTAGE"
+                          id="exemptbgp"
+                          onClick={() => setExemptbg(PercentageType.PERCENTAGE)}
+                        />
+                        <Label
+                          htmlFor="exemptbgp"
+                          className="cursor-pointer"
+                          onClick={() => setExemptbg(PercentageType.PERCENTAGE)}
+                        >
+                          By Percentage
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem
+                          value="AMOUNT"
+                          id="exemptbga"
+                          onClick={() => setExemptbg(PercentageType.AMOUNT)}
+                        />
+                        <Label
+                          htmlFor="exemptbga"
+                          className="cursor-pointer"
+                          onClick={() => setExemptbg(PercentageType.AMOUNT)}
+                        >
+                          By Amount
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                  <div className="grid items-center gap-1.5 w-full mt-4">
+                    <Label htmlFor="exemptbg">Exempt BG Amount</Label>
+                    <Input
+                      id="exemptbg"
+                      type="text"
+                      className="w-full bg-gray-100"
+                      ref={exemptbgamount}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* exempt bg end here */}
+            </>
+          )}
+
+          <p className="text-gray-500 mt-4 text-center">Fees Structure</p>
+          <Separator />
+
+          <div className="flex gap-4">
+            <div className="grid items-center gap-1.5 w-full mt-4">
+              <Label htmlFor="minbid">Minimum Bid</Label>
+              <Input
+                id="minbid"
+                type="text"
+                className="w-full bg-gray-100"
+                ref={minbid}
+              />
+            </div>
+            <div className="grid items-center gap-1.5 w-full mt-4">
+              <Label htmlFor="bidinc">Bid Increment % / Amount</Label>
+              <RadioGroup
+                defaultValue="AMOUNT"
+                className="flex gap-2"
+                id="bidinc"
+                value={bidinc}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value="PERCENTAGE"
+                    id="r1"
+                    onClick={() => setBidinc(PercentageType.PERCENTAGE)}
+                  />
+                  <Label
+                    htmlFor="r1"
+                    className="cursor-pointer"
+                    onClick={() => setBidinc(PercentageType.PERCENTAGE)}
+                  >
+                    By Percentage
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value="AMOUNT"
+                    id="r2"
+                    onClick={() => setBidinc(PercentageType.AMOUNT)}
+                  />
+                  <Label
+                    htmlFor="r2"
+                    className="cursor-pointer"
+                    onClick={() => setBidinc(PercentageType.AMOUNT)}
+                  >
+                    By Amount
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+            <div className="grid items-center gap-1.5 w-full mt-4">
+              <Label htmlFor="minbid">Min Bid Increment</Label>
+              <Input
+                id="minbid"
+                type="text"
+                className="w-full bg-gray-100"
+                ref={minbidinc}
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <div className="grid items-center gap-1.5 w-full mt-4">
+              <Label htmlFor="feesamount">Fees Amount</Label>
+              <Input
+                id="feesamount"
+                type="text"
+                className="w-full bg-gray-100"
+                ref={feesamount}
+              />
+            </div>
+            <div className="grid items-center gap-1.5 w-full mt-4">
+              <Label htmlFor="feespercentage">Fees % / Amount</Label>
+              <RadioGroup
+                defaultValue="feesbypercentage"
+                className="flex gap-2"
+                id="feespercentage"
+                value={fees}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value="PERCENTAGE"
+                    id="fr1"
+                    onClick={() => setFees(PercentageType.PERCENTAGE)}
+                  />
+                  <Label
+                    htmlFor="fr1"
+                    className="cursor-pointer"
+                    onClick={() => setFees(PercentageType.PERCENTAGE)}
+                  >
+                    By Percentage
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value="AMOUNT"
+                    id="fr2"
+                    onClick={() => setFees(PercentageType.AMOUNT)}
+                  />
+                  <Label
+                    htmlFor="fr2"
+                    className="cursor-pointer"
+                    onClick={() => setFees(PercentageType.AMOUNT)}
+                  >
+                    By Amount
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+            <div className="grid items-center gap-1.5 w-full mt-4">
+              <Label htmlFor="feespercentage">Is Fees Refundable</Label>
+              <RadioGroup
+                defaultValue="no"
+                className="flex gap-2"
+                id="feespercentage"
+                value={feesrefundable}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value="REFUNDABLE"
+                    id="rr1"
+                    onClick={() => setFeesrefundable(RefundType.REFUNDABLE)}
+                  />
+                  <Label
+                    htmlFor="rr1"
+                    className="cursor-pointer"
+                    onClick={() => setFeesrefundable(RefundType.REFUNDABLE)}
+                  >
+                    Yes
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value="NONREFUNDABLE"
+                    id="rr2"
+                    onClick={() => setFeesrefundable(RefundType.NONREFUNDABLE)}
+                  />
+                  <Label
+                    htmlFor="rr2"
+                    className="cursor-pointer"
+                    onClick={() => setFeesrefundable(RefundType.NONREFUNDABLE)}
+                  >
+                    No
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <div className="grid items-center gap-1.5 w-full mt-4">
+              <Label htmlFor="emdamount">EMD Amount</Label>
+              <Input
+                id="emdamount"
+                type="text"
+                className="w-full bg-gray-100"
+                ref={emdamount}
+              />
+            </div>
+            <div className="grid items-center gap-1.5 w-full mt-4">
+              <Label htmlFor="emdpercentage">EMD % / Amount</Label>
+              <RadioGroup
+                defaultValue="emdbypercentage"
+                className="flex gap-2"
+                id="emdpercentage"
+                value={emd}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value="PERCENTAGE"
+                    id="emdr1"
+                    onClick={() => setEmd(PercentageType.PERCENTAGE)}
+                  />
+                  <Label
+                    htmlFor="emdr1"
+                    className="cursor-pointer"
+                    onClick={() => setEmd(PercentageType.PERCENTAGE)}
+                  >
+                    By Percentage
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value="AMOUNT"
+                    id="emdr2"
+                    onClick={() => setEmd(PercentageType.AMOUNT)}
+                  />
+                  <Label
+                    htmlFor="emdr2"
+                    className="cursor-pointer"
+                    onClick={() => setEmd(PercentageType.AMOUNT)}
+                  >
+                    By Amount
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+            <div className="grid items-center gap-1.5 w-full mt-4">
+              <Label htmlFor="emdpercentage">Is EMD Refundable</Label>
+              <RadioGroup
+                defaultValue="yes"
+                className="flex gap-2"
+                id="emdpercentage"
+                value={emdrefundable}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value="REFUNDABLE"
+                    id="emdrr1"
+                    onClick={() => setEmdrefundable(RefundType.REFUNDABLE)}
+                  />
+                  <Label
+                    htmlFor="emdrr1"
+                    className="cursor-pointer"
+                    onClick={() => setEmdrefundable(RefundType.REFUNDABLE)}
+                  >
+                    Yes
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value="NONREFUNDABLE"
+                    id="emdrr2"
+                    onClick={() => setEmdrefundable(RefundType.NONREFUNDABLE)}
+                  />
+                  <Label
+                    htmlFor="emdrr2"
+                    className="cursor-pointer"
+                    onClick={() => setEmdrefundable(RefundType.NONREFUNDABLE)}
+                  >
+                    No
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <div className="grid items-center gap-1.5 w-full mt-4">
+              <Label htmlFor="bgamount">BG Amount</Label>
+              <Input
+                id="bgamount"
+                type="text"
+                className="w-full bg-gray-100"
+                ref={bgamount}
+              />
+            </div>
+            <div className="grid items-center gap-1.5 w-full mt-4">
+              <Label htmlFor="bgpercentage">BG % / Amount</Label>
+              <RadioGroup
+                id={"bgpercentage"}
+                defaultValue="bgbypercentage"
+                className="flex gap-2"
+                value={bg}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value="PERCENTAGE"
+                    id="bgfr1"
+                    onClick={() => setBg(PercentageType.PERCENTAGE)}
+                  />
+                  <Label
+                    htmlFor="bgfr1"
+                    className="cursor-pointer"
+                    onClick={() => setBg(PercentageType.PERCENTAGE)}
+                  >
+                    By Percentage
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value="AMOUNT"
+                    id="bgfr2"
+                    onClick={() => setBg(PercentageType.AMOUNT)}
+                  />
+                  <Label
+                    htmlFor="bgfr2"
+                    className="cursor-pointer"
+                    onClick={() => setBg(PercentageType.AMOUNT)}
+                  >
+                    By Amount
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+            <div className="grid items-center gap-1.5 w-full mt-4">
+              <Label htmlFor="bgpercentage">Is BG Refundable</Label>
+              <RadioGroup
+                defaultValue="yes"
+                className="flex gap-2"
+                id="bgpercentage"
+                value={bgrefundable}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value="REFUNDABLE"
+                    id="bgrr1"
+                    onClick={() => setBgrefundable(RefundType.REFUNDABLE)}
+                  />
+                  <Label
+                    htmlFor="bgrr1"
+                    className="cursor-pointer"
+                    onClick={() => setBgrefundable(RefundType.REFUNDABLE)}
+                  >
+                    Yes
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem
+                    value="NONREFUNDABLE"
+                    id="bgrr2"
+                    onClick={() => setBgrefundable(RefundType.NONREFUNDABLE)}
+                  />
+                  <Label
+                    htmlFor="bgrr2"
+                    className="cursor-pointer"
+                    onClick={() => setBgrefundable(RefundType.NONREFUNDABLE)}
+                  >
+                    No
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+          </div>
+
+          <p className="text-gray-500 mt-4 text-center">Document Required</p>
+          <Separator />
+
+          <div className="grid items-center gap-1.5 w-full mt-4">
+            <Label htmlFor="doctitle">Document Title</Label>
+            <Input
+              id="doctitle"
+              type="text"
+              className="w-full bg-gray-100"
+              ref={doctitle}
+            />
+          </div>
+          <div className="grid items-center gap-1.5 w-full mt-4">
+            <Label htmlFor="docdescription">Document Description</Label>
+            <Textarea
+              id="docdescription"
+              className="w-full bg-gray-100 h-20 resize-none"
+              ref={docdescription}
+            />
+          </div>
+
+          <p className="text-gray-500 mt-4 text-center">
+            Terms & Conditions Document
+          </p>
+          <Separator />
+
+          <div className="grid items-center gap-1.5 w-full mt-4">
+            <Label htmlFor="filenumber">File Number</Label>
+            <Input
+              id="filenumber"
+              type="text"
+              className="w-full bg-gray-100"
+              ref={filenumber}
+            />
+          </div>
+          <div className="grid items-center gap-1.5 w-full mt-4">
+            <Label htmlFor="filesubject">File Subject</Label>
+            <Textarea
+              id="filesubject"
+              className="w-full bg-gray-100 h-20 resize-none"
+              ref={filesubject}
+            />
+          </div>
+
+          <div className="flex gap-4 mt-4 items-center">
+            <Label htmlFor="termfile">Terms & Conditions File</Label>
+            <Button
+              onClick={() => cFileUploader.current?.click()}
+              variant={"secondary"}
+            >
+              {fileUploader == null ? "Upload File" : "Change File"}
+            </Button>
+            <p className="text-sm">No File Selected</p>
+            <Button onClick={upload}>submit</Button>
+
+            <div className="hidden">
+              <Input
+                type="file"
+                ref={cFileUploader}
+                accept="*/*"
+                onChange={(val) => handleFileChange(val, setFileUploader)}
+              />
+            </div>
+          </div>
+
+          <p className="text-gray-500 mt-4">Select Bidder Category</p>
+          {items.map((item, index) => (
+            <div key={index} className="flex gap-2 mt-1 items-center ">
+              <Checkbox
+                id={`${item.id.toString()}1`}
+                checked={field.includes(item.id)}
+                onCheckedChange={(value) => {
+                  if (value) {
+                    setField((prev) => [...prev, item.id]);
+                  } else {
+                    setField((prev) => prev.filter((x) => x !== item.id));
+                  }
+                }}
+              />
+
+              <Label
+                className="text-sm font-normal cursor-pointer"
+                htmlFor={`${item.id.toString()}1`}
+              >
+                {item.label}
+              </Label>
+            </div>
+          ))}
+
+          <Button className="w-full mt-4" onClick={create}>
+            Submit
+          </Button>
+        </div>
+      </div>
+    </>
+  );
+};
+export default CreateBidPage;

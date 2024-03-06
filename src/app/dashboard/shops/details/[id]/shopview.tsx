@@ -1,9 +1,13 @@
 "use client";
 
+import GetBidByShop from "@/action/bid/getbidbyshop";
+import IsUserAppliedForBid from "@/action/bid_transact/isuserapplied";
 import GetShop from "@/action/shop/getshop";
+import GetUser from "@/action/user/getuser";
 import { AntDesignCheckOutlined } from "@/components/icons";
 import { capitalcase } from "@/utils/methods";
-import { shop } from "@prisma/client";
+import { bid, shop, user } from "@prisma/client";
+import { getCookie } from "cookies-next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 interface ShowShopProps {
@@ -11,6 +15,8 @@ interface ShowShopProps {
 }
 
 const ShopView = (props: ShowShopProps) => {
+  const userid: number = parseInt(getCookie("id") ?? "0");
+
   const items = [
     {
       name: "January",
@@ -64,6 +70,12 @@ const ShopView = (props: ShowShopProps) => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [shop, setShop] = useState<shop>();
+  const [bid, setBid] = useState<bid>();
+
+  const [userApplyed, setUserApplyed] = useState<boolean>(false);
+
+  const [user, setUser] = useState<user>();
+
   const init = async () => {
     setIsLoading(true);
 
@@ -73,6 +85,28 @@ const ShopView = (props: ShowShopProps) => {
 
     if (shopresponse.status) {
       setShop(shopresponse.data!);
+    }
+
+    const bidresponse = await GetBidByShop({
+      shopid: parseInt(props.id.toString()),
+    });
+
+    if (bidresponse.status) {
+      setBid(bidresponse.data!);
+    }
+
+    const userresponse = await GetUser({ id: userid });
+    if (userresponse.status) {
+      setUser(userresponse.data!);
+    }
+
+    const userapplied = await IsUserAppliedForBid({
+      userid: userid,
+      bidid: bidresponse.data?.id ?? 0,
+    });
+
+    if (userapplied.status) {
+      setUserApplyed(true);
     }
 
     setIsLoading(false);
@@ -104,18 +138,41 @@ const ShopView = (props: ShowShopProps) => {
           {shop?.meterno && (
             <p className="px-2 text-sm">Meter Number : {shop?.meterno}</p>
           )}
-          <div className="flex gap-2 p-2 mt-2">
-            <div className="grow"></div>
-            <button className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 py-1 text-sm">
-              Manage Shop
-            </button>
-            <Link
-              href={"/dashboard/shops/createbid"}
-              className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 py-1 text-sm"
-            >
-              Create Bid
-            </Link>
-          </div>
+
+          {user?.role === "ADMIN" && (
+            <div className="flex gap-2 p-2 mt-2">
+              <div className="grow"></div>
+
+              {bid && (
+                <Link
+                  href={`/dashboard/shops/shopbidhistory/${props.id}`}
+                  className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 py-1 text-sm"
+                >
+                  Bid History
+                </Link>
+              )}
+              <button className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 py-1 text-sm bg-transparent">
+                Manage Shop
+              </button>
+              {bid ? (
+                <></>
+              ) : (
+                <Link
+                  href={`/dashboard/shops/createbid/${props.id}`}
+                  className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 py-1 text-sm"
+                >
+                  Create Bid
+                </Link>
+              )}
+
+              <Link
+                href={`/dashboard/shops/createrent/${props.id}`}
+                className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 h-8 text-sm grid place-items-center"
+              >
+                Add Rent
+              </Link>
+            </div>
+          )}
         </div>
         <div className="bg-white rounded-sm shadow-sm">
           <iframe
@@ -127,7 +184,58 @@ const ShopView = (props: ShowShopProps) => {
           ></iframe>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 ">
+
+      {bid && (
+        <div className="bg-white rounded-sm shadow-sm pb-4 mt-4">
+          <div className="border-b border-gray-300 flex items-center pr-2">
+            <p className="text-xl p-2  font-semibold">Bid Details</p>
+            <div className="grow"></div>
+
+            {user?.role === "USER" && !userApplyed && (
+              <Link
+                href={`/dashboard/bids/apply/${bid.id}`}
+                className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 py-1 text-sm"
+              >
+                Apply Bid
+              </Link>
+            )}
+            {user?.role === "ADMIN" && (
+              <Link
+                href={`/dashboard/bids/biderslist/${bid?.id}`}
+                className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 h-8 text-sm grid place-items-center"
+              >
+                Running Bid History
+              </Link>
+            )}
+          </div>
+          <div className="flex">
+            <div className="flex-1">
+              <p className="px-2 text-sm">Title : {bid.title}</p>
+              <p className="px-2 text-sm">
+                Bid Start Date : {bid.bidenddate.toDateString()}
+              </p>
+              <p className="px-2 text-sm">
+                Bid End Date : {bid.bidstartdate.toDateString()}
+              </p>
+              {user?.role != "USER" && (
+                <p className="px-2 text-sm">Total Bidders : 5</p>
+              )}
+            </div>
+            <div className="flex-1">
+              <p className="px-2 text-sm">
+                Min Bid Amount : {bid.min_bid_amount}
+              </p>
+              <p className="px-2 text-sm">Fees Amount : {bid.fees_amount}</p>
+              <p className="px-2 text-sm">EMD Amount : {bid.emd_amount}</p>
+
+              {user?.role != "USER" && (
+                <p className="px-2 text-sm">BG Amount : {bid.bg_amount}</p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 ">
         <div className="bg-white rounded-sm shadow-sm pb-4">
           <p className="text-xl p-2 border-b border-gray-300 font-semibold">
             Tenant Details
@@ -153,21 +261,24 @@ const ShopView = (props: ShowShopProps) => {
           <p className="px-2 text-sm">21000</p>
           <p className="px-2 text-sm">Pending</p>
         </div>
-      </div>
+      </div> */}
 
-      <div className="w-full bg-white rounded-sm shadow-sm mt-4">
-        <div className="bg-white rounded-sm shadow-sm">
-          <p className="text-xl p-2 border-b border-gray-300">
-            Rent History - 2022
-          </p>
+      {user?.role === "ADMIN" && (
+        <div className="w-full bg-white rounded-sm shadow-sm mt-4">
+          <div className="bg-white rounded-sm shadow-sm">
+            <p className="text-xl p-2  font-semibold border-b border-gray-300">
+              {" "}
+              Rent History - 2022
+            </p>
 
-          <div className="grow grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 md:grid-cols-4 gap-2 flex-wrap justify-center items-center">
-            {items.map((item, index) => (
-              <PropertiesDeatils key={index} {...item} />
-            ))}
+            <div className="grow grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 md:grid-cols-4 gap-2 flex-wrap justify-center items-center">
+              {items.map((item, index) => (
+                <PropertiesDeatils key={index} {...item} />
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

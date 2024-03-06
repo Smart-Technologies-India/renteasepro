@@ -6,12 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CreatePropertySchema } from "@/schema/createproperty";
 import { handleDecimalChange, handleNumberChange } from "@/utils/methods";
+import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
 import { toast } from "react-toastify";
 import { safeParse } from "valibot";
 
 const AddPropertyPage = () => {
+  const userid: number = parseInt(getCookie("id") ?? "0");
   const router = useRouter();
   const name = useRef<HTMLInputElement>(null);
   const address = useRef<HTMLInputElement>(null);
@@ -54,7 +56,7 @@ const AddPropertyPage = () => {
         latitude: result.data.latitude,
         longitude: result.data.longitude,
         priority: 1,
-        creadtedById: 1,
+        creadtedById: userid,
       });
 
       if (!createProperty.status) return toast.error(createProperty.message);

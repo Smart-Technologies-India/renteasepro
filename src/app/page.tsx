@@ -1,9 +1,8 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Image } from "@nextui-org/react";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -13,11 +12,11 @@ export default function Home() {
   return (
     <>
       <div className="min-h-screen w-full bg-[#f5f6f8] flex">
-        <div className="flex-1">
+        <div className="flex-1 w-20 relative">
           <Image
-            removeWrapper
             src="/log_in_bg.png"
             alt="error"
+            fill={true}
             className="w-full object-cover object-center h-screen"
           />
         </div>

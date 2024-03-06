@@ -19,6 +19,9 @@ const GetShop = async (
         deletedAt: null,
         deletedBy: null,
       },
+      include: {
+        property: true,
+      },
     });
 
     if (!shop)

@@ -6,7 +6,6 @@ import { capitalcase } from "@/utils/methods";
 import { property, shop } from "@prisma/client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { set } from "valibot";
 
 interface PropertiesViewProps {
   id: number;
@@ -95,12 +94,6 @@ const PropertiesView = (props: PropertiesViewProps) => {
               className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 py-1 text-sm"
             >
               Add Shops
-            </Link>
-            <Link
-              href={"/dashboard/shops/details"}
-              className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 py-1 text-sm"
-            >
-              View Shops
             </Link>
           </div>
         </div>

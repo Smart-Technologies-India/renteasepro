@@ -53,48 +53,67 @@ const Sidebar = (props: SidebarProps) => {
         path={path}
         pathcheck={"/dashboard"}
       />
+      {["USER"].includes(props.role) && (
+        <>
+          <MenuTab
+            icco={<FluentMdl2Home className="text-gray-300  w-6" />}
+            name="My Properties"
+            path={path}
+            pathcheck={"/dashboard/userproperties"}
+          />
 
-      {/* <MenuTab
-        icco={<Fa6RegularBuilding className="text-gray-300  w-6" />}
-        name="Organisation"
-        path={path}
-        pathcheck={"/dashboard/organisation"}
-      /> */}
-
-      <MenuTab
-        icco={<FluentMdl2Home className="text-gray-300  w-6" />}
-        name="Properties"
-        path={path}
-        pathcheck={"/dashboard/properties"}
-      />
-
-      <MenuTab
-        icco={<Fa6RegularFileLines className="text-gray-300  w-6" />}
-        name="Reports"
-        path={path}
-        pathcheck={"/dashboard/reports"}
-      />
-
-      <MenuTab
-        icco={<RiAuctionLine className="text-gray-300  w-6" />}
-        name="Bids"
-        path={path}
-        pathcheck={"/dashboard/bids"}
-      />
-      <MenuTab
-        icco={<RiMoneyRupeeCircleLine className="text-gray-300  w-6" />}
-        name="Rents"
-        path={path}
-        pathcheck={"/dashboard/rents"}
-      />
+          <MenuTab
+            icco={<RiAuctionLine className="text-gray-300  w-6" />}
+            name="Bids"
+            path={path}
+            pathcheck={"/dashboard/bids"}
+          />
+          <MenuTab
+            icco={<RiAuctionLine className="text-gray-300  w-6" />}
+            name="Bid History"
+            path={path}
+            pathcheck={"/dashboard/userbidhistory"}
+          />
+        </>
+      )}
 
       {["ADMIN"].includes(props.role) && (
-        <MenuTab
-          icco={<MaterialSymbolsPersonRounded className="text-gray-300  w-6" />}
-          name="Users"
-          path={path}
-          pathcheck={"/dashboard/users"}
-        />
+        <>
+          <MenuTab
+            icco={<FluentMdl2Home className="text-gray-300  w-6" />}
+            name="Properties"
+            path={path}
+            pathcheck={"/dashboard/properties"}
+          />
+
+          <MenuTab
+            icco={<Fa6RegularFileLines className="text-gray-300  w-6" />}
+            name="Reports"
+            path={path}
+            pathcheck={"/dashboard/reports"}
+          />
+
+          <MenuTab
+            icco={<RiAuctionLine className="text-gray-300  w-6" />}
+            name="Bids"
+            path={path}
+            pathcheck={"/dashboard/bids"}
+          />
+          <MenuTab
+            icco={<RiMoneyRupeeCircleLine className="text-gray-300  w-6" />}
+            name="Rents"
+            path={path}
+            pathcheck={"/dashboard/rents"}
+          />
+          <MenuTab
+            icco={
+              <MaterialSymbolsPersonRounded className="text-gray-300  w-6" />
+            }
+            name="Users"
+            path={path}
+            pathcheck={"/dashboard/users"}
+          />
+        </>
       )}
       {["ADMIN"].includes(props.role) && (
         <MenuTab

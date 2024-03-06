@@ -4,7 +4,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ApiResponseType } from "@/models/response";
 import { CreateUserSchema } from "@/schema/createuser";
-import { Image } from "@nextui-org/react";
 import { Role, user } from "@prisma/client";
 import Link from "next/link";
 import { useRef, useState } from "react";
@@ -13,6 +12,7 @@ import { safeParse } from "valibot";
 
 import createUser from "@/action/user/createuser";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 export default function Home() {
   const username = useRef<HTMLInputElement>(null);
   const password = useRef<HTMLInputElement>(null);
@@ -54,9 +54,9 @@ export default function Home() {
   return (
     <>
       <div className="min-h-screen w-full bg-[#f5f6f8] flex">
-        <div className="flex-1">
+        <div className="flex-1 relative">
           <Image
-            removeWrapper
+            fill={true}
             src="/log_in_bg.png"
             alt="error"
             className="w-full object-cover object-center h-screen"

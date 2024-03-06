@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { CreateShopSchema } from "@/schema/createshop";
 import { Floors, shop_category } from "@prisma/client";
+import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
@@ -27,6 +28,8 @@ interface AddShopPageProps {
 }
 
 const AddShopPage = (props: AddShopPageProps) => {
+  const userid: number = parseInt(getCookie("id") ?? "0");
+
   const router = useRouter();
   const [isLoading, setLoading] = useState<boolean>(true);
 
@@ -66,7 +69,7 @@ const AddShopPage = (props: AddShopPageProps) => {
       const createshop = await CreateShop({
         propertyId: parseInt(props.id.toString()),
         shopCategoryId: shopcategory,
-        creadtedById: 1,
+        creadtedById: userid,
         floor: floor,
         shopNumber: shopnumber.current?.value!,
         shopSize: size.current?.value!,

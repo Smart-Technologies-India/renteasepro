@@ -25,6 +25,22 @@ const CreateProperty = async (
   payload: CreatePropertyPayload
 ): Promise<ApiResponseType<property | null>> => {
   try {
+    const propertyExist = await prisma.property.findFirst({
+      where: {
+        name: payload.name,
+        latitude: payload.latitude,
+        longitude: payload.longitude,
+      },
+    });
+
+    if (propertyExist)
+      return {
+        status: false,
+        data: null,
+        message: "Property already exist.",
+        functionname: "CreateProperty",
+      };
+
     const property = await prisma.property.create({
       data: {
         name: payload.name,

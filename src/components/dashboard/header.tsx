@@ -56,7 +56,7 @@ const Navbar = (props: NavbarProps) => {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="gap-2 flex">
-            <p className="font-semibold text-lg">TABREZ CHOUHAN</p>
+            <p className="font-semibold text-lg">USER</p>
             <SolarAltArrowDownLinear className="textx-2xl" />
           </Button>
         </DropdownMenuTrigger>

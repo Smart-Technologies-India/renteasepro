@@ -3,7 +3,6 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ApiResponseType } from "@/models/response";
-import { Image } from "@nextui-org/react";
 import { user } from "@prisma/client";
 import { use, useRef } from "react";
 import { toast } from "react-toastify";
@@ -13,6 +12,7 @@ import Login from "@/action/user/login";
 import { Button } from "@/components/ui/button";
 import { LoginSchema } from "@/schema/login";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function LoginPage() {
   const username = useRef<HTMLInputElement>(null);
@@ -53,9 +53,9 @@ export default function LoginPage() {
   return (
     <>
       <div className="min-h-screen w-full bg-[#f5f6f8] flex">
-        <div className="flex-1">
+        <div className="flex-1 relative">
           <Image
-            removeWrapper
+            fill={true}
             src="/log_in_bg.png"
             alt="error"
             className="w-full object-cover object-center h-screen"

@@ -20,7 +20,7 @@ const DashboardPage = () => {
     <>
       <div className="p-6 sm:p-10">
         <div className="flex flex-wrap w-full gap-4 items-center my-6">
-          <p className="font-semibold text-xl text-[#162f56]">TABREZ CHOUHAN</p>
+          <p className="font-semibold text-xl text-[#162f56]">USER</p>
           <div className="grow"></div>
           {/* dropdown one start here */}
           <DropdownMenu>
@@ -139,9 +139,9 @@ const DashboardPage = () => {
           {/* dropdown two end here */}
 
           {/* dropdown three start here */}
-          <Button className="bg-transparent rounded-md border-2 border-gray-600 hover:bg-transparent text-slate-700">
+          {/* <Button className="bg-transparent rounded-md border-2 border-gray-600 hover:bg-transparent text-slate-700">
             Go to legacy dashboard
-          </Button>
+          </Button> */}
           {/* dropdown three end here */}
         </div>
 

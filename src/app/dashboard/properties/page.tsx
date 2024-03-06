@@ -5,13 +5,20 @@ import {
   FluentMdl2Search,
   FluentMdl2ViewDashboard,
 } from "@/components/icons";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { property } from "@prisma/client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const Properties = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [properties, setProperties] = useState<property[]>([]);
+  const [search, setSearch] = useState<boolean>(false);
+
+  const searchtext = useRef<HTMLInputElement>(null);
+  const [searchresult, setSearchresult] = useState<property[]>([]);
+
   const init = async () => {
     setIsLoading(true);
     const propertyresponse = await AllPropertys({});
@@ -45,51 +52,100 @@ const Properties = () => {
           Add New Property
         </Link>
       </div>
-      {/* <div className="mt-4 flex">
-        <p className="border-b-2 border-blue-500 px-4 py-2 text-sm font-medium">
-          All
-        </p>
-        <p className="border-b-2 border-gray-300 px-4  py-2 text-sm font-medium">
-          Rent Overdue
-        </p>
-        <p className="border-b-2 border-gray-300 px-4  py-2 text-sm font-medium">
-          Rent Due Soon
-        </p>
-        <p className="border-b-2 border-gray-300 px-4  py-2 text-sm font-medium">
-          Rent Due Later
-        </p>
-        <p className="border-b-2 border-gray-300 px-4  py-2 text-sm font-medium">
-          Vacant
-        </p>
-        <p className="border-b-2 border-gray-300 px-4  py-2 text-sm font-medium">
-          Multi-Unit
-        </p>
-        <p className="border-b-2 border-gray-300 px-4 grow"></p>
-      </div> */}
-      <div className="w-80 bg-white border-2 border-gray-300 flex items-center rounded-full px-4 my-4">
-        <FluentMdl2Search />
-        <input
-          className="  py-1 px-2 bg-transparent"
-          placeholder="Search Properties"
-        />
+
+      <div className="flex gap-4 items-center">
+        <div className="w-80 bg-white border-2 border-gray-300 flex items-center rounded-full px-4 my-4">
+          <FluentMdl2Search />
+          <Input
+            className="bg-transparent focus:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 focus:ring-offset-0 ring-offset-0 ring-0 focus:ring-0 py-1 px-2 border-none outline-none focus:outline-none focus:border-none w-full"
+            placeholder="Search Properties"
+            ref={searchtext}
+            onChange={() => {
+              if (searchtext.current) {
+                if (searchtext.current.value.length > 0) {
+                  setSearch(true);
+                  setSearchresult(
+                    properties.filter((property) =>
+                      property.name
+                        .toLowerCase()
+                        .includes(searchtext.current?.value.toLowerCase() ?? "")
+                    )
+                  );
+                } else {
+                  setSearch(false);
+                }
+              }
+            }}
+          />
+        </div>
+        <div className="grow"></div>
+        {search && (
+          <>
+            <Button
+              className="bg-white hover:bg-white text-gray-500"
+              onClick={() => {
+                setSearch(false);
+                if (searchtext.current) {
+                  searchtext.current.value = "";
+                }
+              }}
+            >
+              Clear Filter
+            </Button>
+            <div
+              className="bg-white hover:bg-white text-gray-500 rounded-md h-10 px-4 grid place-items-center"
+              onClick={() => {
+                setSearch(false);
+                if (searchtext.current) {
+                  searchtext.current.value = "";
+                }
+              }}
+            >
+              Fount {searchresult.length} Result
+            </div>
+          </>
+        )}
       </div>
 
-      {properties.length == 0 && (
-        <p className="text-sm mt-4 mb-2">No Property created yet.</p>
-      )}
+      {search == true ? (
+        <>
+          {searchresult.length == 0 && (
+            <p className="text-sm mt-4 mb-2">No search result found.</p>
+          )}
 
-      {properties.map((property, index) => (
-        <CardDetails
-          key={index}
-          id={property.id}
-          name={property.name}
-          address={property.locality}
-          icon={
-            <FluentMdl2ViewDashboard className="text-rose-500 text-2xl w-6" />
-          }
-          totalShop={property.total_shops}
-        />
-      ))}
+          {searchresult.map((property, index) => (
+            <CardDetails
+              key={index}
+              id={property.id}
+              name={property.name}
+              address={property.locality}
+              icon={
+                <FluentMdl2ViewDashboard className="text-rose-500 text-2xl w-6" />
+              }
+              totalShop={property.total_shops}
+            />
+          ))}
+        </>
+      ) : (
+        <>
+          {properties.length == 0 && (
+            <p className="text-sm mt-4 mb-2">No Property created yet.</p>
+          )}
+
+          {properties.map((property, index) => (
+            <CardDetails
+              key={index}
+              id={property.id}
+              name={property.name}
+              address={property.locality}
+              icon={
+                <FluentMdl2ViewDashboard className="text-rose-500 text-2xl w-6" />
+              }
+              totalShop={property.total_shops}
+            />
+          ))}
+        </>
+      )}
     </div>
   );
 };
@@ -108,7 +164,7 @@ const CardDetails = (props: CardDetailsProps) => {
   return (
     <Link
       href={`/dashboard/properties/details/${props.id}`}
-      className="rounded-md my-4 bg-white w-full p-4 flex gap-4 items-center hover:shadow-lg hover:scale-105 transition-all duration-300 cursor-pointer"
+      className="rounded-md my-4 bg-white w-full p-4 flex gap-4 items-center hover:shadow-lg hover:scale-105 transition-all duration-500 cursor-pointer"
     >
       {props.icon}
       <div>

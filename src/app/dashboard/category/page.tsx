@@ -6,7 +6,6 @@ import {
   AntDesignEyeOutlined,
   AntDesignPlusCircleOutlined,
 } from "@/components/icons";
-import { Button, Tooltip } from "@nextui-org/react";
 import { useEffect, useRef, useState } from "react";
 
 import { useWindowSize } from "@uidotdev/usehooks";
@@ -35,6 +34,13 @@ import { shop_category, user_category } from "@prisma/client";
 import AllShopCategorys from "@/action/shop_category/allshopcategory";
 import AllUserCategorys from "@/action/user_category/allusercategory";
 import CreateUserCategory from "@/action/user_category/createusercategory";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const Category = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -102,40 +108,51 @@ const Category = () => {
               key={index}
             >
               <h1 className="mr-4">{shop.name}</h1>
-              <Tooltip
-                content={
-                  <p className="bg-black text-white py-1 px-4 text-sm rounded-md">
-                    Edit
-                  </p>
-                }
-              >
-                <Button>
-                  <AntDesignEditOutlined className="text-black text-lg" />
-                </Button>
-              </Tooltip>
 
-              <Tooltip
-                content={
-                  <p className="bg-black text-white py-1 px-4 text-sm rounded-md">
-                    View
-                  </p>
-                }
-              >
-                <Button>
-                  <AntDesignEyeOutlined className="text-black text-lg" />
-                </Button>
-              </Tooltip>
-              <Tooltip
-                content={
-                  <p className="bg-black text-white py-1 px-4 text-sm rounded-md">
-                    Delete
-                  </p>
-                }
-              >
-                <Button>
-                  <AntDesignDeleteOutlined className="text-black text-lg" />
-                </Button>
-              </Tooltip>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button className="p-0 bg-transparent m-0 h-auto hover:bg-transparent">
+                      <AntDesignEditOutlined className="text-black text-lg" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="p-0 m-0">
+                    <p className="bg-black text-white py-1 px-4 text-sm rounded-md">
+                      Edit
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button className="p-0 bg-transparent m-0 h-auto hover:bg-transparent">
+                      <AntDesignEyeOutlined className="text-black text-lg" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="p-0 m-0">
+                    <p className="bg-black text-white py-1 px-4 text-sm rounded-md">
+                      View
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button className="p-0 bg-transparent m-0 h-auto hover:bg-transparent">
+                      <AntDesignDeleteOutlined className="text-black text-lg" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="p-0 m-0">
+                    <p className="bg-black text-white py-1 px-4 text-sm rounded-md">
+                      Delete
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           ))}
         </div>
@@ -166,40 +183,51 @@ const Category = () => {
                 key={index}
               >
                 <h1 className="mr-4">{shop.name}</h1>
-                <Tooltip
-                  content={
-                    <p className="bg-black text-white py-1 px-4 text-sm rounded-md">
-                      Edit
-                    </p>
-                  }
-                >
-                  <Button>
-                    <AntDesignEditOutlined className="text-black text-lg" />
-                  </Button>
-                </Tooltip>
 
-                <Tooltip
-                  content={
-                    <p className="bg-black text-white py-1 px-4 text-sm rounded-md">
-                      View
-                    </p>
-                  }
-                >
-                  <Button>
-                    <AntDesignEyeOutlined className="text-black text-lg" />
-                  </Button>
-                </Tooltip>
-                <Tooltip
-                  content={
-                    <p className="bg-black text-white py-1 px-4 text-sm rounded-md">
-                      Delete
-                    </p>
-                  }
-                >
-                  <Button>
-                    <AntDesignDeleteOutlined className="text-black text-lg" />
-                  </Button>
-                </Tooltip>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button className="p-0 bg-transparent m-0 h-auto hover:bg-transparent">
+                        <AntDesignEditOutlined className="text-black text-lg" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent className="p-0 m-0">
+                      <p className="bg-black text-white py-1 px-4 text-sm rounded-md">
+                        Edit
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button className="p-0 bg-transparent m-0 h-auto hover:bg-transparent">
+                        <AntDesignEyeOutlined className="text-black text-lg" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent className="p-0 m-0">
+                      <p className="bg-black text-white py-1 px-4 text-sm rounded-md">
+                        View
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button className="p-0 bg-transparent m-0 h-auto hover:bg-transparent">
+                        <AntDesignDeleteOutlined className="text-black text-lg" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent className="p-0 m-0">
+                      <p className="bg-black text-white py-1 px-4 text-sm rounded-md">
+                        Delete
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
             ))}
           </div>

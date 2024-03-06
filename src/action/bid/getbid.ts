@@ -2,7 +2,7 @@
 
 import { errorToString } from "@/utils/methods";
 import { ApiResponseType } from "@/models/response";
-import { Status, bid } from "@prisma/client";
+import { bid } from "@prisma/client";
 import prisma from "../../../prisma/database";
 
 interface GetBidPayload {
@@ -19,7 +19,13 @@ const GetBid = async (
         deletedAt: null,
         deletedBy: null,
       },
+      include: {
+        bid_transact: true,
+        shop: true,
+        exempt: true,
+      },
     });
+
 
     if (!bid)
       return {
