@@ -4,7 +4,7 @@ import { errorToString } from "@/utils/methods";
 import { ApiResponseType } from "@/models/response";
 import prisma from "../../../prisma/database";
 import { ExemptFor, PercentageType, bid } from "@prisma/client";
-import { mkdir, writeFile } from "fs/promises";
+import { mkdir } from "fs/promises";
 
 interface CreateBidPayload {
   shopId: number;
@@ -41,6 +41,9 @@ interface CreateBidPayload {
   is_differently_abled: boolean;
   is_msme: boolean;
   is_exemption: boolean;
+  is_open: boolean;
+  is_tribal: boolean;
+  is_sc_st: boolean;
   exemptfield: string[];
   exemptsectionsvalue: string[];
   is_fees_exempt_allowed: boolean;
@@ -105,7 +108,10 @@ const CreateBid = async (
       is_differently_abled: payload.is_differently_abled,
       is_msme: payload.is_msme,
       is_exemption: payload.is_exemption,
+      is_tribal: payload.is_tribal,
+      is_sc_st: payload.is_sc_st,
       createdById: payload.createdById,
+      is_open: payload.is_open,
     };
 
     if (payload.docone) {
@@ -132,7 +138,6 @@ const CreateBid = async (
     if (payload.t_and_c_upload) {
       data_to_insert["t_and_c_upload"] = payload.t_and_c_upload;
     }
-
     const bid = await prisma.bid.create({
       data: data_to_insert,
     });
@@ -155,7 +160,6 @@ const CreateBid = async (
     });
 
     const getExemptfor = (value: string): ExemptFor => {
-      console.log(value);
       switch (value) {
         case "forwomen":
           return ExemptFor.WOMEN;

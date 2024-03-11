@@ -51,7 +51,7 @@ const Category = () => {
 
   const windowwidth = useWindowSize();
 
-  const init = async () => {
+  const initdata = async () => {
     setIsLoading(true);
     const shopcategoryresponse = await AllShopCategorys({});
     if (shopcategoryresponse.status) {
@@ -64,7 +64,21 @@ const Category = () => {
     }
     setIsLoading(false);
   };
+
   useEffect(() => {
+    const init = async () => {
+      setIsLoading(true);
+      const shopcategoryresponse = await AllShopCategorys({});
+      if (shopcategoryresponse.status) {
+        setShops(shopcategoryresponse.data ?? []);
+      }
+
+      const usercategoryresponse = await AllUserCategorys({});
+      if (usercategoryresponse.status) {
+        setUsers(usercategoryresponse.data ?? []);
+      }
+      setIsLoading(false);
+    };
     init();
   }, []);
 
@@ -80,7 +94,7 @@ const Category = () => {
       <div className="p-6 sm:p-10">
         <h1 className="text-[#162f57] text-2xl font-semibold">Edit Category</h1>
         <p className="text-sm mt-4 mb-2">
-          Get started by addding your property&apos;s address and details below.
+          Get started by adding your property&apos;s address and details below.
         </p>
 
         <div className="flex mt-2">
@@ -97,7 +111,7 @@ const Category = () => {
 
         {shops.length == 0 && (
           <>
-            <p className="text-sm mt-4 mb-2">No Shop Category Found</p>
+            <p className="text-sm mb-2">No Shop Category Found</p>
           </>
         )}
 
@@ -172,7 +186,7 @@ const Category = () => {
 
           {users.length == 0 && (
             <>
-              <p className="text-sm mt-4 mb-2">No User Category Found</p>
+              <p className="text-sm mb-2">No User Category Found</p>
             </>
           )}
 
@@ -247,7 +261,7 @@ const Category = () => {
               </DialogDescription>
             </DialogHeader>
             {/* <ProfileForm /> */}
-            <ShopCategory setShopBox={setShopBox} init={init} />
+            <ShopCategory setShopBox={setShopBox} init={initdata} />
           </DialogContent>
         </Dialog>
       ) : (
@@ -264,7 +278,7 @@ const Category = () => {
             </DrawerHeader>
             {/* <ProfileForm className="px-4" /> */}
             <div className="p-4">
-              <ShopCategory setShopBox={setShopBox} init={init} />
+              <ShopCategory setShopBox={setShopBox} init={initdata} />
             </div>
 
             {/*  <DrawerFooter className="pt-2">
@@ -289,7 +303,7 @@ const Category = () => {
               </DialogDescription>
             </DialogHeader>
             {/* <ProfileForm /> */}
-            <UserCategory setUserBox={setUserBox} init={init} />
+            <UserCategory setUserBox={setUserBox} init={initdata} />
           </DialogContent>
         </Dialog>
       ) : (
@@ -306,7 +320,7 @@ const Category = () => {
             </DrawerHeader>
             {/* <ProfileForm className="px-4" /> */}
             <div className="p-4">
-              <UserCategory setUserBox={setUserBox} init={init} />
+              <UserCategory setUserBox={setUserBox} init={initdata} />
             </div>
 
             {/*  <DrawerFooter className="pt-2">

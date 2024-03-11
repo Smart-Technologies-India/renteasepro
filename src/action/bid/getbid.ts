@@ -11,9 +11,9 @@ interface GetBidPayload {
 
 const GetBid = async (
   payload: GetBidPayload
-): Promise<ApiResponseType<bid | null>> => {
+): Promise<ApiResponseType<any | null>> => {
   try {
-    const bid = await prisma.bid.findFirst({
+    let bid: any = await prisma.bid.findFirst({
       where: {
         id: payload.id,
         deletedAt: null,
@@ -21,11 +21,10 @@ const GetBid = async (
       },
       include: {
         bid_transact: true,
-        shop: true,
+        shop: { include: { property: true } },
         exempt: true,
       },
     });
-
 
     if (!bid)
       return {
@@ -34,6 +33,24 @@ const GetBid = async (
         message: "Invalid id. Please try again.",
         functionname: "GetBid",
       };
+
+    const max_bid_amount = await prisma.bid_transact.findFirst({
+      where: {
+        bidId: payload.id,
+        deletedAt: null,
+        deletedBy: null,
+      },
+      orderBy: {
+        amount: "desc",
+      },
+    });
+
+    if (max_bid_amount) {
+      bid.max_bid_amount = max_bid_amount.amount;
+    } else {
+      bid.max_bid_amount = bid.min_bid_amount;
+    }
+
 
     return {
       status: true,

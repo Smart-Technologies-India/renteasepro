@@ -1,12 +1,18 @@
 "use client";
 
 import GetBidByShop from "@/action/bid/getbidbyshop";
+import TotalBidders from "@/action/bid/totalbiders";
 import IsUserAppliedForBid from "@/action/bid_transact/isuserapplied";
 import GetShop from "@/action/shop/getshop";
 import GetUser from "@/action/user/getuser";
-import { AntDesignCheckOutlined } from "@/components/icons";
+import {
+  AntDesignCheckOutlined,
+  Fa6RegularCalendarXmark,
+  Fa6RegularHourglassHalf,
+  MaterialSymbolsCalendarClockRounded,
+} from "@/components/icons";
 import { capitalcase } from "@/utils/methods";
-import { bid, shop, user } from "@prisma/client";
+import { RentTransactStatus, bid, shop, user } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -17,104 +23,119 @@ interface ShowShopProps {
 const ShopView = (props: ShowShopProps) => {
   const userid: number = parseInt(getCookie("id") ?? "0");
 
-  const items = [
+  interface ItemsType {
+    name: string;
+    status: RentTransactStatus;
+  }
+
+  const items: ItemsType[] = [
     {
       name: "January",
-      status: true,
+      status: RentTransactStatus.INACTIVE,
     },
     {
       name: "February",
-      status: true,
+      status: RentTransactStatus.INACTIVE,
     },
     {
       name: "March",
-      status: true,
+      status: RentTransactStatus.PAID,
     },
     {
       name: "April",
-      status: true,
+      status: RentTransactStatus.PAID,
     },
     {
       name: "May",
-      status: true,
+      status: RentTransactStatus.MONTHCROSS,
     },
     {
       name: "June",
-      status: true,
+      status: RentTransactStatus.MONTHCROSS,
     },
     {
       name: "July",
-      status: true,
+      status: RentTransactStatus.LATE,
     },
     {
       name: "August",
-      status: true,
+      status: RentTransactStatus.LATE,
     },
     {
       name: "September",
-      status: false,
+      status: RentTransactStatus.DUE,
     },
     {
       name: "October",
-      status: false,
+      status: RentTransactStatus.DUE,
     },
     {
       name: "November",
-      status: false,
+      status: RentTransactStatus.VERYLATE,
     },
     {
       name: "December",
-      status: false,
+      status: RentTransactStatus.VERYLATE,
     },
   ];
 
   const [isLoading, setIsLoading] = useState(true);
   const [shop, setShop] = useState<shop>();
-  const [bid, setBid] = useState<bid>();
+  const [bid, setBid] = useState<any>();
 
   const [userApplyed, setUserApplyed] = useState<boolean>(false);
 
   const [user, setUser] = useState<user>();
 
-  const init = async () => {
-    setIsLoading(true);
+  const [isrented, setIsRented] = useState<boolean>(false);
 
-    const shopresponse = await GetShop({
-      id: parseInt(props.id.toString()),
-    });
-
-    if (shopresponse.status) {
-      setShop(shopresponse.data!);
-    }
-
-    const bidresponse = await GetBidByShop({
-      shopid: parseInt(props.id.toString()),
-    });
-
-    if (bidresponse.status) {
-      setBid(bidresponse.data!);
-    }
-
-    const userresponse = await GetUser({ id: userid });
-    if (userresponse.status) {
-      setUser(userresponse.data!);
-    }
-
-    const userapplied = await IsUserAppliedForBid({
-      userid: userid,
-      bidid: bidresponse.data?.id ?? 0,
-    });
-
-    if (userapplied.status) {
-      setUserApplyed(true);
-    }
-
-    setIsLoading(false);
-  };
+  const [totalBidder, setTotalBidder] = useState<number>(0);
 
   useEffect(() => {
+    const init = async () => {
+      setIsLoading(true);
+
+      const shopresponse = await GetShop({
+        id: parseInt(props.id.toString()),
+      });
+
+      if (shopresponse.status) {
+        setShop(shopresponse.data!);
+      }
+
+      const bidresponse = await GetBidByShop({
+        shopid: parseInt(props.id.toString()),
+      });
+
+      if (bidresponse.status) {
+        setBid(bidresponse.data!);
+      }
+
+      const userresponse = await GetUser({ id: userid });
+      if (userresponse.status) {
+        setUser(userresponse.data!);
+      }
+
+      const userapplied = await IsUserAppliedForBid({
+        userid: userid,
+        bidid: bidresponse.data?.id ?? 0,
+      });
+
+      if (userapplied.status) {
+        setUserApplyed(true);
+      }
+
+      const totalbiderresponse = await TotalBidders({
+        bidid: bidresponse.data?.id ?? 0,
+      });
+      if (totalbiderresponse.status) {
+        setTotalBidder(totalbiderresponse.data!);
+      }
+
+      setIsLoading(false);
+    };
     init();
-  }, []);
+  }, [props.id, userid]);
 
   if (isLoading)
     return (
@@ -188,8 +209,32 @@ const ShopView = (props: ShowShopProps) => {
       {bid && (
         <div className="bg-white rounded-sm shadow-sm pb-4 mt-4">
           <div className="border-b border-gray-300 flex items-center pr-2">
-            <p className="text-xl p-2  font-semibold">Bid Details</p>
+            <p className="text-xl p-2  font-semibold">
+              Bid Details -{" "}
+              <span className="text-sm">
+                [{bid.is_open == true ? "OPEN BID" : "CLOSE BID"}]
+              </span>
+            </p>
             <div className="grow"></div>
+
+            {bid.is_open == true
+              ? user?.role === "USER" && (
+                  <Link
+                    href={`/dashboard/bids/apply/${bid.id}`}
+                    className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 py-1 text-sm"
+                  >
+                    Apply Bid
+                  </Link>
+                )
+              : user?.role === "USER" &&
+                !userApplyed && (
+                  <Link
+                    href={`/dashboard/bids/apply/${bid.id}`}
+                    className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 py-1 text-sm"
+                  >
+                    Apply Bid
+                  </Link>
+                )}
 
             {user?.role === "USER" && !userApplyed && (
               <Link
@@ -199,6 +244,7 @@ const ShopView = (props: ShowShopProps) => {
                 Apply Bid
               </Link>
             )}
+
             {user?.role === "ADMIN" && (
               <Link
                 href={`/dashboard/bids/biderslist/${bid?.id}`}
@@ -218,12 +264,12 @@ const ShopView = (props: ShowShopProps) => {
                 Bid End Date : {bid.bidstartdate.toDateString()}
               </p>
               {user?.role != "USER" && (
-                <p className="px-2 text-sm">Total Bidders : 5</p>
+                <p className="px-2 text-sm">Total Bidders : {totalBidder}</p>
               )}
             </div>
             <div className="flex-1">
               <p className="px-2 text-sm">
-                Min Bid Amount : {bid.min_bid_amount}
+                Min Bid Amount : {bid.max_bid_amount}
               </p>
               <p className="px-2 text-sm">Fees Amount : {bid.fees_amount}</p>
               <p className="px-2 text-sm">EMD Amount : {bid.emd_amount}</p>
@@ -268,7 +314,7 @@ const ShopView = (props: ShowShopProps) => {
           <div className="bg-white rounded-sm shadow-sm">
             <p className="text-xl p-2  font-semibold border-b border-gray-300">
               {" "}
-              Rent History - 2022
+              Rent History - 2023
             </p>
 
             <div className="grow grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 md:grid-cols-4 gap-2 flex-wrap justify-center items-center">
@@ -287,28 +333,54 @@ export default ShopView;
 
 interface PropertiesDeatilsProps {
   name: string;
-  status: boolean;
+  status: RentTransactStatus;
 }
 
 const PropertiesDeatils = (props: PropertiesDeatilsProps) => {
-  return (
-    <>
-      <div
-        className={`p-2  flex flex-col  items-center justify-start px-4 py-2 min-w-28`}
-      >
-        <p className={`text-sm text-black`}>{props.name}</p>
-        <div
-          className={`text-sm h-7  mx-auto rounded-md mt-2 py-1 grid place-items-center w-10 border ${
-            props.status
-              ? "border-green-500 bg-green-500 bg-opacity-10"
-              : "border-gray-100 bg-gray-100"
-          }`}
-        >
-          {props.status && (
+  const Component = (): React.ReactNode => {
+    switch (props.status) {
+      case RentTransactStatus.INACTIVE:
+        return (
+          <div className="bg-gray-500 bg-opacity-10 h-7 grid place-items-center w-10 border border-gray-500 mt-1 rounded-sm"></div>
+        );
+      case RentTransactStatus.PAID:
+        return (
+          <div className="bg-green-500 bg-opacity-10 h-7 grid place-items-center w-10 border border-green-500 mt-1 rounded-sm">
             <AntDesignCheckOutlined className="text-green-500 text-xl" />
-          )}
-        </div>
-      </div>
-    </>
+          </div>
+        );
+
+      case RentTransactStatus.DUE:
+        return (
+          <div className="bg-yellow-500 bg-opacity-10 h-7 grid place-items-center w-10 border border-yellow-500 mt-1 rounded-sm">
+            <MaterialSymbolsCalendarClockRounded className="text-yellow-500 text-xl" />
+          </div>
+        );
+      case RentTransactStatus.LATE:
+        return (
+          <div className="bg-orange-500 bg-opacity-10 h-7 grid place-items-center w-10 border border-orange-500 mt-1 rounded-sm">
+            <Fa6RegularHourglassHalf className="text-orange-500 text-xl" />
+          </div>
+        );
+      case RentTransactStatus.MONTHCROSS:
+        return (
+          <div className="bg-rose-500 bg-opacity-10 h-7 grid place-items-center w-10 border border-rose-500 mt-1 rounded-sm">
+            <Fa6RegularCalendarXmark className="text-rose-500 text-xl" />
+          </div>
+        );
+      default:
+        return (
+          <div className="bg-gray-500 bg-opacity-10 h-7 grid place-items-center w-10 border border-gray-500 mt-1 rounded-sm"></div>
+        );
+    }
+  };
+
+  return (
+    <div
+      className={`p-2  flex flex-col  items-center justify-start px-4 py-2 min-w-28`}
+    >
+      <p className={`text-sm text-black`}>{props.name}</p>
+      <Component />
+    </div>
   );
 };

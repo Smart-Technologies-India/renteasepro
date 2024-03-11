@@ -50,26 +50,25 @@ const CreateRentPage = (props: CreateRentProps) => {
 
   const [user, setUsers] = useState<user[]>([]);
 
-  const init = async () => {
-    setLoading(true);
-    const shopresponse = await GetShop({
-      id: props.shopid,
-    });
-    if (shopresponse.status) {
-      setShopData(shopresponse.data ?? null);
-    }
-    const normaluserresponse = await GetNormalUser({});
-
-    if (normaluserresponse.status) {
-      setUsers(normaluserresponse.data ?? []);
-    }
-
-    setLoading(false);
-  };
-
   useEffect(() => {
+    const init = async () => {
+      setLoading(true);
+      const shopresponse = await GetShop({
+        id: props.shopid,
+      });
+      if (shopresponse.status) {
+        setShopData(shopresponse.data ?? null);
+      }
+      const normaluserresponse = await GetNormalUser({});
+
+      if (normaluserresponse.status) {
+        setUsers(normaluserresponse.data ?? []);
+      }
+
+      setLoading(false);
+    };
     init();
-  }, []);
+  }, [props.shopid]);
 
   const create = async () => {
     const result = safeParse(CreateRentSchema, {
@@ -86,8 +85,8 @@ const CreateRentPage = (props: CreateRentProps) => {
         userId: userid,
         createdById: createuserid,
         rent_amount: parseInt(amount.current?.value ?? "0"),
-        rent_start_date: startDate!,
-        rent_end_date: endDate!,
+        rent_start_date: startDate!.toLocaleString(),
+        rent_end_date: endDate!.toLocaleString(),
         due_date: duedate,
         chargeone: chargeone.current?.value
           ? parseInt(chargeone.current?.value)
@@ -128,7 +127,7 @@ const CreateRentPage = (props: CreateRentProps) => {
           Add rent for Shop
         </h1>
         <p className="text-sm mt-4 mb-2">
-          Get started by addding your shop&apos;s rant details below.
+          Get started by adding your shop&apos;s rant details below.
         </p>
 
         <div className="bg-white rounded-sm shadow-sm p-4">

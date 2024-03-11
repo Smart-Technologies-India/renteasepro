@@ -2,16 +2,17 @@
 
 import ApplyBid from "@/action/bid/applybid";
 import GetBid from "@/action/bid/getbid";
-import { IcBaselineCalendarMonth } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Textarea } from "@/components/ui/textarea";
-import { formatDateTime, formateDate } from "@/utils/methods";
+import {
+  formatDateTime,
+  formateDate,
+  handleNumberChange,
+} from "@/utils/methods";
 import { ExemptFor, bid, exempt } from "@prisma/client";
 import { getCookie } from "cookies-next";
-import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
@@ -41,43 +42,23 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
   const [isLoading, setLoading] = useState<boolean>(true);
   const [bid, setBid] = useState<any>();
 
-  const title = useRef<HTMLInputElement>(null);
-  const description = useRef<HTMLTextAreaElement>(null);
-  const instructions = useRef<HTMLTextAreaElement>(null);
-  const minbid = useRef<HTMLInputElement>(null);
-  const minbidinc = useRef<HTMLInputElement>(null);
-  const feesamount = useRef<HTMLInputElement>(null);
-  const emdamount = useRef<HTMLInputElement>(null);
-
-  const bgamount = useRef<HTMLInputElement>(null);
-  const doctitle = useRef<HTMLInputElement>(null);
-  const docdescription = useRef<HTMLTextAreaElement>(null);
-  const filenumber = useRef<HTMLInputElement>(null);
-  const filesubject = useRef<HTMLTextAreaElement>(null);
-
   const amount = useRef<HTMLInputElement>(null);
 
-  const items = [
-    {
-      id: "execempt",
-      label: "Is Exempted",
-    },
-  ] as const;
-  const [field, setField] = useState<string[]>([]);
-
-  const init = async () => {
-    setLoading(true);
-
-    const bidresponse = await GetBid({ id: parseInt(props.bidid.toString()) });
-    if (bidresponse.status) {
-      setBid(bidresponse.data ?? ({} as bid));
-    }
-    setLoading(false);
-  };
-
   useEffect(() => {
+    const init = async () => {
+      setLoading(true);
+
+      const bidresponse = await GetBid({
+        id: parseInt(props.bidid.toString()),
+      });
+      if (bidresponse.status) {
+        setBid(bidresponse.data ?? ({} as bid));
+      }
+      setLoading(false);
+    };
+
     init();
-  }, []);
+  }, [props.bidid]);
 
   const create = async () => {
     if (
@@ -86,6 +67,29 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
       amount.current?.value == null
     )
       return toast.error("Please enter bid amount");
+
+    if (bid?.is_open == false) {
+      if (
+        parseInt(amount.current?.value ?? "0") <
+        bid.min_bid_amount + bid.min_bid_increment
+      )
+        return toast.error(
+          "Bid amount should be greater than minimum bid amount"
+        );
+    } else {
+      if (
+        parseInt(amount.current?.value ?? "0") <
+        bid.max_bid_amount + bid.min_bid_increment
+      )
+        return toast.error(
+          "Bid amount should be greater than current bid amount"
+        );
+    }
+
+    if (parseInt(amount.current?.value ?? "0") % bid.min_bid_increment != 0)
+      return toast.error(
+        `Bid amount should be in multiple of Rs.${bid.min_bid_increment}`
+      );
 
     const createbid = await ApplyBid({
       amount: parseInt(amount.current?.value ?? "0"),
@@ -125,19 +129,37 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
       <div className="p-6 sm:p-10">
         <h1 className="text-[#162f57] text-2xl font-semibold">Bid Details</h1>
         <p className="text-sm mt-4 mb-2">
-          Get started by addding your Bid details below.
+          Get started by adding your Bid details below.
         </p>
 
         {page == 0 && (
           <div className="bg-white rounded-sm shadow-sm p-4 my-2">
             <p className="text-gray-500 text-center">General Information</p>
             <Separator />
-            <h1 className="mt-2">Bid Title:</h1>
-            <p>- {bid.title}</p>
-            <h1 className="mt-2">Bid Description:</h1>
-            <p>- {bid.description}</p>
-            <h1 className="mt-2">Bid Instructions:</h1>
-            <p>- {bid.instruction}</p>
+            <div className="flex gap-4">
+              <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
+                <h1>Property Name:</h1>
+                <p>- {bid.shop.property.name}</p>
+              </div>
+              <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
+                <h1>Shop Number:</h1>
+                <p>- {bid.shop.shopNumber}</p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
+                <h1>Bid Title:</h1>
+                <p>- {bid.title}</p>
+              </div>
+              <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
+                <h1>Bid Description:</h1>
+                <p>- {bid.description}</p>
+              </div>
+            </div>
+            <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md">
+              <h1>Bid Instructions:</h1>
+              <p>- {bid.instruction}</p>
+            </div>
             <div className="mt-4"></div>
             <Separator />
             <div className="flex justify-between w-full mt-2">
@@ -151,26 +173,26 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
 
         {page == 1 && (
           <>
-            <div className="bg-white rounded-sm shadow-sm p-4 my-2">
+            <div className="bg-white rounded-sm shadow-sm p-4">
               <p className="text-gray-500 text-center">Fees Structure</p>
               <Separator />
 
               <div className="flex gap-4 items-center justify-around w-full mt-4">
-                <div>
+                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                   <h1 className="text-center">Bid Start Date Time:</h1>
                   <p className="text-center">
                     {formatDateTime(new Date(bid.bidstartdate))}
                   </p>
                 </div>
 
-                <div>
+                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                   <h1 className="text-center">Bid End Date Time:</h1>
                   <p className="text-center">
                     {formatDateTime(new Date(bid.bidenddate))}
                   </p>
                 </div>
 
-                <div>
+                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                   <h1 className="text-center">Bid Deadline Date:</h1>
                   <p className="text-center">
                     {formateDate(new Date(bid.biddeclarationdate))}
@@ -178,30 +200,35 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                 </div>
               </div>
 
-              <div className="flex gap-4 items-center justify-around w-full mt-4">
-                <div>
+              <div className="flex gap-4 items-center justify-around w-full mt-2">
+                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                   <h1 className="text-center">Fees Amount:</h1>
                   <p className="text-center">{bid.fees_amount}</p>
                 </div>
 
-                <div>
+                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                   <h1 className="text-center">Emd Amount:</h1>
                   <p className="text-center">{bid.emd_amount}</p>
                 </div>
 
-                <div>
+                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                   <h1 className="text-center">Bg Amount:</h1>
                   <p className="text-center">{bid.bg_amount}</p>
                 </div>
               </div>
 
-              <div className="flex gap-4 items-center justify-around w-full mt-4">
-                <div>
+              <div className="flex gap-4 items-center justify-around w-full mt-2">
+                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                   <h1 className="text-center">Minimum Bid:</h1>
-                  <p>{bid.min_bid_amount}</p>
+                  <p className="text-center">{bid.min_bid_amount}</p>
                 </div>
-
-                <div>
+                {bid.is_open == true && (
+                  <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
+                    <h1 className="text-center">Current Bid:</h1>
+                    <p className="text-center">{bid.max_bid_amount}</p>
+                  </div>
+                )}
+                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                   <h1 className="text-center">Min Bid Increment:</h1>
                   <p className="text-center">{bid.min_bid_increment}</p>
                 </div>
@@ -273,7 +300,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                 <h1 className="mt-2 text-gray-500 m">
                   Allowed Bidder Category
                 </h1>
-                <div className="flex gap-2 flex-wrap items-center mt-4">
+                <div className="flex gap-2 flex-wrap items-center my-4">
                   {bid.is_woman == true ? (
                     <>
                       <div className="bg-gray-100 rounded-sm shadow py-1 px-4 text-xs">
@@ -382,6 +409,21 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                   User Submitted Bid Information
                 </p>
                 <Separator />
+                <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
+                  <h1>Minimum Bid:</h1>
+                  <p>{bid.min_bid_amount}</p>
+                </div>
+
+                <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
+                  <h1>Min Bid Increment:</h1>
+                  <p>{bid.min_bid_increment}</p>
+                </div>
+                {bid.is_open == true && (
+                  <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
+                    <h1>Current Bid:</h1>
+                    <p>{bid.max_bid_amount}</p>
+                  </div>
+                )}
                 <div className="grid items-center gap-1.5 w-full mt-4">
                   <Label htmlFor="minbid">Enter Bid Amount</Label>
                   <Input
@@ -389,6 +431,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                     type="text"
                     className="w-full"
                     ref={amount}
+                    onChange={handleNumberChange}
                   />
                 </div>
 
@@ -396,27 +439,34 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                   <p>Fees</p>
                   <p>{bid.fees_amount}</p>
                 </div>
-                <div className="flex justify-between mt-2">
-                  <p>Exempted Fees</p>
-                  <p>-{bid?.exempt[0].feesamount}</p>
-                </div>
+                {bid?.is_exemption == true && (
+                  <div className="flex justify-between mt-2">
+                    <p>Exempted Fees</p>
+                    <p>-{bid?.exempt[0].feesamount}</p>
+                  </div>
+                )}
                 <div className="flex justify-between mt-2">
                   <p>Emd Amount</p>
                   <p>{bid.emd_amount}</p>
                 </div>
-                <div className="flex justify-between mt-2">
-                  <p>Exempted Emd Amount</p>
-                  <p>-{bid?.exempt[0].emdamount}</p>
-                </div>
+                {bid?.is_exemption == true && (
+                  <div className="flex justify-between mt-2">
+                    <p>Exempted Emd Amount</p>
+                    <p>-{bid?.exempt[0].emdamount}</p>
+                  </div>
+                )}
                 <div className="mt-4"></div>
                 <Separator />
                 <div className="flex justify-between">
                   <p>Total Fees to be Paid</p>
                   <p>
-                    {parseInt(bid.fees_amount.toString() ?? "0") -
-                      parseInt(bid?.exempt[0].feesamount.toString() ?? "0") +
-                      parseInt(bid.emd_amount.toString() ?? "0") -
-                      parseInt(bid?.exempt[0].emdamount.toString() ?? "0")}
+                    {bid?.is_exemption == true
+                      ? parseInt(bid.fees_amount.toString() ?? "0") -
+                        parseInt(bid?.exempt[0].feesamount.toString() ?? "0") +
+                        parseInt(bid.emd_amount.toString() ?? "0") -
+                        parseInt(bid?.exempt[0].emdamount.toString() ?? "0")
+                      : parseInt(bid.fees_amount.toString() ?? "0") +
+                        parseInt(bid.emd_amount.toString() ?? "0")}
                   </p>
                 </div>
                 <Button onClick={create} className="w-full mt-4">

@@ -1,4 +1,6 @@
+import UpdateRentTrasact from "@/action/rent_transact/updaterenttransact";
 import {
+  IcBaselineRefresh,
   MaterialSymbolsCloseSmall,
   SolarAltArrowDownLinear,
   SolarBellBold,
@@ -21,13 +23,24 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { toast } from "react-toastify";
 
 interface NavbarProps {
   isOpen: boolean;
   setIsOpen: (arg: (val: boolean) => boolean) => void;
+  name: string;
 }
 
 const Navbar = (props: NavbarProps) => {
+  const refreshrent = async () => {
+    const response = await UpdateRentTrasact({});
+    if (response.status) {
+      toast.success("Rent Transact Updated");
+    } else {
+      toast.error(response.message);
+    }
+  };
+
   return (
     <nav className="py-1 px-4 w-full bg-[#f0f1f5] flex items-center gap-4">
       <div className="md:hidden">
@@ -45,6 +58,10 @@ const Navbar = (props: NavbarProps) => {
       </div>
 
       <div className="grow"></div>
+      <IcBaselineRefresh
+        className="text-xl md:block hidden cursor-pointer"
+        onClick={refreshrent}
+      />
       <SolarCalendarMinimalisticBold className="text-xl md:block hidden" />
       <SolarBellBold className="text-2xl md:block hidden" />
       <SolarLightbulbMinimalisticBold className="text-xl md:block hidden" />
@@ -56,7 +73,7 @@ const Navbar = (props: NavbarProps) => {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="gap-2 flex">
-            <p className="font-semibold text-lg">USER</p>
+            <p className="font-semibold text-lg">{props.name}</p>
             <SolarAltArrowDownLinear className="textx-2xl" />
           </Button>
         </DropdownMenuTrigger>

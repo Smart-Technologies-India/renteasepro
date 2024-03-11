@@ -2,7 +2,7 @@
 
 import GetProperty from "@/action/property/getproperty";
 import getShopsByStatus from "@/action/shop/getshopbystatus";
-import { capitalcase } from "@/utils/methods";
+import { capitalcase, removeDuplicates } from "@/utils/methods";
 import { ShopStatus, property, shop, user } from "@prisma/client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -40,46 +40,45 @@ const BidPropertiesView = (props: BidPropertiesViewProps) => {
     }
   };
 
-  const init = async () => {
-    setIsLoading(true);
-
-    const propertyresponse = await GetProperty({
-      id: parseInt(props.id.toString()),
-    });
-
-    if (propertyresponse.status) {
-      setProperty(propertyresponse.data!);
-    }
-
-    const shopresponse = await getShopsByStatus({
-      status: ShopStatus.AUCTION,
-    });
-    if (shopresponse.status) {
-      setShops(shopresponse.data ?? []);
-      setFilterShop(shopresponse.data ?? []);
-    }
-
-    let temp: string[] = [];
-
-    shopresponse.data?.map((item: any) => {
-      if (!temp.includes(item.shop_category.name)) {
-        temp.push(capitalcase(item.shop_category.name));
-      }
-    });
-
-    setCategory(["All", ...temp]);
-
-    const userresponse = await GetUser({ id: userid });
-    if (userresponse.status) {
-      setUser(userresponse.data!);
-    }
-
-    setIsLoading(false);
-  };
-
   useEffect(() => {
+    const init = async () => {
+      setIsLoading(true);
+
+      const propertyresponse = await GetProperty({
+        id: parseInt(props.id.toString()),
+      });
+
+      if (propertyresponse.status) {
+        setProperty(propertyresponse.data!);
+      }
+
+      const shopresponse = await getShopsByStatus({
+        status: ShopStatus.AUCTION,
+      });
+      if (shopresponse.status) {
+        setShops(shopresponse.data ?? []);
+        setFilterShop(shopresponse.data ?? []);
+      }
+
+      let temp: string[] = [];
+
+      shopresponse.data?.map((item: any) => {
+        if (!temp.includes(item.shop_category.name)) {
+          temp.push(capitalcase(item.shop_category.name));
+        }
+      });
+
+      setCategory(["All", ...removeDuplicates(temp)]);
+
+      const userresponse = await GetUser({ id: userid });
+      if (userresponse.status) {
+        setUser(userresponse.data!);
+      }
+
+      setIsLoading(false);
+    };
     init();
-  }, []);
+  }, [props.id, userid]);
 
   if (isLoading)
     return (

@@ -128,3 +128,9 @@ const formateDate = (date: Date): string => {
 };
 
 export { formateDate };
+
+const removeDuplicates = (arr: any[]): any[] => {
+  return Array.from(new Set(arr));
+};
+
+export { removeDuplicates };

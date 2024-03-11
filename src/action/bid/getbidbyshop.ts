@@ -13,7 +13,7 @@ const GetBidByShop = async (
   payload: GetBidPayload
 ): Promise<ApiResponseType<bid | null>> => {
   try {
-    const bid = await prisma.bid.findFirst({
+    const bid: any = await prisma.bid.findFirst({
       where: {
         shopId: payload.shopid,
         status: "ACTIVE",
@@ -29,6 +29,23 @@ const GetBidByShop = async (
         message: "Invalid id. Please try again.",
         functionname: "GetBidByShop",
       };
+
+    const max_bid_amount = await prisma.bid_transact.findFirst({
+      where: {
+        bidId: bid.id,
+        deletedAt: null,
+        deletedBy: null,
+      },
+      orderBy: {
+        amount: "desc",
+      },
+    });
+
+    if (max_bid_amount) {
+      bid.max_bid_amount = max_bid_amount.amount;
+    } else {
+      bid.max_bid_amount = bid.min_bid_amount;
+    }
 
     return {
       status: true,

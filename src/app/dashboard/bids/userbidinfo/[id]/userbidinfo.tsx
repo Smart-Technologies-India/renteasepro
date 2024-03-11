@@ -37,26 +37,25 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
   const [bid, setBid] = useState<any>();
   const [bidtran, setBidTran] = useState<any>();
 
-  const init = async () => {
-    setLoading(true);
-
-    const bidtranresponse = await GetBidTran({
-      id: parseInt(props.bidid.toString()),
-    });
-    if (bidtranresponse.status) {
-      setBidTran(bidtranresponse.data ?? ({} as bid_transact));
-    }
-
-    const bidresponse = await GetBid({ id: bidtranresponse.data!.bidId });
-    if (bidresponse.status) {
-      setBid(bidresponse.data ?? ({} as bid));
-    }
-    setLoading(false);
-  };
-
   useEffect(() => {
+    const init = async () => {
+      setLoading(true);
+
+      const bidtranresponse = await GetBidTran({
+        id: parseInt(props.bidid.toString()),
+      });
+      if (bidtranresponse.status) {
+        setBidTran(bidtranresponse.data ?? ({} as bid_transact));
+      }
+
+      const bidresponse = await GetBid({ id: bidtranresponse.data!.bidId });
+      if (bidresponse.status) {
+        setBid(bidresponse.data ?? ({} as bid));
+      }
+      setLoading(false);
+    };
     init();
-  }, []);
+  }, [props.bidid]);
 
   const [page, setPage] = useState<number>(0);
   const maxpage = 4;
@@ -86,20 +85,39 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
           <BackButton />
           <h1 className="text-[#162f57] text-2xl font-semibold">Bid Details</h1>
         </div>
+
         <p className="text-sm mt-4 mb-2">
-          Get started by addding your Bid details below.
+          Get started by adding your Bid details below.
         </p>
 
         {page == 0 && (
           <div className="bg-white rounded-sm shadow-sm p-4 my-2">
             <p className="text-gray-500 text-center">General Information</p>
             <Separator />
-            <h1 className="mt-2">Bid Title:</h1>
-            <p>- {bid.title}</p>
-            <h1 className="mt-2">Bid Description:</h1>
-            <p>- {bid.description}</p>
-            <h1 className="mt-2">Bid Instructions:</h1>
-            <p>- {bid.instruction}</p>
+            <div className="flex gap-4">
+              <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
+                <h1>Property Name:</h1>
+                <p>- {bid.shop.property.name}</p>
+              </div>
+              <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
+                <h1>Shop Number:</h1>
+                <p>- {bid.shop.shopNumber}</p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
+                <h1>Bid Title:</h1>
+                <p>- {bid.title}</p>
+              </div>
+              <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
+                <h1>Bid Description:</h1>
+                <p>- {bid.description}</p>
+              </div>
+            </div>
+            <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md">
+              <h1>Bid Instructions:</h1>
+              <p>- {bid.instruction}</p>
+            </div>
             <div className="mt-4"></div>
             <Separator />
             <div className="flex justify-between w-full mt-2">
@@ -118,21 +136,21 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
               <Separator />
 
               <div className="flex gap-4 items-center justify-around w-full mt-4">
-                <div>
+                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                   <h1 className="text-center">Bid Start Date Time:</h1>
                   <p className="text-center">
                     {formatDateTime(new Date(bid.bidstartdate))}
                   </p>
                 </div>
 
-                <div>
+                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                   <h1 className="text-center">Bid End Date Time:</h1>
                   <p className="text-center">
                     {formatDateTime(new Date(bid.bidenddate))}
                   </p>
                 </div>
 
-                <div>
+                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                   <h1 className="text-center">Bid Deadline Date:</h1>
                   <p className="text-center">
                     {formateDate(new Date(bid.biddeclarationdate))}
@@ -140,30 +158,35 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
                 </div>
               </div>
 
-              <div className="flex gap-4 items-center justify-around w-full mt-4">
-                <div>
+              <div className="flex gap-4 items-center justify-around w-full mt-2">
+                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                   <h1 className="text-center">Fees Amount:</h1>
                   <p className="text-center">{bid.fees_amount}</p>
                 </div>
 
-                <div>
+                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                   <h1 className="text-center">Emd Amount:</h1>
                   <p className="text-center">{bid.emd_amount}</p>
                 </div>
 
-                <div>
+                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                   <h1 className="text-center">Bg Amount:</h1>
                   <p className="text-center">{bid.bg_amount}</p>
                 </div>
               </div>
 
-              <div className="flex gap-4 items-center justify-around w-full mt-4">
-                <div>
+              <div className="flex gap-4 items-center justify-around w-full mt-2">
+                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                   <h1 className="text-center">Minimum Bid:</h1>
-                  <p>{bid.min_bid_amount}</p>
+                  <p className="text-center">{bid.min_bid_amount}</p>
                 </div>
-
-                <div>
+                {bid.is_open == true && (
+                  <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
+                    <h1 className="text-center">Current Bid:</h1>
+                    <p className="text-center">{bid.max_bid_amount}</p>
+                  </div>
+                )}
+                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                   <h1 className="text-center">Min Bid Increment:</h1>
                   <p className="text-center">{bid.min_bid_increment}</p>
                 </div>
@@ -271,7 +294,7 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
                     <></>
                   )}
                 </div>
-
+                <div className="mt-4"></div>
                 {bid?.is_exemption == true && (
                   <>
                     <h1 className="text-gray-500 mt-2">Exempt Category :</h1>

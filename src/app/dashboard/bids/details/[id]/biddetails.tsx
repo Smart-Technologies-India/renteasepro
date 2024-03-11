@@ -5,7 +5,6 @@ import GetUser from "@/action/user/getuser";
 import BackButton from "@/components/backbutton";
 import { IcBaselineCalendarMonth } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -17,7 +16,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 const getExemptfor = (value: ExemptFor): string => {
-  console.log(value);
   switch (value) {
     case ExemptFor.WOMEN:
       return "For Women";
@@ -57,33 +55,28 @@ const BidDetailsView = (props: BidDetailsViewProps) => {
   const filenumber = useRef<HTMLInputElement>(null);
   const filesubject = useRef<HTMLTextAreaElement>(null);
 
-  const items = [
-    {
-      id: "execempt",
-      label: "Is Exempted",
-    },
-  ] as const;
-  const [field, setField] = useState<string[]>([]);
   const [user, setUser] = useState<user>();
 
-  const init = async () => {
-    setLoading(true);
-
-    const bidresponse = await GetBid({ id: parseInt(props.bidid.toString()) });
-    if (bidresponse.status) {
-      setBid(bidresponse.data ?? ({} as any));
-    }
-
-    const userresponse = await GetUser({ id: userid });
-    if (userresponse.status) {
-      setUser(userresponse.data ?? ({} as user));
-    }
-    setLoading(false);
-  };
-
   useEffect(() => {
+    const init = async () => {
+      setLoading(true);
+
+      const bidresponse = await GetBid({
+        id: parseInt(props.bidid.toString()),
+      });
+      if (bidresponse.status) {
+        setBid(bidresponse.data ?? ({} as any));
+      }
+
+      const userresponse = await GetUser({ id: userid });
+      if (userresponse.status) {
+        setUser(userresponse.data ?? ({} as user));
+      }
+      setLoading(false);
+    };
+
     init();
-  }, []);
+  }, [props.bidid, userid]);
 
   if (isLoading)
     return (
@@ -119,7 +112,7 @@ const BidDetailsView = (props: BidDetailsViewProps) => {
           )}
         </div>
         <p className="text-sm mt-4 mb-2">
-          Get started by addding your Bid details below.
+          Get started by adding your Bid details below.
         </p>
 
         <div className="bg-white rounded-sm shadow-sm p-4">

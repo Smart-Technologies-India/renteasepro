@@ -1,8 +1,9 @@
 "use client";
 
 import GetProperty from "@/action/property/getproperty";
+import GetShopFromProperty from "@/action/property/getshopsfromproperty";
 import AllShops from "@/action/shop/allshop";
-import { capitalcase } from "@/utils/methods";
+import { capitalcase, removeDuplicates } from "@/utils/methods";
 import { property, shop } from "@prisma/client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -33,39 +34,41 @@ const PropertiesView = (props: PropertiesViewProps) => {
     }
   };
 
-  const init = async () => {
-    setIsLoading(true);
-
-    const propertyresponse = await GetProperty({
-      id: parseInt(props.id.toString()),
-    });
-
-    if (propertyresponse.status) {
-      setProperty(propertyresponse.data!);
-    }
-
-    const shopresponse = await AllShops({});
-    if (shopresponse.status) {
-      setShops(shopresponse.data ?? []);
-      setFilterShop(shopresponse.data ?? []);
-    }
-
-    let temp: string[] = [];
-
-    shopresponse.data?.map((item: any) => {
-      if (!temp.includes(item.shop_category.name)) {
-        temp.push(capitalcase(item.shop_category.name));
-      }
-    });
-
-    setCategory(["All", ...temp]);
-
-    setIsLoading(false);
-  };
-
   useEffect(() => {
+    const init = async () => {
+      setIsLoading(true);
+
+      const propertyresponse = await GetProperty({
+        id: parseInt(props.id.toString()),
+      });
+
+      if (propertyresponse.status) {
+        setProperty(propertyresponse.data!);
+      }
+
+      const shopresponse = await GetShopFromProperty({
+        propertyid: props.id,
+      });
+
+      if (shopresponse.status) {
+        setShops(shopresponse.data ?? []);
+        setFilterShop(shopresponse.data ?? []);
+      }
+
+      let temp: string[] = [];
+
+      shopresponse.data?.map((item: any) => {
+        if (!temp.includes(item.shop_category.name)) {
+          temp.push(capitalcase(item.shop_category.name));
+        }
+      });
+
+      setCategory(["All", ...removeDuplicates(temp)]);
+
+      setIsLoading(false);
+    };
     init();
-  }, []);
+  }, [props.id]);
 
   if (isLoading)
     return (
@@ -89,12 +92,15 @@ const PropertiesView = (props: PropertiesViewProps) => {
           </p>
           <div className="flex gap-2 p-2 mt-2">
             <div className="grow"></div>
-            <Link
-              href={`/dashboard/shops/add/${props.id}`}
-              className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 py-1 text-sm"
-            >
-              Add Shops
-            </Link>
+
+            {shops.length < property?.total_shops! && (
+              <Link
+                href={`/dashboard/shops/add/${props.id}`}
+                className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 py-1 text-sm"
+              >
+                Add Shops
+              </Link>
+            )}
           </div>
         </div>
 
@@ -109,61 +115,47 @@ const PropertiesView = (props: PropertiesViewProps) => {
         </div>
       </div>
 
-      <div className="mt-4 flex">
-        {category.map((item: string, index: number) => (
-          <p
-            key={index}
-            onClick={() => {
-              filtershopbycategory(item);
-              setSelectedCategory(item);
-            }}
-            className={`border-b-2 border-gray-300 px-4 py-2 text-sm font-medium cursor-pointer ${
-              selectedCategory === item ? "border-green-500" : ""
-            }`}
-          >
-            {item}
-          </p>
-        ))}
-        {/* <p className="border-b-2 border-green-500 px-4 py-2 text-sm font-medium">
-          All
-        </p>
-        <p className="border-b-2 border-gray-300 px-4  py-2 text-sm font-medium">
-          Rent Overdue
-        </p>
-        <p className="border-b-2 border-gray-300 px-4  py-2 text-sm font-medium">
-          Rent Due Soon
-        </p>
-        <p className="border-b-2 border-gray-300 px-4  py-2 text-sm font-medium">
-          Rent Due Later
-        </p>
-        <p className="border-b-2 border-gray-300 px-4  py-2 text-sm font-medium">
-          Vacant
-        </p>
-        <p className="border-b-2 border-gray-300 px-4  py-2 text-sm font-medium">
-          Multi-Unit
-        </p> */}
-        <p className="border-b-2 border-gray-300 px-4 grow"></p>
-      </div>
-      <div className="w-full bg-white rounded-sm shadow-sm mt-4">
-        <div className="bg-white rounded-sm shadow-sm">
-          <p className="text-lg p-2 border-b border-gray-300 font-medium">
-            {capitalcase(selectedCategory)} Shops
-          </p>
+      {filtershop.length >= 1 && (
+        <>
+          <div className="mt-4 flex">
+            {category.map((item: string, index: number) => (
+              <p
+                key={index}
+                onClick={() => {
+                  filtershopbycategory(item);
+                  setSelectedCategory(item);
+                }}
+                className={`border-b-2 border-gray-300 px-4 py-2 text-sm font-medium cursor-pointer ${
+                  selectedCategory === item ? "border-green-500" : ""
+                }`}
+              >
+                {item}
+              </p>
+            ))}
+            <p className="border-b-2 border-gray-300 px-4 grow"></p>
+          </div>
+          <div className="w-full bg-white rounded-sm shadow-sm mt-4">
+            <div className="bg-white rounded-sm shadow-sm">
+              <p className="text-lg p-2 border-b border-gray-300 font-medium">
+                {capitalcase(selectedCategory)} Shops
+              </p>
 
-          <div className="flex p-2 gap-4">
-            <div className="grow flex gap-2 overflow-x-hidden justify-start items-center">
-              {filtershop.map((item: shop, index: number) => (
-                <PropertiesDeatils
-                  key={index}
-                  id={item.id.toString()}
-                  status={item.status}
-                  count={item.shopNumber}
-                />
-              ))}
+              <div className="flex p-2 gap-4">
+                <div className="grow flex gap-2 overflow-x-hidden justify-start items-center">
+                  {filtershop.map((item: shop, index: number) => (
+                    <PropertiesDeatils
+                      key={index}
+                      id={item.id.toString()}
+                      status={item.status}
+                      count={item.shopNumber}
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
     </div>
   );
 };

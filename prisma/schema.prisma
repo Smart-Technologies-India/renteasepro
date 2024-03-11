@@ -90,6 +90,37 @@ enum SecurityDepositForm {
   OTHER
 }
 
+enum RentStatus {
+  NONE
+  RUNNING
+  COMPLETED
+}
+
+enum RentTransactStatus {
+  PAID
+  DUE
+  LATE
+  INACTIVE
+  VERYLATE
+  MONTHCROSS
+}
+
+enum UserDocType {
+  AADHAR
+  PAN
+  BANK
+  ADDRESS
+  PHOTO
+  PASSPORT
+  MSME
+  DIFFERENTLY_ABLED
+  WOMEN
+  RESERVED
+  SC_ST
+  TRIBAL
+  OTHER
+}
+
 model user {
   id                Int       @id @default(autoincrement())
   username          String    @unique
@@ -187,6 +218,12 @@ model user {
   demand_node_update demand_node[] @relation("demand_node_updatedBy_userId")
   demand_node_delete demand_node[] @relation("demand_node_deletedBy_userId")
   demand_node        demand_node[]
+
+  // user doc upload
+  user_doc_upload_create user_doc_upload[] @relation("user_doc_upload_createdBy_userId")
+  user_doc_upload_update user_doc_upload[] @relation("user_doc_upload_updatedBy_userId")
+  user_doc_upload_delete user_doc_upload[] @relation("user_doc_upload_deletedBy_userId")
+  user_doc_upload        user_doc_upload[]
 }
 
 model shop_category {
@@ -328,6 +365,9 @@ model bid {
   is_differently_abled Boolean        @default(false)
   is_msme              Boolean        @default(false)
   is_exemption         Boolean        @default(false)
+  is_open              Boolean        @default(false)
+  is_tribal            Boolean        @default(false)
+  is_sc_st             Boolean        @default(false)
   remarks              String?        @db.MediumText
   status               Status         @default(ACTIVE)
   createdAt            DateTime       @default(now())
@@ -361,7 +401,7 @@ model rent {
   chargetwo           Int?            @db.MediumInt
   chargethree         Int?            @db.MediumInt
   remarks             String?         @db.MediumText
-  status              Status          @default(ACTIVE)
+  status              RentStatus      @default(RUNNING)
   createdAt           DateTime        @default(now())
   createdBy           user            @relation("rent_createdBy_userId", fields: [createdById], references: [id])
   createdById         Int
@@ -467,29 +507,29 @@ model exempt {
 }
 
 model rent_transact {
-  id               Int       @id @default(autoincrement())
-  rent             rent      @relation(fields: [rentId], references: [id])
+  id               Int                @id @default(autoincrement())
+  rent             rent               @relation(fields: [rentId], references: [id])
   rentId           Int
-  user             user      @relation(fields: [userId], references: [id])
+  user             user               @relation(fields: [userId], references: [id])
   userId           Int
-  shop             shop      @relation(fields: [shopId], references: [id])
+  shop             shop               @relation(fields: [shopId], references: [id])
   shopId           Int
-  formonth         Int
-  amount           Int       @db.MediumInt
-  transaction_date DateTime  @default(now())
+  formonth         DateTime
+  amount           Int                @db.MediumInt
+  transaction_date DateTime           @default(now())
   paymentmode      String?
   transactionid    String?
   bankname         String?
-  remarks          String?   @db.MediumText
-  status           Status    @default(ACTIVE)
-  createdAt        DateTime  @default(now())
-  createdBy        user      @relation("rent_transact_createdBy_userId", fields: [createdById], references: [id])
+  remarks          String?            @db.MediumText
+  status           RentTransactStatus @default(INACTIVE)
+  createdAt        DateTime           @default(now())
+  createdBy        user               @relation("rent_transact_createdBy_userId", fields: [createdById], references: [id])
   createdById      Int
-  updatedAt        DateTime  @updatedAt
-  updatedBy        user?     @relation("rent_transact_updatedBy_userId", fields: [updatedById], references: [id])
+  updatedAt        DateTime           @updatedAt
+  updatedBy        user?              @relation("rent_transact_updatedBy_userId", fields: [updatedById], references: [id])
   updatedById      Int?
   deletedAt        DateTime?
-  deletedBy        user?     @relation("rent_transact_deletedBy_userId", fields: [deletedById], references: [id])
+  deletedBy        user?              @relation("rent_transact_deletedBy_userId", fields: [deletedById], references: [id])
   deletedById      Int?
 }
 
@@ -590,7 +630,7 @@ model demand_node {
   stemp_paper_value         Int?
   description               String?
   remarks                   String?
-  status                    Status              @default(ACTIVE)
+  status                    Status              @default(INACTIVE)
   createdAt                 DateTime            @default(now())
   createdBy                 user                @relation("demand_node_createdBy_userId", fields: [createdById], references: [id])
   createdById               Int
@@ -600,4 +640,24 @@ model demand_node {
   deletedAt                 DateTime?
   deletedBy                 user?               @relation("demand_node_deletedBy_userId", fields: [deletedById], references: [id])
   deletedById               Int?
+}
+
+model user_doc_upload {
+  id          Int         @id @default(autoincrement())
+  user        user?       @relation(fields: [userId], references: [id])
+  userId      Int?
+  doc_type    UserDocType @default(AADHAR)
+  name        String
+  description String?
+  path        String
+  status      Status      @default(ACTIVE)
+  createdAt   DateTime    @default(now())
+  createdBy   user        @relation("user_doc_upload_createdBy_userId", fields: [createdById], references: [id])
+  createdById Int
+  updatedAt   DateTime    @updatedAt
+  updatedBy   user?       @relation("user_doc_upload_updatedBy_userId", fields: [updatedById], references: [id])
+  updatedById Int?
+  deletedAt   DateTime?
+  deletedBy   user?       @relation("user_doc_upload_deletedBy_userId", fields: [deletedById], references: [id])
+  deletedById Int?
 }

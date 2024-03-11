@@ -1,5 +1,4 @@
 "use client";
-import GetUserBid from "@/action/bid/getuserbid";
 import {
   Table,
   TableBody,
@@ -10,56 +9,48 @@ import {
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
 import { getCookie } from "cookies-next";
-import { BidTransact } from "@prisma/client";
 import Link from "next/link";
+import { RentStatus } from "@prisma/client";
+import GetUserRent from "@/action/rent/getrentbyuser";
+import { formateDate } from "@/utils/methods";
 
-const UserBidHistoryPage = () => {
+const UserRentPage = () => {
   const id: number = parseInt(getCookie("id") ?? "0");
   const [isLoading, setIsLoading] = useState(true);
 
-  const [category, setCategory] = useState<string[]>([
-    "All",
-    "Pending",
-    "Accepted",
-    "Rejected",
-  ]);
+  const category = ["All", "Running", "Completed"];
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
-  const [filterbid, setFilterbid] = useState<any[]>([]);
+  const [filterrent, setFilterRent] = useState<any[]>([]);
 
-  const [bids, setBids] = useState<any[]>([]);
+  const [rents, setRents] = useState<any[]>([]);
 
   const filtershopbycategory = (category: string) => {
     if (category === "All") {
-      setFilterbid(bids);
-    } else if (category === "Pending") {
-      const temp = bids.filter((item: any) => {
-        return item.status === BidTransact.PENDING;
+      setFilterRent(rents);
+    } else if (category === "Running") {
+      const temp = rents.filter((item: any) => {
+        return item.status === RentStatus.RUNNING;
       });
-      setFilterbid(temp);
-    } else if (category === "Accepted") {
-      const temp = bids.filter((item: any) => {
-        return item.status === BidTransact.ACCEPTED;
+      setFilterRent(temp);
+    } else if (category === "Completed") {
+      const temp = rents.filter((item: any) => {
+        return item.status === RentStatus.COMPLETED;
       });
-      setFilterbid(temp);
-    } else if (category === "Rejected") {
-      const temp = bids.filter((item: any) => {
-        return item.status === BidTransact.REJECTED;
-      });
-      setFilterbid(temp);
+      setFilterRent(temp);
     }
   };
 
   useEffect(() => {
     const init = async () => {
       setIsLoading(true);
-      const bidresponse = await GetUserBid({
+      const rentresponse = await GetUserRent({
         userid: id,
       });
 
-      if (bidresponse.status) {
-        setBids(bidresponse.data ?? []);
-        setFilterbid(bidresponse.data ?? []);
+      if (rentresponse.status) {
+        setRents(rentresponse.data ?? []);
+        setFilterRent(rentresponse.data ?? []);
       }
 
       setIsLoading(false);
@@ -77,9 +68,7 @@ const UserBidHistoryPage = () => {
 
   return (
     <div className="p-6 sm:p-10">
-      <h1 className="text-[#162f57] text-2xl font-semibold">
-        Your Bid History
-      </h1>
+      <h1 className="text-[#162f57] text-2xl font-semibold">Your Rent</h1>
       <div className="mt-4 flex">
         {category.map((item: string, index: number) => (
           <p
@@ -98,38 +87,43 @@ const UserBidHistoryPage = () => {
         <p className="border-b-2 border-gray-300 px-4 grow"></p>
       </div>
 
-      {filterbid.length === 0 ? (
+      {filterrent.length === 0 ? (
         <>
-          <p className="mt-4 text-lg">No Bid Found</p>
+          <p className="mt-4 text-lg">No Rent Found</p>
         </>
       ) : (
         <Table className="mt-4">
           <TableHeader>
             <TableRow>
               <TableHead className="w-[100px]">Id</TableHead>
-              <TableHead>Property Name</TableHead>
               <TableHead>Shop No.</TableHead>
-              <TableHead>Bid Amount</TableHead>
-              <TableHead>Applied Date</TableHead>
+              <TableHead>Rent Amount</TableHead>
+              <TableHead>Start Date</TableHead>
               <TableHead>Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filterbid.map((bid_tans: any, index: number) => (
+            {filterrent.map((rent_data: any, index: number) => (
               <TableRow key={index}>
-                <TableCell className="font-medium">{bid_tans.id}</TableCell>
-                <TableCell>{bid_tans.shop.property.name}</TableCell>
-                <TableCell>{bid_tans.shop.shopNumber}</TableCell>
-                <TableCell>{bid_tans.amount}</TableCell>
+                <TableCell className="font-medium">{rent_data.id}</TableCell>
+                <TableCell>{rent_data.shop.shopNumber}</TableCell>
+                <TableCell>{rent_data.rent_amount}</TableCell>
                 <TableCell>
-                  {new Date(bid_tans.createdAt).toDateString()}
+                  {formateDate(new Date(rent_data.rent_start_date))}
                 </TableCell>
-                <TableCell>
+                <TableCell className="flex">
                   <Link
-                    href={`/dashboard/bids/userbidinfo/${bid_tans.id}`}
+                    href={`/dashboard/userrent/details/${rent_data.id}`}
                     className="bg-green-500 hover:bg-green-500 py-2 px-4 rounded-md text-white text-sm font-medium cursor-pointer"
                   >
                     View
+                  </Link>
+                  <div className="w-4"></div>
+                  <Link
+                    href={`/dashboard/userrent/history/${rent_data.id}`}
+                    className="bg-green-500 hover:bg-green-500 py-2 px-4 rounded-md text-white text-sm font-medium cursor-pointer"
+                  >
+                    History
                   </Link>
                 </TableCell>
               </TableRow>
@@ -140,4 +134,4 @@ const UserBidHistoryPage = () => {
     </div>
   );
 };
-export default UserBidHistoryPage;
+export default UserRentPage;

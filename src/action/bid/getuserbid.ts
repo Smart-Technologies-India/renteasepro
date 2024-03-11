@@ -20,7 +20,7 @@ const GetUserBid = async (
         deletedBy: null,
       },
       include: {
-        shop: true,
+        shop: { include: { property: true } },
         bid: true,
       },
     });

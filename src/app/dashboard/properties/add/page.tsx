@@ -80,7 +80,7 @@ const AddPropertyPage = () => {
           Add a property
         </h1>
         <p className="text-sm mt-4 mb-2">
-          Get started by addding your property&apos;s address and details below.
+          Get started by adding your property&apos;s address and details below.
         </p>
 
         <div className="bg-white rounded-sm shadow-sm p-4">

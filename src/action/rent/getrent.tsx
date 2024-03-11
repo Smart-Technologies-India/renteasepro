@@ -2,53 +2,53 @@
 
 import { errorToString } from "@/utils/methods";
 import { ApiResponseType } from "@/models/response";
-import { bid_transact } from "@prisma/client";
+import { rent } from "@prisma/client";
 import prisma from "../../../prisma/database";
 
-interface GetFromBidIdPayload {
+interface GetRentPayload {
   id: number;
 }
 
-const GetFromBidId = async (
-  payload: GetFromBidIdPayload
-): Promise<ApiResponseType<bid_transact[] | null>> => {
+const GetRent = async (
+  payload: GetRentPayload
+): Promise<ApiResponseType<rent | null>> => {
   try {
-    const bid_transact = await prisma.bid_transact.findMany({
+    const rent_respone = await prisma.rent.findFirst({
       where: {
-        bidId: parseInt(payload.id.toString() ?? "0"),
+        id: payload.id,
         deletedAt: null,
         deletedBy: null,
       },
       include: {
-        user: true,
         shop: true,
-        bid: true,
+        user: true,
+        rent_transact: true,
       },
     });
 
-    if (!bid_transact)
+    if (!rent_respone)
       return {
         status: false,
         data: null,
         message: "Invalid id. Please try again.",
-        functionname: "GetFromBidId",
+        functionname: "GetRent",
       };
 
     return {
       status: true,
-      data: bid_transact,
-      message: "Bid transact data get successfully",
-      functionname: "GetFromBidId",
+      data: rent_respone,
+      message: "Rent data get successfully",
+      functionname: "GetRent",
     };
   } catch (e) {
     const response: ApiResponseType<null> = {
       status: false,
       data: null,
       message: errorToString(e),
-      functionname: "GetFromBidId",
+      functionname: "GetRent",
     };
     return response;
   }
 };
 
-export default GetFromBidId;
+export default GetRent;

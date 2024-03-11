@@ -32,44 +32,43 @@ const BidPropertiesView = () => {
     }
   };
 
-  const init = async () => {
-    setIsLoading(true);
-
-    const userresponse = await GetUser({ id: userid });
-    if (userresponse.status) {
-      setUser(userresponse.data!);
-    }
-
-    const bid_transaction = await GetApplyedShopFromBid({ userid: userid });
-    if (bid_transaction.status) {
-    }
-
-    const propertry = bid_transaction.data?.map((item: any) => {
-      return item.shop.property.name;
-    });
-    // remove dubplicate property name
-    const unique = propertry?.filter(
-      (v: any, i: any, a: any) => a.indexOf(v) === i
-    );
-    setCategory(["All", ...unique]);
-
-    const shopdata = bid_transaction.data?.map((item: any) => {
-      return item.shop;
-    });
-
-    // remove dubplicate shop
-    const uniqueShop = shopdata?.filter(
-      (v: any, i: any, a: any) => a.indexOf(v) === i
-    );
-    setShops(uniqueShop);
-    setFilterShop(uniqueShop ?? []);
-
-    setIsLoading(false);
-  };
-
   useEffect(() => {
+    const init = async () => {
+      setIsLoading(true);
+
+      const userresponse = await GetUser({ id: userid });
+      if (userresponse.status) {
+        setUser(userresponse.data!);
+      }
+
+      const bid_transaction = await GetApplyedShopFromBid({ userid: userid });
+      if (bid_transaction.status) {
+      }
+
+      const propertry = bid_transaction.data?.map((item: any) => {
+        return item.shop.property.name;
+      });
+      // remove dubplicate property name
+      const unique = propertry?.filter(
+        (v: any, i: any, a: any) => a.indexOf(v) === i
+      );
+      setCategory(["All", ...unique]);
+
+      const shopdata = bid_transaction.data?.map((item: any) => {
+        return item.shop;
+      });
+
+      // remove dubplicate shop
+      const uniqueShop = shopdata?.filter(
+        (v: any, i: any, a: any) => a.indexOf(v) === i
+      );
+      setShops(uniqueShop);
+      setFilterShop(uniqueShop ?? []);
+
+      setIsLoading(false);
+    };
     init();
-  }, []);
+  }, [userid]);
 
   if (isLoading)
     return (
@@ -83,47 +82,50 @@ const BidPropertiesView = () => {
       <h1 className="text-[#162f57] text-2xl font-semibold">
         Property Details
       </h1>
-      <p className="text-sm mt-4 mb-2">
-        Get started by selecting shop and applaying for bidog.
-      </p>
 
-      <div className="mt-4 flex">
-        {category.map((item: string, index: number) => (
-          <p
-            key={index}
-            onClick={() => {
-              filtershopbycategory(item);
-              setSelectedCategory(item);
-            }}
-            className={`border-b-2 border-gray-300 px-4 py-2 text-sm font-medium cursor-pointer ${
-              selectedCategory === item ? "border-green-500" : ""
-            }`}
-          >
-            {item}
-          </p>
-        ))}
-        <p className="border-b-2 border-gray-300 px-4 grow"></p>
-      </div>
-      <div className="w-full bg-white rounded-sm shadow-sm mt-4">
-        <div className="bg-white rounded-sm shadow-sm">
-          <p className="text-lg p-2 border-b border-gray-300 font-medium">
-            {capitalcase(selectedCategory)} Shops
-          </p>
+      {filtershop.length >= 1 ? (
+        <>
+          <div className="mt-4 flex">
+            {category.map((item: string, index: number) => (
+              <p
+                key={index}
+                onClick={() => {
+                  filtershopbycategory(item);
+                  setSelectedCategory(item);
+                }}
+                className={`border-b-2 border-gray-300 px-4 py-2 text-sm font-medium cursor-pointer ${
+                  selectedCategory === item ? "border-green-500" : ""
+                }`}
+              >
+                {item}
+              </p>
+            ))}
+            <p className="border-b-2 border-gray-300 px-4 grow"></p>
+          </div>
+          <div className="w-full bg-white rounded-sm shadow-sm mt-4">
+            <div className="bg-white rounded-sm shadow-sm">
+              <p className="text-lg p-2 border-b border-gray-300 font-medium">
+                {capitalcase(selectedCategory)} Shops
+              </p>
 
-          <div className="flex p-2 gap-4">
-            <div className="grow flex gap-2 overflow-x-hidden justify-start items-center">
-              {filtershop.map((item: shop, index: number) => (
-                <PropertiesDeatils
-                  key={index}
-                  id={item.id.toString()}
-                  status={item.status}
-                  count={item.shopNumber}
-                />
-              ))}
+              <div className="flex p-2 gap-4">
+                <div className="grow flex gap-2 overflow-x-hidden justify-start items-center">
+                  {filtershop.map((item: shop, index: number) => (
+                    <PropertiesDeatils
+                      key={index}
+                      id={item.id.toString()}
+                      status={item.status}
+                      count={item.shopNumber}
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        </>
+      ) : (
+        <p className="text-sm mt-4 mb-2">You Haven&apos;t Property .</p>
+      )}
     </div>
   );
 };

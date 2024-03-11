@@ -19,16 +19,15 @@ const Properties = () => {
   const searchtext = useRef<HTMLInputElement>(null);
   const [searchresult, setSearchresult] = useState<property[]>([]);
 
-  const init = async () => {
-    setIsLoading(true);
-    const propertyresponse = await AllPropertys({});
-    if (propertyresponse.status) {
-      setProperties(propertyresponse.data ?? []);
-    }
-    setIsLoading(false);
-  };
-
   useEffect(() => {
+    const init = async () => {
+      setIsLoading(true);
+      const propertyresponse = await AllPropertys({});
+      if (propertyresponse.status) {
+        setProperties(propertyresponse.data ?? []);
+      }
+      setIsLoading(false);
+    };
     init();
   }, []);
 

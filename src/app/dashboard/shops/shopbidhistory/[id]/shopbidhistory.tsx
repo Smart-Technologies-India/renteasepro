@@ -20,26 +20,24 @@ interface ShopBidHistoryViewProps {
 }
 
 const ShopBidHistoryView = (props: ShopBidHistoryViewProps) => {
-  const router = useRouter();
   const [isLoading, setLoading] = useState<boolean>(true);
 
   const [bids, setBids] = useState<any[]>([]);
 
-  const init = async () => {
-    setLoading(true);
-    const bids = await GetBidsByShop({
-      shopid: parseInt(props.id.toString()),
-    });
-    if (bids.status) {
-      setBids(bids.data ?? []);
-    }
-
-    setLoading(false);
-  };
-
   useEffect(() => {
+    const init = async () => {
+      setLoading(true);
+      const bids = await GetBidsByShop({
+        shopid: parseInt(props.id.toString()),
+      });
+      if (bids.status) {
+        setBids(bids.data ?? []);
+      }
+
+      setLoading(false);
+    };
     init();
-  }, []);
+  }, [props.id]);
 
   if (isLoading)
     return (

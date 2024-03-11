@@ -47,23 +47,22 @@ const BidHistoryView = (props: BidHistoryViewProps) => {
     }
   };
 
-  const init = async () => {
-    setIsLoading(true);
-    const bidresponse = await GetFromBidId({
-      id: 1,
-    });
-
-    if (bidresponse.status) {
-      setBids(bidresponse.data ?? []);
-      setFilterbid(bidresponse.data ?? []);
-    }
-
-    setIsLoading(false);
-  };
-
   useEffect(() => {
+    const init = async () => {
+      setIsLoading(true);
+      const bidresponse = await GetFromBidId({
+        id: props.id,
+      });
+
+      if (bidresponse.status) {
+        setBids(bidresponse.data ?? []);
+        setFilterbid(bidresponse.data ?? []);
+      }
+
+      setIsLoading(false);
+    };
     init();
-  }, []);
+  }, [props.id]);
 
   if (isLoading)
     return (
@@ -76,7 +75,7 @@ const BidHistoryView = (props: BidHistoryViewProps) => {
     <div className="p-6 sm:p-10">
       <div className="items-center flex gap-4">
         <BackButton />
-        <h1 className="text-[#162f57] text-2xl font-semibold">Bid History</h1>
+        <h1 className="text-[#162f57] text-2xl font-semibold">Biders List</h1>
       </div>
       <div className="mt-4 flex">
         {category.map((item: string, index: number) => (

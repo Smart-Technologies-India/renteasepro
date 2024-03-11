@@ -16,24 +16,24 @@ const ApplyBid = async (
   payload: ApplyBidPayload
 ): Promise<ApiResponseType<bid_transact | null>> => {
   try {
-    const bid_transactExist = await prisma.bid_transact.findFirst({
-      where: {
-        bidId: payload.bidId,
-        userId: payload.userId,
-        shopId: payload.shopId,
-        deletedAt: null,
-        deletedBy: null,
-      },
-    });
+    // const bid_transactExist = await prisma.bid_transact.findFirst({
+    //   where: {
+    //     bidId: payload.bidId,
+    //     userId: payload.userId,
+    //     shopId: payload.shopId,
+    //     deletedAt: null,
+    //     deletedBy: null,
+    //   },
+    // });
 
-    if (bid_transactExist)
-      return {
-        status: false,
-        data: null,
-        message:
-          "You have already applied for this bid. Kindly wait for the result",
-        functionname: "ApplyBid",
-      };
+    // if (bid_transactExist)
+    //   return {
+    //     status: false,
+    //     data: null,
+    //     message:
+    //       "You have already applied for this bid. Kindly wait for the result",
+    //     functionname: "ApplyBid",
+    //   };
 
     const bid_transactresponse = await prisma.bid_transact.create({
       data: {

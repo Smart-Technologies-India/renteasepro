@@ -1,11 +1,14 @@
 import { usePathname, useRouter } from "next/navigation";
 import {
+  Fa6RegularCalendarXmark,
   Fa6RegularFileLines,
   FluentMdl2Home,
   FluentMdl2ViewDashboard,
   GgAlbum,
+  IcBaselineAccountCircle,
   MaterialSymbolsCloseSmall,
   MaterialSymbolsPersonRounded,
+  MdiStorefrontOutline,
   RiAuctionLine,
   RiMoneyRupeeCircleLine,
   SolarLogout2Bold,
@@ -74,6 +77,12 @@ const Sidebar = (props: SidebarProps) => {
             path={path}
             pathcheck={"/dashboard/userbidhistory"}
           />
+          <MenuTab
+            icco={<MdiStorefrontOutline className="text-gray-300  w-6" />}
+            name="Rent"
+            path={path}
+            pathcheck={"/dashboard/userrent"}
+          />
         </>
       )}
 
@@ -132,8 +141,19 @@ const Sidebar = (props: SidebarProps) => {
       /> */}
 
       <div className="grow"></div>
+
+      {["USER"].includes(props.role) && (
+        <>
+          <MenuTab
+            icco={<IcBaselineAccountCircle className="text-gray-300  w-6" />}
+            name="My Profile"
+            path={path}
+            pathcheck={"/dashboard/userprofile"}
+          />
+        </>
+      )}
       <button
-        className="text-white md:hidden text-left px-4 flex items-center gap-2"
+        className="text-white md:hidden text-left items-center flex justify-start gap-4 rounded-none px-4 py-2 hover:bg-rose-500 hover:border-l-2 hover:border-rose-500 bg-transparent hover:bg-opacity-20"
         onClick={() => props.setIsOpen(false)}
       >
         <MaterialSymbolsCloseSmall className="text-2xl" />

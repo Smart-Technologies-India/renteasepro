@@ -19,17 +19,17 @@ const RentRunning = () => {
 
   const [properties, setProperties] = useState<any[]>([]);
 
-  const init = async () => {
-    setLoading(true);
-    const propertyrunningrent = await GetRentProperty({});
-    if (propertyrunningrent.status) {
-      setProperties(propertyrunningrent.data ?? []);
-    }
-
-    setLoading(false);
-  };
-
   useEffect(() => {
+    const init = async () => {
+      setLoading(true);
+      const propertyrunningrent = await GetRentProperty({});
+      if (propertyrunningrent.status) {
+        setProperties(propertyrunningrent.data ?? []);
+      }
+
+      setLoading(false);
+    };
+
     init();
   }, []);
 
@@ -56,7 +56,7 @@ const RentRunning = () => {
         />
       </div>
       {properties.length == 0 && (
-        <p className="text-sm mt-4 mb-2">No Property created yet.</p>
+        <p className="text-sm mt-4 mb-2">No Property with active rent.</p>
       )}
 
       {properties.map((property: any, index) => (

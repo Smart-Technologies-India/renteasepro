@@ -2,7 +2,7 @@
 
 import GetProperty from "@/action/property/getproperty";
 import getShopsByStatus from "@/action/shop/getshopbystatus";
-import { capitalcase } from "@/utils/methods";
+import { capitalcase, removeDuplicates } from "@/utils/methods";
 import { ShopStatus, property, shop } from "@prisma/client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -33,41 +33,41 @@ const RentPropertiesView = (props: RentPropertiesViewProps) => {
     }
   };
 
-  const init = async () => {
-    setIsLoading(true);
-
-    const propertyresponse = await GetProperty({
-      id: parseInt(props.id.toString()),
-    });
-
-    if (propertyresponse.status) {
-      setProperty(propertyresponse.data!);
-    }
-
-    const shopresponse = await getShopsByStatus({
-      status: ShopStatus.RENTED,
-    });
-    if (shopresponse.status) {
-      setShops(shopresponse.data ?? []);
-      setFilterShop(shopresponse.data ?? []);
-    }
-
-    let temp: string[] = [];
-
-    shopresponse.data?.map((item: any) => {
-      if (!temp.includes(item.shop_category.name)) {
-        temp.push(capitalcase(item.shop_category.name));
-      }
-    });
-
-    setCategory(["All", ...temp]);
-
-    setIsLoading(false);
-  };
-
   useEffect(() => {
+    const init = async () => {
+      setIsLoading(true);
+
+      const propertyresponse = await GetProperty({
+        id: parseInt(props.id.toString()),
+      });
+
+      if (propertyresponse.status) {
+        setProperty(propertyresponse.data!);
+      }
+
+      const shopresponse = await getShopsByStatus({
+        status: ShopStatus.RENTED,
+      });
+      if (shopresponse.status) {
+        setShops(shopresponse.data ?? []);
+        setFilterShop(shopresponse.data ?? []);
+      }
+
+      let temp: string[] = [];
+
+      shopresponse.data?.map((item: any) => {
+        if (!temp.includes(item.shop_category.name)) {
+          temp.push(capitalcase(item.shop_category.name));
+        }
+      });
+
+      setCategory(["All", ...removeDuplicates(temp)]);
+
+      setIsLoading(false);
+    };
+
     init();
-  }, []);
+  }, [props.id]);
 
   if (isLoading)
     return (

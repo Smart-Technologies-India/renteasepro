@@ -18,17 +18,16 @@ const UserBidsRunning = () => {
 
   const [properties, setProperties] = useState<any[]>([]);
 
-  const init = async () => {
-    setLoading(true);
-    const propertyrunningbid = await GetBidProperty({});
-    if (propertyrunningbid.status) {
-      setProperties(propertyrunningbid.data ?? []);
-    }
-
-    setLoading(false);
-  };
-
   useEffect(() => {
+    const init = async () => {
+      setLoading(true);
+      const propertyrunningbid = await GetBidProperty({});
+      if (propertyrunningbid.status) {
+        setProperties(propertyrunningbid.data ?? []);
+      }
+
+      setLoading(false);
+    };
     init();
   }, []);
 
@@ -56,7 +55,7 @@ const UserBidsRunning = () => {
       </div>
 
       {properties.length == 0 && (
-        <p className="text-sm mt-4 mb-2">No Property created yet.</p>
+        <p className="text-sm mt-4 mb-2">No Bid history found.</p>
       )}
 
       {properties.map((property: any, index) => (

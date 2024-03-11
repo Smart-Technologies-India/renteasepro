@@ -42,17 +42,16 @@ const AddShopPage = (props: AddShopPageProps) => {
   const size = useRef<HTMLInputElement>(null);
   const meter = useRef<HTMLInputElement>(null);
 
-  const init = async () => {
-    setLoading(true);
-    const shop_categoryresponse = await AllShopCategorys({});
-    if (shop_categoryresponse.status) {
-      setShopCategory(shop_categoryresponse.data ?? []);
-    }
-
-    setLoading(false);
-  };
-
   useEffect(() => {
+    const init = async () => {
+      setLoading(true);
+      const shop_categoryresponse = await AllShopCategorys({});
+      if (shop_categoryresponse.status) {
+        setShopCategory(shop_categoryresponse.data ?? []);
+      }
+
+      setLoading(false);
+    };
     init();
   }, []);
 
@@ -102,7 +101,7 @@ const AddShopPage = (props: AddShopPageProps) => {
       <div className="p-6 sm:p-10">
         <h1 className="text-[#162f57] text-2xl font-semibold">Add a Shop </h1>
         <p className="text-sm mt-4 mb-2">
-          Get started by addding your shop&apos;s details below.
+          Get started by adding your shop&apos;s details below.
         </p>
 
         <div className="bg-white rounded-sm shadow-sm p-4">
@@ -129,7 +128,7 @@ const AddShopPage = (props: AddShopPageProps) => {
                 <SelectTrigger className="">
                   <SelectValue placeholder="Select Shop Category" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="h-64">
                   <SelectGroup>
                     {shop_category.map((val) => (
                       <SelectItem key={val.id} value={val.id.toString()}>
@@ -161,7 +160,7 @@ const AddShopPage = (props: AddShopPageProps) => {
                 <SelectTrigger className="">
                   <SelectValue placeholder="Select Floor" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="h-64">
                   <SelectGroup>
                     <SelectItem value={Floors.OUTSIDE}>
                       {Floors.OUTSIDE}
