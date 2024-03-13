@@ -1,4 +1,8 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  env: {
+    UPLOAD_LINK: process.env.UPLOAD_LINK,
+  },
+};
 
 export default nextConfig;

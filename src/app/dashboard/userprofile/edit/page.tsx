@@ -1,5 +1,6 @@
 "use client";
 import GetUser from "@/action/user/getuser";
+import updateUser from "@/action/user/updateuser";
 import BackButton from "@/components/backbutton";
 import { Fa6RegularPenToSquare } from "@/components/icons";
 import { Button } from "@/components/ui/button";
@@ -8,16 +9,43 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
+import { UpdateUserSchema } from "@/schema/updateuser";
 import { handleNumberChange, longtext } from "@/utils/methods";
 import { user } from "@prisma/client";
 import { getCookie } from "cookies-next";
+import getConfig from "next/config";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { SetStateAction, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
+import { safeParse } from "valibot";
 
+// const uploadfile = async () => {
+//   const formData = new FormData();
+//   formData.append("file", fileUploader!);
+
+//   const uploadfile = await axios.post(props.uploadurl, formData, {
+//     headers: {
+//       "Content-Type": "multipart/form-data",
+//     },
+//   });
+
+//   if (uploadfile.status != 200) {
+//     return toast.error("File upload failed");
+//   }
+
+//   const uploadfileResponse = await UploadFile({
+//     name: doctitle.current?.value!,
+//     path: uploadfile.data.filePath,
+//     createdById: userid,
+//     bidId: createbid.data?.id,
+//   });
+
+//   if (!uploadfileResponse.status) {
+//     return toast.error("File upload failed");
+//   }
+// };
 const UserBidsRunning = () => {
-  //   file upload section start here
   const items = [
     {
       id: "forwomen",
@@ -35,12 +63,35 @@ const UserBidsRunning = () => {
       id: "msme",
       label: "For MSME",
     },
+    {
+      id: "stsc",
+      label: "For SC/ST",
+    },
+    {
+      id: "tribal",
+      label: "For Tribal",
+    },
   ] as const;
 
   const [field, setField] = useState<string[]>([]);
 
   const [womenfile, setWomenFile] = useState<File | null>(null);
   const cWomenFile = useRef<HTMLInputElement>(null);
+
+  const [category, setCategory] = useState<File | null>(null);
+  const cCategory = useRef<HTMLInputElement>(null);
+
+  const [abled, setAbled] = useState<File | null>(null);
+  const cAbled = useRef<HTMLInputElement>(null);
+
+  const [msme, setMsme] = useState<File | null>(null);
+  const cMsme = useRef<HTMLInputElement>(null);
+
+  const [stsc, setStsc] = useState<File | null>(null);
+  const cStsc = useRef<HTMLInputElement>(null);
+
+  const [tribal, setTribal] = useState<File | null>(null);
+  const cTribal = useRef<HTMLInputElement>(null);
 
   const [aadhar, setAadhar] = useState<File | null>(null);
   const cAadhar = useRef<HTMLInputElement>(null);
@@ -54,23 +105,6 @@ const UserBidsRunning = () => {
   const [photo, setPhoto] = useState<File | null>(null);
   const cPhoto = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (
-    value: React.ChangeEvent<HTMLInputElement>,
-    setFun: (value: SetStateAction<File | null>) => void
-  ) => {
-    let file_size = parseInt(
-      (value!.target.files![0].size / 1024 / 1024).toString()
-    );
-    if (file_size < 5) {
-      if (value!.target.files![0].type.startsWith("image/")) {
-        setFun((val) => value!.target.files![0]);
-      } else {
-        toast.error("Please select a file.", { theme: "light" });
-      }
-    } else {
-      toast.error("File size must be less then 5 mb", { theme: "light" });
-    }
-  };
   //   file upload section end here
 
   const userid: number = parseInt(getCookie("id") ?? "0");
@@ -96,6 +130,10 @@ const UserBidsRunning = () => {
   const ifscRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    console.log(process.env.UPLOAD_LINK);
+
+    // console.log(UPLOAD_LINK);
+    //   file upload section start here
     const init = async () => {
       setLoading(true);
       const userrespone = await GetUser({
@@ -111,7 +149,110 @@ const UserBidsRunning = () => {
     init();
   }, [userid]);
 
-  const update = async () => {};
+  const update = async () => {
+    const result = safeParse(UpdateUserSchema, {
+      firstName: firstNameRef.current?.value,
+      lastName: lastNameRef.current?.value,
+      contactone: contactoneRef.current?.value,
+      contacttwo: contacttwoRef.current?.value,
+      email: emailRef.current?.value,
+      aadhar: aadharRef.current?.value,
+      pan: panRef.current?.value,
+      address: addressRef.current?.value,
+      city: cityRef.current?.value,
+      bankName: banknameRef.current?.value,
+      bankAccountNumber: accountnumberRef.current?.value,
+      ifscCode: ifscRef.current?.value,
+    });
+
+    if (result.success) {
+      if (aadhar == null) {
+        return toast.error("Please upload aadhar card", { theme: "light" });
+      }
+
+      if (pan == null) {
+        return toast.error("Please upload pan card", { theme: "light" });
+      }
+
+      if (bankpassbook == null) {
+        return toast.error("Please upload bank passbook", { theme: "light" });
+      }
+
+      if (photo == null) {
+        return toast.error("Please upload photo", { theme: "light" });
+      }
+
+      if (field.includes("forwomen") && womenfile == null) {
+        return toast.error("Please upload Women Certificate", {
+          theme: "light",
+        });
+      }
+
+      if (field.includes("category") && category == null) {
+        return toast.error("Please upload Category Certificate", {
+          theme: "light",
+        });
+      }
+
+      if (field.includes("abled") && abled == null) {
+        return toast.error("Please upload Differently Abled Certificate", {
+          theme: "light",
+        });
+      }
+
+      if (field.includes("msme") && msme == null) {
+        return toast.error("Please upload MSME Certificate", {
+          theme: "light",
+        });
+      }
+
+      if (field.includes("stsc") && stsc == null) {
+        return toast.error("Please upload SC/ST Certificate", {
+          theme: "light",
+        });
+      }
+
+      if (field.includes("tribal") && tribal == null) {
+        return toast.error("Please upload Tribal Certificate", {
+          theme: "light",
+        });
+      }
+
+      const updateuserresponse = await updateUser({
+        id: userid,
+        username: user?.username,
+        firstName: result.output.firstName,
+        lastName: result.output.lastName,
+        contactone: result.output.contactone,
+        contacttwo: result.output.contacttwo,
+        email: result.output.email,
+        city: result.output.city,
+        address: result.output.address,
+        aadhar: result.output.aadhar,
+        pan: result.output.pan,
+        bankName: result.output.bankName,
+        bankAccountNumber: result.output.bankAccountNumber,
+        ifscCode: result.output.ifscCode,
+      });
+
+      if (updateuserresponse.status) {
+        toast.success(updateuserresponse.message);
+        router.back();
+      } else {
+        toast.error(updateuserresponse.message);
+      }
+
+      // if (loginrespone.status) {
+    } else {
+      let errorMessage = "";
+      if (result.issues[0].input) {
+        errorMessage = result.issues[0].message;
+      } else {
+        errorMessage = result.issues[0].path![0].key + " is required";
+      }
+      toast.error(errorMessage);
+    }
+  };
 
   if (isLoading)
     return (
@@ -140,7 +281,6 @@ const UserBidsRunning = () => {
               type="text"
               className="w-full"
               ref={usernameRef}
-              disabled
               value={user?.username}
             />
           </div>
@@ -162,6 +302,7 @@ const UserBidsRunning = () => {
               type="text"
               className="w-full"
               ref={firstNameRef}
+              value={user?.firstName!}
             />
           </div>
           <div className="grid items-center gap-1.5 w-full mt-4">
@@ -171,6 +312,7 @@ const UserBidsRunning = () => {
               type="text"
               className="w-full"
               ref={lastNameRef}
+              value={user?.lastName!}
             />
           </div>
         </div>
@@ -184,6 +326,7 @@ const UserBidsRunning = () => {
               onChange={handleNumberChange}
               ref={contactoneRef}
               maxLength={10}
+              value={user?.contactone!}
             />
           </div>
           <div className="grid items-center gap-1.5 w-full mt-4">
@@ -195,6 +338,7 @@ const UserBidsRunning = () => {
               onChange={handleNumberChange}
               ref={contacttwoRef}
               maxLength={10}
+              value={user?.contacttwo!}
             />
           </div>
         </div>
@@ -202,11 +346,23 @@ const UserBidsRunning = () => {
         <div className="flex gap-4">
           <div className="grid items-center gap-1.5 w-full mt-4">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="text" className="w-full" ref={emailRef} />
+            <Input
+              id="email"
+              type="text"
+              className="w-full"
+              ref={emailRef}
+              value={user?.email!}
+            />
           </div>
           <div className="grid items-center gap-1.5 w-full mt-4">
             <Label htmlFor="city">City</Label>
-            <Input id="city" type="text" className="w-full" ref={cityRef} />
+            <Input
+              id="city"
+              type="text"
+              className="w-full"
+              ref={cityRef}
+              value={user?.city!}
+            />
           </div>
         </div>
 
@@ -216,6 +372,7 @@ const UserBidsRunning = () => {
             id="address"
             className="w-full h-28 resize-none"
             ref={addressRef}
+            value={user?.address!}
           ></Textarea>
         </div>
 
@@ -229,11 +386,19 @@ const UserBidsRunning = () => {
               ref={aadharRef}
               maxLength={12}
               onChange={handleNumberChange}
+              value={user?.aadhar!}
             />
           </div>
           <div className="grid items-center gap-1.5 w-full mt-4">
             <Label htmlFor="pan">Pan</Label>
-            <Input id="pan" type="text" className="w-full" ref={panRef} />
+            <Input
+              id="pan"
+              type="text"
+              className="w-full"
+              maxLength={10}
+              ref={panRef}
+              value={user?.pan!}
+            />
           </div>
         </div>
 
@@ -245,63 +410,58 @@ const UserBidsRunning = () => {
               type="text"
               className="w-full"
               ref={banknameRef}
+              value={user?.bankName!}
             />
           </div>
           <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="accountnumber">Acount Number</Label>
+            <Label htmlFor="accountnumber">Account Number</Label>
             <Input
               id="accountnumber"
               type="text"
               className="w-full"
               ref={accountnumberRef}
               onChange={handleNumberChange}
+              value={user?.bankAccountNumber!}
             />
           </div>
           <div className="grid items-center gap-1.5 w-full mt-4">
             <Label htmlFor="ifsccode">IFSC Code</Label>
-            <Input id="ifsccode" type="text" className="w-full" ref={ifscRef} />
+            <Input
+              id="ifsccode"
+              type="text"
+              className="w-full"
+              ref={ifscRef}
+              value={user?.ifscCode!}
+            />
           </div>
         </div>
         <div className="h-4"></div>
         <Separator />
 
-        <div className="flex gap-4">
-          <div className="flex-1">
-            <DocUploader
-              title="Aadhar Card"
-              file={aadhar}
-              setFile={setAadhar}
-              cFile={cAadhar}
-            />
-          </div>
-          <div className="flex-1">
-            <DocUploader
-              title="Pan Card"
-              file={pan}
-              setFile={setPan}
-              cFile={cPan}
-            />
-          </div>
-        </div>
-
-        <div className="flex gap-4">
-          <div className="flex-1">
-            <DocUploader
-              title="Bank Passbook"
-              file={bankpassbook}
-              setFile={setBankPassbook}
-              cFile={cBankPassbook}
-            />
-          </div>
-          <div className="flex-1">
-            <DocUploader
-              title="Photo"
-              file={photo}
-              setFile={setPhoto}
-              cFile={cPhoto}
-            />
-          </div>
-        </div>
+        <DocUploader
+          title="Aadhar Card"
+          file={aadhar}
+          setFile={setAadhar}
+          cFile={cAadhar}
+        />
+        <DocUploader
+          title="Pan Card"
+          file={pan}
+          setFile={setPan}
+          cFile={cPan}
+        />
+        <DocUploader
+          title="Bank Passbook"
+          file={bankpassbook}
+          setFile={setBankPassbook}
+          cFile={cBankPassbook}
+        />
+        <DocUploader
+          title="Photo"
+          file={photo}
+          setFile={setPhoto}
+          cFile={cPhoto}
+        />
 
         <p className="text-gray-500 mt-4">Select Your Category</p>
         {items.map((item, index) => (
@@ -328,38 +488,57 @@ const UserBidsRunning = () => {
         ))}
 
         {field.includes("forwomen") && (
-          <div className="flex gap-4 mt-4 items-center">
-            <Label htmlFor="termfile">Aadhar Card</Label>
-            <Button
-              onClick={() => cWomenFile.current?.click()}
-              variant={"secondary"}
-            >
-              {womenfile == null ? "Upload File" : "Change File"}
-            </Button>
-            {womenfile != null && (
-              <Link
-                target="_blank"
-                href={URL.createObjectURL(womenfile!)}
-                className="bg-gray-100 text-black py-1 px-4 rounded-md text-sm h-10 grid place-items-center"
-              >
-                View File
-              </Link>
-            )}
-            <p className="text-sm">
-              {womenfile != null
-                ? longtext(womenfile.name, 20)
-                : "No File Selected"}
-            </p>
+          <DocUploader
+            title="Women Certificate"
+            file={womenfile}
+            setFile={setWomenFile}
+            cFile={cWomenFile}
+          />
+        )}
 
-            <div className="hidden">
-              <Input
-                type="file"
-                ref={cWomenFile}
-                accept="*/*"
-                onChange={(val) => handleFileChange(val, setWomenFile)}
-              />
-            </div>
-          </div>
+        {field.includes("category") && (
+          <DocUploader
+            title="Category Certificate"
+            file={category}
+            setFile={setCategory}
+            cFile={cCategory}
+          />
+        )}
+
+        {field.includes("abled") && (
+          <DocUploader
+            title="Differently Abled Certificate"
+            file={abled}
+            setFile={setAbled}
+            cFile={cAbled}
+          />
+        )}
+
+        {field.includes("msme") && (
+          <DocUploader
+            title="MSME Certificate"
+            file={msme}
+            setFile={setMsme}
+            cFile={cMsme}
+          />
+        )}
+
+        {field.includes("stsc") && (
+          <DocUploader
+            title="SC/ST Certificate"
+            file={stsc}
+            setFile={setStsc}
+            cFile={cStsc}
+          />
+        )}
+
+        {field.includes("tribal") && (
+          <DocUploader
+            title="Tribal Certificate"
+            file={tribal}
+            setFile={setTribal}
+            cFile={cTribal}
+          />
         )}
 
         <Button className="w-full mt-4" onClick={update}>
@@ -398,11 +577,18 @@ const DocUploader = (props: DocUploaderProps) => {
   };
 
   return (
-    <div className="flex gap-4 mt-4 items-center">
+    <div className="flex gap-4 mt-2 items-center bg-gray-100 px-2 py-2 rounded-sm">
       <Label htmlFor="termfile">{props.title}</Label>
+      <div className="grow"></div>
+      <p className="text-sm">
+        {props.file != null
+          ? longtext(props.file.name, 20)
+          : "No File Selected"}
+      </p>
       <Button
         onClick={() => props.cFile.current?.click()}
         variant={"secondary"}
+        className="bg-gray-200 hover:bg-gray-300 h-8"
       >
         {props.file == null ? "Upload File" : "Change File"}
       </Button>
@@ -410,16 +596,11 @@ const DocUploader = (props: DocUploaderProps) => {
         <Link
           target="_blank"
           href={URL.createObjectURL(props.file!)}
-          className="bg-gray-100 text-black py-1 px-4 rounded-md text-sm h-10 grid place-items-center"
+          className="bg-gray-200 text-black py-1 px-4 rounded-md text-sm h-8 grid place-items-center"
         >
           View File
         </Link>
       )}
-      <p className="text-sm">
-        {props.file != null
-          ? longtext(props.file.name, 20)
-          : "No File Selected"}
-      </p>
 
       <div className="hidden">
         <Input

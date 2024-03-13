@@ -3,6 +3,9 @@
 import GetBidByShop from "@/action/bid/getbidbyshop";
 import TotalBidders from "@/action/bid/totalbiders";
 import IsUserAppliedForBid from "@/action/bid_transact/isuserapplied";
+import isShopRented from "@/action/rent/isrentcreateonshop";
+import GetFromRent from "@/action/rent_transact/getfromrent";
+import GetFromShop from "@/action/rent_transact/getfromshop";
 import GetShop from "@/action/shop/getshop";
 import GetUser from "@/action/user/getuser";
 import {
@@ -12,7 +15,13 @@ import {
   MaterialSymbolsCalendarClockRounded,
 } from "@/components/icons";
 import { capitalcase } from "@/utils/methods";
-import { RentTransactStatus, bid, shop, user } from "@prisma/client";
+import {
+  RentTransactStatus,
+  bid,
+  rent_transact,
+  shop,
+  user,
+} from "@prisma/client";
 import { getCookie } from "cookies-next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -87,9 +96,10 @@ const ShopView = (props: ShowShopProps) => {
 
   const [user, setUser] = useState<user>();
 
-  const [isrented, setIsRented] = useState<boolean>(false);
-
   const [totalBidder, setTotalBidder] = useState<number>(0);
+
+  const [isrented, setIsRented] = useState<boolean>(false);
+  const [rentdata, setRentdata] = useState<rent_transact[]>([]);
 
   useEffect(() => {
     const init = async () => {
@@ -130,6 +140,24 @@ const ShopView = (props: ShowShopProps) => {
       });
       if (totalbiderresponse.status) {
         setTotalBidder(totalbiderresponse.data!);
+      }
+
+      const isshoprented = await isShopRented({
+        id: props.id,
+      });
+
+      if (isshoprented.status) {
+        setIsRented(isshoprented.data!);
+      }
+
+      if (isshoprented.data) {
+        const rentresponse = await GetFromShop({
+          shopid: props.id,
+        });
+
+        if (rentresponse.status) {
+          setRentdata(rentresponse.data ?? []);
+        }
       }
 
       setIsLoading(false);
@@ -217,24 +245,18 @@ const ShopView = (props: ShowShopProps) => {
             </p>
             <div className="grow"></div>
 
-            {bid.is_open == true
-              ? user?.role === "USER" && (
-                  <Link
-                    href={`/dashboard/bids/apply/${bid.id}`}
-                    className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 py-1 text-sm"
-                  >
-                    Apply Bid
-                  </Link>
-                )
-              : user?.role === "USER" &&
-                !userApplyed && (
-                  <Link
-                    href={`/dashboard/bids/apply/${bid.id}`}
-                    className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 py-1 text-sm"
-                  >
-                    Apply Bid
-                  </Link>
-                )}
+            {bid.is_open == true ? (
+              user?.role === "USER" && (
+                <Link
+                  href={`/dashboard/bids/apply/${bid.id}`}
+                  className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 py-1 text-sm"
+                >
+                  Apply Bid
+                </Link>
+              )
+            ) : (
+              <></>
+            )}
 
             {user?.role === "USER" && !userApplyed && (
               <Link
@@ -309,7 +331,7 @@ const ShopView = (props: ShowShopProps) => {
         </div>
       </div> */}
 
-      {user?.role === "ADMIN" && (
+      {isrented && (
         <div className="w-full bg-white rounded-sm shadow-sm mt-4">
           <div className="bg-white rounded-sm shadow-sm">
             <p className="text-xl p-2  font-semibold border-b border-gray-300">

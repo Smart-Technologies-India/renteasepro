@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { getCookie } from "cookies-next";
 import GetUser from "@/action/user/getuser";
 import BackButton from "@/components/backbutton";
+import searchShop from "@/action/shop/searchshop";
 
 interface BidPropertiesViewProps {
   id: number;
@@ -52,9 +53,11 @@ const BidPropertiesView = (props: BidPropertiesViewProps) => {
         setProperty(propertyresponse.data!);
       }
 
-      const shopresponse = await getShopsByStatus({
+      const shopresponse = await searchShop({
+        propertyId: props.id,
         status: ShopStatus.AUCTION,
       });
+
       if (shopresponse.status) {
         setShops(shopresponse.data ?? []);
         setFilterShop(shopresponse.data ?? []);
@@ -96,7 +99,7 @@ const BidPropertiesView = (props: BidPropertiesViewProps) => {
         </h1>
       </div>
       <p className="text-sm mt-4 mb-2">
-        Get started by selecting shop and applaying for bidog.
+        Get started by selecting shop and applaying for biding.
       </p>
       {user?.role === "ADMIN" && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
@@ -124,43 +127,47 @@ const BidPropertiesView = (props: BidPropertiesViewProps) => {
         </div>
       )}
 
-      <div className="mt-4 flex">
-        {category.map((item: string, index: number) => (
-          <p
-            key={index}
-            onClick={() => {
-              filtershopbycategory(item);
-              setSelectedCategory(item);
-            }}
-            className={`border-b-2 border-gray-300 px-4 py-2 text-sm font-medium cursor-pointer ${
-              selectedCategory === item ? "border-green-500" : ""
-            }`}
-          >
-            {item}
-          </p>
-        ))}
-        <p className="border-b-2 border-gray-300 px-4 grow"></p>
-      </div>
-      <div className="w-full bg-white rounded-sm shadow-sm mt-4">
-        <div className="bg-white rounded-sm shadow-sm">
-          <p className="text-lg p-2 border-b border-gray-300 font-medium">
-            {capitalcase(selectedCategory)} Shops
-          </p>
+      {filtershop.length != 0 && (
+        <>
+          <div className="mt-4 flex">
+            {category.map((item: string, index: number) => (
+              <p
+                key={index}
+                onClick={() => {
+                  filtershopbycategory(item);
+                  setSelectedCategory(item);
+                }}
+                className={`border-b-2 border-gray-300 px-4 py-2 text-sm font-medium cursor-pointer ${
+                  selectedCategory === item ? "border-green-500" : ""
+                }`}
+              >
+                {item}
+              </p>
+            ))}
+            <p className="border-b-2 border-gray-300 px-4 grow"></p>
+          </div>
+          <div className="w-full bg-white rounded-sm shadow-sm mt-4">
+            <div className="bg-white rounded-sm shadow-sm">
+              <p className="text-lg p-2 border-b border-gray-300 font-medium">
+                {capitalcase(selectedCategory)} Shops
+              </p>
 
-          <div className="flex p-2 gap-4">
-            <div className="grow flex gap-2 overflow-x-hidden justify-start items-center">
-              {filtershop.map((item: shop, index: number) => (
-                <PropertiesDeatils
-                  key={index}
-                  id={item.id.toString()}
-                  status={item.status}
-                  count={item.shopNumber}
-                />
-              ))}
+              <div className="flex p-2 gap-4">
+                <div className="grow flex gap-2 overflow-x-hidden justify-start items-center">
+                  {filtershop.map((item: shop, index: number) => (
+                    <PropertiesDeatils
+                      key={index}
+                      id={item.id.toString()}
+                      status={item.status}
+                      count={item.shopNumber}
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
     </div>
   );
 };

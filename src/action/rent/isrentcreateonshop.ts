@@ -4,18 +4,18 @@ import { errorToString } from "@/utils/methods";
 import { ApiResponseType } from "@/models/response";
 import prisma from "../../../prisma/database";
 
-interface GetRentPayload {
+interface isShopRentedPayload {
   id: number;
 }
 
-const GetRent = async (
-  payload: GetRentPayload
+const isShopRented = async (
+  payload: isShopRentedPayload
 ): Promise<ApiResponseType<boolean | null>> => {
   try {
     const rent_respone = await prisma.rent.findFirst({
       where: {
         status: "RUNNING",
-        shopId: payload.id,
+        shopId: parseInt(payload.id.toString() ?? "0"),
         deletedAt: null,
         deletedBy: null,
       },
@@ -25,26 +25,25 @@ const GetRent = async (
       return {
         status: false,
         data: null,
-        message: "Invalid id. Please try again.",
-        functionname: "GetRent",
+        message: "There is no rent created on this shop.",
+        functionname: "isShopRented",
       };
 
     return {
       status: true,
       data: true,
-      message: "Rent is already created on this shop.",
-      functionname: "GetRent",
+      message: "Shop is rented.",
+      functionname: "isShopRented",
     };
-    
   } catch (e) {
     const response: ApiResponseType<null> = {
       status: false,
       data: null,
       message: errorToString(e),
-      functionname: "GetRent",
+      functionname: "isShopRented",
     };
     return response;
   }
 };
 
-export default GetRent;
+export default isShopRented;

@@ -33,7 +33,6 @@ const UserBidsRunning = () => {
     init();
   }, [userid]);
 
-
   if (isLoading)
     return (
       <div className="h-screen w-full grid place-items-center text-3xl text-gray-600 bg-gray-200">
@@ -45,7 +44,7 @@ const UserBidsRunning = () => {
     <div className="p-6 sm:p-10">
       <div className="flex gap-2 items-center">
         <IcBaselineAccountCircle className="text-3xl" />
-        <p className="text-xl text-gray-600">User Profile</p>
+        <p className="text-sm font-semibold text-gray-600">User Profile</p>
         <div className="grow"></div>
         <Link
           href={"/dashboard/userprofile/edit"}
@@ -60,80 +59,79 @@ const UserBidsRunning = () => {
         <div className="mt-2 flex gap-2">
           <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
             <h1 className="text-sm text-black">Username</h1>
-            <p className="text-xl">{user?.username}</p>
+            <p className="text-sm font-semibold">{user?.username ?? "-"}</p>
           </div>
 
           <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
             <h1 className="text-sm text-black">Email:</h1>
-            <p className="text-xl">- {user?.email}</p>
+            <p className="text-sm font-semibold">{user?.email ?? "-"}</p>
           </div>
         </div>
 
         <div className="mt-2 flex gap-2">
           <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
             <h1 className="text-sm text-black">First Name</h1>
-            <p className="text-xl">{user?.firstName}</p>
+            <p className="text-sm font-semibold">{user?.firstName ?? "-"}</p>
           </div>
 
           <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
             <h1 className="text-sm text-black">Last Name:</h1>
-            <p className="text-xl">- {user?.lastName}</p>
+            <p className="text-sm font-semibold">{user?.lastName ?? "-"}</p>
           </div>
         </div>
 
         <div className="mt-2 flex gap-2">
           <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
             <h1 className="text-sm text-black">Contact One</h1>
-            <p className="text-xl">{user?.contactone}</p>
+            <p className="text-sm font-semibold">{user?.contactone ?? "-"}</p>
           </div>
 
           <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
             <h1 className="text-sm text-black">Contact Two</h1>
-            <p className="text-xl">- {user?.lastName}</p>
+            <p className="text-sm font-semibold">{user?.lastName ?? "-"}</p>
           </div>
         </div>
 
         <div className="mt-2 flex gap-2">
           <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
             <h1 className="text-sm text-black">Aadhar</h1>
-            <p className="text-xl">{user?.aadhar}</p>
+            <p className="text-sm font-semibold">{user?.aadhar ?? "-"}</p>
           </div>
 
           <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
             <h1 className="text-sm text-black">Pan</h1>
-            <p className="text-xl">- {user?.pan}</p>
+            <p className="text-sm font-semibold">{user?.pan ?? "-"}</p>
           </div>
         </div>
 
         <div className="mt-2 flex gap-2">
           <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
             <h1 className="text-sm text-black">Address</h1>
-            <p className="text-xl">{user?.address}</p>
+            <p className="text-sm font-semibold">{user?.address ?? "-"}</p>
           </div>
 
           <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
             <h1 className="text-sm text-black">City</h1>
-            <p className="text-xl">- {user?.city}</p>
+            <p className="text-sm font-semibold">{user?.city ?? "-"}</p>
           </div>
         </div>
 
         <div className="mt-2 flex gap-2">
           <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
             <h1 className="text-sm text-black">Bank Name</h1>
-            <p className="text-xl">{user?.bankName}</p>
+            <p className="text-sm font-semibold">{user?.bankName ?? "-"}</p>
           </div>
 
           <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
             <h1 className="text-sm text-black">Bank Amount Number</h1>
-            <p className="text-xl">- {user?.bankAccountNumber}</p>
+            <p className="text-sm font-semibold">{user?.bankAccountNumber ?? "-"}</p>
           </div>
 
           <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
             <h1 className="text-sm text-black">Ifsc Code</h1>
-            <p className="text-xl">- {user?.ifscCode}</p>
+            <p className="text-sm font-semibold">{user?.ifscCode ?? "-"}</p>
           </div>
         </div>
-       
       </div>
     </div>
   );
