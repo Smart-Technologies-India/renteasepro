@@ -44,17 +44,17 @@ const AddPropertyPage = () => {
 
     if (result.success) {
       const createProperty = await CreateProperty({
-        name: result.data.name,
-        address: result.data.address,
-        pincode: result.data.pincode,
-        locality: result.data.locality,
+        name: result.output.name,
+        address: result.output.address,
+        pincode: result.output.pincode,
+        locality: result.output.locality,
         city: "Silvassa",
-        total_shops: result.data.total_shops,
-        total_floors: result.data.total_floors,
-        contact_person: result.data.contact_person,
-        contact_number: result.data.contact_number,
-        latitude: result.data.latitude,
-        longitude: result.data.longitude,
+        total_shops: result.output.total_shops,
+        total_floors: result.output.total_floors,
+        contact_person: result.output.contact_person,
+        contact_number: result.output.contact_number,
+        latitude: result.output.latitude,
+        longitude: result.output.longitude,
         priority: 1,
         creadtedById: userid,
       });
