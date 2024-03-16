@@ -9,14 +9,40 @@ import {
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
 import { BidTransact } from "@prisma/client";
-import Link from "next/link";
 import GetFromBidId from "@/action/bid_transact/getfrombidid";
 import BackButton from "@/components/backbutton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { SolarAltArrowDownLinear } from "@/components/icons";
+import { useRouter } from "next/navigation";
+import setWinner from "@/action/bid_transact/setwinner";
+import { toast } from "react-toastify";
+import isHigherBid from "@/action/bid_transact/ishigerbid";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface BidHistoryViewProps {
   id: number;
 }
 const BidHistoryView = (props: BidHistoryViewProps) => {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
 
   const category: string[] = ["All", "Pending", "Accepted", "Rejected"];
@@ -64,6 +90,62 @@ const BidHistoryView = (props: BidHistoryViewProps) => {
     init();
   }, [props.id]);
 
+  const [bidid, setBidid] = useState<number>(0);
+
+  const [isHigherBidBox, setIsHigherBidBox] = useState<boolean>(false);
+
+  const setWinning = async (id: number) => {
+    const ishigherbid = await isHigherBid({ id: id });
+    if (!ishigherbid.status) {
+      toast.error(ishigherbid.message);
+      return;
+    }
+
+    if (ishigherbid.data) {
+      const response = await setWinner({ id: id });
+      if (response.status) {
+        toast.success(response.message);
+      } else {
+        toast.error(response.message);
+      }
+
+      setIsLoading(true);
+      const bidresponse = await GetFromBidId({
+        id: props.id,
+      });
+
+      if (bidresponse.status) {
+        setBids(bidresponse.data ?? []);
+        setFilterbid(bidresponse.data ?? []);
+      }
+
+      setIsLoading(false);
+    } else {
+      setIsHigherBidBox(true);
+    }
+  };
+
+  const setaswinnder = async () => {
+    const response = await setWinner({ id: bidid });
+    if (response.status) {
+      toast.success(response.message);
+    } else {
+      toast.error(response.message);
+    }
+
+    setIsLoading(true);
+    const bidresponse = await GetFromBidId({
+      id: props.id,
+    });
+
+    if (bidresponse.status) {
+      setBids(bidresponse.data ?? []);
+      setFilterbid(bidresponse.data ?? []);
+    }
+
+    setIsLoading(false);
+  };
+
   if (isLoading)
     return (
       <div className="h-screen w-full grid place-items-center text-3xl text-gray-600 bg-gray-200">
@@ -75,7 +157,7 @@ const BidHistoryView = (props: BidHistoryViewProps) => {
     <div className="p-6 sm:p-10">
       <div className="items-center flex gap-4">
         <BackButton />
-        <h1 className="text-[#162f57] text-2xl font-semibold">Biders List</h1>
+        <h1 className="text-[#162f57] text-2xl font-semibold">Bidders List</h1>
       </div>
       <div className="mt-4 flex">
         {category.map((item: string, index: number) => (
@@ -115,7 +197,7 @@ const BidHistoryView = (props: BidHistoryViewProps) => {
           <TableBody>
             {filterbid.map((bid_tans: any, index: number) => (
               <TableRow key={index}>
-                <TableCell className="font-medium">{bid_tans.bid.id}</TableCell>
+                <TableCell className="font-medium">{bid_tans.id}</TableCell>
                 <TableCell>{bid_tans.user.username}</TableCell>
                 <TableCell>{bid_tans.user.contactone}</TableCell>
                 <TableCell>{bid_tans.amount}</TableCell>
@@ -124,12 +206,67 @@ const BidHistoryView = (props: BidHistoryViewProps) => {
                 </TableCell>
                 <TableCell>{bid_tans.status}</TableCell>
                 <TableCell>
-                  <Link
-                    href={`/dashboard/bids/userbidinfo/${bid_tans.id}`}
-                    className="bg-green-500 hover:bg-green-500 py-2 px-4 rounded-md text-white text-sm font-medium cursor-pointer"
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="gap-2 flex">
+                        <p className="font-medium text-sm">View</p>
+                        <SolarAltArrowDownLinear className="textx-2xl" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56">
+                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuGroup>
+                        <DropdownMenuItem
+                          onClick={() =>
+                            router.push(
+                              `/dashboard/userprofile/viewprofile/${bid_tans.user.id}/${bid_tans.id}`
+                            )
+                          }
+                          className="cursor-pointer"
+                        >
+                          View user Docs
+                        </DropdownMenuItem>
+                        {bid_tans.status == BidTransact.ACCEPTED ? (
+                          <>
+                            <DropdownMenuItem
+                              className="cursor-pointer"
+                              onClick={() => {
+                                setWinning(bid_tans.id);
+                                setBidid(bid_tans.id);
+                              }}
+                            >
+                              Approve as Winner
+                            </DropdownMenuItem>
+                          </>
+                        ) : (
+                          <></>
+                        )}
+                      </DropdownMenuGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  <AlertDialog
+                    open={isHigherBidBox}
+                    onOpenChange={setIsHigherBidBox}
                   >
-                    View
-                  </Link>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Are you absolutely sure?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This is not the higest bid. Are you sure you want to
+                          approve this bid as winner?
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={setaswinnder}>
+                          Continue
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </TableCell>
               </TableRow>
             ))}

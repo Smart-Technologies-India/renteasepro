@@ -34,7 +34,6 @@ const PayRent = async (
         functionname: "PayRent",
       };
 
-    console.log(update_response);
     return {
       status: true,
       data: null,

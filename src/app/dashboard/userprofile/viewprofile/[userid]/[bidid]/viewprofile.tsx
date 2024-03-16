@@ -1,21 +1,41 @@
 "use client";
-import getUploadFileUser from "@/action/user/getuploadedfile";
 import GetUser from "@/action/user/getuser";
 import { IcBaselineAccountCircle } from "@/components/icons";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { UserDocType, user } from "@prisma/client";
-import { getCookie } from "cookies-next";
-import Link from "next/link";
+import { UserDocType, bid_transact, user } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import TextArea from "antd/es/input/TextArea";
+import { toast } from "react-toastify";
+import AcceptBidTran from "@/action/bid_transact/acceptbidtran";
+import RejectBidTran from "@/action/bid_transact/rejectbidtran";
+import GetBidTran from "@/action/bid_transact/getbidtransact";
+import getUploadFileUser from "@/action/user/getuploadedfile";
+import Link from "next/link";
 
-const UserBidsRunning = () => {
-  const userid: number = parseInt(getCookie("id") ?? "0");
+interface UserProfileProps {
+  userid: number;
+  bidid: number;
+}
 
+const UserProfile = (props: UserProfileProps) => {
   const router = useRouter();
   const [isLoading, setLoading] = useState<boolean>(true);
 
   const [user, setUser] = useState<user>();
+  const [bidTransact, setBidTransact] = useState<bid_transact>();
 
   interface FileGetResponse {
     status: boolean;
@@ -76,14 +96,25 @@ const UserBidsRunning = () => {
     const init = async () => {
       setLoading(true);
       const userrespone = await GetUser({
-        id: userid,
+        id: props.userid,
       });
       if (userrespone.status) {
         setUser(userrespone.data!);
       }
 
+      const bidtransact = await GetBidTran({
+        id: props.bidid,
+      });
+
+      if (bidtransact.status) {
+        setBidTransact(bidtransact.data!);
+      }
+
+      if (userrespone.status) {
+        setUser(userrespone.data!);
+      }
       const aadharresponse = await getUploadFileUser({
-        userId: userrespone.data?.id!,
+        userId: props.userid,
         doc_type: UserDocType.AADHAR,
       });
 
@@ -95,7 +126,7 @@ const UserBidsRunning = () => {
       }
 
       const panresponse = await getUploadFileUser({
-        userId: userrespone.data?.id!,
+        userId: props.userid,
         doc_type: UserDocType.PAN,
       });
 
@@ -107,7 +138,7 @@ const UserBidsRunning = () => {
       }
 
       const bankpassbookresponse = await getUploadFileUser({
-        userId: userrespone.data?.id!,
+        userId: props.userid,
         doc_type: UserDocType.BANK,
       });
 
@@ -119,7 +150,7 @@ const UserBidsRunning = () => {
       }
 
       const photoresponse = await getUploadFileUser({
-        userId: userrespone.data?.id!,
+        userId: props.userid,
         doc_type: UserDocType.PHOTO,
       });
 
@@ -129,9 +160,8 @@ const UserBidsRunning = () => {
           path: photoresponse.data?.path!,
         });
       }
-
       const womenfileresponse = await getUploadFileUser({
-        userId: userid,
+        userId: props.userid,
         doc_type: UserDocType.WOMEN,
       });
 
@@ -143,7 +173,7 @@ const UserBidsRunning = () => {
       }
 
       const categoryresponse = await getUploadFileUser({
-        userId: userid,
+        userId: props.userid,
         doc_type: UserDocType.RESERVED,
       });
 
@@ -155,7 +185,7 @@ const UserBidsRunning = () => {
       }
 
       const abledresponse = await getUploadFileUser({
-        userId: userid,
+        userId: props.userid,
         doc_type: UserDocType.DIFFERENTLY_ABLED,
       });
 
@@ -167,7 +197,7 @@ const UserBidsRunning = () => {
       }
 
       const msmeresponse = await getUploadFileUser({
-        userId: userid,
+        userId: props.userid,
         doc_type: UserDocType.MSME,
       });
 
@@ -179,7 +209,7 @@ const UserBidsRunning = () => {
       }
 
       const stscresponse = await getUploadFileUser({
-        userId: userid,
+        userId: props.userid,
         doc_type: UserDocType.SC_ST,
       });
 
@@ -191,7 +221,7 @@ const UserBidsRunning = () => {
       }
 
       const tribalresponse = await getUploadFileUser({
-        userId: userid,
+        userId: props.userid,
         doc_type: UserDocType.TRIBAL,
       });
 
@@ -201,11 +231,48 @@ const UserBidsRunning = () => {
           path: tribalresponse.data?.path!,
         });
       }
+
       setLoading(false);
     };
 
     init();
-  }, [userid]);
+  }, [props.userid, props.bidid]);
+
+  const [acceptReason, setAcceptReason] = useState<string>("");
+  const acceptBid = async () => {
+    console.log(acceptReason);
+    if (acceptReason == "" || acceptReason == undefined || acceptReason == null)
+      return toast.error("Please Enter Accept Reason");
+
+    const response = await AcceptBidTran({
+      id: props.bidid,
+      reason: acceptReason ?? "",
+    });
+
+    if (response.status) {
+      toast.success("Bid Accepted Successfully");
+      router.back();
+    } else {
+      toast.error(response.message);
+    }
+  };
+  const [rejectReason, setRejectReason] = useState<string>("");
+  const recjectBid = async () => {
+    if (rejectReason == "" || rejectReason == undefined || rejectReason == null)
+      return toast.error("Please Enter Reject Reason");
+
+    const response = await RejectBidTran({
+      id: props.bidid,
+      reason: rejectReason,
+    });
+
+    if (response.status) {
+      toast.success("Bid Rejected Successfully");
+      router.back();
+    } else {
+      toast.error(response.message);
+    }
+  };
 
   if (isLoading)
     return (
@@ -220,12 +287,6 @@ const UserBidsRunning = () => {
         <IcBaselineAccountCircle className="text-3xl" />
         <p className="text-sm font-semibold text-gray-600">User Profile</p>
         <div className="grow"></div>
-        <Link
-          href={"/dashboard/userprofile/edit"}
-          className="rounded-md text-white py-1 px-4 bg-black"
-        >
-          Edit Profile
-        </Link>
       </div>
       <div className="bg-white p-4 rounded-md shadow-md mt-6">
         <p className="text-gray-500 text-center">User Basic Information</p>
@@ -308,6 +369,7 @@ const UserBidsRunning = () => {
             <p className="text-sm font-semibold">{user?.ifscCode ?? "-"}</p>
           </div>
         </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
           {getAadhar.status ? (
             <>
@@ -479,9 +541,90 @@ const UserBidsRunning = () => {
             <></>
           )}
         </div>
+
+        {bidTransact?.status == "REJECTED" && (
+          <div className="rounded-md py-1 px-4 bg-rose-50 flex-1 mt-2">
+            <h1 className="text-sm text-black">Rejected Reason</h1>
+            <p className="text-sm font-semibold">
+              {bidTransact?.rejectedreason}
+            </p>
+          </div>
+        )}
+
+        {bidTransact?.status == "ACCEPTED" && (
+          <div className="rounded-md py-1 px-4 bg-green-50 flex-1 mt-2">
+            <h1 className="text-sm text-black">Accepted Reason</h1>
+            <p className="text-sm font-semibold">{bidTransact?.biddocreason}</p>
+          </div>
+        )}
+
+        {bidTransact?.status == "PENDING" && (
+          <div className="flex gap-4 mt-4">
+            <div className="grow"></div>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button className="bg-green-500 hover:bg-green-600 w-28">
+                  Accept
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    Are you sure you want to accept?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Enter Accept Reason Below
+                  </AlertDialogDescription>
+                  <TextArea
+                    value={acceptReason}
+                    onChange={(e) => setAcceptReason(e.target.value)}
+                    placeholder="Enter Accept Reason"
+                    className="resize-none h-24 mt-2"
+                  ></TextArea>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={acceptBid}>
+                    Continue
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button className="bg-rose-500 hover:bg-rose-600 w-28">
+                  Reject
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    Are you sure you want to reject?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Enter Reject Reason Below
+                  </AlertDialogDescription>
+                  <TextArea
+                    value={rejectReason}
+                    onChange={(e) => setRejectReason(e.target.value)}
+                    placeholder="Enter Reject Reason"
+                    className="resize-none h-24 mt-2"
+                  ></TextArea>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={recjectBid}>
+                    Continue
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
-export default UserBidsRunning;
+export default UserProfile;

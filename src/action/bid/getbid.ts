@@ -15,7 +15,7 @@ const GetBid = async (
   try {
     let bid: any = await prisma.bid.findFirst({
       where: {
-        id: payload.id,
+        id: parseInt(payload.id.toString() ?? "0"),
         deletedAt: null,
         deletedBy: null,
       },
@@ -36,7 +36,7 @@ const GetBid = async (
 
     const max_bid_amount = await prisma.bid_transact.findFirst({
       where: {
-        bidId: payload.id,
+        bidId: parseInt(payload.id.toString() ?? "0"),
         deletedAt: null,
         deletedBy: null,
       },
@@ -50,7 +50,6 @@ const GetBid = async (
     } else {
       bid.max_bid_amount = bid.min_bid_amount;
     }
-
 
     return {
       status: true,

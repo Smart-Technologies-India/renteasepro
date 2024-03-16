@@ -20,11 +20,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { CreateBidSchema } from "@/schema/createbid";
 import { PercentageType, RefundType } from "@prisma/client";
 import { getCookie } from "cookies-next";
-import { format, set } from "date-fns";
+import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { SetStateAction, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { safeParse } from "valibot";
+import { isoDate, safeParse } from "valibot";
 import { TimePicker } from "antd";
 import axios from "axios";
 import GetShop from "@/action/shop/getshop";
@@ -110,10 +110,10 @@ const CreateBidPage = (props: CreateBidPageProps) => {
   const [exempt, setExempt] = useState<Exempt>(Exempt.NO);
 
   enum BidType {
-    OPEN = "OPEN",
-    CLOSE = "CLOSE",
+    AUCTION = "AUCTION",
+    TENDER = "TENDER",
   }
-  const [bidType, setBidType] = useState<BidType>(BidType.CLOSE);
+  const [bidType, setBidType] = useState<BidType>(BidType.TENDER);
 
   const exemptfeesamount = useRef<HTMLInputElement>(null);
   const exemptemdamount = useRef<HTMLInputElement>(null);
@@ -162,6 +162,7 @@ const CreateBidPage = (props: CreateBidPageProps) => {
   ] as const;
 
   const [field, setField] = useState<string[]>([]);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const exemptitems = [
     {
@@ -320,6 +321,7 @@ const CreateBidPage = (props: CreateBidPageProps) => {
         );
         extrafields["exempt_bg"] = exemptbg;
       }
+      console.log(isOpen);
 
       const createbid = await CreateBid({
         title: result.output.title,
@@ -347,9 +349,10 @@ const CreateBidPage = (props: CreateBidPageProps) => {
         is_differently_abled: field.includes("abled"),
         is_msme: field.includes("msme"),
         is_exemption: exempt == Exempt.YES,
-        is_open: bidType == BidType.OPEN,
+        is_auction: bidType == BidType.AUCTION,
         is_sc_st: field.includes("scst"),
         is_tribal: field.includes("tribal"),
+        is_open: isOpen,
         exemptfield: exemptfield,
         exemptsectionsvalue: exemptsectionsvalue,
         ...extrafields,
@@ -417,26 +420,6 @@ const CreateBidPage = (props: CreateBidPageProps) => {
     } else {
       toast.error("File size must be less then 5 mb", { theme: "light" });
     }
-  };
-
-  const upload = async () => {
-    const formData = new FormData();
-    formData.append("file", fileUploader!);
-
-    console.log(fileUploader);
-
-    console.log(props.uploadurl);
-
-    const uploadfile = await axios.post(props.uploadurl, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    if (uploadfile.status != 200) {
-      return toast.error("File upload failed");
-    }
-    console.log(uploadfile.data.filePath);
   };
 
   if (isLoading)
@@ -669,30 +652,30 @@ const CreateBidPage = (props: CreateBidPageProps) => {
               <RadioGroup className="flex gap-2" id="bid_type" value={bidType}>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem
-                    value="OPEN"
+                    value="AUCTION"
                     id="bid_type1"
-                    onClick={() => setBidType(BidType.OPEN)}
+                    onClick={() => setBidType(BidType.AUCTION)}
                   />
                   <Label
                     htmlFor="bid_type1"
                     className="cursor-pointer"
-                    onClick={() => setBidType(BidType.OPEN)}
+                    onClick={() => setBidType(BidType.AUCTION)}
                   >
-                    OPEN
+                    AUCTION
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem
-                    value="CLOSE"
+                    value="TENDER"
                     id="bid_type2"
-                    onClick={() => setBidType(BidType.CLOSE)}
+                    onClick={() => setBidType(BidType.TENDER)}
                   />
                   <Label
                     htmlFor="bid_type2"
                     className="cursor-pointer"
-                    onClick={() => setBidType(BidType.CLOSE)}
+                    onClick={() => setBidType(BidType.TENDER)}
                   >
-                    CLOSE
+                    TENDER
                   </Label>
                 </div>
               </RadioGroup>
@@ -1322,7 +1305,6 @@ const CreateBidPage = (props: CreateBidPageProps) => {
                 ? longtext(fileUploader.name, 20)
                 : "No File Selected"}
             </p>
-            {/* <Button onClick={upload}>submit</Button> */}
 
             <div className="hidden">
               <Input
@@ -1336,28 +1318,52 @@ const CreateBidPage = (props: CreateBidPageProps) => {
 
           <p className="text-gray-500 mt-4">Select Bidder Category</p>
           <div className="flex gap-x-6 gap-y-4 flex-wrap mt-2">
-            {items.map((item, index) => (
-              <div key={index} className="flex gap-2 mt-1 items-center ">
-                <Checkbox
-                  id={`${item.id.toString()}1`}
-                  checked={field.includes(item.id)}
-                  onCheckedChange={(value) => {
-                    if (value) {
-                      setField((prev) => [...prev, item.id]);
-                    } else {
-                      setField((prev) => prev.filter((x) => x !== item.id));
-                    }
-                  }}
-                />
+            <div className="flex gap-2 mt-1 items-center ">
+              <Checkbox
+                id={"isopen"}
+                checked={isOpen}
+                onCheckedChange={(value) => {
+                  if (value) {
+                    setIsOpen(true);
 
-                <Label
-                  className="text-sm font-normal cursor-pointer"
-                  htmlFor={`${item.id.toString()}1`}
-                >
-                  {item.label}
-                </Label>
-              </div>
-            ))}
+                    setField([]);
+                  } else {
+                    setIsOpen(false);
+                  }
+                }}
+              />
+
+              <Label
+                className="text-sm font-normal cursor-pointer"
+                htmlFor={`isopen`}
+              >
+                Open Bid
+              </Label>
+            </div>
+
+            {isOpen == false &&
+              items.map((item, index) => (
+                <div key={index} className="flex gap-2 mt-1 items-center ">
+                  <Checkbox
+                    id={`${item.id.toString()}1`}
+                    checked={field.includes(item.id)}
+                    onCheckedChange={(value) => {
+                      if (value) {
+                        setField((prev) => [...prev, item.id]);
+                      } else {
+                        setField((prev) => prev.filter((x) => x !== item.id));
+                      }
+                    }}
+                  />
+
+                  <Label
+                    className="text-sm font-normal cursor-pointer"
+                    htmlFor={`${item.id.toString()}1`}
+                  >
+                    {item.label}
+                  </Label>
+                </div>
+              ))}
           </div>
 
           <Button className="w-full mt-4" onClick={create}>

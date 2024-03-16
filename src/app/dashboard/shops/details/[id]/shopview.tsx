@@ -240,13 +240,22 @@ const ShopView = (props: ShowShopProps) => {
             <p className="text-xl p-2  font-semibold">
               Bid Details -{" "}
               <span className="text-sm">
-                [{bid.is_open == true ? "OPEN BID" : "CLOSE BID"}]
+                [{bid.is_auction == true ? "Auction Bid" : "Tender Bid"}]
               </span>
             </p>
             <div className="grow"></div>
 
-            {bid.is_open == true ? (
-              user?.role === "USER" && (
+            {user?.role === "USER" ? (
+              bid.is_auction == true ? (
+                <Link
+                  href={`/dashboard/bids/apply/${bid.id}`}
+                  className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 py-1 text-sm"
+                >
+                  Apply Bid
+                </Link>
+              ) : userApplyed ? (
+                <></>
+              ) : (
                 <Link
                   href={`/dashboard/bids/apply/${bid.id}`}
                   className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 py-1 text-sm"
@@ -258,22 +267,22 @@ const ShopView = (props: ShowShopProps) => {
               <></>
             )}
 
-            {user?.role === "USER" && !userApplyed && (
-              <Link
-                href={`/dashboard/bids/apply/${bid.id}`}
-                className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 py-1 text-sm"
-              >
-                Apply Bid
-              </Link>
-            )}
-
             {user?.role === "ADMIN" && (
-              <Link
-                href={`/dashboard/bids/biderslist/${bid?.id}`}
-                className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 h-8 text-sm grid place-items-center"
-              >
-                Running Bid History
-              </Link>
+              <>
+                <Link
+                  href={`/dashboard/bids/userbidinfo/${bid?.id}`}
+                  className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                >
+                  View Bid Details
+                </Link>
+                <div className="w-4"></div>
+                <Link
+                  href={`/dashboard/bids/biderslist/${bid?.id}`}
+                  className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                >
+                  Running Bid History
+                </Link>
+              </>
             )}
           </div>
           <div className="flex">

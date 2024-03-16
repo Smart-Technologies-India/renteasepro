@@ -41,9 +41,10 @@ interface CreateBidPayload {
   is_differently_abled: boolean;
   is_msme: boolean;
   is_exemption: boolean;
-  is_open: boolean;
+  is_auction: boolean;
   is_tribal: boolean;
   is_sc_st: boolean;
+  is_open: boolean;
   exemptfield: string[];
   exemptsectionsvalue: string[];
   is_fees_exempt_allowed: boolean;
@@ -111,6 +112,7 @@ const CreateBid = async (
       is_tribal: payload.is_tribal,
       is_sc_st: payload.is_sc_st,
       createdById: payload.createdById,
+      is_auction: payload.is_auction,
       is_open: payload.is_open,
     };
 

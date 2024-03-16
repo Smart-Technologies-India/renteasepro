@@ -387,7 +387,7 @@ const BidDetailsView = (props: BidDetailsViewProps) => {
           </div>
 
           <div className="flex gap-4 flex-wrap items-center mt-4">
-            <p className="text-gray-500">Select Bidder Category</p>
+            <p className="text-gray-500">Bidder Category</p>
             {bid.is_woman == true ? (
               <>
                 <div className="bg-gray-100 rounded-sm shadow py-1 px-4">

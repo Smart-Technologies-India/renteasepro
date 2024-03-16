@@ -34,9 +34,23 @@ const GetFromBidId = async (
         functionname: "GetFromBidId",
       };
 
+    // shorting by highest amount
+    const uniqueBids = bid_transact.sort((a, b) => {
+      return b.amount - a.amount;
+    });
+
+    // removing duplicate user
+    const uniqueBidsUser = uniqueBids.filter(
+      (thing, index, self) =>
+        index ===
+        self.findIndex(
+          (t) => t.user.id === thing.user.id && t.shop.id === thing.shop.id
+        )
+    );
+
     return {
       status: true,
-      data: bid_transact,
+      data: uniqueBidsUser,
       message: "Bid transact data get successfully",
       functionname: "GetFromBidId",
     };

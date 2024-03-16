@@ -3,6 +3,7 @@
 import ApplyBid from "@/action/bid/applybid";
 import GetBid from "@/action/bid/getbid";
 import getFromUser from "@/action/bid_transact/getfromuser";
+import getUploadFileUser from "@/action/user/getuploadedfile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,7 +13,7 @@ import {
   formateDate,
   handleNumberChange,
 } from "@/utils/methods";
-import { ExemptFor, bid, exempt } from "@prisma/client";
+import { ExemptFor, UserDocType, bid, exempt } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -45,9 +46,46 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
 
   const amount = useRef<HTMLInputElement>(null);
 
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  // const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isApplied, setIsApplied] = useState<boolean>(false);
   const [bidTransact, setBidTransact] = useState<any>();
+
+  const [isAplicable, setIsApplicable] = useState<boolean>(false);
+
+  // interface FileGetResponse {
+  //   status: boolean;
+  //   path: string;
+  // }
+
+  // const [getWomenFile, setGetWomenFile] = useState<FileGetResponse>({
+  //   status: false,
+  //   path: "",
+  // });
+
+  // const [getCategory, setGetCategory] = useState<FileGetResponse>({
+  //   status: false,
+  //   path: "",
+  // });
+
+  // const [getAbled, setGetAbled] = useState<FileGetResponse>({
+  //   status: false,
+  //   path: "",
+  // });
+
+  // const [getMsme, setGetMsme] = useState<FileGetResponse>({
+  //   status: false,
+  //   path: "",
+  // });
+
+  // const [getStsc, setGetStsc] = useState<FileGetResponse>({
+  //   status: false,
+  //   path: "",
+  // });
+
+  // const [getTribal, setGetTribal] = useState<FileGetResponse>({
+  //   status: false,
+  //   path: "",
+  // });
 
   useEffect(() => {
     const init = async () => {
@@ -58,7 +96,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
       });
       if (bidresponse.status) {
         setBid(bidresponse.data ?? ({} as bid));
-        setIsOpen(bidresponse.data?.is_open ?? false);
+        // setIsOpen(bidresponse.data?.is_auction ?? false);
       }
 
       const isaaplied = await getFromUser({
@@ -70,6 +108,55 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
         setBidTransact(isaaplied.data);
       }
 
+      // file info start from here
+
+      const womenfileresponse = await getUploadFileUser({
+        userId: userid,
+        doc_type: UserDocType.WOMEN,
+      });
+
+      const categoryresponse = await getUploadFileUser({
+        userId: userid,
+        doc_type: UserDocType.RESERVED,
+      });
+
+      const abledresponse = await getUploadFileUser({
+        userId: userid,
+        doc_type: UserDocType.DIFFERENTLY_ABLED,
+      });
+
+      const msmeresponse = await getUploadFileUser({
+        userId: userid,
+        doc_type: UserDocType.MSME,
+      });
+
+      const stscresponse = await getUploadFileUser({
+        userId: userid,
+        doc_type: UserDocType.SC_ST,
+      });
+
+      const tribalresponse = await getUploadFileUser({
+        userId: userid,
+        doc_type: UserDocType.TRIBAL,
+      });
+
+      const setApplicable = (): boolean => {
+        if (womenfileresponse.status && bidresponse.data.is_woman) return true;
+        if (categoryresponse.status && bidresponse.data.is_reserved)
+          return true;
+        if (abledresponse.status && bidresponse.data.is_differently_abled)
+          return true;
+        if (msmeresponse.status && bidresponse.data.is_msme) return true;
+        if (stscresponse.status && bidresponse.data.is_stsc) return true;
+        if (tribalresponse.status && bidresponse.data.is_tribal) return true;
+        return false;
+      };
+      const value = setApplicable();
+
+      setIsApplicable(() => value);
+
+      console.log("isApplicable", value);
+      // file info end here
       setLoading(false);
     };
 
@@ -84,7 +171,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
     )
       return toast.error("Please enter bid amount");
 
-    if (bid?.is_open == false) {
+    if (bid?.is_auction == false) {
       if (
         parseInt(amount.current?.value ?? "0") <
         bid.min_bid_amount + bid.min_bid_increment
@@ -238,7 +325,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                   <h1 className="text-center">Minimum Bid:</h1>
                   <p className="text-center">{bid.min_bid_amount}</p>
                 </div>
-                {bid.is_open == true && (
+                {bid.is_auction == true && (
                   <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                     <h1 className="text-center">Current Bid:</h1>
                     <p className="text-center">{bid.max_bid_amount}</p>
@@ -317,6 +404,15 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                   Allowed Bidder Category
                 </h1>
                 <div className="flex gap-2 flex-wrap items-center my-4">
+                  {bid.is_open == true ? (
+                    <>
+                      <div className="bg-gray-100 rounded-sm shadow py-1 px-4 text-xs">
+                        Open Bid
+                      </div>
+                    </>
+                  ) : (
+                    <></>
+                  )}
                   {bid.is_woman == true ? (
                     <>
                       <div className="bg-gray-100 rounded-sm shadow py-1 px-4 text-xs">
@@ -421,370 +517,331 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                 </div>
               </div>
 
-              {isOpen == true ? (
+              {isAplicable == true ? (
                 <>
-                  {isApplied == true ? (
+                  {bid.is_auction == true ? (
                     <>
-                      <div className="bg-white rounded-sm shadow-sm p-4 my-2 flex-1">
-                        <p className="text-gray-500 text-center">
-                          User Submitted Bid Information
-                        </p>
-                        <Separator />
-                        <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
-                          <h1>Minimum Bid:</h1>
-                          <p>{bid.min_bid_amount}</p>
-                        </div>
+                      {isApplied == true ? (
+                        <>
+                          <div className="bg-white rounded-sm shadow-sm p-4 my-2 flex-1">
+                            <p className="text-gray-500 text-center">
+                              User Submitted Bid Information
+                            </p>
+                            <Separator />
+                            <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
+                              <h1>Minimum Bid:</h1>
+                              <p>{bid.min_bid_amount}</p>
+                            </div>
 
-                        <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
-                          <h1>Min Bid Increment:</h1>
-                          <p>{bid.min_bid_increment}</p>
-                        </div>
-                        {bid.is_open == true && (
-                          <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
-                            <h1>Current Bid:</h1>
-                            <p>{bid.max_bid_amount}</p>
-                          </div>
-                        )}
+                            <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
+                              <h1>Min Bid Increment:</h1>
+                              <p>{bid.min_bid_increment}</p>
+                            </div>
+                            {bid.is_auction == true && (
+                              <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
+                                <h1>Current Bid:</h1>
+                                <p>{bid.max_bid_amount}</p>
+                              </div>
+                            )}
 
-                        <div className="flex justify-between mt-2">
-                          <p>Fees Paid</p>
-                          <p>{bid.fees_amount}</p>
-                        </div>
-                        {bid?.is_exemption == true && (
-                          <div className="flex justify-between mt-2">
-                            <p>Exempted Fees Paid</p>
-                            <p>-{bid?.exempt[0].feesamount}</p>
-                          </div>
-                        )}
-                        <div className="flex justify-between mt-2">
-                          <p>Emd Amount Paid</p>
-                          <p>{bid.emd_amount}</p>
-                        </div>
-                        {bid?.is_exemption == true && (
-                          <div className="flex justify-between mt-2">
-                            <p>Exempted Emd Amount Paid</p>
-                            <p>-{bid?.exempt[0].emdamount}</p>
-                          </div>
-                        )}
-                        <div className="flex justify-between mt-2">
-                          <p>User Bid Amount</p>
-                          <p>{bidTransact.amount}</p>
-                        </div>
-                        <div className="mt-4"></div>
-                        <Separator />
-                        <div className="grid items-center gap-1.5 w-full mt-4">
-                          <Label htmlFor="minbid">Enter Bid Amount</Label>
-                          <Input
-                            id="minbid"
-                            type="text"
-                            className="w-full"
-                            ref={amount}
-                            onChange={handleNumberChange}
-                          />
-                        </div>
+                            <div className="flex justify-between mt-2">
+                              <p>Fees Paid</p>
+                              <p>{bid.fees_amount}</p>
+                            </div>
+                            {bid?.is_exemption == true && (
+                              <div className="flex justify-between mt-2">
+                                <p>Exempted Fees Paid</p>
+                                <p>-{bid?.exempt[0].feesamount}</p>
+                              </div>
+                            )}
+                            <div className="flex justify-between mt-2">
+                              <p>Emd Amount Paid</p>
+                              <p>{bid.emd_amount}</p>
+                            </div>
+                            {bid?.is_exemption == true && (
+                              <div className="flex justify-between mt-2">
+                                <p>Exempted Emd Amount Paid</p>
+                                <p>-{bid?.exempt[0].emdamount}</p>
+                              </div>
+                            )}
+                            <div className="flex justify-between mt-2">
+                              <p>User Bid Amount</p>
+                              <p>{bidTransact.amount}</p>
+                            </div>
+                            <div className="mt-4"></div>
+                            <Separator />
+                            <div className="grid items-center gap-1.5 w-full mt-4">
+                              <Label htmlFor="minbid">Enter Bid Amount</Label>
+                              <Input
+                                id="minbid"
+                                type="text"
+                                className="w-full"
+                                ref={amount}
+                                onChange={handleNumberChange}
+                              />
+                            </div>
 
-                        <Button onClick={create} className="w-full mt-4">
-                          Pay Fees and Submit
-                        </Button>
-                      </div>
+                            <Button onClick={create} className="w-full mt-4">
+                              Pay Fees and Submit
+                            </Button>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="bg-white rounded-sm shadow-sm p-4 my-2 flex-1">
+                            <p className="text-gray-500 text-center">
+                              User Submitted Bid Information
+                            </p>
+                            <Separator />
+                            <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
+                              <h1>Minimum Bid:</h1>
+                              <p>{bid.min_bid_amount}</p>
+                            </div>
+
+                            <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
+                              <h1>Min Bid Increment:</h1>
+                              <p>{bid.min_bid_increment}</p>
+                            </div>
+                            {bid.is_auction == true && (
+                              <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
+                                <h1>Current Bid:</h1>
+                                <p>{bid.max_bid_amount}</p>
+                              </div>
+                            )}
+                            <div className="grid items-center gap-1.5 w-full mt-4">
+                              <Label htmlFor="minbid">Enter Bid Amount</Label>
+                              <Input
+                                id="minbid"
+                                type="text"
+                                className="w-full"
+                                ref={amount}
+                                onChange={handleNumberChange}
+                              />
+                            </div>
+
+                            <div className="flex justify-between mt-2">
+                              <p>Fees</p>
+                              <p>{bid.fees_amount}</p>
+                            </div>
+                            {bid?.is_exemption == true && (
+                              <div className="flex justify-between mt-2">
+                                <p>Exempted Fees</p>
+                                <p>-{bid?.exempt[0].feesamount}</p>
+                              </div>
+                            )}
+                            <div className="flex justify-between mt-2">
+                              <p>Emd Amount</p>
+                              <p>{bid.emd_amount}</p>
+                            </div>
+                            {bid?.is_exemption == true && (
+                              <div className="flex justify-between mt-2">
+                                <p>Exempted Emd Amount</p>
+                                <p>-{bid?.exempt[0].emdamount}</p>
+                              </div>
+                            )}
+                            <div className="mt-4"></div>
+                            <Separator />
+                            <div className="flex justify-between">
+                              <p>Total Fees to be Paid</p>
+                              <p>
+                                {bid?.is_exemption == true
+                                  ? parseInt(
+                                      bid.fees_amount.toString() ?? "0"
+                                    ) -
+                                    parseInt(
+                                      bid?.exempt[0].feesamount.toString() ??
+                                        "0"
+                                    ) +
+                                    parseInt(bid.emd_amount.toString() ?? "0") -
+                                    parseInt(
+                                      bid?.exempt[0].emdamount.toString() ?? "0"
+                                    )
+                                  : parseInt(
+                                      bid.fees_amount.toString() ?? "0"
+                                    ) +
+                                    parseInt(bid.emd_amount.toString() ?? "0")}
+                              </p>
+                            </div>
+                            <Button onClick={create} className="w-full mt-4">
+                              Pay Fees and Submit
+                            </Button>
+                          </div>
+                        </>
+                      )}
                     </>
                   ) : (
                     <>
-                      <div className="bg-white rounded-sm shadow-sm p-4 my-2 flex-1">
-                        <p className="text-gray-500 text-center">
-                          User Submitted Bid Information
-                        </p>
-                        <Separator />
-                        <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
-                          <h1>Minimum Bid:</h1>
-                          <p>{bid.min_bid_amount}</p>
-                        </div>
+                      {isApplied == true ? (
+                        <>
+                          <div className="bg-white rounded-sm shadow-sm p-4 my-2 flex-1">
+                            <p className="text-gray-500 text-center">
+                              User Submitted Bid Information
+                            </p>
+                            <Separator />
+                            <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
+                              <h1>Minimum Bid:</h1>
+                              <p>{bid.min_bid_amount}</p>
+                            </div>
 
-                        <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
-                          <h1>Min Bid Increment:</h1>
-                          <p>{bid.min_bid_increment}</p>
-                        </div>
-                        {bid.is_open == true && (
-                          <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
-                            <h1>Current Bid:</h1>
-                            <p>{bid.max_bid_amount}</p>
-                          </div>
-                        )}
-                        <div className="grid items-center gap-1.5 w-full mt-4">
-                          <Label htmlFor="minbid">Enter Bid Amount</Label>
-                          <Input
-                            id="minbid"
-                            type="text"
-                            className="w-full"
-                            ref={amount}
-                            onChange={handleNumberChange}
-                          />
-                        </div>
+                            <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
+                              <h1>Min Bid Increment:</h1>
+                              <p>{bid.min_bid_increment}</p>
+                            </div>
+                            {bid.is_auction == true && (
+                              <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
+                                <h1>Current Bid:</h1>
+                                <p>{bid.max_bid_amount}</p>
+                              </div>
+                            )}
 
-                        <div className="flex justify-between mt-2">
-                          <p>Fees</p>
-                          <p>{bid.fees_amount}</p>
-                        </div>
-                        {bid?.is_exemption == true && (
-                          <div className="flex justify-between mt-2">
-                            <p>Exempted Fees</p>
-                            <p>-{bid?.exempt[0].feesamount}</p>
+                            <div className="flex justify-between mt-2">
+                              <p>User Bid Amount</p>
+                              <p>{bidTransact.amount}</p>
+                            </div>
+
+                            <div className="flex justify-between mt-2">
+                              <p>Fees Paid</p>
+                              <p>{bid.fees_amount}</p>
+                            </div>
+                            {bid?.is_exemption == true && (
+                              <div className="flex justify-between mt-2">
+                                <p>Exempted Fees Paid</p>
+                                <p>-{bid?.exempt[0].feesamount}</p>
+                              </div>
+                            )}
+                            <div className="flex justify-between mt-2">
+                              <p>Emd Amount Paid</p>
+                              <p>{bid.emd_amount}</p>
+                            </div>
+                            {bid?.is_exemption == true && (
+                              <div className="flex justify-between mt-2">
+                                <p>Exempted Emd Amount Paid</p>
+                                <p>-{bid?.exempt[0].emdamount}</p>
+                              </div>
+                            )}
+                            <div className="mt-4"></div>
+                            <Separator />
+                            <div className="flex justify-between">
+                              <p>Total Amount Paid</p>
+                              <p>
+                                {bid?.is_exemption == true
+                                  ? parseInt(
+                                      bid.fees_amount.toString() ?? "0"
+                                    ) -
+                                    parseInt(
+                                      bid?.exempt[0].feesamount.toString() ??
+                                        "0"
+                                    ) +
+                                    parseInt(bid.emd_amount.toString() ?? "0") -
+                                    parseInt(
+                                      bid?.exempt[0].emdamount.toString() ?? "0"
+                                    )
+                                  : parseInt(
+                                      bid.fees_amount.toString() ?? "0"
+                                    ) +
+                                    parseInt(bid.emd_amount.toString() ?? "0")}
+                              </p>
+                            </div>
                           </div>
-                        )}
-                        <div className="flex justify-between mt-2">
-                          <p>Emd Amount</p>
-                          <p>{bid.emd_amount}</p>
-                        </div>
-                        {bid?.is_exemption == true && (
-                          <div className="flex justify-between mt-2">
-                            <p>Exempted Emd Amount</p>
-                            <p>-{bid?.exempt[0].emdamount}</p>
+                        </>
+                      ) : (
+                        <>
+                          <div className="bg-white rounded-sm shadow-sm p-4 my-2 flex-1">
+                            <p className="text-gray-500 text-center">
+                              User Submitted Bid Information
+                            </p>
+                            <Separator />
+                            <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
+                              <h1>Minimum Bid:</h1>
+                              <p>{bid.min_bid_amount}</p>
+                            </div>
+
+                            <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
+                              <h1>Min Bid Increment:</h1>
+                              <p>{bid.min_bid_increment}</p>
+                            </div>
+                            {bid.is_auction == true && (
+                              <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
+                                <h1>Current Bid:</h1>
+                                <p>{bid.max_bid_amount}</p>
+                              </div>
+                            )}
+                            <div className="grid items-center gap-1.5 w-full mt-4">
+                              <Label htmlFor="minbid">Enter Bid Amount</Label>
+                              <Input
+                                id="minbid"
+                                type="text"
+                                className="w-full"
+                                ref={amount}
+                                onChange={handleNumberChange}
+                              />
+                            </div>
+
+                            <div className="flex justify-between mt-2">
+                              <p>Fees</p>
+                              <p>{bid.fees_amount}</p>
+                            </div>
+                            {bid?.is_exemption == true && (
+                              <div className="flex justify-between mt-2">
+                                <p>Exempted Fees</p>
+                                <p>-{bid?.exempt[0].feesamount}</p>
+                              </div>
+                            )}
+                            <div className="flex justify-between mt-2">
+                              <p>Emd Amount</p>
+                              <p>{bid.emd_amount}</p>
+                            </div>
+                            {bid?.is_exemption == true && (
+                              <div className="flex justify-between mt-2">
+                                <p>Exempted Emd Amount</p>
+                                <p>-{bid?.exempt[0].emdamount}</p>
+                              </div>
+                            )}
+                            <div className="mt-4"></div>
+                            <Separator />
+                            <div className="flex justify-between">
+                              <p>Total Fees to be Paid</p>
+                              <p>
+                                {bid?.is_exemption == true
+                                  ? parseInt(
+                                      bid.fees_amount.toString() ?? "0"
+                                    ) -
+                                    parseInt(
+                                      bid?.exempt[0].feesamount.toString() ??
+                                        "0"
+                                    ) +
+                                    parseInt(bid.emd_amount.toString() ?? "0") -
+                                    parseInt(
+                                      bid?.exempt[0].emdamount.toString() ?? "0"
+                                    )
+                                  : parseInt(
+                                      bid.fees_amount.toString() ?? "0"
+                                    ) +
+                                    parseInt(bid.emd_amount.toString() ?? "0")}
+                              </p>
+                            </div>
+                            <Button onClick={create} className="w-full mt-4">
+                              Pay Fees and Submit
+                            </Button>
                           </div>
-                        )}
-                        <div className="mt-4"></div>
-                        <Separator />
-                        <div className="flex justify-between">
-                          <p>Total Fees to be Paid</p>
-                          <p>
-                            {bid?.is_exemption == true
-                              ? parseInt(bid.fees_amount.toString() ?? "0") -
-                                parseInt(
-                                  bid?.exempt[0].feesamount.toString() ?? "0"
-                                ) +
-                                parseInt(bid.emd_amount.toString() ?? "0") -
-                                parseInt(
-                                  bid?.exempt[0].emdamount.toString() ?? "0"
-                                )
-                              : parseInt(bid.fees_amount.toString() ?? "0") +
-                                parseInt(bid.emd_amount.toString() ?? "0")}
-                          </p>
-                        </div>
-                        <Button onClick={create} className="w-full mt-4">
-                          Pay Fees and Submit
-                        </Button>
-                      </div>
+                        </>
+                      )}
                     </>
                   )}
                 </>
               ) : (
                 <>
-                  {isApplied == true ? (
-                    <>
-                      <div className="bg-white rounded-sm shadow-sm p-4 my-2 flex-1">
-                        <p className="text-gray-500 text-center">
-                          User Submitted Bid Information
-                        </p>
-                        <Separator />
-                        <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
-                          <h1>Minimum Bid:</h1>
-                          <p>{bid.min_bid_amount}</p>
-                        </div>
-
-                        <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
-                          <h1>Min Bid Increment:</h1>
-                          <p>{bid.min_bid_increment}</p>
-                        </div>
-                        {bid.is_open == true && (
-                          <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
-                            <h1>Current Bid:</h1>
-                            <p>{bid.max_bid_amount}</p>
-                          </div>
-                        )}
-
-                        <div className="flex justify-between mt-2">
-                          <p>User Bid Amount</p>
-                          <p>{bidTransact.amount}</p>
-                        </div>
-
-                        <div className="flex justify-between mt-2">
-                          <p>Fees Paid</p>
-                          <p>{bid.fees_amount}</p>
-                        </div>
-                        {bid?.is_exemption == true && (
-                          <div className="flex justify-between mt-2">
-                            <p>Exempted Fees Paid</p>
-                            <p>-{bid?.exempt[0].feesamount}</p>
-                          </div>
-                        )}
-                        <div className="flex justify-between mt-2">
-                          <p>Emd Amount Paid</p>
-                          <p>{bid.emd_amount}</p>
-                        </div>
-                        {bid?.is_exemption == true && (
-                          <div className="flex justify-between mt-2">
-                            <p>Exempted Emd Amount Paid</p>
-                            <p>-{bid?.exempt[0].emdamount}</p>
-                          </div>
-                        )}
-                        <div className="mt-4"></div>
-                        <Separator />
-                        <div className="flex justify-between">
-                          <p>Total Amount Paid</p>
-                          <p>
-                            {bid?.is_exemption == true
-                              ? parseInt(bid.fees_amount.toString() ?? "0") -
-                                parseInt(
-                                  bid?.exempt[0].feesamount.toString() ?? "0"
-                                ) +
-                                parseInt(bid.emd_amount.toString() ?? "0") -
-                                parseInt(
-                                  bid?.exempt[0].emdamount.toString() ?? "0"
-                                )
-                              : parseInt(bid.fees_amount.toString() ?? "0") +
-                                parseInt(bid.emd_amount.toString() ?? "0")}
-                          </p>
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="bg-white rounded-sm shadow-sm p-4 my-2 flex-1">
-                        <p className="text-gray-500 text-center">
-                          User Submitted Bid Information
-                        </p>
-                        <Separator />
-                        <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
-                          <h1>Minimum Bid:</h1>
-                          <p>{bid.min_bid_amount}</p>
-                        </div>
-
-                        <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
-                          <h1>Min Bid Increment:</h1>
-                          <p>{bid.min_bid_increment}</p>
-                        </div>
-                        {bid.is_open == true && (
-                          <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
-                            <h1>Current Bid:</h1>
-                            <p>{bid.max_bid_amount}</p>
-                          </div>
-                        )}
-                        <div className="grid items-center gap-1.5 w-full mt-4">
-                          <Label htmlFor="minbid">Enter Bid Amount</Label>
-                          <Input
-                            id="minbid"
-                            type="text"
-                            className="w-full"
-                            ref={amount}
-                            onChange={handleNumberChange}
-                          />
-                        </div>
-
-                        <div className="flex justify-between mt-2">
-                          <p>Fees</p>
-                          <p>{bid.fees_amount}</p>
-                        </div>
-                        {bid?.is_exemption == true && (
-                          <div className="flex justify-between mt-2">
-                            <p>Exempted Fees</p>
-                            <p>-{bid?.exempt[0].feesamount}</p>
-                          </div>
-                        )}
-                        <div className="flex justify-between mt-2">
-                          <p>Emd Amount</p>
-                          <p>{bid.emd_amount}</p>
-                        </div>
-                        {bid?.is_exemption == true && (
-                          <div className="flex justify-between mt-2">
-                            <p>Exempted Emd Amount</p>
-                            <p>-{bid?.exempt[0].emdamount}</p>
-                          </div>
-                        )}
-                        <div className="mt-4"></div>
-                        <Separator />
-                        <div className="flex justify-between">
-                          <p>Total Fees to be Paid</p>
-                          <p>
-                            {bid?.is_exemption == true
-                              ? parseInt(bid.fees_amount.toString() ?? "0") -
-                                parseInt(
-                                  bid?.exempt[0].feesamount.toString() ?? "0"
-                                ) +
-                                parseInt(bid.emd_amount.toString() ?? "0") -
-                                parseInt(
-                                  bid?.exempt[0].emdamount.toString() ?? "0"
-                                )
-                              : parseInt(bid.fees_amount.toString() ?? "0") +
-                                parseInt(bid.emd_amount.toString() ?? "0")}
-                          </p>
-                        </div>
-                        <Button onClick={create} className="w-full mt-4">
-                          Pay Fees and Submit
-                        </Button>
-                      </div>
-                    </>
-                  )}
+                  <div className="bg-white rounded-sm shadow-sm p-4 my-2 flex-1">
+                    <p className="text-gray-500 text-center">
+                      User Submitted Bid Information
+                    </p>
+                    <Separator />
+                    <div className="mt-4">
+                      Your are not applicable for this bid. Please Submit required document as per bid requirement.
+                    </div>
+                  </div>
                 </>
               )}
-
-              {/* <div className="bg-white rounded-sm shadow-sm p-4 my-2 flex-1">
-                <p className="text-gray-500 text-center">
-                  User Submitted Bid Information
-                </p>
-                <Separator />
-                <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
-                  <h1>Minimum Bid:</h1>
-                  <p>{bid.min_bid_amount}</p>
-                </div>
-
-                <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
-                  <h1>Min Bid Increment:</h1>
-                  <p>{bid.min_bid_increment}</p>
-                </div>
-                {bid.is_open == true && (
-                  <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
-                    <h1>Current Bid:</h1>
-                    <p>{bid.max_bid_amount}</p>
-                  </div>
-                )}
-                <div className="grid items-center gap-1.5 w-full mt-4">
-                  <Label htmlFor="minbid">Enter Bid Amount</Label>
-                  <Input
-                    id="minbid"
-                    type="text"
-                    className="w-full"
-                    ref={amount}
-                    onChange={handleNumberChange}
-                  />
-                </div>
-
-                <div className="flex justify-between mt-2">
-                  <p>Fees</p>
-                  <p>{bid.fees_amount}</p>
-                </div>
-                {bid?.is_exemption == true && (
-                  <div className="flex justify-between mt-2">
-                    <p>Exempted Fees</p>
-                    <p>-{bid?.exempt[0].feesamount}</p>
-                  </div>
-                )}
-                <div className="flex justify-between mt-2">
-                  <p>Emd Amount</p>
-                  <p>{bid.emd_amount}</p>
-                </div>
-                {bid?.is_exemption == true && (
-                  <div className="flex justify-between mt-2">
-                    <p>Exempted Emd Amount</p>
-                    <p>-{bid?.exempt[0].emdamount}</p>
-                  </div>
-                )}
-                <div className="mt-4"></div>
-                <Separator />
-                <div className="flex justify-between">
-                  <p>Total Fees to be Paid</p>
-                  <p>
-                    {bid?.is_exemption == true
-                      ? parseInt(bid.fees_amount.toString() ?? "0") -
-                        parseInt(bid?.exempt[0].feesamount.toString() ?? "0") +
-                        parseInt(bid.emd_amount.toString() ?? "0") -
-                        parseInt(bid?.exempt[0].emdamount.toString() ?? "0")
-                      : parseInt(bid.fees_amount.toString() ?? "0") +
-                        parseInt(bid.emd_amount.toString() ?? "0")}
-                  </p>
-                </div>
-                <Button onClick={create} className="w-full mt-4">
-                  Pay Fees and Submit
-                </Button>
-              </div> */}
             </div>
           </>
         )}

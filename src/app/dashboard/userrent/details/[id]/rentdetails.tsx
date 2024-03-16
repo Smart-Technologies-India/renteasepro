@@ -89,7 +89,6 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
       if (rentTransactresponse.status) {
         setRentTransact(rentTransactresponse.data as rent_transact[]);
       }
-      console.log(rentTransactresponse.data);
       setLoading(false);
     };
     init();

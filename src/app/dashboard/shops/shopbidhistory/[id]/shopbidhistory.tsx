@@ -92,7 +92,7 @@ const ShopBidHistoryView = (props: ShopBidHistoryViewProps) => {
                   <TableCell>{bid.status}</TableCell>
                   <TableCell className="text-right">
                     <Link
-                      href={`/dashboard/bids/details/${bid.id}`}
+                      href={`/dashboard/bids/userbidinfo/${bid.id}`}
                       className="bg-green-500 hover:bg-green-500 py-1 px-4 rounded-md text-white"
                     >
                       View

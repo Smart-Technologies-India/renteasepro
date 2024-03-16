@@ -7,7 +7,7 @@ const { mkdir } = require("fs/promises");
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
-const port = 3000;
+const port = 9999;
 
 // when using middleware `hostname` and `port` must be provided below
 const app = next({ dev, hostname, port });

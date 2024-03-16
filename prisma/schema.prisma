@@ -65,6 +65,7 @@ enum BidTransact {
   ACCEPTED
   REJECTED
   INACTIVE
+  WINNINGBID
 }
 
 enum ExemptFor {
@@ -366,6 +367,7 @@ model bid {
   is_msme              Boolean        @default(false)
   is_exemption         Boolean        @default(false)
   is_open              Boolean        @default(false)
+  is_auction           Boolean        @default(false) // if true then it is auction else it is tender
   is_tribal            Boolean        @default(false)
   is_sc_st             Boolean        @default(false)
   remarks              String?        @db.MediumText
@@ -441,35 +443,35 @@ model organization {
 }
 
 model bid_transact {
-  id                 Int           @id @default(autoincrement())
-  bid                bid           @relation(fields: [bidId], references: [id])
-  bidId              Int
-  user               user          @relation(fields: [userId], references: [id])
-  userId             Int
-  shop               shop          @relation(fields: [shopId], references: [id])
-  shopId             Int
-  amount             Int           @db.MediumInt
-  iswinningbid       Boolean?
-  bidrejected        Boolean?
-  rejectedreason     String?       @db.MediumText
-  isexempt           Boolean?
-  exemptcategory     String?       @db.MediumText
-  exemptdocurl       String?       @db.MediumText
-  biddocstatus       Boolean?
-  biddocrejectreason String?       @db.MediumText
-  transaction_date   DateTime      @default(now())
-  remarks            String?       @db.MediumText
-  status             BidTransact   @default(PENDING)
-  createdAt          DateTime      @default(now())
-  createdBy          user          @relation("bid_transact_createdBy_userId", fields: [createdById], references: [id])
-  createdById        Int
-  updatedAt          DateTime      @updatedAt
-  updatedBy          user?         @relation("bid_transact_updatedBy_userId", fields: [updatedById], references: [id])
-  updatedById        Int?
-  deletedAt          DateTime?
-  deletedBy          user?         @relation("bid_transact_deletedBy_userId", fields: [deletedById], references: [id])
-  deletedById        Int?
-  file_upload        file_upload[]
+  id               Int           @id @default(autoincrement())
+  bid              bid           @relation(fields: [bidId], references: [id])
+  bidId            Int
+  user             user          @relation(fields: [userId], references: [id])
+  userId           Int
+  shop             shop          @relation(fields: [shopId], references: [id])
+  shopId           Int
+  amount           Int           @db.MediumInt
+  iswinningbid     Boolean?
+  bidrejected      Boolean?
+  rejectedreason   String?       @db.MediumText
+  isexempt         Boolean?
+  exemptcategory   String?       @db.MediumText
+  exemptdocurl     String?       @db.MediumText
+  biddocstatus     Boolean?
+  biddocreason     String?       @db.MediumText
+  transaction_date DateTime      @default(now())
+  remarks          String?       @db.MediumText
+  status           BidTransact   @default(PENDING)
+  createdAt        DateTime      @default(now())
+  createdBy        user          @relation("bid_transact_createdBy_userId", fields: [createdById], references: [id])
+  createdById      Int
+  updatedAt        DateTime      @updatedAt
+  updatedBy        user?         @relation("bid_transact_updatedBy_userId", fields: [updatedById], references: [id])
+  updatedById      Int?
+  deletedAt        DateTime?
+  deletedBy        user?         @relation("bid_transact_deletedBy_userId", fields: [deletedById], references: [id])
+  deletedById      Int?
+  file_upload      file_upload[]
 }
 
 model exempt {

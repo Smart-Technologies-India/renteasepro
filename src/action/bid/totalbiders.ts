@@ -25,14 +25,14 @@ const TotalBidders = async (
       return {
         status: false,
         data: null,
-        message: "There is no Biders. Please try again.",
+        message: "There is no Bidders. Please try again.",
         functionname: "TotalBidders",
       };
 
     return {
       status: true,
       data: total_biders.length,
-      message: "Bid Total Biders data get successfully",
+      message: "Bid Total Bidders data get successfully",
       functionname: "TotalBidders",
     };
   } catch (e) {

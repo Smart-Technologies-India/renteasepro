@@ -13,7 +13,7 @@ const GetUser = async (
 ): Promise<ApiResponseType<user | null>> => {
   try {
     const user = await prisma.user.findFirst({
-      where: { id: payload.id, status: "ACTIVE" },
+      where: { id: parseInt(payload.id.toString() ?? "0"), status: "ACTIVE" },
     });
 
     if (!user)

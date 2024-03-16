@@ -2,13 +2,15 @@
 
 import GetBid from "@/action/bid/getbid";
 import GetBidTran from "@/action/bid_transact/getbidtransact";
+import GetUser from "@/action/user/getuser";
 import BackButton from "@/components/backbutton";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { formatDateTime, formateDate } from "@/utils/methods";
-import { ExemptFor, bid, bid_transact, exempt } from "@prisma/client";
+import { ExemptFor, bid, bid_transact, exempt, user } from "@prisma/client";
 import { getCookie } from "cookies-next";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const getExemptfor = (value: ExemptFor): string => {
@@ -32,6 +34,8 @@ interface UserBidInfoViewProps {
 
 const UserBidInfoView = (props: UserBidInfoViewProps) => {
   const userid: number = parseInt(getCookie("id") ?? "0");
+  const router = useRouter();
+  const [user, setUser] = useState<user>();
 
   const [isLoading, setLoading] = useState<boolean>(true);
   const [bid, setBid] = useState<any>();
@@ -42,20 +46,24 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
       setLoading(true);
 
       const bidtranresponse = await GetBidTran({
-        id: parseInt(props.bidid.toString()),
+        id: props.bidid,
       });
       if (bidtranresponse.status) {
         setBidTran(bidtranresponse.data ?? ({} as bid_transact));
       }
 
-      const bidresponse = await GetBid({ id: bidtranresponse.data!.bidId });
+      const bidresponse = await GetBid({ id: props.bidid });
       if (bidresponse.status) {
         setBid(bidresponse.data ?? ({} as bid));
+      }
+      const userresponse = await GetUser({ id: userid });
+      if (userresponse.status) {
+        setUser(userresponse.data ?? ({} as user));
       }
       setLoading(false);
     };
     init();
-  }, [props.bidid]);
+  }, [props.bidid, userid]);
 
   const [page, setPage] = useState<number>(0);
   const maxpage = 4;
@@ -84,6 +92,25 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
         <div className="items-center gap-4 flex">
           <BackButton />
           <h1 className="text-[#162f57] text-2xl font-semibold">Bid Details</h1>
+          <div className="grow"></div>
+          {user?.role === "ADMIN" && (
+            <>
+              <Button
+                className="bg-green-500 hover:bg-green-500 h-auto"
+                onClick={() => router.push("/dashboard/bids")}
+              >
+                Edit Bid
+              </Button>
+              <Button
+                className="bg-green-500 hover:bg-green-500 h-auto"
+                onClick={() =>
+                  router.push(`/dashboard/bids/biderslist/${bid?.id}`)
+                }
+              >
+                View All Bidders
+              </Button>
+            </>
+          )}
         </div>
 
         <p className="text-sm mt-4 mb-2">
@@ -180,7 +207,7 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
                   <h1 className="text-center">Minimum Bid:</h1>
                   <p className="text-center">{bid.min_bid_amount}</p>
                 </div>
-                {bid.is_open == true && (
+                {bid.is_auction == true && (
                   <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                     <h1 className="text-center">Current Bid:</h1>
                     <p className="text-center">{bid.max_bid_amount}</p>
@@ -257,6 +284,15 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
 
                 <h1 className="mt-2">- Allowed Bidder Category</h1>
                 <div className="flex gap-2 flex-wrap items-center mt-4">
+                  {bid.is_open == true ? (
+                    <>
+                      <div className="bg-gray-100 rounded-sm shadow py-1 px-4 text-xs">
+                        Open Bid
+                      </div>
+                    </>
+                  ) : (
+                    <></>
+                  )}
                   {bid.is_woman == true ? (
                     <>
                       <div className="bg-gray-100 rounded-sm shadow py-1 px-4 text-xs">
@@ -360,14 +396,20 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
                   </Button>
                 </div>
               </div>
-              <div className="bg-white rounded-sm shadow-sm p-4 my-2 flex-1">
-                <p className="text-gray-500 text-center">
-                  User Submitted Bid Information
-                </p>
-                <Separator />
-                <h1 className="mt-2">Amount:</h1>
-                <p>- {bidtran.amount.toString()}</p>
-              </div>
+              {user?.role === "ADMIN" ? (
+                <></>
+              ) : (
+                <>
+                  <div className="bg-white rounded-sm shadow-sm p-4 my-2 flex-1">
+                    <p className="text-gray-500 text-center">
+                      User Submitted Bid Information
+                    </p>
+                    <Separator />
+                    <h1 className="mt-2">Amount:</h1>
+                    <p>- {bidtran.amount.toString()}</p>
+                  </div>
+                </>
+              )}
             </div>
           </>
         )}
