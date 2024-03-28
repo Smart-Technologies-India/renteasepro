@@ -11,12 +11,37 @@ import {
 import { useEffect, useState } from "react";
 import { getCookie } from "cookies-next";
 import { BidTransact } from "@prisma/client";
-import Link from "next/link";
+import { capitalcase } from "@/utils/methods";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { SolarAltArrowDownLinear } from "@/components/icons";
+import { useRouter } from "next/navigation";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import TextArea from "antd/es/input/TextArea";
+import { toast } from "react-toastify";
+import RejectUserBid from "@/action/bid_transact/rejactuserbid";
 
 const UserBidHistoryPage = () => {
   const id: number = parseInt(getCookie("id") ?? "0");
   const [isLoading, setIsLoading] = useState(true);
-
+  const router = useRouter();
   const [category, setCategory] = useState<string[]>([
     "All",
     "Pending",
@@ -28,6 +53,10 @@ const UserBidHistoryPage = () => {
   const [filterbid, setFilterbid] = useState<any[]>([]);
 
   const [bids, setBids] = useState<any[]>([]);
+
+  const [bidid, setBidid] = useState<number>(0);
+  const [isBox, setIsBox] = useState<boolean>(false);
+  const [rejectReason, setRejectReason] = useState<string>("");
 
   const filtershopbycategory = (category: string) => {
     if (category === "All") {
@@ -68,6 +97,33 @@ const UserBidHistoryPage = () => {
     init();
   }, [id]);
 
+  const recjectBid = async () => {
+    if (rejectReason == "" || rejectReason == undefined || rejectReason == null)
+      return toast.error("Please Enter Reject Reason");
+
+    const response = await RejectUserBid({
+      id: bidid,
+      reason: rejectReason,
+    });
+
+    if (response.status) {
+      toast.success("Bid Rejected Successfully");
+      setIsLoading(true);
+      const bidresponse = await GetUserBid({
+        userid: id,
+      });
+
+      if (bidresponse.status) {
+        setBids(bidresponse.data ?? []);
+        setFilterbid(bidresponse.data ?? []);
+      }
+
+      setIsLoading(false);
+    } else {
+      toast.error(response.message);
+    }
+  };
+
   if (isLoading)
     return (
       <div className="h-screen w-full grid place-items-center text-3xl text-gray-600 bg-gray-200">
@@ -76,7 +132,7 @@ const UserBidHistoryPage = () => {
     );
 
   return (
-    <div className="p-6 sm:p-10">
+    <div className="p-6">
       <h1 className="text-[#162f57] text-2xl font-semibold">
         Your Bid History
       </h1>
@@ -111,6 +167,7 @@ const UserBidHistoryPage = () => {
               <TableHead>Shop No.</TableHead>
               <TableHead>Bid Amount</TableHead>
               <TableHead>Applied Date</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead>Action</TableHead>
             </TableRow>
           </TableHeader>
@@ -124,13 +181,69 @@ const UserBidHistoryPage = () => {
                 <TableCell>
                   {new Date(bid_tans.createdAt).toDateString()}
                 </TableCell>
+                <TableCell>{capitalcase(bid_tans.status)}</TableCell>
                 <TableCell>
-                  <Link
-                    href={`/dashboard/bids/userbidinfo/${bid_tans.id}`}
-                    className="bg-green-500 hover:bg-green-500 py-2 px-4 rounded-md text-white text-sm font-medium cursor-pointer"
-                  >
-                    View
-                  </Link>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="gap-2 flex">
+                        <p className="font-medium text-sm">View</p>
+                        <SolarAltArrowDownLinear className="textx-2xl" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56">
+                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuGroup>
+                        <DropdownMenuItem
+                          onClick={() => {
+                            router.push(
+                              `/dashboard/shops/details/${bid_tans.shop.property.id}`
+                            );
+                          }}
+                          className="cursor-pointer"
+                        >
+                          View
+                        </DropdownMenuItem>
+
+                        {bid_tans.status === BidTransact.PENDING && (
+                          <DropdownMenuItem
+                            className="cursor-pointer"
+                            onClick={() => {
+                              setBidid(bid_tans.id);
+                              setIsBox(true);
+                            }}
+                          >
+                            Not Interested
+                          </DropdownMenuItem>
+                        )}
+                      </DropdownMenuGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  <AlertDialog open={isBox} onOpenChange={setIsBox}>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Are you sure you want to reject?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Enter Reject Reason Below
+                        </AlertDialogDescription>
+                        <TextArea
+                          value={rejectReason}
+                          onChange={(e) => setRejectReason(e.target.value)}
+                          placeholder="Enter Reject Reason"
+                          className="resize-none h-24 mt-2"
+                        ></TextArea>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={recjectBid}>
+                          Continue
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </TableCell>
               </TableRow>
             ))}

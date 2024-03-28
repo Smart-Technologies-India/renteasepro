@@ -66,6 +66,7 @@ enum BidTransact {
   REJECTED
   INACTIVE
   WINNINGBID
+  USERNOTINTERESTED
 }
 
 enum ExemptFor {
@@ -122,15 +123,25 @@ enum UserDocType {
   OTHER
 }
 
+enum BidStatus {
+  DRAFT
+  PUBLISHED
+  NOTPUBLISHED
+  OPEN
+  CANCELLED
+  RESULTDECLARED
+}
+
 model user {
   id                Int       @id @default(autoincrement())
-  username          String    @unique
-  password          String
+  username          String?   @unique
+  password          String?
   firstName         String?
   lastName          String?
-  contactone        String?
+  contactone        String?   @unique
   contacttwo        String?
   email             String?   @unique
+  otp               String?
   aadhar            String?
   pan               String?
   address           String?   @db.MediumText
@@ -372,6 +383,7 @@ model bid {
   is_sc_st             Boolean        @default(false)
   remarks              String?        @db.MediumText
   status               Status         @default(ACTIVE)
+  bid_status           BidStatus      @default(DRAFT)
   createdAt            DateTime       @default(now())
   createdBy            user           @relation("bid_createdBy_userId", fields: [createdById], references: [id])
   createdById          Int
@@ -461,6 +473,7 @@ model bid_transact {
   biddocreason     String?       @db.MediumText
   transaction_date DateTime      @default(now())
   remarks          String?       @db.MediumText
+  userremarks      String?       @db.MediumText
   status           BidTransact   @default(PENDING)
   createdAt        DateTime      @default(now())
   createdBy        user          @relation("bid_transact_createdBy_userId", fields: [createdById], references: [id])

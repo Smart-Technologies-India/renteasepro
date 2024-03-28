@@ -1,6 +1,5 @@
 import { usePathname, useRouter } from "next/navigation";
 import {
-  Fa6RegularCalendarXmark,
   Fa6RegularFileLines,
   FluentMdl2Home,
   FluentMdl2ViewDashboard,
@@ -69,7 +68,7 @@ const Sidebar = (props: SidebarProps) => {
             icco={<RiAuctionLine className="text-gray-300  w-6" />}
             name="Bids"
             path={path}
-            pathcheck={"/dashboard/bids"}
+            pathcheck={"/dashboard/userbids"}
           />
           <MenuTab
             icco={<RiAuctionLine className="text-gray-300  w-6" />}

@@ -4,6 +4,7 @@ import ApplyBid from "@/action/bid/applybid";
 import GetBid from "@/action/bid/getbid";
 import getFromUser from "@/action/bid_transact/getfromuser";
 import getUploadFileUser from "@/action/user/getuploadedfile";
+import GetUser from "@/action/user/getuser";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,7 +14,7 @@ import {
   formateDate,
   handleNumberChange,
 } from "@/utils/methods";
-import { ExemptFor, UserDocType, bid, exempt } from "@prisma/client";
+import { ExemptFor, UserDocType, bid, exempt, user } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -46,50 +47,23 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
 
   const amount = useRef<HTMLInputElement>(null);
 
-  // const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isApplied, setIsApplied] = useState<boolean>(false);
   const [bidTransact, setBidTransact] = useState<any>();
 
   const [isAplicable, setIsApplicable] = useState<boolean>(false);
 
-  // interface FileGetResponse {
-  //   status: boolean;
-  //   path: string;
-  // }
-
-  // const [getWomenFile, setGetWomenFile] = useState<FileGetResponse>({
-  //   status: false,
-  //   path: "",
-  // });
-
-  // const [getCategory, setGetCategory] = useState<FileGetResponse>({
-  //   status: false,
-  //   path: "",
-  // });
-
-  // const [getAbled, setGetAbled] = useState<FileGetResponse>({
-  //   status: false,
-  //   path: "",
-  // });
-
-  // const [getMsme, setGetMsme] = useState<FileGetResponse>({
-  //   status: false,
-  //   path: "",
-  // });
-
-  // const [getStsc, setGetStsc] = useState<FileGetResponse>({
-  //   status: false,
-  //   path: "",
-  // });
-
-  // const [getTribal, setGetTribal] = useState<FileGetResponse>({
-  //   status: false,
-  //   path: "",
-  // });
+  const [user, setUser] = useState<user>();
 
   useEffect(() => {
     const init = async () => {
       setLoading(true);
+
+      const userresponse = await GetUser({
+        id: userid,
+      });
+      if (userresponse.status) {
+        setUser(userresponse.data!);
+      }
 
       const bidresponse = await GetBid({
         id: parseInt(props.bidid.toString()),
@@ -141,6 +115,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
       });
 
       const setApplicable = (): boolean => {
+        if (bidresponse.data.is_open) return true;
         if (womenfileresponse.status && bidresponse.data.is_woman) return true;
         if (categoryresponse.status && bidresponse.data.is_reserved)
           return true;
@@ -155,7 +130,6 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
 
       setIsApplicable(() => value);
 
-      console.log("isApplicable", value);
       // file info end here
       setLoading(false);
     };
@@ -163,7 +137,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
     init();
   }, [props.bidid, userid]);
 
-  const create = async () => {
+  const create = async (issecond: boolean) => {
     if (
       amount.current?.value === "" ||
       amount.current?.value == undefined ||
@@ -199,9 +173,11 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
       bidId: parseInt(props.bidid.toString()),
       shopId: bid?.shopId ?? 0,
       userId: parseInt(userid.toString()),
+      issecond: issecond,
     });
 
     if (!createbid.status) return toast.error(createbid.message);
+
     toast.success(createbid.message);
     router.back();
   };
@@ -229,7 +205,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
 
   return (
     <>
-      <div className="p-6 sm:p-10">
+      <div className="p-6">
         <h1 className="text-[#162f57] text-2xl font-semibold">Bid Details</h1>
         <p className="text-sm mt-4 mb-2">
           Get started by adding your Bid details below.
@@ -581,8 +557,11 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                               />
                             </div>
 
-                            <Button onClick={create} className="w-full mt-4">
-                              Pay Fees and Submit
+                            <Button
+                              onClick={() => create(true)}
+                              className="w-full mt-4"
+                            >
+                              Freeze Bid
                             </Button>
                           </div>
                         </>
@@ -662,8 +641,11 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                                     parseInt(bid.emd_amount.toString() ?? "0")}
                               </p>
                             </div>
-                            <Button onClick={create} className="w-full mt-4">
-                              Pay Fees and Submit
+                            <Button
+                              onClick={() => create(false)}
+                              className="w-full mt-4"
+                            >
+                              Pay Fees and Freeze Bid
                             </Button>
                           </div>
                         </>
@@ -820,8 +802,11 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                                     parseInt(bid.emd_amount.toString() ?? "0")}
                               </p>
                             </div>
-                            <Button onClick={create} className="w-full mt-4">
-                              Pay Fees and Submit
+                            <Button
+                              onClick={() => create(false)}
+                              className="w-full mt-4"
+                            >
+                              Pay Fees and Freeze Bid
                             </Button>
                           </div>
                         </>
@@ -837,7 +822,8 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                     </p>
                     <Separator />
                     <div className="mt-4">
-                      Your are not applicable for this bid. Please Submit required document as per bid requirement.
+                      Your are not applicable for this bid. Please Submit
+                      required document as per bid requirement.
                     </div>
                   </div>
                 </>

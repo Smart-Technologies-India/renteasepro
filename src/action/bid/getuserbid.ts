@@ -23,6 +23,10 @@ const GetUserBid = async (
         shop: { include: { property: true } },
         bid: true,
       },
+      distinct: ["bidId"],
+      orderBy: {
+        updatedAt: "desc",
+      },
     });
 
     if (!bid_transacts)

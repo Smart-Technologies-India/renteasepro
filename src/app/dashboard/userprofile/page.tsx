@@ -215,7 +215,7 @@ const UserBidsRunning = () => {
     );
 
   return (
-    <div className="p-6 sm:p-10">
+    <div className="p-6">
       <div className="flex gap-2 items-center">
         <IcBaselineAccountCircle className="text-3xl" />
         <p className="text-sm font-semibold text-gray-600">User Profile</p>
@@ -262,7 +262,7 @@ const UserBidsRunning = () => {
 
           <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
             <h1 className="text-sm text-black">Contact Two</h1>
-            <p className="text-sm font-semibold">{user?.lastName ?? "-"}</p>
+            <p className="text-sm font-semibold">{user?.contacttwo ?? "-"}</p>
           </div>
         </div>
 

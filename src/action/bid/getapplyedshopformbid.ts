@@ -4,43 +4,47 @@ import { errorToString } from "@/utils/methods";
 import { ApiResponseType } from "@/models/response";
 import prisma from "../../../prisma/database";
 
-interface GetApplyedShopFromBidPayload {
+interface GetUserRendedShopPayload {
   userid: number;
 }
 
-const GetApplyedShopFromBid = async (
-  payload: GetApplyedShopFromBidPayload
+const GetUserRendedShop = async (
+  payload: GetUserRendedShopPayload
 ): Promise<ApiResponseType<any | null>> => {
   try {
-    const bid_transaction = await prisma.bid_transact.findMany({
+    const rent_transaction = await prisma.rent_transact.findMany({
+      where: {
+        userId: payload.userid,
+      },
       include: {
         shop: { include: { property: true } },
       },
+      distinct: ["shopId", "rentId"],
     });
 
-    if (!bid_transaction)
+    if (!rent_transaction)
       return {
         status: false,
         data: null,
         message: "No Bid transaction exist for this user id. Please try again.",
-        functionname: "GetApplyedShopFromBid",
+        functionname: "GetUserRendedShop",
       };
 
     return {
       status: true,
-      data: bid_transaction,
+      data: rent_transaction,
       message: "Bid transaction get successfully",
-      functionname: "GetApplyedShopFromBid",
+      functionname: "GetUserRendedShop",
     };
   } catch (e) {
     const response: ApiResponseType<null> = {
       status: false,
       data: null,
       message: errorToString(e),
-      functionname: "GetApplyedShopFromBid",
+      functionname: "GetUserRendedShop",
     };
     return response;
   }
 };
 
-export default GetApplyedShopFromBid;
+export default GetUserRendedShop;

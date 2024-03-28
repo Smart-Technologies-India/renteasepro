@@ -4,6 +4,7 @@ import { errorToString } from "@/utils/methods";
 import { ApiResponseType } from "@/models/response";
 import { bid_transact } from "@prisma/client";
 import prisma from "../../../prisma/database";
+import { SMSType, sendSMS } from "@/utils/smsmessage";
 
 interface RejectBidTranPayload {
   id: number;
@@ -21,7 +22,12 @@ const RejectBidTran = async (
         deletedBy: null,
       },
       include: {
-        shop: true,
+        shop: {
+          include: {
+            property: true,
+          },
+        },
+        user: true,
       },
     });
 
@@ -51,6 +57,21 @@ const RejectBidTran = async (
         message: "Bid transact not updated. Please try again.",
         functionname: "RejectBidTran",
       };
+
+    const messageresponse = await sendSMS({
+      type: SMSType.BidRejected,
+      contact: bid_transact.user.contactone!,
+      propertyName: bid_transact.shop.property.name,
+    });
+
+    if (!messageresponse.status) {
+      return {
+        status: false,
+        data: null,
+        message: messageresponse.message,
+        functionname: "ApplyBid",
+      };
+    }
 
     return {
       status: true,

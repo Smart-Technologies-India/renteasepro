@@ -1,5 +1,6 @@
 "use client";
 
+import UpdateBidStatus from "@/action/bid/changebidstatus";
 import GetBid from "@/action/bid/getbid";
 import GetBidTran from "@/action/bid_transact/getbidtransact";
 import GetUser from "@/action/user/getuser";
@@ -8,10 +9,18 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { formatDateTime, formateDate } from "@/utils/methods";
-import { ExemptFor, bid, bid_transact, exempt, user } from "@prisma/client";
+import {
+  BidStatus,
+  ExemptFor,
+  bid,
+  bid_transact,
+  exempt,
+  user,
+} from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 const getExemptfor = (value: ExemptFor): string => {
   switch (value) {
@@ -40,6 +49,7 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
   const [isLoading, setLoading] = useState<boolean>(true);
   const [bid, setBid] = useState<any>();
   const [bidtran, setBidTran] = useState<any>();
+  const [editAll, setEditAll] = useState<boolean>(false);
 
   useEffect(() => {
     const init = async () => {
@@ -79,6 +89,34 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
     }
   };
 
+  const changeBidStatus = async (status: BidStatus) => {
+    const updateresponse = await UpdateBidStatus({
+      id: bid.id,
+      status: status,
+    });
+    if (updateresponse.status) {
+      toast.success(updateresponse.message);
+      setLoading(true);
+
+      const bidtranresponse = await GetBidTran({
+        id: props.bidid,
+      });
+      if (bidtranresponse.status) {
+        setBidTran(bidtranresponse.data ?? ({} as bid_transact));
+      }
+
+      const bidresponse = await GetBid({ id: props.bidid });
+      if (bidresponse.status) {
+        setBid(bidresponse.data ?? ({} as bid));
+      }
+      const userresponse = await GetUser({ id: userid });
+      if (userresponse.status) {
+        setUser(userresponse.data ?? ({} as user));
+      }
+      setLoading(false);
+    }
+  };
+
   if (isLoading)
     return (
       <div className="h-screen w-full grid place-items-center text-3xl text-gray-600 bg-gray-200">
@@ -88,21 +126,44 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
 
   return (
     <>
-      <div className="p-6 sm:p-10">
+      <div className="p-6">
         <div className="items-center gap-4 flex">
           <BackButton />
           <h1 className="text-[#162f57] text-2xl font-semibold">Bid Details</h1>
           <div className="grow"></div>
           {user?.role === "ADMIN" && (
             <>
+              {bid.bid_status == "PUBLISHED" ? (
+                <Button
+                  className="bg-rose-500 h-auto"
+                  onClick={() => changeBidStatus(BidStatus.NOTPUBLISHED)}
+                >
+                  UNPUBLISH BID
+                </Button>
+              ) : (
+                <Button
+                  className="bg-green-500 h-auto"
+                  onClick={() => changeBidStatus(BidStatus.PUBLISHED)}
+                >
+                  PUBLISH BID
+                </Button>
+              )}
+              {bid.bid_status == BidStatus.NOTPUBLISHED ||
+              bid.bid_status == BidStatus.DRAFT ? (
+                <Button
+                  className="bg-black h-auto"
+                  onClick={() =>
+                    router.push(`/dashboard/bids/editbid/${bid.id}`)
+                  }
+                >
+                  Edit Bid
+                </Button>
+              ) : (
+                <></>
+              )}
+
               <Button
-                className="bg-green-500 hover:bg-green-500 h-auto"
-                onClick={() => router.push("/dashboard/bids")}
-              >
-                Edit Bid
-              </Button>
-              <Button
-                className="bg-green-500 hover:bg-green-500 h-auto"
+                className="bg-black h-auto"
                 onClick={() =>
                   router.push(`/dashboard/bids/biderslist/${bid?.id}`)
                 }

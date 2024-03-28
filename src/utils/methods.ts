@@ -134,3 +134,11 @@ const removeDuplicates = (arr: any[]): any[] => {
 };
 
 export { removeDuplicates };
+
+const numberWithIndianFormat = (x: number) => {
+  const parts = x
+    .toLocaleString("en-IN", { maximumFractionDigits: 2 })
+    .split(".");
+  return parts.join(".");
+};
+export default numberWithIndianFormat;

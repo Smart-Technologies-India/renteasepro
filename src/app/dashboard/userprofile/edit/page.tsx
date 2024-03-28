@@ -575,7 +575,7 @@ const UserBidsRunning = () => {
     );
 
   return (
-    <div className="p-6 sm:p-10">
+    <div className="p-6">
       <div className="flex gap-2 items-center">
         <BackButton />
         <Fa6RegularPenToSquare className="text-xl" />

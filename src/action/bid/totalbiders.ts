@@ -18,8 +18,8 @@ const TotalBidders = async (
         deletedAt: null,
         deletedBy: null,
       },
+      distinct: ["userId"],
     });
-
 
     if (!total_biders)
       return {

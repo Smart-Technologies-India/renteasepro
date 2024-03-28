@@ -48,7 +48,7 @@ const ShopBidHistoryView = (props: ShopBidHistoryViewProps) => {
 
   return (
     <>
-      <div className="p-6 sm:p-10">
+      <div className="p-6">
         <div className="flex gap-4 items-center">
           <BackButton />
           <FluentMdl2Home className="text-xl" />

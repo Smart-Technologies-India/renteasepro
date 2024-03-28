@@ -4,6 +4,7 @@ import { errorToString } from "@/utils/methods";
 import { ApiResponseType } from "@/models/response";
 import prisma from "../../../prisma/database";
 import { rent } from "@prisma/client";
+import { SMSType, sendSMS } from "@/utils/smsmessage";
 
 interface CreateRentPayload {
   shopId: number;
@@ -61,6 +62,15 @@ const CreateRent = async (
       ) {
         const rent = await prisma.rent.create({
           data: data_to_update,
+          include: {
+            user: true,
+            shop: {
+              include: {
+                shop_category: true,
+                property: true,
+              },
+            },
+          },
         });
         if (!rent)
           return {
@@ -99,6 +109,23 @@ const CreateRent = async (
             functionname: "CreateRent",
           };
         }
+
+        const messageresponse = await sendSMS({
+          type: SMSType.RentIsStarted,
+          contact: rent.user.contactone!,
+          propertyName: rent.shop.property.name,
+          shopCategory: rent.shop.shop_category.name,
+        });
+
+        if (!messageresponse.status) {
+          return {
+            status: false,
+            data: null,
+            message: messageresponse.message,
+            functionname: "ApplyBid",
+          };
+        }
+
         return {
           status: true,
           data: rent,
@@ -116,6 +143,15 @@ const CreateRent = async (
     } else {
       const rent = await prisma.rent.create({
         data: data_to_update,
+        include: {
+          user: true,
+          shop: {
+            include: {
+              shop_category: true,
+              property: true,
+            },
+          },
+        },
       });
       await prisma.shop.update({
         where: {
@@ -154,6 +190,22 @@ const CreateRent = async (
           message: "Unable to create shop rent. Please try again.",
           functionname: "CreateRent",
         };
+
+      const messageresponse = await sendSMS({
+        type: SMSType.RentIsStarted,
+        contact: rent.user.contactone!,
+        propertyName: rent.shop.property.name,
+        shopCategory: rent.shop.shop_category.name,
+      });
+
+      if (!messageresponse.status) {
+        return {
+          status: false,
+          data: null,
+          message: messageresponse.message,
+          functionname: "ApplyBid",
+        };
+      }
       return {
         status: true,
         data: rent,

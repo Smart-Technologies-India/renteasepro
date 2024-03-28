@@ -37,6 +37,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { set } from "date-fns";
 
 interface BidHistoryViewProps {
   id: number;
@@ -93,33 +94,38 @@ const BidHistoryView = (props: BidHistoryViewProps) => {
   const [bidid, setBidid] = useState<number>(0);
 
   const [isHigherBidBox, setIsHigherBidBox] = useState<boolean>(false);
+  const [isOrderBox, setIsOrderBox] = useState<boolean>(false);
+  const [isEndBox, setIsEndBox] = useState<boolean>(false);
 
-  const setWinning = async (id: number) => {
+  const setWinning = async (id: number, isend: boolean) => {
     const ishigherbid = await isHigherBid({ id: id });
     if (!ishigherbid.status) {
       toast.error(ishigherbid.message);
       return;
     }
 
+    if (!isend) return setIsEndBox(true);
+
     if (ishigherbid.data) {
-      const response = await setWinner({ id: id });
-      if (response.status) {
-        toast.success(response.message);
-      } else {
-        toast.error(response.message);
-      }
+      setIsOrderBox(true);
+      // const response = await setWinner({ id: id });
+      // if (response.status) {
+      //   toast.success(response.message);
+      // } else {
+      //   toast.error(response.message);
+      // }
 
-      setIsLoading(true);
-      const bidresponse = await GetFromBidId({
-        id: props.id,
-      });
+      // setIsLoading(true);
+      // const bidresponse = await GetFromBidId({
+      //   id: props.id,
+      // });
 
-      if (bidresponse.status) {
-        setBids(bidresponse.data ?? []);
-        setFilterbid(bidresponse.data ?? []);
-      }
+      // if (bidresponse.status) {
+      //   setBids(bidresponse.data ?? []);
+      //   setFilterbid(bidresponse.data ?? []);
+      // }
 
-      setIsLoading(false);
+      // setIsLoading(false);
     } else {
       setIsHigherBidBox(true);
     }
@@ -129,6 +135,9 @@ const BidHistoryView = (props: BidHistoryViewProps) => {
     const response = await setWinner({ id: bidid });
     if (response.status) {
       toast.success(response.message);
+      router.push(
+        `/dashboard/shops/createrent/${response.data?.shopId}/${response.data?.userId}`
+      );
     } else {
       toast.error(response.message);
     }
@@ -154,7 +163,7 @@ const BidHistoryView = (props: BidHistoryViewProps) => {
     );
 
   return (
-    <div className="p-6 sm:p-10">
+    <div className="p-6">
       <div className="items-center flex gap-4">
         <BackButton />
         <h1 className="text-[#162f57] text-2xl font-semibold">Bidders List</h1>
@@ -218,11 +227,11 @@ const BidHistoryView = (props: BidHistoryViewProps) => {
                       <DropdownMenuSeparator />
                       <DropdownMenuGroup>
                         <DropdownMenuItem
-                          onClick={() =>
+                          onClick={() => {
                             router.push(
                               `/dashboard/userprofile/viewprofile/${bid_tans.user.id}/${bid_tans.id}`
-                            )
-                          }
+                            );
+                          }}
                           className="cursor-pointer"
                         >
                           View user Docs
@@ -232,8 +241,11 @@ const BidHistoryView = (props: BidHistoryViewProps) => {
                             <DropdownMenuItem
                               className="cursor-pointer"
                               onClick={() => {
-                                setWinning(bid_tans.id);
+                                const end_date = bid_tans.bid.bidenddate;
+                                const current_date = new Date();
+                                const is_end = end_date < current_date;
                                 setBidid(bid_tans.id);
+                                setWinning(bid_tans.id, is_end);
                               }}
                             >
                               Approve as Winner
@@ -256,7 +268,7 @@ const BidHistoryView = (props: BidHistoryViewProps) => {
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                           This is not the higest bid. Are you sure you want to
-                          approve this bid as winner?
+                          approve this bid as winner and generate rent order?
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
@@ -264,6 +276,42 @@ const BidHistoryView = (props: BidHistoryViewProps) => {
                         <AlertDialogAction onClick={setaswinnder}>
                           Continue
                         </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+
+                  <AlertDialog open={isOrderBox} onOpenChange={setIsOrderBox}>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Are you absolutely sure?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to approve this bid as winner
+                          and generate rent order?
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={setaswinnder}>
+                          Continue
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+
+                  <AlertDialog open={isEndBox} onOpenChange={setIsEndBox}>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Warning! Bid has not ended yet.
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Kindly wait till the bid ends to approve the winner.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>

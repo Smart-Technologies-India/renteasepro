@@ -1,12 +1,13 @@
 "use client";
 
 import { capitalcase } from "@/utils/methods";
-import { ShopStatus, property, shop, user } from "@prisma/client";
+import { shop, user } from "@prisma/client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getCookie } from "cookies-next";
 import GetUser from "@/action/user/getuser";
-import GetApplyedShopFromBid from "@/action/bid/getapplyedshopformbid";
+import GetUserRendedShop from "@/action/bid/getapplyedshopformbid";
+import { toast } from "react-toastify";
 
 const BidPropertiesView = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -26,7 +27,9 @@ const BidPropertiesView = () => {
       setFilterShop(shops);
     } else {
       const temp = shops.filter((item: any) => {
-        return capitalcase(item.property.name) === category;
+        return (
+          item.property.name.toString().toLowerCase() === category.toLowerCase()
+        );
       });
       setFilterShop(temp);
     }
@@ -41,20 +44,24 @@ const BidPropertiesView = () => {
         setUser(userresponse.data!);
       }
 
-      const bid_transaction = await GetApplyedShopFromBid({ userid: userid });
-      if (bid_transaction.status) {
-      }
+      const rent_transaction = await GetUserRendedShop({ userid: userid });
+      if (!rent_transaction.status)
+        return toast.error(rent_transaction.message);
 
-      const propertry = bid_transaction.data?.map((item: any) => {
+      console.log(rent_transaction.data);
+
+      const propertry = rent_transaction.data?.map((item: any) => {
         return item.shop.property.name;
       });
+
       // remove dubplicate property name
       const unique = propertry?.filter(
         (v: any, i: any, a: any) => a.indexOf(v) === i
       );
+
       setCategory(["All", ...unique]);
 
-      const shopdata = bid_transaction.data?.map((item: any) => {
+      const shopdata = rent_transaction.data?.map((item: any) => {
         return item.shop;
       });
 
@@ -62,6 +69,7 @@ const BidPropertiesView = () => {
       const uniqueShop = shopdata?.filter(
         (v: any, i: any, a: any) => a.indexOf(v) === i
       );
+
       setShops(uniqueShop);
       setFilterShop(uniqueShop ?? []);
 
@@ -78,7 +86,7 @@ const BidPropertiesView = () => {
     );
 
   return (
-    <div className="p-6 sm:p-10">
+    <div className="p-6">
       <h1 className="text-[#162f57] text-2xl font-semibold">
         Property Details
       </h1>
@@ -124,7 +132,7 @@ const BidPropertiesView = () => {
           </div>
         </>
       ) : (
-        <p className="text-sm mt-4 mb-2">You Haven&apos;t Property .</p>
+        <p className="text-sm mt-4 mb-2">You Have No Rented Property .</p>
       )}
     </div>
   );

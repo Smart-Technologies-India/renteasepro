@@ -1,5 +1,6 @@
 "use client";
 import GetBidProperty from "@/action/bid/getbidproperty";
+import GetLiveBid from "@/action/bid/getlivebid";
 import {
   FluentMdl2Home,
   FluentMdl2Search,
@@ -12,8 +13,8 @@ import { useEffect, useState } from "react";
 
 const UserBidsRunning = () => {
   const userid: number = parseInt(getCookie("id") ?? "0");
-
   const router = useRouter();
+
   const [isLoading, setLoading] = useState<boolean>(true);
 
   const [properties, setProperties] = useState<any[]>([]);
@@ -21,7 +22,7 @@ const UserBidsRunning = () => {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
-      const propertyrunningbid = await GetBidProperty({});
+      const propertyrunningbid = await GetLiveBid({});
       if (propertyrunningbid.status) {
         setProperties(propertyrunningbid.data ?? []);
       }
@@ -39,7 +40,7 @@ const UserBidsRunning = () => {
     );
 
   return (
-    <div className="p-6 sm:p-10">
+    <div className="p-6">
       <div className="flex gap-4 items-center">
         <FluentMdl2Home className="text-xl" />
         <p className="text-xl text-gray-600">Running Bids</p>
@@ -89,7 +90,7 @@ interface CardDetailsProps {
 const CardDetails = (props: CardDetailsProps) => {
   return (
     <Link
-      href={`/dashboard/bids/property/${props.id}`}
+      href={`/dashboard/userbids/property/${props.id}`}
       className="rounded-md my-4 bg-white w-full p-4 flex gap-4 items-center hover:shadow-lg hover:scale-105 transition-all duration-300 cursor-pointer"
     >
       {props.icon}

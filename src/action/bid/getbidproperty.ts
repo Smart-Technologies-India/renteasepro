@@ -2,10 +2,8 @@
 
 import { errorToString } from "@/utils/methods";
 import { ApiResponseType } from "@/models/response";
-import { bid, property, shop } from "@prisma/client";
 import prisma from "../../../prisma/database";
-import { it } from "node:test";
-import { Dumbbell } from "lucide-react";
+
 
 interface GetBidPropertyPayload {}
 

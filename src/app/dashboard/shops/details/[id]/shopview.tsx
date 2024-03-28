@@ -1,13 +1,14 @@
 "use client";
 
 import GetBidByShop from "@/action/bid/getbidbyshop";
+import IsWinnderDeclared from "@/action/bid/iswinnerdeclared";
 import TotalBidders from "@/action/bid/totalbiders";
 import IsUserAppliedForBid from "@/action/bid_transact/isuserapplied";
 import isShopRented from "@/action/rent/isrentcreateonshop";
-import GetFromRent from "@/action/rent_transact/getfromrent";
 import GetFromShop from "@/action/rent_transact/getfromshop";
 import GetShop from "@/action/shop/getshop";
 import GetUser from "@/action/user/getuser";
+import BackButton from "@/components/backbutton";
 import {
   AntDesignCheckOutlined,
   Fa6RegularCalendarXmark,
@@ -15,16 +16,10 @@ import {
   MaterialSymbolsCalendarClockRounded,
 } from "@/components/icons";
 import { capitalcase } from "@/utils/methods";
-import {
-  RentTransactStatus,
-  bid,
-  rent_transact,
-  shop,
-  user,
-} from "@prisma/client";
+import { RentTransactStatus, rent_transact, shop, user } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 interface ShowShopProps {
   id: number;
 }
@@ -37,56 +32,10 @@ const ShopView = (props: ShowShopProps) => {
     status: RentTransactStatus;
   }
 
-  const items: ItemsType[] = [
-    {
-      name: "January",
-      status: RentTransactStatus.INACTIVE,
-    },
-    {
-      name: "February",
-      status: RentTransactStatus.INACTIVE,
-    },
-    {
-      name: "March",
-      status: RentTransactStatus.PAID,
-    },
-    {
-      name: "April",
-      status: RentTransactStatus.PAID,
-    },
-    {
-      name: "May",
-      status: RentTransactStatus.MONTHCROSS,
-    },
-    {
-      name: "June",
-      status: RentTransactStatus.MONTHCROSS,
-    },
-    {
-      name: "July",
-      status: RentTransactStatus.LATE,
-    },
-    {
-      name: "August",
-      status: RentTransactStatus.LATE,
-    },
-    {
-      name: "September",
-      status: RentTransactStatus.DUE,
-    },
-    {
-      name: "October",
-      status: RentTransactStatus.DUE,
-    },
-    {
-      name: "November",
-      status: RentTransactStatus.VERYLATE,
-    },
-    {
-      name: "December",
-      status: RentTransactStatus.VERYLATE,
-    },
-  ];
+  interface yearsDetails {
+    year: number;
+    rentdetails: ItemsType[];
+  }
 
   const [isLoading, setIsLoading] = useState(true);
   const [shop, setShop] = useState<shop>();
@@ -99,9 +48,47 @@ const ShopView = (props: ShowShopProps) => {
   const [totalBidder, setTotalBidder] = useState<number>(0);
 
   const [isrented, setIsRented] = useState<boolean>(false);
-  const [rentdata, setRentdata] = useState<rent_transact[]>([]);
+
+  const [rentdetails, setRentDetails] = useState<yearsDetails[]>([]);
+
+  const [isWinnerDeclared, setIsWinnerDeclared] = useState<boolean>(false);
 
   useEffect(() => {
+    const setRentMonthDetails = (value: any[]) => {
+      const years: number[] = value.map((item) => item.formonth.getFullYear());
+      const uniqueyears = years.filter((value, index, self) => {
+        return self.indexOf(value) === index;
+      });
+
+      const currentYear = new Date().getFullYear(); // Get the current year
+
+      const monthdetails: yearsDetails[] = uniqueyears.map((year) => {
+        const rentdetails = [];
+        for (let i = 0; i < 12; i++) {
+          const monthDate = new Date(year, i, 1);
+          const monthStatus = value.find(
+            (item) =>
+              item.formonth.getFullYear() === year &&
+              item.formonth.getMonth() === i
+          );
+          const isActive =
+            (year === currentYear && i <= new Date().getMonth()) ||
+            year < currentYear; // Determine if month should be active or inactive
+          rentdetails.push({
+            name: monthDate.toLocaleString("default", { month: "long" }),
+            status: monthStatus ? monthStatus.status : "INACTIVE", // Set status based on existence in value array
+            isActive: isActive,
+          });
+        }
+
+        return {
+          year: year,
+          rentdetails: rentdetails,
+        };
+      });
+
+      setRentDetails(monthdetails);
+    };
     const init = async () => {
       setIsLoading(true);
 
@@ -156,8 +143,16 @@ const ShopView = (props: ShowShopProps) => {
         });
 
         if (rentresponse.status) {
-          setRentdata(rentresponse.data ?? []);
+          setRentMonthDetails(rentresponse.data ?? []);
         }
+      }
+
+      const isWinnerDeclaredResponse = await IsWinnderDeclared({
+        bidid: bidresponse.data?.id ?? 0,
+      });
+
+      if (isWinnerDeclaredResponse.status) {
+        setIsWinnerDeclared(isWinnerDeclaredResponse.data!);
       }
 
       setIsLoading(false);
@@ -173,11 +168,15 @@ const ShopView = (props: ShowShopProps) => {
     );
 
   return (
-    <div className="p-6 sm:p-10">
+    <div className="p-6">
+      <div className="flex gap-4 items-center mb-4">
+        <BackButton />
+        <h1 className="text-[#162f57] text-2xl font-semibold">Shop Details</h1>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
         <div className="bg-white rounded-sm shadow-sm">
           <p className="text-xl p-2 border-b border-gray-300 font-semibold">
-            Shops Details
+            Details
           </p>
           <p className="px-2 text-sm">Shop Number : {shop?.shopNumber}</p>
           <p className="px-2 text-sm">Shop Size : {shop?.shopSize}</p>
@@ -236,16 +235,28 @@ const ShopView = (props: ShowShopProps) => {
 
       {bid && (
         <div className="bg-white rounded-sm shadow-sm pb-4 mt-4">
-          <div className="border-b border-gray-300 flex items-center pr-2">
+          <div className="border-b border-gray-300 flex items-center pr-2 gap-2">
             <p className="text-xl p-2  font-semibold">
-              Bid Details -{" "}
+              Bid Details -
               <span className="text-sm">
                 [{bid.is_auction == true ? "Auction Bid" : "Tender Bid"}]
               </span>
             </p>
             <div className="grow"></div>
 
-            {user?.role === "USER" ? (
+            {isWinnerDeclared && (
+              <h1 className="border-green-500 border-2 rounded text-green-500 bg-green-500 bg-opacity-10  px-2 py-1 text-sm">
+                Winner Declared
+              </h1>
+            )}
+
+            {bid.bidenddate < new Date() || bid.bidstartdate > new Date() ? (
+              <h1 className="border-rose-500 border-2 rounded text-rose-500 bg-rose-500 bg-opacity-10  px-2 py-1 text-sm">
+                Bid Ended
+              </h1>
+            ) : isWinnerDeclared ? (
+              <></>
+            ) : user?.role === "USER" ? (
               bid.is_auction == true ? (
                 <Link
                   href={`/dashboard/bids/apply/${bid.id}`}
@@ -275,7 +286,6 @@ const ShopView = (props: ShowShopProps) => {
                 >
                   View Bid Details
                 </Link>
-                <div className="w-4"></div>
                 <Link
                   href={`/dashboard/bids/biderslist/${bid?.id}`}
                   className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 h-8 text-sm grid place-items-center"
@@ -289,10 +299,10 @@ const ShopView = (props: ShowShopProps) => {
             <div className="flex-1">
               <p className="px-2 text-sm">Title : {bid.title}</p>
               <p className="px-2 text-sm">
-                Bid Start Date : {bid.bidenddate.toDateString()}
+                Bid Start Date : {bid.bidstartdate.toDateString()}
               </p>
               <p className="px-2 text-sm">
-                Bid End Date : {bid.bidstartdate.toDateString()}
+                Bid End Date : {bid.bidenddate.toDateString()}
               </p>
               {user?.role != "USER" && (
                 <p className="px-2 text-sm">Total Bidders : {totalBidder}</p>
@@ -340,22 +350,24 @@ const ShopView = (props: ShowShopProps) => {
         </div>
       </div> */}
 
-      {isrented && (
-        <div className="w-full bg-white rounded-sm shadow-sm mt-4">
-          <div className="bg-white rounded-sm shadow-sm">
-            <p className="text-xl p-2  font-semibold border-b border-gray-300">
-              {" "}
-              Rent History - 2023
-            </p>
+      {isrented &&
+        rentdetails.map((item, index) => (
+          <>
+            <div className="w-full bg-white rounded-sm shadow-sm mt-4">
+              <div className="bg-white rounded-sm shadow-sm">
+                <p className="text-xl p-2  font-semibold border-b border-gray-300">
+                  Rent History - {item.year}
+                </p>
 
-            <div className="grow grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 md:grid-cols-4 gap-2 flex-wrap justify-center items-center">
-              {items.map((item, index) => (
-                <PropertiesDeatils key={index} {...item} />
-              ))}
+                <div className="grow grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 md:grid-cols-4 gap-2 flex-wrap justify-center items-center">
+                  {item.rentdetails.map((item, index) => (
+                    <PropertiesDeatils key={index} {...item} />
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </>
+        ))}
     </div>
   );
 };

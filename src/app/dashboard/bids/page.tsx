@@ -25,7 +25,7 @@ const BidsRunning = () => {
       if (propertyrunningbid.status) {
         setProperties(propertyrunningbid.data ?? []);
       }
-
+      
       setLoading(false);
     };
     init();
@@ -39,7 +39,7 @@ const BidsRunning = () => {
     );
 
   return (
-    <div className="p-6 sm:p-10">
+    <div className="p-6">
       <div className="flex gap-4 items-center">
         <FluentMdl2Home className="text-xl" />
         <p className="text-xl text-gray-600">Running Bids</p>

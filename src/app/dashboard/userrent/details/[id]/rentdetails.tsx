@@ -123,7 +123,7 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
 
   return (
     <>
-      <div className="p-6 sm:p-10">
+      <div className="p-6">
         <div className="flex items-center gap-2">
           <BackButton />
           <h1 className="text-[#162f57] text-2xl font-semibold">
@@ -257,7 +257,7 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
                 </div>
 
                 <Button onClick={payfees} className="w-full mt-4">
-                  Pay Fees
+                  Pay Rent
                 </Button>
               </>
             )}

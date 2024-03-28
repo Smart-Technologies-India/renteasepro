@@ -91,7 +91,7 @@ const Category = () => {
 
   return (
     <>
-      <div className="p-6 sm:p-10">
+      <div className="p-6">
         <h1 className="text-[#162f57] text-2xl font-semibold">Edit Category</h1>
         <p className="text-sm mt-4 mb-2">
           Get started by adding your property&apos;s address and details below.

@@ -24,6 +24,7 @@ import RejectBidTran from "@/action/bid_transact/rejectbidtran";
 import GetBidTran from "@/action/bid_transact/getbidtransact";
 import getUploadFileUser from "@/action/user/getuploadedfile";
 import Link from "next/link";
+import BackButton from "@/components/backbutton";
 
 interface UserProfileProps {
   userid: number;
@@ -240,7 +241,6 @@ const UserProfile = (props: UserProfileProps) => {
 
   const [acceptReason, setAcceptReason] = useState<string>("");
   const acceptBid = async () => {
-    console.log(acceptReason);
     if (acceptReason == "" || acceptReason == undefined || acceptReason == null)
       return toast.error("Please Enter Accept Reason");
 
@@ -282,8 +282,9 @@ const UserProfile = (props: UserProfileProps) => {
     );
 
   return (
-    <div className="p-6 sm:p-10">
+    <div className="p-6">
       <div className="flex gap-2 items-center">
+        <BackButton />
         <IcBaselineAccountCircle className="text-3xl" />
         <p className="text-sm font-semibold text-gray-600">User Profile</p>
         <div className="grow"></div>
@@ -542,6 +543,12 @@ const UserProfile = (props: UserProfileProps) => {
           )}
         </div>
 
+        {bidTransact?.status == "USERNOTINTERESTED" && (
+          <div className="rounded-md py-1 px-4 bg-rose-50 flex-1 mt-2">
+            <h1 className="text-sm text-black">User is not Intrested</h1>
+            <p className="text-sm font-semibold">{bidTransact?.userremarks}</p>
+          </div>
+        )}
         {bidTransact?.status == "REJECTED" && (
           <div className="rounded-md py-1 px-4 bg-rose-50 flex-1 mt-2">
             <h1 className="text-sm text-black">Rejected Reason</h1>
@@ -558,7 +565,8 @@ const UserProfile = (props: UserProfileProps) => {
           </div>
         )}
 
-        {bidTransact?.status == "PENDING" && (
+        {(bidTransact?.status == "PENDING" ||
+          bidTransact?.status == "USERNOTINTERESTED") && (
           <div className="flex gap-4 mt-4">
             <div className="grow"></div>
             <AlertDialog>

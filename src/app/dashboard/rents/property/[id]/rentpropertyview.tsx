@@ -77,7 +77,7 @@ const RentPropertiesView = (props: RentPropertiesViewProps) => {
     );
 
   return (
-    <div className="p-6 sm:p-10">
+    <div className="p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
         <div className="bg-white rounded-sm shadow-sm">
           <p className="text-xl p-2 border-b border-gray-300 font-semibold">

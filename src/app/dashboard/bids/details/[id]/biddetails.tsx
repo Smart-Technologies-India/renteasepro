@@ -87,7 +87,7 @@ const BidDetailsView = (props: BidDetailsViewProps) => {
 
   return (
     <>
-      <div className="p-6 sm:p-10">
+      <div className="p-6">
         <div className="flex items-center gap-4">
           <BackButton />
           <h1 className="text-[#162f57] text-2xl font-semibold">View Bid</h1>
@@ -95,13 +95,13 @@ const BidDetailsView = (props: BidDetailsViewProps) => {
           {user?.role === "ADMIN" && (
             <>
               <Button
-                className="bg-green-500 hover:bg-green-500 h-auto"
+                className="bg-black h-auto"
                 onClick={() => router.push("/dashboard/bids")}
               >
                 Edit Bid
               </Button>
               <Button
-                className="bg-green-500 hover:bg-green-500 h-auto"
+                className="bg-black h-auto"
                 onClick={() =>
                   router.push(`/dashboard/bids/biderslist/${bid?.id}`)
                 }

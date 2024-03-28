@@ -67,7 +67,7 @@ const UserRentPage = () => {
     );
 
   return (
-    <div className="p-6 sm:p-10">
+    <div className="p-6">
       <h1 className="text-[#162f57] text-2xl font-semibold">Your Rent</h1>
       <div className="mt-4 flex">
         {category.map((item: string, index: number) => (
