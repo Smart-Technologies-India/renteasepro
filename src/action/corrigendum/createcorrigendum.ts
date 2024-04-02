@@ -27,13 +27,13 @@ const CreateCorrigendum = async (
     };
 
     if (payload.exemptId) {
-      data_to_update["exemptId"] = payload.exemptId;
+      data_to_update["exemptId"] = parseInt(payload.exemptId.toString() ?? "0");
     }
     if (payload.rentId) {
-      data_to_update["rentId"] = payload.rentId;
+      data_to_update["rentId"] = parseInt(payload.rentId.toString() ?? "0");
     }
     if (payload.bidId) {
-      data_to_update["bidId"] = payload.bidId;
+      data_to_update["bidId"] = parseInt(payload.bidId.toString() ?? "0");
     }
 
     const corrigendum = await prisma.corrigendum.create({

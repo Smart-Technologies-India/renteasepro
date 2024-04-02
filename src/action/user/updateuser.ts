@@ -22,7 +22,7 @@ interface UpdateUserPayload {
   ifscCode?: string;
 }
 
-const updateUser = async (
+const  updateUser = async (
   payload: UpdateUserPayload
 ): Promise<ApiResponseType<user | null>> => {
   try {
@@ -42,10 +42,24 @@ const updateUser = async (
       data_to_update.bankAccountNumber = payload.bankAccountNumber;
     if (payload.ifscCode) data_to_update.ifscCode = payload.ifscCode;
 
+    const isemailexist = await prisma.user.findFirst({
+      where: {
+        email: payload.email,
+      },
+    });
+
+    if (isemailexist && isemailexist.id !== payload.id) {
+      return {
+        status: false,
+        data: null,
+        message: "Email already exist. Please try again.",
+        functionname: "updateUser",
+      };
+    }
 
     const updateresponse = await prisma.user.update({
       where: {
-        id: parseInt(payload.id.toString() ?? "0"),
+        id: parseInt(payload.id.toString( ) ?? "0"),
       },
       data: data_to_update,
     });

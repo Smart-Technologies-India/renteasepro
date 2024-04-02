@@ -133,6 +133,12 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
           <div className="grow"></div>
           {user?.role === "ADMIN" && (
             <>
+              <Button
+                className="bg-blue-500"
+                onClick={() => router.push(`/dashboard/bids/bidreport/${bid.id}`)}
+              >
+                Print Report
+              </Button>
               {bid.bid_status == "PUBLISHED" ? (
                 <Button
                   className="bg-rose-500 h-auto"
@@ -315,7 +321,7 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
                 <a
                   download={true}
                   href={bid.t_and_c_upload}
-                  className="bg-green-500 hover:bg-green-500 py-1 px-4 rounded-md text-white"
+                  className="bg-green-500 hover:bg-green-500 py-1 px-4 rounded-md text-white cursor-pointer"
                 >
                   Download File
                 </a>
@@ -385,6 +391,24 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
                     <>
                       <div className="bg-gray-100 rounded-sm shadow py-1 px-4 text-xs">
                         For MSME
+                      </div>
+                    </>
+                  ) : (
+                    <></>
+                  )}
+                  {bid.is_sc_st == true ? (
+                    <>
+                      <div className="bg-gray-100 rounded-sm shadow py-1 px-4 text-xs">
+                        For SC/ST
+                      </div>
+                    </>
+                  ) : (
+                    <></>
+                  )}
+                  {bid.tribal == true ? (
+                    <>
+                      <div className="bg-gray-100 rounded-sm shadow py-1 px-4 text-xs">
+                        For Tribal
                       </div>
                     </>
                   ) : (

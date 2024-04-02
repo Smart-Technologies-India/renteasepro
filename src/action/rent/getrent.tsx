@@ -15,12 +15,12 @@ const GetRent = async (
   try {
     const rent_respone = await prisma.rent.findFirst({
       where: {
-        id: payload.id,
+        id: parseInt(payload.id.toString() ?? "0"),
         deletedAt: null,
         deletedBy: null,
       },
       include: {
-        shop: true,
+        shop: { include: { property: true } },
         user: true,
         rent_transact: true,
       },

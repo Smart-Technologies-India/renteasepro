@@ -25,6 +25,13 @@ import GetBidTran from "@/action/bid_transact/getbidtransact";
 import getUploadFileUser from "@/action/user/getuploadedfile";
 import Link from "next/link";
 import BackButton from "@/components/backbutton";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { longtext } from "@/utils/methods";
 
 interface UserProfileProps {
   userid: number;
@@ -32,6 +39,24 @@ interface UserProfileProps {
 }
 
 const UserProfile = (props: UserProfileProps) => {
+  const template: { [key: string]: string }[] = [
+    {
+      key: "one",
+      value: "This is message one",
+    },
+    {
+      key: "two",
+      value: "This is message two",
+    },
+    {
+      key: "three",
+      value: "This is message three",
+    },
+    {
+      key: "four",
+      value: "This is message four",
+    },
+  ];
   const router = useRouter();
   const [isLoading, setLoading] = useState<boolean>(true);
 
@@ -324,7 +349,7 @@ const UserProfile = (props: UserProfileProps) => {
 
           <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
             <h1 className="text-sm text-black">Contact Two</h1>
-            <p className="text-sm font-semibold">{user?.lastName ?? "-"}</p>
+            <p className="text-sm font-semibold">{user?.contacttwo ?? "-"}</p>
           </div>
         </div>
 
@@ -596,6 +621,34 @@ const UserProfile = (props: UserProfileProps) => {
                     Continue
                   </AlertDialogAction>
                 </AlertDialogFooter>
+
+                <Separator />
+                <p className="text-sm">Suggestions</p>
+                <div className="flex gap-2">
+                  {template.map((item, index) => (
+                    <div key={index}>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              onClick={() =>
+                                setAcceptReason((val) => val + " " + item.value)
+                              }
+                              className="h-auto text-xs bg-gray-200 text-black py-2 px-4 hover:bg-gray-300"
+                            >
+                              {item.key}
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent className="p-0 m-0">
+                            <p className="bg-black text-white py-1 px-4 text-xs rounded-md">
+                              {longtext(item.value, 20)}
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                  ))}
+                </div>
               </AlertDialogContent>
             </AlertDialog>
 
@@ -626,6 +679,34 @@ const UserProfile = (props: UserProfileProps) => {
                     Continue
                   </AlertDialogAction>
                 </AlertDialogFooter>
+
+                <Separator />
+                <p className="text-sm">Suggestions</p>
+                <div className="flex gap-2">
+                  {template.map((item, index) => (
+                    <div key={index}>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              onClick={() =>
+                                setRejectReason((val) => val + " " + item.value)
+                              }
+                              className="h-auto text-xs bg-gray-200 text-black py-2 px-4 hover:bg-gray-300"
+                            >
+                              {item.key}
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent className="p-0 m-0">
+                            <p className="bg-black text-white py-1 px-4 text-xs rounded-md">
+                              {longtext(item.value, 20)}
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                  ))}
+                </div>
               </AlertDialogContent>
             </AlertDialog>
           </div>

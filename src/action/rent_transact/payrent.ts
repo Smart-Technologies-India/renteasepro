@@ -8,6 +8,8 @@ import { SMSType, sendSMS } from "@/utils/smsmessage";
 
 interface PayRentPayload {
   rentid: number[];
+  transactionid: string;
+  bankname: string;
 }
 
 const PayRent = async (
@@ -21,6 +23,8 @@ const PayRent = async (
         },
       },
       data: {
+        bankname: payload.bankname,
+        transactionid: payload.transactionid,
         status: "PAID",
         transaction_date: new Date(),
         paymentmode: "CASH",

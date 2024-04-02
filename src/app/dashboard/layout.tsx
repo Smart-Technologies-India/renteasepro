@@ -43,7 +43,7 @@ export default function DashboardLayout({
         setIsOpen={setIsOpen}
         role={userdata?.role as Role}
       />
-      <div className="relative p-0 md:pl-52">
+      <div className="relative p-0 md:pl-52 h-full">
         <Navbar
           isOpen={isOpen}
           setIsOpen={setIsOpen}

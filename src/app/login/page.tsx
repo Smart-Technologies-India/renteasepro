@@ -13,27 +13,28 @@ import { Button } from "@/components/ui/button";
 import { LoginSchema } from "@/schema/login";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { MoonIcon } from "lucide-react";
 
 export default function LoginPage() {
-  const username = useRef<HTMLInputElement>(null);
+  const mobile = useRef<HTMLInputElement>(null);
   const password = useRef<HTMLInputElement>(null);
 
   const router = useRouter();
 
   const loginuser = async () => {
     const result = safeParse(LoginSchema, {
-      username: username.current?.value,
+      contactone: mobile.current?.value,
       password: password.current?.value,
     });
 
     if (result.success) {
       const loginrespone: ApiResponseType<user | null> = await Login({
         password: result.output.password,
-        username: result.output.username,
+        contactone: result.output.contactone,
       });
       if (loginrespone.status) {
         toast.success(loginrespone.message);
-        username.current!.value = "";
+        mobile.current!.value = "";
         password.current!.value = "";
         router.push("/dashboard");
       } else {
@@ -67,8 +68,8 @@ export default function LoginPage() {
               Login
             </h1>
             <div className="grid max-w-sm items-center gap-1.5 w-80">
-              <Label htmlFor="username">Username : </Label>
-              <Input id="username" type="text" ref={username} />
+              <Label htmlFor="mobile">Mobile : </Label>
+              <Input id="mobile" type="text" ref={mobile} />
             </div>
             <div className="grid max-w-sm items-center gap-1.5 w-80 mt-6">
               <Label htmlFor="password">Password : </Label>

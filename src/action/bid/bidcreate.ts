@@ -9,8 +9,8 @@ import { mkdir } from "fs/promises";
 interface CreateBidPayload {
   shopId: number;
   title: string;
-  description: string;
-  instruction: string;
+  description?: string;
+  instruction?: string;
   min_bid_amount: number;
   bidincrementamount: string;
   min_bid_increment: number;
@@ -87,8 +87,6 @@ const CreateBid = async (
     let data_to_insert: any = {
       shopId: payload.shopId,
       title: payload.title,
-      description: payload.description,
-      instruction: payload.instruction,
       min_bid_amount: payload.min_bid_amount,
       bidincrementamount: payload.bidincrementamount,
       min_bid_increment: payload.min_bid_increment,
@@ -115,6 +113,13 @@ const CreateBid = async (
       is_auction: payload.is_auction,
       is_open: payload.is_open,
     };
+
+    if (payload.description) {
+      data_to_insert["description"] = payload.description;
+    }
+    if (payload.instruction) {
+      data_to_insert["instruction"] = payload.instruction;
+    }
 
     if (payload.docone) {
       data_to_insert["docone"] = payload.docone;

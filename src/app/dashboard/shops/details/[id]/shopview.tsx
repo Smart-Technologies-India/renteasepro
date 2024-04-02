@@ -4,6 +4,9 @@ import GetBidByShop from "@/action/bid/getbidbyshop";
 import IsWinnderDeclared from "@/action/bid/iswinnerdeclared";
 import TotalBidders from "@/action/bid/totalbiders";
 import IsUserAppliedForBid from "@/action/bid_transact/isuserapplied";
+import GetRent from "@/action/rent/getrent";
+import GetUserRent from "@/action/rent_transact/getuserrent";
+
 import isShopRented from "@/action/rent/isrentcreateonshop";
 import GetFromShop from "@/action/rent_transact/getfromshop";
 import GetShop from "@/action/shop/getshop";
@@ -15,17 +18,27 @@ import {
   Fa6RegularHourglassHalf,
   MaterialSymbolsCalendarClockRounded,
 } from "@/components/icons";
-import { capitalcase } from "@/utils/methods";
-import { RentTransactStatus, rent_transact, shop, user } from "@prisma/client";
+import { capitalcase, formatDateTime, formateDate } from "@/utils/methods";
+import {
+  RentTransactStatus,
+  rent,
+  rent_transact,
+  shop,
+  user,
+} from "@prisma/client";
 import { getCookie } from "cookies-next";
 import Link from "next/link";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+
 interface ShowShopProps {
   id: number;
 }
 
 const ShopView = (props: ShowShopProps) => {
   const userid: number = parseInt(getCookie("id") ?? "0");
+
+  const router = useRouter();
 
   interface ItemsType {
     name: string;
@@ -49,9 +62,13 @@ const ShopView = (props: ShowShopProps) => {
 
   const [isrented, setIsRented] = useState<boolean>(false);
 
+  const [rentdata, setRentData] = useState<rent>();
+
   const [rentdetails, setRentDetails] = useState<yearsDetails[]>([]);
 
   const [isWinnerDeclared, setIsWinnerDeclared] = useState<boolean>(false);
+
+  const [rentTransact, setRentTransact] = useState<rent_transact[]>([]);
 
   useEffect(() => {
     const setRentMonthDetails = (value: any[]) => {
@@ -143,6 +160,24 @@ const ShopView = (props: ShowShopProps) => {
         });
 
         if (rentresponse.status) {
+          const getrentresponse = await GetRent({
+            id: rentresponse.data![0].rentId,
+          });
+
+          if (getrentresponse.status) {
+            setRentData(getrentresponse.data!);
+          }
+        }
+
+        const rentTransactresponse = await GetUserRent({
+          rentid: rentresponse.data![0].rentId,
+        });
+
+        if (rentTransactresponse.status) {
+          setRentTransact(rentTransactresponse.data as rent_transact[]);
+        }
+
+        if (rentresponse.status) {
           setRentMonthDetails(rentresponse.data ?? []);
         }
       }
@@ -199,9 +234,16 @@ const ShopView = (props: ShowShopProps) => {
                   Bid History
                 </Link>
               )}
-              <button className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 py-1 text-sm bg-transparent">
-                Manage Shop
-              </button>
+              {isrented && (
+                <button
+                  onClick={() => {
+                    return router.push(`/dashboard/rents/edit/${rentdata?.id}`);
+                  }}
+                  className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 py-1 text-sm bg-transparent"
+                >
+                  Manage Shop
+                </button>
+              )}
               {bid ? (
                 <></>
               ) : (
@@ -250,7 +292,7 @@ const ShopView = (props: ShowShopProps) => {
               </h1>
             )}
 
-            {bid.bidenddate < new Date() || bid.bidstartdate > new Date() ? (
+            {bid.bidenddate < new Date() ? (
               <h1 className="border-rose-500 border-2 rounded text-rose-500 bg-rose-500 bg-opacity-10  px-2 py-1 text-sm">
                 Bid Ended
               </h1>
@@ -322,51 +364,82 @@ const ShopView = (props: ShowShopProps) => {
           </div>
         </div>
       )}
-      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 ">
-        <div className="bg-white rounded-sm shadow-sm pb-4">
-          <p className="text-xl p-2 border-b border-gray-300 font-semibold">
-            Tenant Details
-          </p>
-          <p className="px-2 text-sm">Pramila Kataria</p>
-          <p className="px-2 text-sm">9904194114</p>
-          <p className="px-2 text-sm">203000</p>
-          <p className="px-2 text-sm">Pending</p>
-        </div>
-        <div className="bg-white rounded-sm shadow-sm pb-4">
-          <div className="border-b border-gray-300 flex items-center pr-2">
-            <p className="text-xl p-2  font-semibold">Rent Details</p>
-            <div className="grow"></div>
-            <Link
-              href={"/dashboard/shops/createrent"}
-              className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 h-8 text-sm grid place-items-center"
-            >
-              Add Rent
-            </Link>
+
+      {isrented && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 ">
+          <div className="bg-white rounded-sm shadow-sm pb-4">
+            <p className="text-xl p-2 border-b border-gray-300 font-semibold">
+              Tenant Details
+            </p>
+            <p className="px-2 text-sm">
+              {user?.firstName} {user?.lastName}
+            </p>
+            <p className="px-2 text-sm">{user?.contactone}</p>
           </div>
-          <p className="px-2 text-sm">Ashutosh Shandilya</p>
-          <p className="px-2 text-sm">6203159107</p>
-          <p className="px-2 text-sm">21000</p>
-          <p className="px-2 text-sm">Pending</p>
+          <div className="bg-white rounded-sm shadow-sm pb-4">
+            <div className="border-b border-gray-300 flex items-center pr-2">
+              <p className="text-xl p-2  font-semibold">Rent Details</p>
+              <div className="grow"></div>
+              {user?.role! === "ADMIN" && (
+                <Link
+                  href={`/dashboard/userrent/history/${rentdata?.id}`}
+                  className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                >
+                  Rent History
+                </Link>
+              )}
+              {user?.role! === "USER" && (
+                <Link
+                  href={`/dashboard/userrent/details/${rentdata?.id}`}
+                  className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                >
+                  Pay Rent
+                </Link>
+              )}
+            </div>
+            <p className="px-2 text-sm">{}</p>
+            <p className="px-2 text-sm">
+              Start Date & Time :
+              {formateDate(new Date(rentdata?.rent_start_date ?? ""))}
+            </p>
+            <p className="px-2 text-sm">
+              End Date & Time :
+              {formateDate(new Date(rentdata?.rent_end_date ?? ""))}
+            </p>
+            <p className="px-2 text-sm">
+              Rent Amount : {rentdata?.rent_amount}
+            </p>
+            <p className="px-2 text-sm">
+              Pending Amount :
+              {rentTransact.reduce(
+                (accumulator, currentValue) =>
+                  accumulator + currentValue.amount,
+                0
+              )}{" "}
+              - ({rentTransact.length} Months)
+            </p>
+          </div>
         </div>
-      </div> */}
+      )}
 
       {isrented &&
         rentdetails.map((item, index) => (
-          <>
-            <div className="w-full bg-white rounded-sm shadow-sm mt-4">
-              <div className="bg-white rounded-sm shadow-sm">
-                <p className="text-xl p-2  font-semibold border-b border-gray-300">
-                  Rent History - {item.year}
-                </p>
+          <div
+            key={index}
+            className="w-full bg-white rounded-sm shadow-sm mt-4"
+          >
+            <div className="bg-white rounded-sm shadow-sm">
+              <p className="text-xl p-2  font-semibold border-b border-gray-300">
+                Rent History - {item.year}
+              </p>
 
-                <div className="grow grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 md:grid-cols-4 gap-2 flex-wrap justify-center items-center">
-                  {item.rentdetails.map((item, index) => (
-                    <PropertiesDeatils key={index} {...item} />
-                  ))}
-                </div>
+              <div className="grow grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 md:grid-cols-4 gap-2 flex-wrap justify-center items-center">
+                {item.rentdetails.map((item, index) => (
+                  <PropertiesDeatils key={index} {...item} />
+                ))}
               </div>
             </div>
-          </>
+          </div>
         ))}
     </div>
   );

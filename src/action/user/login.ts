@@ -1,6 +1,6 @@
 "use server";
 interface LoginPayload {
-  username: string;
+  contactone: string;
   password: string;
 }
 
@@ -16,7 +16,7 @@ const Login = async (
 ): Promise<ApiResponseType<user | null>> => {
   try {
     const user = await prisma.user.findFirst({
-      where: { username: payload.username, status: "ACTIVE" },
+      where: { contactone: payload.contactone, status: "ACTIVE" },
     });
 
     if (!user)

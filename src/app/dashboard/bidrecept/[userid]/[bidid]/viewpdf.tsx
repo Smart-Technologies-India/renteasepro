@@ -1,7 +1,10 @@
 "use client";
+
 import GetBid from "@/action/bid/getbid";
+import GetFromUserBid from "@/action/bidpayment/getfromuserbid";
 import GetUser from "@/action/user/getuser";
-import { bid, user } from "@prisma/client";
+import { formatDateTime } from "@/utils/methods";
+import { bid_payment, user } from "@prisma/client";
 import {
   Page,
   Text,
@@ -10,12 +13,10 @@ import {
   StyleSheet,
   Font,
   PDFViewer,
-  PDFDownloadLink,
   renderToFile,
   pdf,
   Image,
 } from "@react-pdf/renderer";
-
 import { useEffect, useState } from "react";
 
 interface ViewPdfProps {
@@ -24,12 +25,14 @@ interface ViewPdfProps {
 }
 
 const ViewPdf = (props: ViewPdfProps) => {
-  const [bid, setBid] = useState<bid>();
+  const [bid, setBid] = useState<any>();
   const [user, setUser] = useState<user>();
+  const [payment, setPayment] = useState<bid_payment>();
 
   useEffect(() => {
     const init = async () => {
       const bidresponse = await GetBid({ id: props.bidid });
+
       if (bidresponse.status) {
         setBid(bidresponse.data);
       }
@@ -38,7 +41,15 @@ const ViewPdf = (props: ViewPdfProps) => {
       if (userresponse.status) {
         setUser(userresponse.data!);
       }
-      console.log(userresponse);
+
+      const bidpaymentresponse = await GetFromUserBid({
+        bidid: props.bidid,
+        userid: props.userid,
+      });
+
+      if (bidpaymentresponse.status) {
+        setPayment(bidpaymentresponse.data!);
+      }
     };
 
     init();
@@ -143,7 +154,7 @@ const ViewPdf = (props: ViewPdfProps) => {
           <Image src="/tenders_logo.png" style={styles.image} />
         </View>
 
-        <View style={{}}>
+        <View>
           <View>
             <Text style={styles.title}>Bid Acknowledgement</Text>
           </View>
@@ -157,25 +168,34 @@ const ViewPdf = (props: ViewPdfProps) => {
           </View>
           <View style={styles.myflex}>
             <Text style={styles.text1}>2 Tender Id</Text>
-            <Text style={styles.text2}>Auction_2024_5[bidid]</Text>
+            <Text style={styles.text2}>{`${
+              bid?.is_auction ? "AUCTION" : "TENDER"
+            }_${new Date(payment?.transaction_date!).getFullYear()}_${
+              bid?.id
+            }`}</Text>
           </View>
 
           <View style={styles.myflex}>
             <Text style={styles.text1}>3 Property Name</Text>
-            <Text style={styles.text2}>Property Name</Text>
+            <Text style={styles.text2}>{bid?.shop.property.name}</Text>
           </View>
           <View style={styles.myflex}>
             <Text style={styles.text1}>4 Shop Number</Text>
-            <Text style={styles.text2}>123</Text>
+            <Text style={styles.text2}>{bid?.shop.shopNumber}</Text>
           </View>
 
           <View style={styles.myflex}>
             <Text style={styles.text1}>5 Bid Start Date & Time</Text>
-            <Text style={styles.text2}>2024</Text>
+            <Text style={styles.text2}>
+              {formatDateTime(new Date(bid?.bidstartdate))}
+            </Text>
           </View>
           <View style={styles.myflex}>
             <Text style={styles.text1}>6 Bid End Date & Time</Text>
-            <Text style={styles.text2}>2024</Text>
+            <Text style={styles.text2}>
+              {" "}
+              {formatDateTime(new Date(bid?.bidenddate))}
+            </Text>
           </View>
           <View>
             <Text style={styles.header}>2. Bidder Details</Text>
@@ -188,34 +208,39 @@ const ViewPdf = (props: ViewPdfProps) => {
           </View>
           <View style={styles.myflex}>
             <Text style={styles.text1}>2 Bid Submitted Date & Time</Text>
-            <Text style={styles.text2}>2043</Text>
+
+            <Text style={styles.text2}>
+              {formatDateTime(new Date(payment?.createdAt!))}
+            </Text>
           </View>
           <View>
             <Text style={styles.header}>3. Fees & EMD Details</Text>
           </View>
           <View style={styles.myflex}>
             <Text style={styles.text1}>1 Fees Amount</Text>
-            <Text style={styles.text2}>Applicant details</Text>
+            <Text style={styles.text2}>{bid?.fees_amount}</Text>
           </View>
           <View style={styles.myflex}>
             <Text style={styles.text1}>2 Emd Amount</Text>
-            <Text style={styles.text2}>Applicant details</Text>
+            <Text style={styles.text2}>{bid?.emd_amount}</Text>
           </View>
           <View style={styles.myflex}>
             <Text style={styles.text1}>3 Transaction Id</Text>
-            <Text style={styles.text2}>Applicant details</Text>
+            <Text style={styles.text2}>{payment?.transactionid}</Text>
           </View>
           <View style={styles.myflex}>
             <Text style={styles.text1}>4 Payment Mode</Text>
-            <Text style={styles.text2}>Applicant details</Text>
+            <Text style={styles.text2}>{payment?.paymentmode}</Text>
           </View>
           <View style={styles.myflex}>
             <Text style={styles.text1}>5 Bank Name</Text>
-            <Text style={styles.text2}>Applicant details</Text>
+            <Text style={styles.text2}>{payment?.bankname}</Text>
           </View>
           <View style={styles.myflex}>
             <Text style={styles.text1}>6 Transaction Date & Time</Text>
-            <Text style={styles.text2}>Applicant details</Text>
+            <Text style={styles.text2}>
+              {formatDateTime(new Date(payment?.transaction_date!))}
+            </Text>
           </View>
 
           <View
@@ -268,7 +293,6 @@ const ViewPdf = (props: ViewPdfProps) => {
       ) : null} */}
       {isClient ? (
         <div className="w-full h-full">
-          {/* <PDFViewer width={"100%"} height={"100vh"}> */}
           <PDFViewer style={{ width: "100%", height: "100%" }}>
             <Quixote />
           </PDFViewer>

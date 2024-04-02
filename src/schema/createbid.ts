@@ -12,8 +12,6 @@ import {
 
 const CreateBidSchema = object({
   title: string([minLength(1, "Please enter bid title.")]),
-  description: string([minLength(1, "Please enter bid description.")]),
-  instruction: string([minLength(1, "Please enter bid instruction.")]),
   min_bid_amount: number([minValue(1, "Please enter min bid amount.")]),
   bidincrementamount: enum_(
     PercentageType,

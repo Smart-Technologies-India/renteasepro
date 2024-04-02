@@ -1,6 +1,5 @@
 "use client";
 
-import CreateBid from "@/action/bid/bidcreate";
 import { IcBaselineCalendarMonth } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -18,7 +17,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { CreateBidSchema } from "@/schema/createbid";
-import { PercentageType, RefundType } from "@prisma/client";
+import { ExemptFor, PercentageType, RefundType } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
@@ -30,23 +29,23 @@ import axios from "axios";
 import GetShop from "@/action/shop/getshop";
 import Link from "next/link";
 import { longtext } from "@/utils/methods";
-import UploadFile from "@/action/file_upload/uploadfile";
 import GetBid from "@/action/bid/getbid";
 
 import dayjs, { Dayjs } from "dayjs";
 import CreateCorrigendum from "@/action/corrigendum/createcorrigendum";
+import EditBid from "@/action/bid/editbid";
 
 interface CreateBidPageProps {
   bidid: number;
   uploadurl: string;
 }
 
-function setTime(date: Date, timeString: string): Date | void {
+function setTime(date: Date, timeString: string): Date {
   // Parse the time string to get hours and minutes
   const parts = timeString.match(/(\d+):(\d+) (am|pm)/i);
   if (!parts) {
     toast.error("Invalid time format");
-    return;
+    return new Date();
   }
   const hours = parseInt(parts[1], 10);
   const minutes = parseInt(parts[2], 10);
@@ -210,7 +209,7 @@ const UpdateBidPage = (props: CreateBidPageProps) => {
 
   const [exemptsectionsvalue, setExemptsectionsvalue] = useState<string[]>([]);
 
-  const [bid, setBid] = useState<any>();
+  // const [bid, setBid] = useState<any>();
   const [shop, setShop] = useState<any>();
 
   const [editAll, setEditAll] = useState<boolean>(false);
@@ -221,9 +220,9 @@ const UpdateBidPage = (props: CreateBidPageProps) => {
       setLoading(true);
       const bidresponse = await GetBid({ id: props.bidid });
 
-      if (bidresponse.status) {
-        setBid(bidresponse.data);
-      }
+      // if (bidresponse.status) {
+      //   setBid(bidresponse.data);
+      // }
 
       const shopresponse = await GetShop({ id: bidresponse.data.shopId });
 
@@ -247,33 +246,112 @@ const UpdateBidPage = (props: CreateBidPageProps) => {
         setStartDate(new Date(bidresponse.data.bidstartdate));
         setEndDate(new Date(bidresponse.data.bidenddate));
         setDeadlineDate(new Date(bidresponse.data.biddeclarationdate));
-
         setStartTime(dayjs(bidresponse.data.bidstartdate));
         setEndTime(dayjs(bidresponse.data.bidenddate));
 
-        // setStartTime(format(new Date(bidresponse.data.bidstartdate), "h:mm a"));
-        // setEndTime(format(new Date(bidresponse.data.bidenddate), "h:mm a"));
-        setDeadlineDate(new Date(bidresponse.data.biddeclarationdate));
-        setFees(bidresponse.data.fees);
-        setEmd(bidresponse.data.emd);
-        setBg(bidresponse.data.bg);
-        setFeesrefundable(bidresponse.data.fees_refundable);
-        setEmdrefundable(bidresponse.data.emd_refundable);
-        setBgrefundable(bidresponse.data.bg_refundable);
+        doctitle.current!.value = bidresponse.data?.docone;
+        docdescription.current!.value = bidresponse.data?.doconedescription;
+        filenumber.current!.value = bidresponse.data?.t_and_c_file_number;
+        filesubject.current!.value = bidresponse.data?.t_and_c_description;
 
-        // setField(bidresponse.data.field);
-        // setIsOpen(bidresponse.data.is_open);
-        // setExempt(bidresponse.data.is_exemption ? Exempt.YES : Exempt.NO);
-        // setBidType(
-        //   bidresponse.data.is_auction ? BidType.AUCTION : BidType.TENDER
-        // );
-        // setExamptField(bidresponse.data.exemptfield);
-        // setExemptsectionsvalue(bidresponse.data.exemptsectionsvalue);
-        // setExemptFees(bidresponse.data.exempt_fees);
-        // setExemptEmd(bidresponse.data.exempt_emd);
-        // setExemptbg(bidresponse.data.exempt_bg);
+        setBidType(
+          bidresponse.data.is_auction ? BidType.AUCTION : BidType.TENDER
+        );
+
+        setFees(
+          bidresponse.data.fees
+            ? PercentageType.PERCENTAGE
+            : PercentageType.AMOUNT
+        );
+        setEmd(
+          bidresponse.data.emd
+            ? PercentageType.PERCENTAGE
+            : PercentageType.AMOUNT
+        );
+        setBg(
+          bidresponse.data.bg
+            ? PercentageType.PERCENTAGE
+            : PercentageType.AMOUNT
+        );
+        setFeesrefundable(
+          bidresponse.data.fees_refundable
+            ? RefundType.REFUNDABLE
+            : RefundType.NONREFUNDABLE
+        );
+        setEmdrefundable(
+          bidresponse.data.emd_refundable
+            ? RefundType.REFUNDABLE
+            : RefundType.NONREFUNDABLE
+        );
+        setBgrefundable(
+          bidresponse.data.bg_refundable
+            ? RefundType.REFUNDABLE
+            : RefundType.NONREFUNDABLE
+        );
+
+        setExempt(bidresponse.data.is_exemption ? Exempt.YES : Exempt.NO);
+
+        for (let i = 0; i < bidresponse.data.exempt.length; i++) {
+          if (bidresponse.data.exempt[i].emd_for == ExemptFor.WOMEN) {
+            setExamptField((prev) => [...prev, "forwomen"]);
+          } else if (bidresponse.data.exempt[i].emd_for == ExemptFor.RESERVED) {
+            setExamptField((prev) => [...prev, "category"]);
+          } else if (
+            bidresponse.data.exempt[i].emd_for == ExemptFor.DIFFERENTLY_ABLED
+          ) {
+            setExamptField((prev) => [...prev, "abled"]);
+          } else if (bidresponse.data.exempt[i].emd_for == ExemptFor.MSME) {
+            setExamptField((prev) => [...prev, "msme"]);
+          }
+        }
+
+        const exemptdata = bidresponse.data.exempt[0];
+
+        if (exemptdata.is_bg_exempt_allowed) {
+          setExemptsectionsvalue((prev) => [...prev, "bg"]);
+          setExemptbg(exemptdata.bg);
+          setTimeout(() => {
+            exemptbgamount.current!.value = exemptdata.bgamount.toString();
+          }, 200);
+        }
+
+        if (exemptdata.is_emd_exempt_allowed) {
+          setExemptsectionsvalue((prev) => [...prev, "emd"]);
+          setExemptEmd(exemptdata.emd);
+          setTimeout(() => {
+            exemptemdamount.current!.value = exemptdata.emdamount.toString();
+          }, 200);
+        }
+
+        if (exemptdata.is_fees_exempt_allowed) {
+          setExemptsectionsvalue((prev) => [...prev, "fees"]);
+          setExemptFees(exemptdata.fees);
+          setTimeout(() => {
+            exemptfeesamount.current!.value = exemptdata.feesamount.toString();
+          }, 200);
+        }
+
+        setIsOpen(bidresponse.data.is_open);
+
+        if (bidresponse.data.is_woman) {
+          setField((prev) => [...prev, "forwomen"]);
+        }
+        if (bidresponse.data.is_reserved) {
+          setField((prev) => [...prev, "category"]);
+        }
+        if (bidresponse.data.is_differently_abled) {
+          setField((prev) => [...prev, "abled"]);
+        }
+        if (bidresponse.data.is_msme) {
+          setField((prev) => [...prev, "msme"]);
+        }
+        if (bidresponse.data.is_tribal) {
+          setField((prev) => [...prev, "tribal"]);
+        }
+        if (bidresponse.data.is_sc_st) {
+          setField((prev) => [...prev, "scst"]);
+        }
       }, 500);
-
       setLoading(false);
     };
     init();
@@ -282,13 +360,30 @@ const UpdateBidPage = (props: CreateBidPageProps) => {
   const [startTime, setStartTime] = useState<Dayjs | null>(null);
   const [endTime, setEndTime] = useState<Dayjs | null>(null);
 
-  const [fileUploader, setFileUploader] = useState<File | null>(null);
-  const cFileUploader = useRef<HTMLInputElement>(null);
-
   const [cFile, setCFile] = useState<File | null>(null);
   const ccFile = useRef<HTMLInputElement>(null);
 
-  const create = async () => {
+  const editbid = async () => {
+    if (
+      ctitle.current?.value == "" ||
+      ctitle.current?.value == null ||
+      ctitle.current?.value == undefined
+    ) {
+      return toast.error("Title is required");
+    }
+
+    if (
+      cdescription.current?.value == "" ||
+      cdescription.current?.value == null ||
+      cdescription.current?.value == undefined
+    ) {
+      return toast.error("Description is required");
+    }
+
+    if (cFile == null) {
+      return toast.error("Please upload a file");
+    }
+
     const result = safeParse(CreateBidSchema, {
       title: title.current?.value,
       description: description.current?.value,
@@ -305,8 +400,8 @@ const UpdateBidPage = (props: CreateBidPageProps) => {
       bg_amount: parseInt(bgamount.current?.value ?? "0"),
       bg: bg as PercentageType,
       bg_refundable: bgrefundable as RefundType,
-      startTime: startTime,
-      endTime: endTime,
+      startTime: startTime?.format("h:mm a"),
+      endTime: endTime?.format("h:mm a"),
       bidstartdate: setTime(startDate!, startTime?.format("h:mm a")!),
       bidenddate: setTime(endDate!, endTime?.format("h:mm a")!),
       biddeclarationdate: deadlineDate,
@@ -361,9 +456,9 @@ const UpdateBidPage = (props: CreateBidPageProps) => {
         return toast.error("Please enter exempt bg amount");
       }
 
-      if (fileUploader == null) {
-        return toast.error("Please upload a file");
-      }
+      // if (fileUploader == null) {
+      //   return toast.error("Please upload a file");
+      // }
 
       let extrafields: any = {};
       if (exempt === Exempt.YES && exemptsectionsvalue.includes("fees")) {
@@ -387,10 +482,9 @@ const UpdateBidPage = (props: CreateBidPageProps) => {
         extrafields["exempt_bg"] = exemptbg;
       }
 
-      const createbid = await CreateBid({
+      const createbid = await EditBid({
+        id: props.bidid,
         title: result.output.title,
-        description: result.output.description,
-        instruction: result.output.instruction,
         min_bid_amount: result.output.min_bid_amount,
         bidincrementamount: result.output.bidincrementamount,
         min_bid_increment: result.output.min_bid_increment,
@@ -432,59 +526,6 @@ const UpdateBidPage = (props: CreateBidPageProps) => {
       }
 
       const formData = new FormData();
-      formData.append("file", fileUploader!);
-
-      const uploadfile = await axios.post(props.uploadurl, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      if (uploadfile.status != 200) {
-        return toast.error("File upload failed");
-      }
-
-      const uploadfileResponse = await UploadFile({
-        name: doctitle.current?.value!,
-        path: uploadfile.data.filePath,
-        createdById: userid,
-        bidId: createbid.data?.id,
-      });
-
-      if (!uploadfileResponse.status) {
-        return toast.error("File upload failed");
-      }
-
-      toast.success("Bid added successfully");
-      router.back();
-    } else {
-      let errorMessage = "";
-      if (result.issues[0].input) {
-        errorMessage = result.issues[0].message;
-      } else {
-        errorMessage = result.issues[0].path![0].key + " is required";
-      }
-      toast.error(errorMessage);
-    }
-  };
-
-  const editbid = async () => {
-    if (
-      ctitle.current?.value == "" ||
-      ctitle.current?.value == null ||
-      ctitle.current?.value == undefined
-    ) {
-      return toast.error("Title is required");
-    } else if (
-      cdescription.current?.value == "" ||
-      cdescription.current?.value == null ||
-      cdescription.current?.value == undefined
-    ) {
-      return toast.error("Description is required");
-    } else if (cFile == null) {
-      return toast.error("Please upload a file");
-    } else {
-      const formData = new FormData();
       formData.append("file", cFile);
 
       const uploadfile = await axios.post(props.uploadurl, formData, {
@@ -509,8 +550,17 @@ const UpdateBidPage = (props: CreateBidPageProps) => {
         return toast.error("Corrigendum creation failed");
       }
 
+      toast.success("Bid updated successfully");
       router.back();
-      toast.success("Bid added successfully");
+    } else {
+      let errorMessage = "";
+      console.log(result.issues);
+      if (result.issues[0].input) {
+        errorMessage = result.issues[0].message;
+      } else {
+        errorMessage = result.issues[0].path![0].key + " is required";
+      }
+      toast.error(errorMessage);
     }
   };
 
@@ -1394,7 +1444,7 @@ const UpdateBidPage = (props: CreateBidPageProps) => {
             />
           </div>
 
-          <div className="flex gap-4 mt-4 items-center">
+          {/* <div className="flex gap-4 mt-4 items-center">
             <Label htmlFor="termfile">Terms & Conditions File</Label>
             <Button
               onClick={() => cFileUploader.current?.click()}
@@ -1422,11 +1472,10 @@ const UpdateBidPage = (props: CreateBidPageProps) => {
               <Input
                 type="file"
                 ref={cFileUploader}
-                accept="*/*"
                 onChange={(val) => handleFileChange(val, setFileUploader)}
-              />
-            </div>
-          </div>
+                />
+                </div>
+              </div> */}
 
           <p className="text-gray-500 mt-4">Select Bidder Category</p>
           <div className="flex gap-x-6 gap-y-4 flex-wrap mt-2">

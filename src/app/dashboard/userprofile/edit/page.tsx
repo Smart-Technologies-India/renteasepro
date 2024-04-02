@@ -16,12 +16,11 @@ import { handleNumberChange, longtext } from "@/utils/methods";
 import { UserDocType, user } from "@prisma/client";
 import axios from "axios";
 import { getCookie } from "cookies-next";
-import { get } from "http";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { boolean, safeParse } from "valibot";
+import { safeParse } from "valibot";
 
 async function uploadfile(
   file: File,
@@ -352,7 +351,6 @@ const UserBidsRunning = () => {
       firstName: firstNameRef.current?.value,
       lastName: lastNameRef.current?.value,
       contactone: contactoneRef.current?.value,
-      contacttwo: contacttwoRef.current?.value,
       email: emailRef.current?.value,
       aadhar: aadharRef.current?.value,
       pan: panRef.current?.value,
@@ -426,11 +424,11 @@ const UserBidsRunning = () => {
 
       const updateuserresponse = await updateUser({
         id: userid,
-        username: user?.username,
+        username: user?.username!,
         firstName: result.output.firstName,
         lastName: result.output.lastName,
         contactone: result.output.contactone,
-        contacttwo: result.output.contacttwo,
+        contacttwo: contacttwoRef.current?.value,
         email: result.output.email,
         city: result.output.city,
         address: result.output.address,
@@ -625,6 +623,7 @@ const UserBidsRunning = () => {
               type="text"
               className="w-full"
               onChange={handleNumberChange}
+              disabled
               ref={contactoneRef}
               maxLength={10}
             />
@@ -927,7 +926,7 @@ const UserBidsRunning = () => {
         ))}
         {field.includes("forwomen") && (
           <DocUploader
-            title="Women Certificate"
+            title="Aadhar Card/Pan Card/Passport"
             file={womenfile}
             setFile={setWomenFile}
             cFile={cWomenFile}
@@ -935,7 +934,7 @@ const UserBidsRunning = () => {
         )}
         {field.includes("category") && (
           <DocUploader
-            title="Category Certificate"
+            title="Caste Certificate"
             file={category}
             setFile={setCategory}
             cFile={cCategory}
@@ -943,7 +942,7 @@ const UserBidsRunning = () => {
         )}
         {field.includes("abled") && (
           <DocUploader
-            title="Differently Abled Certificate"
+            title="Disability Certificate"
             file={abled}
             setFile={setAbled}
             cFile={cAbled}
@@ -967,7 +966,7 @@ const UserBidsRunning = () => {
         )}
         {field.includes("tribal") && (
           <DocUploader
-            title="Tribal Certificate"
+            title="Scheduled Tribe Certificate"
             file={tribal}
             setFile={setTribal}
             cFile={cTribal}

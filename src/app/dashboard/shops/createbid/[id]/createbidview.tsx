@@ -24,13 +24,14 @@ import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { SetStateAction, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { isoDate, safeParse } from "valibot";
+import { safeParse } from "valibot";
 import { TimePicker } from "antd";
 import axios from "axios";
 import GetShop from "@/action/shop/getshop";
 import Link from "next/link";
 import { longtext } from "@/utils/methods";
 import UploadFile from "@/action/file_upload/uploadfile";
+import AddFileBid from "@/action/bid/addbidfile";
 
 interface CreateBidPageProps {
   shopid: number;
@@ -226,8 +227,6 @@ const CreateBidPage = (props: CreateBidPageProps) => {
   const create = async () => {
     const result = safeParse(CreateBidSchema, {
       title: title.current?.value,
-      description: description.current?.value,
-      instruction: instructions.current?.value,
       min_bid_amount: parseInt(minbid.current?.value ?? "0"),
       bidincrementamount: bidinc as PercentageType,
       min_bid_increment: parseInt(minbidinc.current?.value ?? "0"),
@@ -324,8 +323,8 @@ const CreateBidPage = (props: CreateBidPageProps) => {
 
       const createbid = await CreateBid({
         title: result.output.title,
-        description: result.output.description,
-        instruction: result.output.instruction,
+        description: description.current?.value,
+        instruction: instructions.current?.value,
         min_bid_amount: result.output.min_bid_amount,
         bidincrementamount: result.output.bidincrementamount,
         min_bid_increment: result.output.min_bid_increment,
@@ -361,7 +360,12 @@ const CreateBidPage = (props: CreateBidPageProps) => {
           exempt === Exempt.YES && exemptsectionsvalue.includes("emd"),
         is_bg_exempt_allowed:
           exempt === Exempt.YES && exemptsectionsvalue.includes("bg"),
+        docone: doctitle.current?.value,
+        doconedescription: docdescription.current?.value,
+        t_and_c_file_number: filenumber.current?.value,
+        t_and_c_description: filesubject.current?.value,
       });
+
       if (!createbid.status) {
         return toast.error(createbid.message);
       }
@@ -384,6 +388,11 @@ const CreateBidPage = (props: CreateBidPageProps) => {
         path: uploadfile.data.filePath,
         createdById: userid,
         bidId: createbid.data?.id,
+      });
+
+      const updatebid = await AddFileBid({
+        id: createbid.data?.id!,
+        t_and_c_upload: uploadfileResponse.data?.path,
       });
 
       if (!uploadfileResponse.status) {

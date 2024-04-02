@@ -3,6 +3,7 @@
 import ApplyBid from "@/action/bid/applybid";
 import GetBid from "@/action/bid/getbid";
 import getFromUser from "@/action/bid_transact/getfromuser";
+import UploadFile from "@/action/file_upload/uploadfile";
 import getUploadFileUser from "@/action/user/getuploadedfile";
 import GetUser from "@/action/user/getuser";
 import { Button } from "@/components/ui/button";
@@ -13,11 +14,14 @@ import {
   formatDateTime,
   formateDate,
   handleNumberChange,
+  longtext,
 } from "@/utils/methods";
 import { ExemptFor, UserDocType, bid, exempt, user } from "@prisma/client";
+import axios from "axios";
 import { getCookie } from "cookies-next";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { SetStateAction, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
 const getExemptfor = (value: ExemptFor): string => {
@@ -54,6 +58,30 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
 
   const [user, setUser] = useState<user>();
 
+  const banknameRef = useRef<HTMLInputElement>(null);
+  const transactionRef = useRef<HTMLInputElement>(null);
+
+  const [fileUploader, setFileUploader] = useState<File | null>(null);
+  const cFileUploader = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (
+    value: React.ChangeEvent<HTMLInputElement>,
+    setFun: (value: SetStateAction<File | null>) => void
+  ) => {
+    let file_size = parseInt(
+      (value!.target.files![0].size / 1024 / 1024).toString()
+    );
+    if (file_size < 5) {
+      if (value!.target.files![0].type.startsWith("image/")) {
+        setFun((val) => value!.target.files![0]);
+      } else {
+        toast.error("Please select a file.", { theme: "light" });
+      }
+    } else {
+      toast.error("File size must be less then 5 mb", { theme: "light" });
+    }
+  };
+
   useEffect(() => {
     const init = async () => {
       setLoading(true);
@@ -70,7 +98,6 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
       });
       if (bidresponse.status) {
         setBid(bidresponse.data ?? ({} as bid));
-        // setIsOpen(bidresponse.data?.is_auction ?? false);
       }
 
       const isaaplied = await getFromUser({
@@ -122,12 +149,12 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
         if (abledresponse.status && bidresponse.data.is_differently_abled)
           return true;
         if (msmeresponse.status && bidresponse.data.is_msme) return true;
-        if (stscresponse.status && bidresponse.data.is_stsc) return true;
+        if (stscresponse.status && bidresponse.data.is_sc_st) return true;
         if (tribalresponse.status && bidresponse.data.is_tribal) return true;
         return false;
       };
-      const value = setApplicable();
 
+      const value = setApplicable();
       setIsApplicable(() => value);
 
       // file info end here
@@ -168,18 +195,57 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
         `Bid amount should be in multiple of Rs.${bid.min_bid_increment}`
       );
 
+    if (!issecond && fileUploader == null) {
+      return toast.error("Please upload receipt file");
+    }
+
+    if (!issecond && banknameRef.current?.value == "") {
+      return toast.error("Please enter bank name");
+    }
+
+    if (!issecond && transactionRef.current?.value == "") {
+      return toast.error("Please enter transaction id");
+    }
+
     const createbid = await ApplyBid({
       amount: parseInt(amount.current?.value ?? "0"),
       bidId: parseInt(props.bidid.toString()),
       shopId: bid?.shopId ?? 0,
       userId: parseInt(userid.toString()),
       issecond: issecond,
+      fees: bid.fees_amount,
+      emd: bid.emd_amount,
+      bg: bid.bg_amount,
+      bankname: banknameRef.current?.value ?? "",
+      transactionid: transactionRef.current?.value ?? "",
     });
-
     if (!createbid.status) return toast.error(createbid.message);
 
-    toast.success(createbid.message);
+    if (!issecond) {
+      const formData = new FormData();
+      formData.append("file", fileUploader!);
+
+      const uploadfile = await axios.post(process.env.UPLOAD_LINK!, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (uploadfile.status != 200) {
+        return toast.error("File upload failed");
+      }
+
+      await UploadFile({
+        name: "receipt",
+        path: uploadfile.data.filePath,
+        createdById: userid,
+        bidId: createbid.data?.id,
+      });
+
+      return router.push(`/dashboard/bidrecept/${userid}/${props.bidid}`);
+    }
     router.back();
+    toast.success(createbid.message);
   };
 
   const [page, setPage] = useState<number>(0);
@@ -348,7 +414,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                 <a
                   download={true}
                   href={bid.t_and_c_upload}
-                  className="bg-green-500 hover:bg-green-500 py-1 px-4 rounded-md text-white"
+                  className="bg-green-500 hover:bg-green-500 py-1 px-4 rounded-md text-white cursor-pointer"
                 >
                   Download File
                 </a>
@@ -425,6 +491,22 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                   ) : (
                     <></>
                   )}
+                  {bid.is_sc_st == true ? (
+                    <div className="bg-gray-100 rounded-sm shadow py-1 px-4 text-xs">
+                      For SC/ST
+                    </div>
+                  ) : (
+                    <></>
+                  )}
+                  {bid.tribal == true ? (
+                    <>
+                      <div className="bg-gray-100 rounded-sm shadow py-1 px-4 text-xs">
+                        For Tribal
+                      </div>
+                    </>
+                  ) : (
+                    <></>
+                  )}
                 </div>
 
                 {bid?.is_exemption == true && (
@@ -493,7 +575,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                 </div>
               </div>
 
-              {isAplicable == true ? (
+              {isAplicable ? (
                 <>
                   {bid.is_auction == true ? (
                     <>
@@ -572,21 +654,33 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                               User Submitted Bid Information
                             </p>
                             <Separator />
-                            <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
-                              <h1>Minimum Bid:</h1>
-                              <p>{bid.min_bid_amount}</p>
+
+                            <div className="flex gap-2">
+                              <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
+                                <h1 className="text-center">Minimum Bid</h1>
+                                <p className="text-center text-xl">
+                                  {bid.min_bid_amount}
+                                </p>
+                              </div>
+
+                              <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
+                                <h1 className="text-center">
+                                  Min Bid Increment
+                                </h1>
+                                <p className="text-center text-xl">
+                                  {bid.min_bid_increment}
+                                </p>
+                              </div>
+                              {bid.is_auction == true && (
+                                <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
+                                  <h1 className="text-center">Current Bid</h1>
+                                  <p className="text-center text-xl">
+                                    {bid.max_bid_amount}
+                                  </p>
+                                </div>
+                              )}
                             </div>
 
-                            <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
-                              <h1>Min Bid Increment:</h1>
-                              <p>{bid.min_bid_increment}</p>
-                            </div>
-                            {bid.is_auction == true && (
-                              <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
-                                <h1>Current Bid:</h1>
-                                <p>{bid.max_bid_amount}</p>
-                              </div>
-                            )}
                             <div className="grid items-center gap-1.5 w-full mt-4">
                               <Label htmlFor="minbid">Enter Bid Amount</Label>
                               <Input
@@ -641,6 +735,67 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                                     parseInt(bid.emd_amount.toString() ?? "0")}
                               </p>
                             </div>
+
+                            <div className="grid items-center gap-1.5 w-full mt-4">
+                              <Label htmlFor="bankname">Enter Bank Name</Label>
+                              <Input
+                                id="bankname"
+                                type="text"
+                                className="w-full"
+                                ref={banknameRef}
+                              />
+                            </div>
+
+                            <div className="grid items-center gap-1.5 w-full mt-4">
+                              <Label htmlFor="transactionid">
+                                Enter Transaction Id
+                              </Label>
+                              <Input
+                                id="transactionid"
+                                type="text"
+                                className="w-full"
+                                ref={transactionRef}
+                              />
+                            </div>
+
+                            <div className="flex gap-4 mt-4 items-center">
+                              <Label htmlFor="termfile">Upload receipt</Label>
+                              <Button
+                                onClick={() => cFileUploader.current?.click()}
+                                variant={"secondary"}
+                              >
+                                {fileUploader == null
+                                  ? "Upload File"
+                                  : "Change File"}
+                              </Button>
+
+                              {fileUploader != null && (
+                                <Link
+                                  target="_blank"
+                                  href={URL.createObjectURL(fileUploader!)}
+                                  className="bg-gray-100 text-black py-1 px-4 rounded-md text-sm h-10 grid place-items-center"
+                                >
+                                  View File
+                                </Link>
+                              )}
+                              <p className="text-sm">
+                                {fileUploader != null
+                                  ? longtext(fileUploader.name, 20)
+                                  : "No File Selected"}
+                              </p>
+
+                              <div className="hidden">
+                                <Input
+                                  type="file"
+                                  ref={cFileUploader}
+                                  accept="*/*"
+                                  onChange={(val) =>
+                                    handleFileChange(val, setFileUploader)
+                                  }
+                                />
+                              </div>
+                            </div>
+
                             <Button
                               onClick={() => create(false)}
                               className="w-full mt-4"
@@ -660,21 +815,31 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                               User Submitted Bid Information
                             </p>
                             <Separator />
-                            <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
-                              <h1>Minimum Bid:</h1>
-                              <p>{bid.min_bid_amount}</p>
-                            </div>
-
-                            <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
-                              <h1>Min Bid Increment:</h1>
-                              <p>{bid.min_bid_increment}</p>
-                            </div>
-                            {bid.is_auction == true && (
+                            <div className="flex gap-2">
                               <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
-                                <h1>Current Bid:</h1>
-                                <p>{bid.max_bid_amount}</p>
+                                <h1 className="text-center">Minimum Bid</h1>
+                                <p className="text-center text-xl">
+                                  {bid.min_bid_amount}
+                                </p>
                               </div>
-                            )}
+
+                              <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
+                                <h1 className="text-center">
+                                  Min Bid Increment
+                                </h1>
+                                <p className="text-center text-xl">
+                                  {bid.min_bid_increment}
+                                </p>
+                              </div>
+                              {bid.is_auction == true && (
+                                <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
+                                  <h1 className="text-center">Current Bid</h1>
+                                  <p className="text-center text-xl">
+                                    {bid.max_bid_amount}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
 
                             <div className="flex justify-between mt-2">
                               <p>User Bid Amount</p>
@@ -733,21 +898,31 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                               User Submitted Bid Information
                             </p>
                             <Separator />
-                            <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
-                              <h1>Minimum Bid:</h1>
-                              <p>{bid.min_bid_amount}</p>
-                            </div>
-
-                            <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
-                              <h1>Min Bid Increment:</h1>
-                              <p>{bid.min_bid_increment}</p>
-                            </div>
-                            {bid.is_auction == true && (
+                            <div className="flex gap-2">
                               <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
-                                <h1>Current Bid:</h1>
-                                <p>{bid.max_bid_amount}</p>
+                                <h1 className="text-center">Minimum Bid</h1>
+                                <p className="text-center text-xl">
+                                  {bid.min_bid_amount}
+                                </p>
                               </div>
-                            )}
+
+                              <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
+                                <h1 className="text-center">
+                                  Min Bid Increment
+                                </h1>
+                                <p className="text-center text-xl">
+                                  {bid.min_bid_increment}
+                                </p>
+                              </div>
+                              {bid.is_auction == true && (
+                                <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
+                                  <h1 className="text-center">Current Bid</h1>
+                                  <p className="text-center text-xl">
+                                    {bid.max_bid_amount}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
                             <div className="grid items-center gap-1.5 w-full mt-4">
                               <Label htmlFor="minbid">Enter Bid Amount</Label>
                               <Input
@@ -802,6 +977,67 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                                     parseInt(bid.emd_amount.toString() ?? "0")}
                               </p>
                             </div>
+
+                            <div className="grid items-center gap-1.5 w-full mt-4">
+                              <Label htmlFor="bankname">Enter Bank Name</Label>
+                              <Input
+                                id="bankname"
+                                type="text"
+                                className="w-full"
+                                ref={banknameRef}
+                              />
+                            </div>
+
+                            <div className="grid items-center gap-1.5 w-full mt-4">
+                              <Label htmlFor="transactionid">
+                                Enter Transaction Id
+                              </Label>
+                              <Input
+                                id="transactionid"
+                                type="text"
+                                className="w-full"
+                                ref={transactionRef}
+                              />
+                            </div>
+
+                            <div className="flex gap-4 mt-4 items-center">
+                              <Label htmlFor="termfile">Upload receipt</Label>
+                              <Button
+                                onClick={() => cFileUploader.current?.click()}
+                                variant={"secondary"}
+                              >
+                                {fileUploader == null
+                                  ? "Upload File"
+                                  : "Change File"}
+                              </Button>
+
+                              {fileUploader != null && (
+                                <Link
+                                  target="_blank"
+                                  href={URL.createObjectURL(fileUploader!)}
+                                  className="bg-gray-100 text-black py-1 px-4 rounded-md text-sm h-10 grid place-items-center"
+                                >
+                                  View File
+                                </Link>
+                              )}
+                              <p className="text-sm">
+                                {fileUploader != null
+                                  ? longtext(fileUploader.name, 20)
+                                  : "No File Selected"}
+                              </p>
+
+                              <div className="hidden">
+                                <Input
+                                  type="file"
+                                  ref={cFileUploader}
+                                  accept="*/*"
+                                  onChange={(val) =>
+                                    handleFileChange(val, setFileUploader)
+                                  }
+                                />
+                              </div>
+                            </div>
+
                             <Button
                               onClick={() => create(false)}
                               className="w-full mt-4"

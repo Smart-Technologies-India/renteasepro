@@ -31,6 +31,9 @@ const GetFromShop = async (
           {
             status: "PAID",
           },
+          {
+            status: "INACTIVE",
+          },
         ],
         shopId: parseInt(payload.shopid.toString() ?? "0"),
         deletedAt: null,

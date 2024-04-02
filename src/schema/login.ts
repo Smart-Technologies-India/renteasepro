@@ -2,9 +2,9 @@ import { isContainSpace } from "@/utils/methods";
 import { Input, custom, minLength, object, string } from "valibot";
 
 const LoginSchema = object({
-  username: string([
-    minLength(1, "Please enter your username."),
-    custom(isContainSpace, "Username cannot contain space."),
+  contactone: string([
+    minLength(10, "Contact number should be 10 digits."),
+    custom(isContainSpace, "Contact number cannot contain space."),
   ]),
   password: string([
     minLength(1, "Please enter your password."),

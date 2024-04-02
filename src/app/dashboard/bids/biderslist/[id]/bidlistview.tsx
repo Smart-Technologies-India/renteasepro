@@ -37,7 +37,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { set } from "date-fns";
 
 interface BidHistoryViewProps {
   id: number;
@@ -52,6 +51,8 @@ const BidHistoryView = (props: BidHistoryViewProps) => {
   const [filterbid, setFilterbid] = useState<any[]>([]);
 
   const [bids, setBids] = useState<any[]>([]);
+
+  const [alldone, setAllDone] = useState<boolean>(false);
 
   const filtershopbycategory = (category: string) => {
     if (category === "All") {
@@ -75,6 +76,18 @@ const BidHistoryView = (props: BidHistoryViewProps) => {
   };
 
   useEffect(() => {
+    const setall = (bidslist: any[]) => {
+      let bidstatuslist: string[] = bidslist.map((item: any) => {
+        return item.status;
+      });
+
+      if (bidstatuslist.includes(BidTransact.PENDING)) {
+        setAllDone(false);
+      } else {
+        setAllDone(true);
+      }
+    };
+
     const init = async () => {
       setIsLoading(true);
       const bidresponse = await GetFromBidId({
@@ -86,6 +99,7 @@ const BidHistoryView = (props: BidHistoryViewProps) => {
         setFilterbid(bidresponse.data ?? []);
       }
 
+      setall(bidresponse.data ?? []);
       setIsLoading(false);
     };
     init();
@@ -236,7 +250,18 @@ const BidHistoryView = (props: BidHistoryViewProps) => {
                         >
                           View user Docs
                         </DropdownMenuItem>
-                        {bid_tans.status == BidTransact.ACCEPTED ? (
+
+                        <DropdownMenuItem
+                          onClick={() => {
+                            return router.push(
+                              `/dashboard/bidrecept/${bid_tans.user.id}/${bid_tans.bid.id}`
+                            );
+                          }}
+                          className="cursor-pointer"
+                        >
+                          View Bid Receipt
+                        </DropdownMenuItem>
+                        {alldone && bid_tans.status == BidTransact.ACCEPTED ? (
                           <>
                             <DropdownMenuItem
                               className="cursor-pointer"

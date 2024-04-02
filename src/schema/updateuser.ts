@@ -16,10 +16,6 @@ const UpdateUserSchema = object({
     minLength(10, "Contact number should be 10 digits."),
     custom(isContainSpace, "Contact number cannot contain space."),
   ]),
-  contacttwo: string([
-    minLength(10, "Second contact number should be 10 digits."),
-    custom(isContainSpace, "Second contact number cannot contain space."),
-  ]),
   email: string([
     minLength(1, "Please enter your email."),
     email("Please enter a valid email."),

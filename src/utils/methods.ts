@@ -115,7 +115,16 @@ const formatDateTime = (date: Date): string => {
     " " +
     meridiem;
 
-  return `${day}-${month}-${year} ${formattedTime}`;
+  //  if month and day is less than 10, add 0 before month
+  if (month < 10 && day < 10) {
+    return `0${day}-0${month}-${year} ${formattedTime}`;
+  } else if (month < 10) {
+    return `${day}-0${month}-${year} ${formattedTime}`;
+  } else if (day < 10) {
+    return `0${day}-${month}-${year} ${formattedTime}`;
+  } else {
+    return `${day}-${month}-${year} ${formattedTime}`;
+  }
 };
 
 export { formatDateTime };
@@ -124,7 +133,16 @@ const formateDate = (date: Date): string => {
   const day = date.getDate();
   const month = date.getMonth() + 1;
   const year = date.getFullYear();
-  return `${day}-${month}-${year}`;
+
+  if (month < 10 && day < 10) {
+    return `0${day}-0${month}-${year}`;
+  } else if (month < 10) {
+    return `${day}-0${month}-${year}`;
+  } else if (day < 10) {
+    return `0${day}-${month}-${year}`;
+  } else {
+    return `${day}-${month}-${year}`;
+  }
 };
 
 export { formateDate };

@@ -48,7 +48,6 @@ const BidPropertiesView = () => {
       if (!rent_transaction.status)
         return toast.error(rent_transaction.message);
 
-      console.log(rent_transaction.data);
 
       const propertry = rent_transaction.data?.map((item: any) => {
         return item.shop.property.name;

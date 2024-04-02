@@ -65,6 +65,7 @@ const AddShopPage = (props: AddShopPageProps) => {
     });
 
     if (result.success) {
+      
       const createshop = await CreateShop({
         propertyId: parseInt(props.id.toString()),
         shopCategoryId: shopcategory,

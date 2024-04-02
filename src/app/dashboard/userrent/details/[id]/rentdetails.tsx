@@ -7,75 +7,57 @@ import { AntDesignCheckOutlined } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
-import { formateDate } from "@/utils/methods";
+import { formateDate, longtext } from "@/utils/methods";
 import { rent_transact } from "@prisma/client";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { SetStateAction, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
+import { getCookie } from "cookies-next";
+import { Label } from "@/components/ui/label";
+import Link from "next/link";
+import { Input } from "@/components/ui/input";
+import axios from "axios";
+import UploadFile from "@/action/file_upload/uploadfile";
 
 interface UserRentDetailsViewProps {
   id: number;
 }
 
 const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
+  const userid: number = parseInt(getCookie("id") ?? "0");
+
   const [field, setField] = useState<number[]>([]);
+  const router = useRouter();
 
   const [amount, setAmount] = useState<number>(0);
-
-  const items = [
-    {
-      name: "January",
-      status: true,
-    },
-    {
-      name: "February",
-      status: true,
-    },
-    {
-      name: "March",
-      status: true,
-    },
-    {
-      name: "April",
-      status: true,
-    },
-    {
-      name: "May",
-      status: true,
-    },
-    {
-      name: "June",
-      status: true,
-    },
-    {
-      name: "July",
-      status: true,
-    },
-    {
-      name: "August",
-      status: true,
-    },
-    {
-      name: "September",
-      status: false,
-    },
-    {
-      name: "October",
-      status: false,
-    },
-    {
-      name: "November",
-      status: false,
-    },
-    {
-      name: "December",
-      status: false,
-    },
-  ];
 
   const [isLoading, setLoading] = useState<boolean>(true);
   const [rent, setRent] = useState<any>();
   const [rentTransact, setRentTransact] = useState<rent_transact[]>([]);
-  // GetUserRent
+
+  const banknameRef = useRef<HTMLInputElement>(null);
+  const transactionRef = useRef<HTMLInputElement>(null);
+
+  const [fileUploader, setFileUploader] = useState<File | null>(null);
+  const cFileUploader = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (
+    value: React.ChangeEvent<HTMLInputElement>,
+    setFun: (value: SetStateAction<File | null>) => void
+  ) => {
+    let file_size = parseInt(
+      (value!.target.files![0].size / 1024 / 1024).toString()
+    );
+    if (file_size < 5) {
+      if (value!.target.files![0].type.startsWith("image/")) {
+        setFun((val) => value!.target.files![0]);
+      } else {
+        toast.error("Please select a file.", { theme: "light" });
+      }
+    } else {
+      toast.error("File size must be less then 5 mb", { theme: "light" });
+    }
+  };
 
   useEffect(() => {
     const init = async () => {
@@ -85,6 +67,7 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
       if (rentresponse.status) {
         setRent(rentresponse.data);
       }
+
       const rentTransactresponse = await GetUserRent({ rentid: props.id });
       if (rentTransactresponse.status) {
         setRentTransact(rentTransactresponse.data as rent_transact[]);
@@ -96,10 +79,53 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
 
   const payfees = async () => {
     setLoading(true);
-    const payrent_response = await PayRent({ rentid: field });
+    if (field.length == 0) {
+      toast.error("Please select atleast one month to pay rent");
+      setLoading(false);
+      return;
+    }
+
+    if (!banknameRef.current?.value) {
+      toast.error("Please enter bank name");
+      setLoading(false);
+      return;
+    }
+
+    if (!transactionRef.current?.value) {
+      toast.error("Please enter transaction id");
+      setLoading(false);
+      return;
+    }
+
+    const payrent_response = await PayRent({
+      rentid: field,
+      transactionid: transactionRef.current?.value ?? "",
+      bankname: banknameRef.current?.value ?? "",
+    });
+
     if (payrent_response.status) {
       toast.success(payrent_response.message);
     }
+
+    const formData = new FormData();
+    formData.append("file", fileUploader!);
+
+    const uploadfile = await axios.post(process.env.UPLOAD_LINK!, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    if (uploadfile.status != 200) {
+      return toast.error("File upload failed");
+    }
+
+    await UploadFile({
+      name: "receipt",
+      path: uploadfile.data.filePath,
+      createdById: userid,
+      rentId: field[0],
+    });
 
     const rentresponse = await GetRent({ id: parseInt(props.id.toString()) });
     if (rentresponse.status) {
@@ -109,6 +135,10 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
     if (rentTransactresponse.status) {
       setRentTransact(rentTransactresponse.data as rent_transact[]);
     }
+    router.push(
+      `/dashboard/rentrecept/${userid}/${props.id}/${banknameRef.current?.value}`
+    );
+
     setField([]);
     setAmount(0);
     setLoading(false);
@@ -148,12 +178,12 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
 
             <div className="mt-4">
               <h1 className="">Start Date:</h1>
-              <p className="">{formateDate(new Date(rent.rent_end_date))}</p>
+              <p className="">{formateDate(new Date(rent.rent_start_date))}</p>
             </div>
 
             <div className="mt-4">
               <h1 className="">End Date:</h1>
-              <p className="">{formateDate(new Date(rent.rent_start_date))}</p>
+              <p className="">{formateDate(new Date(rent.rent_end_date))}</p>
             </div>
 
             <div className="mt-4">
@@ -256,25 +286,65 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
                   </p>
                 </div>
 
+                <div className="grid items-center gap-1.5 w-full mt-4">
+                  <Label htmlFor="bankname">Enter Bank Name</Label>
+                  <Input
+                    id="bankname"
+                    type="text"
+                    className="w-full"
+                    ref={banknameRef}
+                  />
+                </div>
+
+                <div className="grid items-center gap-1.5 w-full mt-4">
+                  <Label htmlFor="transactionid">Enter Transaction Id</Label>
+                  <Input
+                    id="transactionid"
+                    type="text"
+                    className="w-full"
+                    ref={transactionRef}
+                  />
+                </div>
+
+                <div className="flex gap-4 mt-4 items-center">
+                  <Label htmlFor="termfile">Upload receipt</Label>
+                  <Button
+                    onClick={() => cFileUploader.current?.click()}
+                    variant={"secondary"}
+                  >
+                    {fileUploader == null ? "Upload File" : "Change File"}
+                  </Button>
+
+                  {fileUploader != null && (
+                    <Link
+                      target="_blank"
+                      href={URL.createObjectURL(fileUploader!)}
+                      className="bg-gray-100 text-black py-1 px-4 rounded-md text-sm h-10 grid place-items-center"
+                    >
+                      View File
+                    </Link>
+                  )}
+                  <p className="text-sm">
+                    {fileUploader != null
+                      ? longtext(fileUploader.name, 20)
+                      : "No File Selected"}
+                  </p>
+
+                  <div className="hidden">
+                    <Input
+                      type="file"
+                      ref={cFileUploader}
+                      accept="*/*"
+                      onChange={(val) => handleFileChange(val, setFileUploader)}
+                    />
+                  </div>
+                </div>
+
                 <Button onClick={payfees} className="w-full mt-4">
                   Pay Rent
                 </Button>
               </>
             )}
-          </div>
-        </div>
-        <div className="w-full bg-white rounded-sm shadow-sm mt-4">
-          <div className="bg-white rounded-sm shadow-sm">
-            <p className="text-xl p-2  font-semibold border-b border-gray-300">
-              {" "}
-              Rent History - 2022
-            </p>
-
-            <div className="grow grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 md:grid-cols-4 gap-2 flex-wrap justify-center items-center">
-              {items.map((item, index) => (
-                <PropertiesDeatils key={index} {...item} />
-              ))}
-            </div>
           </div>
         </div>
       </div>

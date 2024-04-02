@@ -2,7 +2,7 @@
 
 import { errorToString } from "@/utils/methods";
 import { ApiResponseType } from "@/models/response";
-import { bid_transact } from "@prisma/client";
+import { BidPaymentType, bid_transact } from "@prisma/client";
 import prisma from "../../../prisma/database";
 import { SMSType, sendSMS } from "@/utils/smsmessage";
 
@@ -12,6 +12,11 @@ interface ApplyBidPayload {
   shopId: number;
   amount: number;
   issecond: boolean;
+  fees?: number;
+  emd?: number;
+  bg?: number;
+  bankname?: string;
+  transactionid?: string;
 }
 
 const ApplyBid = async (
@@ -45,20 +50,61 @@ const ApplyBid = async (
       const year = new Date().getFullYear();
       const name = bid_transactresponse.bid.is_auction ? "AUCTION" : "TENDER";
 
-      const transactionid = `${name}_${year}_${bid_transactresponse.bid.id}`;
-      const bidpaymentresponse = await prisma.bid_payment.create({
+      const timestamp = new Date().getTime();
+
+      const transactionid = `${name}_${year}_${bid_transactresponse.bid.id}_${timestamp}`;
+
+      await prisma.bid_payment.create({
         data: {
           userId: payload.userId,
           shopId: payload.shopId,
           bidId: payload.bidId,
-          amount: payload.amount,
+          amount: payload.fees ?? 0,
+          paymenttype: BidPaymentType.FEES,
           gateway_charge: "0",
           transaction_date: new Date(),
           paymentmode: "online",
-          transactionid: transactionid,
+          transactionid: payload.transactionid,
+          bankname: payload.bankname,
           createdById: payload.userId,
         },
       });
+
+      if (payload.emd && payload.emd > 0) {
+        await prisma.bid_payment.create({
+          data: {
+            userId: payload.userId,
+            shopId: payload.shopId,
+            bidId: payload.bidId,
+            amount: payload.emd,
+            paymenttype: BidPaymentType.EMD,
+            gateway_charge: "0",
+            transaction_date: new Date(),
+            paymentmode: "online",
+            transactionid: payload.transactionid,
+            bankname: payload.bankname,
+            createdById: payload.userId,
+          },
+        });
+      }
+
+      if (payload.bg && payload.bg > 0) {
+        await prisma.bid_payment.create({
+          data: {
+            userId: payload.userId,
+            shopId: payload.shopId,
+            bidId: payload.bidId,
+            amount: payload.bg,
+            paymenttype: BidPaymentType.BG,
+            gateway_charge: "0",
+            transaction_date: new Date(),
+            paymentmode: "online",
+            transactionid: payload.transactionid,
+            bankname: payload.bankname,
+            createdById: payload.userId,
+          },
+        });
+      }
     }
 
     const messageresponse = await sendSMS({

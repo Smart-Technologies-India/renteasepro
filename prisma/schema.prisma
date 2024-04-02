@@ -134,7 +134,7 @@ enum BidStatus {
 
 model user {
   id                Int       @id @default(autoincrement())
-  username          String?   @unique
+  username          String?
   password          String?
   firstName         String?
   lastName          String?
@@ -142,8 +142,8 @@ model user {
   contacttwo        String?
   email             String?   @unique
   otp               String?
-  aadhar            String?
-  pan               String?
+  aadhar            String?   @unique
+  pan               String?   @unique
   address           String?   @db.MediumText
   city              String?
   bankName          String?
@@ -346,7 +346,7 @@ model bid {
   shop                 shop           @relation(fields: [shopId], references: [id])
   shopId               Int
   title                String
-  description          String
+  description          String?
   instruction          String?
   min_bid_amount       Int            @db.MediumInt
   bidincrementamount   PercentageType @default(PERCENTAGE)
