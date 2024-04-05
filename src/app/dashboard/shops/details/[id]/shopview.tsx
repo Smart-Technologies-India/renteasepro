@@ -292,7 +292,9 @@ const ShopView = (props: ShowShopProps) => {
               </h1>
             )}
 
-            {bid.bidenddate < new Date() ? (
+            {bid.bidstartdate > new Date() ? (
+              <></>
+            ) : bid.bidenddate < new Date() ? (
               <h1 className="border-rose-500 border-2 rounded text-rose-500 bg-rose-500 bg-opacity-10  px-2 py-1 text-sm">
                 Bid Ended
               </h1>
@@ -457,36 +459,50 @@ const PropertiesDeatils = (props: PropertiesDeatilsProps) => {
     switch (props.status) {
       case RentTransactStatus.INACTIVE:
         return (
-          <div className="bg-gray-500 bg-opacity-10 h-7 grid place-items-center w-10 border border-gray-500 mt-1 rounded-sm"></div>
+          <div className="bg-gray-200 px-3 grid place-items-center border border-gray-200 mt-1 rounded-sm">
+            <p className="text-black font-semibold leading-4 text-xs">N/A</p>
+            {/* <AntDesignCheckOutlined className="text-green-500 text-xl" /> */}
+          </div>
         );
+
       case RentTransactStatus.PAID:
         return (
-          <div className="bg-green-500 bg-opacity-10 h-7 grid place-items-center w-10 border border-green-500 mt-1 rounded-sm">
-            <AntDesignCheckOutlined className="text-green-500 text-xl" />
+          <div className="bg-green-400 px-3 grid place-items-center border border-green-400 mt-1 rounded-sm">
+            <p className="text-black font-semibold leading-4 text-xs">Paid</p>
+            {/* <AntDesignCheckOutlined className="text-green-500 text-xl" /> */}
           </div>
         );
 
       case RentTransactStatus.DUE:
         return (
-          <div className="bg-yellow-500 bg-opacity-10 h-7 grid place-items-center w-10 border border-yellow-500 mt-1 rounded-sm">
-            <MaterialSymbolsCalendarClockRounded className="text-yellow-500 text-xl" />
+          <div className="bg-yellow-400 px-3 grid place-items-center border border-yellow-400 mt-1 rounded-sm">
+            <p className="text-black font-semibold leading-4 text-xs">Due</p>
+            {/* <MaterialSymbolsCalendarClockRounded className="text-yellow-500 text-xl" /> */}
           </div>
         );
       case RentTransactStatus.LATE:
         return (
-          <div className="bg-orange-500 bg-opacity-10 h-7 grid place-items-center w-10 border border-orange-500 mt-1 rounded-sm">
-            <Fa6RegularHourglassHalf className="text-orange-500 text-xl" />
+          <div className="bg-orange-400 px-3 grid place-items-center border border-orange-400 mt-1 rounded-sm">
+            <p className="text-black font-semibold leading-4 text-xs">Late</p>
+
+            {/* <Fa6RegularHourglassHalf className="text-orange-500 text-xl" /> */}
           </div>
         );
+
       case RentTransactStatus.MONTHCROSS:
         return (
-          <div className="bg-rose-500 bg-opacity-10 h-7 grid place-items-center w-10 border border-rose-500 mt-1 rounded-sm">
-            <Fa6RegularCalendarXmark className="text-rose-500 text-xl" />
+          <div className="bg-rose-400 px-3 grid place-items-center border border-rose-400 mt-1 rounded-sm">
+            <p className="text-black font-semibold leading-4 text-xs">
+              Month Cross
+            </p>
+            {/* <Fa6RegularCalendarXmark className="text-rose-500 text-xl" /> */}
           </div>
         );
+
       default:
         return (
-          <div className="bg-gray-500 bg-opacity-10 h-7 grid place-items-center w-10 border border-gray-500 mt-1 rounded-sm"></div>
+          <></>
+          // <div className="bg-gray-500 bg-opacity-10 h-7 grid place-items-center w-10 border border-gray-500 mt-1 rounded-sm"></div>
         );
     }
   };

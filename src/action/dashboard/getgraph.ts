@@ -16,7 +16,6 @@ const getGraph = async (
   payload: getGraphPayload
 ): Promise<ApiResponseType<reponsedata[] | null>> => {
   try {
-
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
     let currentYear = currentDate.getFullYear();
@@ -68,9 +67,6 @@ const getGraph = async (
               status: "LATE",
             },
             {
-              status: "VERYLATE",
-            },
-            {
               status: "MONTHCROSS",
             },
             {
@@ -90,7 +86,6 @@ const getGraph = async (
         totalamount: totalamount,
       });
     }
-
 
     return {
       status: true,

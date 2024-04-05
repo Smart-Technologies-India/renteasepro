@@ -4,6 +4,7 @@ import { errorToString } from "@/utils/methods";
 import { ApiResponseType } from "@/models/response";
 import { bid_transact } from "@prisma/client";
 import prisma from "../../../prisma/database";
+import { SMSType, sendSMS } from "@/utils/smsmessage";
 
 interface setWinnerPayload {
   id: number;
@@ -73,6 +74,14 @@ const setWinner = async (
         status: "WINNINGBID",
         iswinningbid: true,
       },
+      include: {
+        user: true,
+        shop: {
+          include: {
+            property: true,
+          },
+        },
+      },
     });
 
     const updateother = await prisma.bid_transact.updateMany({
@@ -95,6 +104,21 @@ const setWinner = async (
         message: "Bid transact not updated. Please try again.",
         functionname: "setWinner",
       };
+
+    const messageresponse = await sendSMS({
+      type: SMSType.BidAccepted,
+      contact: updateresponse.user.contactone!,
+      propertyName: updateresponse.shop.property.name,
+    });
+
+    if (!messageresponse.status) {
+      return {
+        status: false,
+        data: null,
+        message: messageresponse.message,
+        functionname: "setWinner",
+      };
+    }
 
     return {
       status: true,

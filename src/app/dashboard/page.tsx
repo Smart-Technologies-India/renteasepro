@@ -12,12 +12,14 @@ import getGraph from "@/action/dashboard/getgraph";
 import { getCookie } from "cookies-next";
 import GetUser from "@/action/user/getuser";
 import { user } from "@prisma/client";
+import { useRouter } from "next/navigation";
 
 // ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale);
 ChartJS.register(...registerables);
 
 const DashboardPage = () => {
   const userid: number = parseInt(getCookie("id") ?? "0");
+  const router = useRouter();
 
   const [isLoading, setLoading] = useState<boolean>(true);
   const [count, setCount] = useState<any>({});
@@ -30,6 +32,19 @@ const DashboardPage = () => {
 
   const [user, setUser] = useState<user>();
 
+  const getpercentage = (currentamount: number, lastamount: number) => {
+    let dev = currentamount / lastamount;
+
+    console.log("currentamount", currentamount);
+    console.log("lastamount", lastamount);
+    console.log("dev", dev);
+    let num = Number(dev.toFixed(2));
+
+    // if value is 1.32 then 32%
+    // if value is 0.32 then -68%
+    return (num - 1) * 100;
+  };
+
   useEffect(() => {
     const init = async () => {
       setLoading(true);
@@ -41,6 +56,7 @@ const DashboardPage = () => {
       if (monthdatarespone.status) {
         setMonthinfo(monthdatarespone.data!);
       }
+      console.log("monthdatarespone", monthdatarespone);
       const graphresponse = await getGraph({});
       if (graphresponse.status) {
         setGraphData(graphresponse.data!);
@@ -50,10 +66,14 @@ const DashboardPage = () => {
       if (userresponse.status) {
         setUser(userresponse.data!);
       }
+
+      if (userresponse.data?.role == "USER") {
+        router.push("/dashboard/userproperties");
+      }
       setLoading(false);
     };
     init();
-  }, [userid]);
+  }, [userid, router]);
 
   const options: any = {
     responsive: true,
@@ -242,7 +262,9 @@ const DashboardPage = () => {
                 <div className="flex gap-2 text-gray-500 text-xs">
                   <p>Receivable In {currentmonthname}</p>
                   <div className="grow"></div>
-                  <p>54%</p>
+                  <p>
+                    {getpercentage(monthinfo.total, monthinfo.lastmonthtotal)}
+                  </p>
                 </div>
                 <ProgressBar
                   className="my-2"
@@ -261,7 +283,12 @@ const DashboardPage = () => {
                 <div className="flex gap-2 text-gray-500 text-xs">
                   <p>Received In {currentmonthname}</p>
                   <div className="grow"></div>
-                  <p>54%</p>
+                  <p>
+                    {getpercentage(
+                      monthinfo.collect,
+                      monthinfo.lastmonthcollect
+                    )}
+                  </p>
                 </div>
                 <ProgressBar
                   className="my-2"
@@ -281,7 +308,12 @@ const DashboardPage = () => {
                 <div className="flex gap-2 text-gray-500 text-xs">
                   <p>Total Payment in period</p>
                   <div className="grow"></div>
-                  <p>54%</p>
+                  <p>
+                    {getpercentage(
+                      monthinfo.collect - monthinfo.total,
+                      monthinfo.lastmonthcollect - monthinfo.lastmonthtotal
+                    )}
+                  </p>
                 </div>
                 <ProgressBar
                   className="my-2"

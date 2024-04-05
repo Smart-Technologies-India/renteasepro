@@ -3,8 +3,8 @@
 import { errorToString } from "@/utils/methods";
 import { ApiResponseType } from "@/models/response";
 import prisma from "../../../prisma/database";
-import { ExemptFor, PercentageType, bid } from "@prisma/client";
-import { mkdir } from "fs/promises";
+import { ExemptFor, PercentageType, UserDocType, bid } from "@prisma/client";
+import { SMSType, sendSMS } from "@/utils/smsmessage";
 
 interface CreateBidPayload {
   shopId: number;
@@ -60,10 +60,6 @@ interface CreateBidPayload {
   exempt_bg?: PercentageType;
   exempt_bg_amount?: number;
 }
-
-const ensureDirectory = async (dir: string) => {
-  await mkdir(dir, { recursive: true });
-};
 
 const CreateBid = async (
   payload: CreateBidPayload
@@ -221,6 +217,40 @@ const CreateBid = async (
             ...data_to_insert,
             createdById: payload.createdById,
           },
+        });
+      }
+    }
+
+    if (!bid.is_open) {
+      let categoryarray: UserDocType[] = [];
+      if (bid.is_woman) categoryarray.push(UserDocType.WOMEN);
+      if (bid.is_reserved) categoryarray.push(UserDocType.RESERVED);
+      if (bid.is_differently_abled)
+        categoryarray.push(UserDocType.DIFFERENTLY_ABLED);
+      if (bid.is_msme) categoryarray.push(UserDocType.MSME);
+      if (bid.is_tribal) categoryarray.push(UserDocType.TRIBAL);
+      if (bid.is_sc_st) categoryarray.push(UserDocType.SC_ST);
+
+      const getuser = await prisma.user_doc_upload.findMany({
+        where: {
+          doc_type: {
+            in: categoryarray,
+          },
+        },
+        include: {
+          user: true,
+        },
+      });
+      const getallcontact = getuser.map((item) => item.user?.contactone);
+
+      const uniquecontact = getallcontact.filter(
+        (item, index) => getallcontact.indexOf(item) === index
+      );
+
+      for (let i = 0; i < uniquecontact.length; i++) {
+        await sendSMS({
+          type: SMSType.BidIsNowOpen,
+          contact: uniquecontact[i]!,
         });
       }
     }

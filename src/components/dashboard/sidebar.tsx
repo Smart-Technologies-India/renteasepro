@@ -49,12 +49,6 @@ const Sidebar = (props: SidebarProps) => {
       </p>
       <div className="h-4"></div>
 
-      <MenuTab
-        icco={<FluentMdl2ViewDashboard className="text-gray-300 w-6" />}
-        name="Dashboard"
-        path={path}
-        pathcheck={"/dashboard"}
-      />
       {["USER"].includes(props.role) && (
         <>
           <MenuTab
@@ -88,6 +82,12 @@ const Sidebar = (props: SidebarProps) => {
       {["ADMIN"].includes(props.role) && (
         <>
           <MenuTab
+            icco={<FluentMdl2ViewDashboard className="text-gray-300 w-6" />}
+            name="Dashboard"
+            path={path}
+            pathcheck={"/dashboard"}
+          />
+          <MenuTab
             icco={<FluentMdl2Home className="text-gray-300  w-6" />}
             name="Properties"
             path={path}
@@ -98,7 +98,7 @@ const Sidebar = (props: SidebarProps) => {
             icco={<Fa6RegularFileLines className="text-gray-300  w-6" />}
             name="Reports"
             path={path}
-            pathcheck={"/dashboard/reports"}
+            pathcheck={"/dashboard"}
           />
 
           <MenuTab

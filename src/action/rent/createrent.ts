@@ -3,7 +3,7 @@
 import { errorToString } from "@/utils/methods";
 import { ApiResponseType } from "@/models/response";
 import prisma from "../../../prisma/database";
-import { rent } from "@prisma/client";
+import { SMSStatus, rent } from "@prisma/client";
 import { SMSType, sendSMS } from "@/utils/smsmessage";
 
 interface CreateRentPayload {
@@ -256,9 +256,10 @@ const createRentTransaction = async (
     months.pop();
   }
 
-  const create_rent_transaction = await prisma.rent_transact.createMany({
-    data: months.map((month) => {
-      return {
+  for (let i = 0; i < months.length; i++) {
+    const month = months[i];
+    const create_rent_transaction = await prisma.rent_transact.create({
+      data: {
         rentId: props.rent_id,
         userId: props.userId,
         createdById: props.createdById,
@@ -266,12 +267,30 @@ const createRentTransaction = async (
         amount: props.rent_amount,
         formonth: month,
         status: "INACTIVE",
-      };
-    }),
-  });
+      },
+    });
 
-  if (!create_rent_transaction) {
-    return false;
+    if (!create_rent_transaction) {
+      return false;
+    }
+
+    // create sms_rent_transaction
+    const smsrent = await prisma.rent_sms.create({
+      data: {
+        userId: props.userId,
+        rentId: props.rent_id,
+        rentTransactId: create_rent_transaction.id,
+        due: SMSStatus.ACTIVE,
+        late: SMSStatus.ACTIVE,
+        monthcross: SMSStatus.ACTIVE,
+        status: "ACTIVE",
+      },
+    });
+
+    if (!smsrent) {
+      return false;
+    }
   }
+
   return true;
 };

@@ -85,9 +85,6 @@ const getDashboardCount = async (
             status: "MONTHCROSS",
           },
           {
-            status: "VERYLATE",
-          },
-          {
             status: "DUE",
           },
         ],

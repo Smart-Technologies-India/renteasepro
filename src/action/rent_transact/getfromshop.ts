@@ -20,9 +20,6 @@ const GetFromShop = async (
             status: "DUE",
           },
           {
-            status: "VERYLATE",
-          },
-          {
             status: "MONTHCROSS",
           },
           {

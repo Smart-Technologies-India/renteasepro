@@ -103,7 +103,6 @@ enum RentTransactStatus {
   DUE
   LATE
   INACTIVE
-  VERYLATE
   MONTHCROSS
 }
 
@@ -130,6 +129,11 @@ enum BidStatus {
   OPEN
   CANCELLED
   RESULTDECLARED
+}
+
+enum SMSStatus {
+  ACTIVE
+  SENT
 }
 
 model user {
@@ -236,6 +240,7 @@ model user {
   user_doc_upload_update user_doc_upload[] @relation("user_doc_upload_updatedBy_userId")
   user_doc_upload_delete user_doc_upload[] @relation("user_doc_upload_deletedBy_userId")
   user_doc_upload        user_doc_upload[]
+  rent_sms               rent_sms[]
 }
 
 model shop_category {
@@ -428,6 +433,7 @@ model rent {
   rent_transact       rent_transact[]
   file_upload         file_upload[]
   corrigendum         corrigendum[]
+  rent_sms            rent_sms[]
 }
 
 model organization {
@@ -546,6 +552,7 @@ model rent_transact {
   deletedAt        DateTime?
   deletedBy        user?              @relation("rent_transact_deletedBy_userId", fields: [deletedById], references: [id])
   deletedById      Int?
+  rent_sms         rent_sms[]
 }
 
 model bid_payment {
@@ -675,4 +682,21 @@ model user_doc_upload {
   deletedAt   DateTime?
   deletedBy   user?       @relation("user_doc_upload_deletedBy_userId", fields: [deletedById], references: [id])
   deletedById Int?
+}
+
+model rent_sms {
+  id             Int           @id @default(autoincrement())
+  user           user          @relation(fields: [userId], references: [id])
+  userId         Int
+  rent           rent          @relation(fields: [rentId], references: [id])
+  rentId         Int
+  rent_transact  rent_transact @relation(fields: [rentTransactId], references: [id])
+  rentTransactId Int
+  due            SMSStatus     @default(ACTIVE)
+  late           SMSStatus     @default(ACTIVE)
+  monthcross     SMSStatus     @default(ACTIVE)
+  status         Status        @default(ACTIVE)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  deletedAt      DateTime?
 }

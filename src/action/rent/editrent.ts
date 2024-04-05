@@ -83,6 +83,7 @@ const EditRent = async (
           rentId: rentexist.id,
         },
         data: {
+          amount: rent.rent_amount,
           userId: payload.userId,
         },
       });

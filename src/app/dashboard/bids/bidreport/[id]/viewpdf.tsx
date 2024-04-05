@@ -245,12 +245,12 @@ const ViewPdf = (props: ViewPdfProps) => {
 
           {/* thired section start here */}
           <View style={styles.myflex}>
-            <Text style={styles.text1}>16 Decument Title</Text>
+            <Text style={styles.text1}>16 Document Title</Text>
             <Text style={styles.text2}>{bid?.docone ?? "-"}</Text>
           </View>
 
           <View style={styles.myflex}>
-            <Text style={styles.text1}>17 Decument Description</Text>
+            <Text style={styles.text1}>17 Document Description</Text>
             <Text style={styles.text2}>{bid?.doconedescription ?? "-"}</Text>
           </View>
           <View style={styles.myflex}>
@@ -261,13 +261,13 @@ const ViewPdf = (props: ViewPdfProps) => {
             <Text style={styles.text1}>19 File Subject</Text>
             <Text style={styles.text2}>{bid?.t_and_c_description ?? "-"}</Text>
           </View>
-          <View style={styles.myflex}>
+          {/* <View style={styles.myflex}>
             <Text style={styles.text1}>20 Terms & Conditions File</Text>
             <Text style={styles.text2}>{bid?.t_and_c_upload ?? "-"}</Text>
-          </View>
+          </View> */}
 
           <View style={styles.myflex}>
-            <Text style={styles.text1}>21 Allowed Bidder Category</Text>
+            <Text style={styles.text1}>20 Allowed Bidder Category</Text>
             <Text style={styles.text2}>
               {bid?.is_open ? "Open Bid, " : ""}
               {bid?.is_woman ? "For Women, " : ""}
@@ -301,8 +301,10 @@ const ViewPdf = (props: ViewPdfProps) => {
           </View>
 
           <View style={styles.myflex}>
-            <Text style={styles.text1}> Bidder Name</Text>
-            <Text style={styles.text2}>Bidder Number</Text>
+            <Text style={styles.text1}>Name</Text>
+            <Text style={styles.text1}>Number</Text>
+            <Text style={styles.text1}>Amount</Text>
+            <Text style={styles.text2}>Bid Submit Date</Text>
           </View>
 
           {bidderList.map((bidder: any, index: number) => (
@@ -310,105 +312,13 @@ const ViewPdf = (props: ViewPdfProps) => {
               <Text style={styles.text1}>
                 {index + 1} {bidder?.user.firstName} {bidder?.user.lastName}
               </Text>
-              <Text style={styles.text2}>{bidder?.user.contactone}</Text>
+              <Text style={styles.text1}>{bidder?.user.contactone}</Text>
+              <Text style={styles.text1}>{bidder?.amount}</Text>
+              <Text style={styles.text2}>
+                {formatDateTime(new Date(bidder?.createdAt))}
+              </Text>
             </View>
           ))}
-
-          {/* <View style={styles.myflex}>
-            <Text style={styles.text1}>2 Property Name</Text>
-            <Text style={styles.text2}>{rent?.shop.property.name}</Text>
-          </View>
-          <View style={styles.myflex}>
-            <Text style={styles.text1}>3 Shop Number</Text>
-            <Text style={styles.text2}>{rent?.shop.shopNumber}</Text>
-          </View>
-
-          <View style={styles.myflex}>
-            <Text style={styles.text1}>4 Rent Start Date & Time</Text>
-            <Text style={styles.text2}>
-              {formateDate(new Date(rent?.rent_start_date))}
-            </Text>
-          </View>
-          <View style={styles.myflex}>
-            <Text style={styles.text1}>5 Rent End Date & Time</Text>
-            <Text style={styles.text2}>
-              {formateDate(new Date(rent?.rent_end_date))}
-            </Text>
-          </View>
-          <View>
-            <Text style={styles.header}>2. Tenant Details</Text>
-          </View>
-          <View style={styles.myflex}>
-            <Text style={styles.text1}>1 Bidder Name</Text>
-            <Text style={styles.text2}>
-              {user?.firstName} {user?.lastName}
-            </Text>
-          </View>
-          <View style={styles.myflex}>
-            <Text style={styles.text1}>2 Bidder Mobile</Text>
-            <Text style={styles.text2}>{user?.contactone!}</Text>
-          </View> 
-
-          <View>
-            <Text style={styles.header}>3. Rent Payment Details</Text>
-          </View>
-
-            {history.length > 0 && (
-            <>
-             <View style={styles.myflex}>
-                <Text style={styles.text1}>1 Months</Text>
-                <Text style={styles.text2}>
-                  {history
-                    .flatMap(
-                      (arr: any) =>
-                        [
-                          "January",
-                          "February",
-                          "March",
-                          "April",
-                          "May",
-                          "June",
-                          "July",
-                          "August",
-                          "September",
-                          "October",
-                          "November",
-                          "December",
-                        ][new Date(arr.formonth).getMonth()] +
-                        "-" +
-                        (new Date(arr.formonth).getFullYear() % 100)
-                    )
-                    .join(", ")}
-                </Text>
-              </View> */}
-          {/* <View style={styles.myflex}>
-                <Text style={styles.text1}>2 Paid Rent Amount</Text>
-                <Text style={styles.text2}>
-                  {history
-                    .flatMap((arr: any) => arr.amount) // Extract numbers from objects
-                    .reduce((acc: any, curr: any) => acc + curr, 0)}
-                </Text>
-              </View>
-              <View style={styles.myflex}>
-                <Text style={styles.text1}>3 Transaction Id</Text>
-                <Text style={styles.text2}>{history[0]?.transactionid}</Text>
-              </View>
-              <View style={styles.myflex}>
-                <Text style={styles.text1}>4 Payment Mode</Text>
-                <Text style={styles.text2}>{history[0]?.paymentmode}</Text>
-              </View>
-              <View style={styles.myflex}>
-                <Text style={styles.text1}>5 Bank Name</Text>
-                <Text style={styles.text2}>{history[0]?.bankname}</Text>
-              </View>
-              <View style={styles.myflex}>
-                <Text style={styles.text1}>6 Transaction Date & Time</Text>
-                <Text style={styles.text2}>
-                  {formatDateTime(new Date(history[0]?.transaction_date!))}
-                </Text>
-              </View> 
-            </>
-          )}*/}
 
           <View
             style={{

@@ -20,9 +20,6 @@ const GetFromRent = async (
             status: "DUE",
           },
           {
-            status: "VERYLATE",
-          },
-          {
             status: "MONTHCROSS",
           },
           {

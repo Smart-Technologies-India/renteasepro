@@ -2,6 +2,7 @@
 
 import GetProperty from "@/action/property/getproperty";
 import getShopsByStatus from "@/action/shop/getshopbystatus";
+import GetShopsByProperty from "@/action/shop/getshopfromproperty";
 import { capitalcase, removeDuplicates } from "@/utils/methods";
 import { ShopStatus, property, shop } from "@prisma/client";
 import Link from "next/link";
@@ -45,9 +46,14 @@ const RentPropertiesView = (props: RentPropertiesViewProps) => {
         setProperty(propertyresponse.data!);
       }
 
-      const shopresponse = await getShopsByStatus({
-        status: ShopStatus.RENTED,
+      // const shopresponse = await getShopsByStatus({
+      //   status: ShopStatus.RENTED,
+      // });
+
+      const shopresponse = await GetShopsByProperty({
+        propertyid: parseInt(props.id.toString()),
       });
+
       if (shopresponse.status) {
         setShops(shopresponse.data ?? []);
         setFilterShop(shopresponse.data ?? []);
