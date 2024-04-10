@@ -53,7 +53,6 @@ const ViewPdf = (props: ViewPdfProps) => {
         setHistory(historyresponse.data);
       }
 
-      console.log(historyresponse.data);
     };
 
     init();

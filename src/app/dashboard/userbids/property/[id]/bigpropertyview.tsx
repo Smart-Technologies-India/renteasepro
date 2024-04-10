@@ -2,13 +2,12 @@
 
 import GetProperty from "@/action/property/getproperty";
 import { capitalcase, removeDuplicates } from "@/utils/methods";
-import { ShopStatus, property, shop, user } from "@prisma/client";
+import { property, shop, user } from "@prisma/client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getCookie } from "cookies-next";
 import GetUser from "@/action/user/getuser";
 import BackButton from "@/components/backbutton";
-import searchShop from "@/action/shop/searchshop";
 import getLiveShop from "@/action/shop/getliveshop";
 
 interface BidPropertiesViewProps {
@@ -97,9 +96,6 @@ const BidPropertiesView = (props: BidPropertiesViewProps) => {
           Property Details
         </h1>
       </div>
-      <p className="text-sm mt-4 mb-2">
-        Get started by selecting shop and applaying for biding.
-      </p>
       {user?.role === "ADMIN" && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
           <div className="bg-white rounded-sm shadow-sm">

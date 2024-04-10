@@ -8,12 +8,15 @@ import { CreatePropertySchema } from "@/schema/createproperty";
 import { handleDecimalChange, handleNumberChange } from "@/utils/methods";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { safeParse } from "valibot";
 
 const AddPropertyPage = () => {
   const userid: number = parseInt(getCookie("id") ?? "0");
+
+  const [isCreating, setIsCreating] = useState<boolean>(false);
+
   const router = useRouter();
   const name = useRef<HTMLInputElement>(null);
   const address = useRef<HTMLInputElement>(null);
@@ -27,6 +30,7 @@ const AddPropertyPage = () => {
   const longitude = useRef<HTMLInputElement>(null);
 
   const create = async () => {
+    setIsCreating(true);
     const result = safeParse(CreatePropertySchema, {
       name: name.current?.value,
       address: address.current?.value,
@@ -71,23 +75,20 @@ const AddPropertyPage = () => {
       }
       toast.error(errorMessage);
     }
+
+    setIsCreating(false);
   };
 
   return (
     <>
       <div className="p-6">
-        <h1 className="text-[#162f57] text-2xl font-semibold">
-          Add a property
-        </h1>
-        <p className="text-sm mt-4 mb-2">
-          Get started by adding your property&apos;s address and details below.
-        </p>
-
         <div className="bg-white rounded-sm shadow-sm p-4">
-          <p className="text-gray-500">GENERAL INFORMATION</p>
+          <p className="text-gray-500 text-xl">Add a property</p>
 
           <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="name">Property name</Label>
+            <Label htmlFor="name">
+              Property name <span className="text-rose-500">*</span>
+            </Label>
             <Input
               id="name"
               type="text"
@@ -96,7 +97,9 @@ const AddPropertyPage = () => {
             />
           </div>
           <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="address">Property address</Label>
+            <Label htmlFor="address">
+              Property address <span className="text-rose-500">*</span>
+            </Label>
             <Input
               id="address"
               type="text"
@@ -107,7 +110,9 @@ const AddPropertyPage = () => {
 
           <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="pin">Zip/Postcode</Label>
+              <Label htmlFor="pin">
+                Zip/Postcode <span className="text-rose-500">*</span>{" "}
+              </Label>
               <Input
                 id="pin"
                 type="text"
@@ -118,7 +123,9 @@ const AddPropertyPage = () => {
               />
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="locality">Locality</Label>
+              <Label htmlFor="locality">
+                Locality <span className="text-rose-500">*</span>
+              </Label>
               <Input
                 id="locality"
                 type="text"
@@ -130,7 +137,9 @@ const AddPropertyPage = () => {
 
           <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="shops">Total Shops</Label>
+              <Label htmlFor="shops">
+                Total Shops <span className="text-rose-500">*</span>
+              </Label>
               <Input
                 id="shops"
                 type="text"
@@ -140,7 +149,9 @@ const AddPropertyPage = () => {
               />
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="floors">Total Floors</Label>
+              <Label htmlFor="floors">
+                Total Floors <span className="text-rose-500">*</span>
+              </Label>
               <Input
                 id="floors"
                 type="text"
@@ -153,7 +164,9 @@ const AddPropertyPage = () => {
 
           <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="personname">Contact Person Name</Label>
+              <Label htmlFor="personname">
+                Contact Person Name <span className="text-rose-500">*</span>
+              </Label>
               <Input
                 id="personname"
                 type="text"
@@ -162,7 +175,9 @@ const AddPropertyPage = () => {
               />
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="contact">Contact Person Number</Label>
+              <Label htmlFor="contact">
+                Contact Person Number <span className="text-rose-500">*</span>
+              </Label>
               <Input
                 id="contact"
                 type="text"
@@ -176,7 +191,9 @@ const AddPropertyPage = () => {
 
           <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="latitude">Latitude</Label>
+              <Label htmlFor="latitude">
+                Latitude <span className="text-rose-500">*</span>
+              </Label>
               <Input
                 id="latitude"
                 type="text"
@@ -186,7 +203,9 @@ const AddPropertyPage = () => {
               />
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="longitude">Longitude</Label>
+              <Label htmlFor="longitude">
+                Longitude <span className="text-rose-500">*</span>
+              </Label>
               <Input
                 id="longitude"
                 type="text"
@@ -197,9 +216,25 @@ const AddPropertyPage = () => {
             </div>
           </div>
 
-          <Button onClick={create} className="w-full mt-4">
-            Submit
-          </Button>
+          {isCreating ? (
+            <>
+              <Button
+                disabled
+                className="w-full mt-4 bg-[#172e57] hover:bg-[#21427d]"
+              >
+                Adding property...
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                onClick={create}
+                className="w-full mt-4 bg-[#172e57] hover:bg-[#21427d]"
+              >
+                Submit
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </>

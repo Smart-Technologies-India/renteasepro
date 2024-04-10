@@ -21,6 +21,7 @@ const GetShop = async (
       },
       include: {
         property: true,
+        shop_category: true,
       },
     });
 

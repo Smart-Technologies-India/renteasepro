@@ -205,9 +205,6 @@ const EditRentPage = (props: EditRentProps) => {
     <>
       <div className="p-6">
         <h1 className="text-[#162f57] text-2xl font-semibold">Edit for Shop</h1>
-        <p className="text-sm mt-4 mb-2">
-          Get started by adding your shop&apos;s rant details below.
-        </p>
 
         <div className="bg-white rounded-sm shadow-sm p-4">
           <p className="text-gray-500">GENERAL INFORMATION</p>

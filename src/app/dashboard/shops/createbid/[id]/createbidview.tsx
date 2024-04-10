@@ -71,6 +71,8 @@ function setTime(date: Date, timeString: string): Date | void {
 const CreateBidPage = (props: CreateBidPageProps) => {
   const userid: number = parseInt(getCookie("id") ?? "0");
 
+  const [isCreating, setIsCreating] = useState<boolean>(false);
+
   const router = useRouter();
   const [isLoading, setLoading] = useState<boolean>(true);
 
@@ -225,6 +227,7 @@ const CreateBidPage = (props: CreateBidPageProps) => {
   const cFileUploader = useRef<HTMLInputElement>(null);
 
   const create = async () => {
+    setIsCreating(true);
     const result = safeParse(CreateBidSchema, {
       title: title.current?.value,
       min_bid_amount: parseInt(minbid.current?.value ?? "0"),
@@ -250,53 +253,71 @@ const CreateBidPage = (props: CreateBidPageProps) => {
       if (
         parseInt(minbid.current?.value!) < parseInt(minbidinc.current?.value!)
       ) {
-        return toast.error(
+        toast.error(
           "Minimum bid increment should be less than minimum bid amount"
         );
+        setIsCreating(false);
+        return;
       }
 
       if (
         parseInt(minbid.current?.value!) < parseInt(feesamount.current?.value!)
       ) {
-        return toast.error(
-          "Fees amount should be less than minimum bid amount"
-        );
+        toast.error("Fees amount should be less than minimum bid amount");
+        setIsCreating(false);
+        return;
       }
 
       if (
         parseInt(minbid.current?.value!) < parseInt(emdamount.current?.value!)
       ) {
-        return toast.error("EMD amount should be less than minimum bid amount");
+        toast.error("EMD amount should be less than minimum bid amount");
+        setIsCreating(false);
+        return;
       }
 
       if (
         parseInt(minbid.current?.value!) < parseInt(bgamount.current?.value!)
       ) {
-        return toast.error("BG amount should be less than minimum bid amount");
+        toast.error("BG amount should be less than minimum bid amount");
+        setIsCreating(false);
+        return;
       }
 
       if (exempt === Exempt.YES && exemptfield.length == 0) {
-        return toast.error("Please select at least one exempt category");
+        toast.error("Please select at least one exempt category");
+        setIsCreating(false);
+        return;
       }
 
       if (exempt == Exempt.YES && exemptsectionsvalue.length == 0) {
-        return toast.error("Please select at least one exempt section");
+        toast.error("Please select at least one exempt section");
+        setIsCreating(false);
+        return;
       }
 
       if (exemptsectionsvalue.includes("fees") && !exemptfeesamount.current) {
-        return toast.error("Please enter exempt fees amount");
+        toast.error("Please enter exempt fees amount");
+        setIsCreating(false);
+        return;
       }
 
       if (exemptsectionsvalue.includes("emd") && !exemptemdamount.current) {
-        return toast.error("Please enter exempt emd amount");
+        toast.error("Please enter exempt EMD amount");
+        setIsCreating(false);
+        return;
       }
 
       if (exemptsectionsvalue.includes("bg") && !exemptbgamount.current) {
-        return toast.error("Please enter exempt bg amount");
+        toast.error("Please enter exempt bg amount");
+        setIsCreating(false);
+        return;
       }
 
       if (fileUploader == null) {
-        return toast.error("Please upload a file");
+        toast.error("Please upload a file");
+        setIsCreating(false);
+        return;
       }
 
       let extrafields: any = {};
@@ -367,7 +388,9 @@ const CreateBidPage = (props: CreateBidPageProps) => {
       });
 
       if (!createbid.status) {
-        return toast.error(createbid.message);
+        toast.error(createbid.message);
+        setIsCreating(false);
+        return;
       }
 
       const formData = new FormData();
@@ -380,7 +403,9 @@ const CreateBidPage = (props: CreateBidPageProps) => {
       });
 
       if (uploadfile.status != 200) {
-        return toast.error("File upload failed");
+        toast.error("File upload failed");
+        setIsCreating(false);
+        return;
       }
 
       const uploadfileResponse = await UploadFile({
@@ -390,13 +415,15 @@ const CreateBidPage = (props: CreateBidPageProps) => {
         bidId: createbid.data?.id,
       });
 
-      const updatebid = await AddFileBid({
+      await AddFileBid({
         id: createbid.data?.id!,
         t_and_c_upload: uploadfileResponse.data?.path,
       });
 
       if (!uploadfileResponse.status) {
-        return toast.error("File upload failed");
+        toast.error("File upload failed");
+        setIsCreating(false);
+        return;
       }
 
       toast.success("Bid added successfully");
@@ -410,6 +437,7 @@ const CreateBidPage = (props: CreateBidPageProps) => {
       }
       toast.error(errorMessage);
     }
+    setIsCreating(false);
   };
 
   const handleFileChange = (
@@ -441,9 +469,6 @@ const CreateBidPage = (props: CreateBidPageProps) => {
     <>
       <div className="p-6">
         <h1 className="text-[#162f57] text-2xl font-semibold">Create Bid</h1>
-        <p className="text-sm mt-4 mb-2">
-          Get started by adding your Bid details below.
-        </p>
 
         <div className="bg-white rounded-sm shadow-sm p-4">
           <p className="text-gray-500 text-center">General Information</p>
@@ -452,7 +477,7 @@ const CreateBidPage = (props: CreateBidPageProps) => {
 
           <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="propertes">Property Name</Label>
+              <Label htmlFor="propertes">Property Name </Label>
               <div className="rounded-sm w-full p-2 bg-gray-100 border">
                 {shop.property.name}
               </div>
@@ -466,11 +491,16 @@ const CreateBidPage = (props: CreateBidPageProps) => {
           </div>
 
           <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="title">Bid Title</Label>
+            <Label htmlFor="title">
+              Bid Title <span className="text-rose-500">*</span>
+            </Label>
             <Input id="title" type="text" className="w-full" ref={title} />
           </div>
           <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="description">Bid Description</Label>
+            <Label htmlFor="description">
+              Bid Description{" "}
+              <span className="text-[0.50rem] font-normal">(Optional)</span>
+            </Label>
             <Textarea
               id="description"
               className="w-full h-20 resize-none"
@@ -478,7 +508,10 @@ const CreateBidPage = (props: CreateBidPageProps) => {
             />
           </div>
           <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="instructions">Bid Instructions</Label>
+            <Label htmlFor="instructions">
+              Bid Instructions{" "}
+              <span className="text-[0.50rem] font-normal">(Optional)</span>
+            </Label>
             <Textarea
               id="instructions"
               className="w-full h-20 resize-none"
@@ -488,7 +521,9 @@ const CreateBidPage = (props: CreateBidPageProps) => {
 
           <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="starttime">Start Date</Label>
+              <Label htmlFor="starttime">
+                Start Date <span className="text-rose-500">*</span>
+              </Label>
 
               <Popover open={startDPop} onOpenChange={setStartDPop}>
                 <PopoverTrigger asChild>
@@ -522,7 +557,9 @@ const CreateBidPage = (props: CreateBidPageProps) => {
             </div>
 
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="minbid">Start Time</Label>
+              <Label htmlFor="minbid">
+                Start Time <span className="text-rose-500">*</span>
+              </Label>
               <TimePicker
                 minuteStep={15}
                 use12Hours
@@ -537,7 +574,9 @@ const CreateBidPage = (props: CreateBidPageProps) => {
 
           <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="enddatetime">End Date Time</Label>
+              <Label htmlFor="enddatetime">
+                End Date Time <span className="text-rose-500">*</span>
+              </Label>
               <Popover open={endDPop} onOpenChange={setEndDPop}>
                 <PopoverTrigger asChild>
                   <Button
@@ -570,7 +609,9 @@ const CreateBidPage = (props: CreateBidPageProps) => {
             </div>
 
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="minbid">End Time</Label>
+              <Label htmlFor="minbid">
+                End Time <span className="text-rose-500">*</span>
+              </Label>
               <TimePicker
                 minuteStep={15}
                 use12Hours
@@ -585,7 +626,9 @@ const CreateBidPage = (props: CreateBidPageProps) => {
 
           <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="enddatetime">Document Deadline Date</Label>
+              <Label htmlFor="enddatetime">
+                Document Deadline Date <span className="text-rose-500">*</span>
+              </Label>
               <Popover open={deadlineDPop} onOpenChange={setDeadlineDPop}>
                 <PopoverTrigger asChild>
                   <Button
@@ -616,11 +659,13 @@ const CreateBidPage = (props: CreateBidPageProps) => {
                 </PopoverContent>
               </Popover>
             </div>
-            <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="exempt">Exempt</Label>
+            <div className="w-full mt-4">
+              <Label htmlFor="exempt">
+                Exempt <span className="text-rose-500">*</span>
+              </Label>
               <RadioGroup
                 defaultValue="exempt"
-                className="flex gap-2"
+                className="flex gap-2 mt-2"
                 id="exempt"
                 value={exempt}
               >
@@ -655,9 +700,15 @@ const CreateBidPage = (props: CreateBidPageProps) => {
               </RadioGroup>
             </div>
 
-            <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="exempt">Bid Type</Label>
-              <RadioGroup className="flex gap-2" id="bid_type" value={bidType}>
+            <div className="w-full mt-4">
+              <Label htmlFor="exempt">
+                Bid Type <span className="text-rose-500">*</span>
+              </Label>
+              <RadioGroup
+                className="flex gap-2 mt-2"
+                id="bid_type"
+                value={bidType}
+              >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem
                     value="AUCTION"
@@ -754,7 +805,10 @@ const CreateBidPage = (props: CreateBidPageProps) => {
               {exemptsectionsvalue.includes("fees") && (
                 <div className="flex gap-4">
                   <div className="grid items-center gap-1.5 w-full mt-4">
-                    <Label htmlFor="exemptfeespa">Exempt Fees % / Amount</Label>
+                    <Label htmlFor="exemptfeespa">
+                      Exempt Fees % / Amount
+                      <span className="text-rose-500">*</span>
+                    </Label>
                     <RadioGroup
                       defaultValue="AMOUNT"
                       className="flex gap-2"
@@ -796,7 +850,10 @@ const CreateBidPage = (props: CreateBidPageProps) => {
                     </RadioGroup>
                   </div>
                   <div className="grid items-center gap-1.5 w-full mt-4">
-                    <Label htmlFor="exemptfees">Exempt Fees Amount</Label>
+                    <Label htmlFor="exemptfees">
+                      Exempt Fees Amount{" "}
+                      <span className="text-rose-500">*</span>
+                    </Label>
                     <Input
                       id="exemptfees"
                       type="text"
@@ -813,7 +870,10 @@ const CreateBidPage = (props: CreateBidPageProps) => {
               {exemptsectionsvalue.includes("emd") && (
                 <div className="flex gap-4">
                   <div className="grid items-center gap-1.5 w-full mt-4">
-                    <Label htmlFor="exemptemdpa">Exempt EMD % / Amount</Label>
+                    <Label htmlFor="exemptemdpa">
+                      Exempt EMD % / Amount{" "}
+                      <span className="text-rose-500">*</span>
+                    </Label>
                     <RadioGroup
                       defaultValue="AMOUNT"
                       className="flex gap-2"
@@ -855,7 +915,9 @@ const CreateBidPage = (props: CreateBidPageProps) => {
                     </RadioGroup>
                   </div>
                   <div className="grid items-center gap-1.5 w-full mt-4">
-                    <Label htmlFor="exemptemd">Exempt EMD Amount</Label>
+                    <Label htmlFor="exemptemd">
+                      Exempt EMD Amount <span className="text-rose-500">*</span>
+                    </Label>
                     <Input
                       id="exemptemd"
                       type="text"
@@ -872,7 +934,10 @@ const CreateBidPage = (props: CreateBidPageProps) => {
               {exemptsectionsvalue.includes("bg") && (
                 <div className="flex gap-4 mb-4">
                   <div className="grid items-center gap-1.5 w-full mt-4">
-                    <Label htmlFor="exemptbgpa">Exempt BG % / Amount</Label>
+                    <Label htmlFor="exemptbgpa">
+                      Exempt BG % / Amount{" "}
+                      <span className="text-rose-500">*</span>
+                    </Label>
                     <RadioGroup
                       defaultValue="AMOUNT"
                       className="flex gap-2"
@@ -910,7 +975,9 @@ const CreateBidPage = (props: CreateBidPageProps) => {
                     </RadioGroup>
                   </div>
                   <div className="grid items-center gap-1.5 w-full mt-4">
-                    <Label htmlFor="exemptbg">Exempt BG Amount</Label>
+                    <Label htmlFor="exemptbg">
+                      Exempt BG Amount <span className="text-rose-500">*</span>
+                    </Label>
                     <Input
                       id="exemptbg"
                       type="text"
@@ -925,7 +992,7 @@ const CreateBidPage = (props: CreateBidPageProps) => {
             </>
           )}
 
-          <p className="text-gray-500 mt-4 text-center">Fees Structure</p>
+          <p className="text-gray-500 mt-4 text-center">Fees Structure </p>
           <Separator />
 
           <div className="flex gap-4">
@@ -972,7 +1039,9 @@ const CreateBidPage = (props: CreateBidPageProps) => {
               </RadioGroup>
             </div> */}
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="minbid">Min Bid Increment</Label>
+              <Label htmlFor="minbid">
+                Min Bid Increment <span className="text-rose-500">*</span>
+              </Label>
               <Input
                 id="minbid"
                 type="text"
@@ -984,7 +1053,9 @@ const CreateBidPage = (props: CreateBidPageProps) => {
 
           <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="feesamount">Fees Amount</Label>
+              <Label htmlFor="feesamount">
+                Fees Amount <span className="text-rose-500">*</span>
+              </Label>
               <Input
                 id="feesamount"
                 type="text"
@@ -993,7 +1064,9 @@ const CreateBidPage = (props: CreateBidPageProps) => {
               />
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="feespercentage">Fees % / Amount</Label>
+              <Label htmlFor="feespercentage">
+                Fees % / Amount <span className="text-rose-500">*</span>
+              </Label>
               <RadioGroup
                 defaultValue="feesbypercentage"
                 className="flex gap-2"
@@ -1031,7 +1104,9 @@ const CreateBidPage = (props: CreateBidPageProps) => {
               </RadioGroup>
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="feespercentage">Is Fees Refundable</Label>
+              <Label htmlFor="feespercentage">
+                Is Fees Refundable <span className="text-rose-500">*</span>
+              </Label>
               <RadioGroup
                 defaultValue="no"
                 className="flex gap-2"
@@ -1072,7 +1147,9 @@ const CreateBidPage = (props: CreateBidPageProps) => {
 
           <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="emdamount">EMD Amount</Label>
+              <Label htmlFor="emdamount">
+                EMD Amount <span className="text-rose-500">*</span>
+              </Label>
               <Input
                 id="emdamount"
                 type="text"
@@ -1081,7 +1158,9 @@ const CreateBidPage = (props: CreateBidPageProps) => {
               />
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="emdpercentage">EMD % / Amount</Label>
+              <Label htmlFor="emdpercentage">
+                EMD % / Amount <span className="text-rose-500">*</span>
+              </Label>
               <RadioGroup
                 defaultValue="emdbypercentage"
                 className="flex gap-2"
@@ -1119,7 +1198,9 @@ const CreateBidPage = (props: CreateBidPageProps) => {
               </RadioGroup>
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="emdpercentage">Is EMD Refundable</Label>
+              <Label htmlFor="emdpercentage">
+                Is EMD Refundable <span className="text-rose-500">*</span>
+              </Label>
               <RadioGroup
                 defaultValue="yes"
                 className="flex gap-2"
@@ -1160,7 +1241,9 @@ const CreateBidPage = (props: CreateBidPageProps) => {
 
           <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="bgamount">BG Amount</Label>
+              <Label htmlFor="bgamount">
+                BG Amount <span className="text-rose-500">*</span>
+              </Label>
               <Input
                 id="bgamount"
                 type="text"
@@ -1169,7 +1252,9 @@ const CreateBidPage = (props: CreateBidPageProps) => {
               />
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="bgpercentage">BG % / Amount</Label>
+              <Label htmlFor="bgpercentage">
+                BG % / Amount <span className="text-rose-500">*</span>
+              </Label>
               <RadioGroup
                 id={"bgpercentage"}
                 defaultValue="bgbypercentage"
@@ -1207,7 +1292,9 @@ const CreateBidPage = (props: CreateBidPageProps) => {
               </RadioGroup>
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="bgpercentage">Is BG Refundable</Label>
+              <Label htmlFor="bgpercentage">
+                Is BG Refundable <span className="text-rose-500">*</span>
+              </Label>
               <RadioGroup
                 defaultValue="yes"
                 className="flex gap-2"
@@ -1250,7 +1337,9 @@ const CreateBidPage = (props: CreateBidPageProps) => {
           <Separator />
 
           <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="doctitle">Document Title</Label>
+            <Label htmlFor="doctitle">
+              Document Title <span className="text-rose-500">*</span>
+            </Label>
             <Input
               id="doctitle"
               type="text"
@@ -1259,7 +1348,9 @@ const CreateBidPage = (props: CreateBidPageProps) => {
             />
           </div>
           <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="docdescription">Document Description</Label>
+            <Label htmlFor="docdescription">
+              Document Description <span className="text-rose-500">*</span>
+            </Label>
             <Textarea
               id="docdescription"
               className="w-full h-20 resize-none"
@@ -1268,12 +1359,14 @@ const CreateBidPage = (props: CreateBidPageProps) => {
           </div>
 
           <p className="text-gray-500 mt-4 text-center">
-            Terms & Conditions Document
+            Terms & Conditions Document <span className="text-rose-500">*</span>
           </p>
           <Separator />
 
           <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="filenumber">File Number</Label>
+            <Label htmlFor="filenumber">
+              File Number <span className="text-rose-500">*</span>
+            </Label>
             <Input
               id="filenumber"
               type="text"
@@ -1282,7 +1375,9 @@ const CreateBidPage = (props: CreateBidPageProps) => {
             />
           </div>
           <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="filesubject">File Subject</Label>
+            <Label htmlFor="filesubject">
+              File Subject <span className="text-rose-500">*</span>
+            </Label>
             <Textarea
               id="filesubject"
               className="w-full h-20 resize-none"
@@ -1291,7 +1386,9 @@ const CreateBidPage = (props: CreateBidPageProps) => {
           </div>
 
           <div className="flex gap-4 mt-4 items-center">
-            <Label htmlFor="termfile">Terms & Conditions File</Label>
+            <Label htmlFor="termfile">
+              Terms & Conditions File <span className="text-rose-500">*</span>
+            </Label>
             <Button
               onClick={() => cFileUploader.current?.click()}
               variant={"secondary"}
@@ -1324,7 +1421,9 @@ const CreateBidPage = (props: CreateBidPageProps) => {
             </div>
           </div>
 
-          <p className="text-gray-500 mt-4">Select Bidder Category</p>
+          <p className="text-gray-500 mt-4">
+            Select Bidder Category <span className="text-rose-500">*</span>
+          </p>
           <div className="flex gap-x-6 gap-y-4 flex-wrap mt-2">
             <div className="flex gap-2 mt-1 items-center ">
               <Checkbox
@@ -1374,9 +1473,21 @@ const CreateBidPage = (props: CreateBidPageProps) => {
               ))}
           </div>
 
-          <Button className="w-full mt-4" onClick={create}>
-            Submit
-          </Button>
+          {isCreating ? (
+            <Button
+              disabled
+              className="w-full mt-4 bg-[#172e57] hover:bg-[#224688]"
+            >
+              Loading...
+            </Button>
+          ) : (
+            <Button
+              className="w-full mt-4 bg-[#172e57] hover:bg-[#224688]"
+              onClick={create}
+            >
+              Submit
+            </Button>
+          )}
         </div>
       </div>
     </>

@@ -4,7 +4,8 @@ import CreateRentPage from "./createrentview";
 const AddShop = async ({ params }: { params: any }) => {
   const shopid: number = parseInt(params.id.toString());
   const userid: number = parseInt(params.userid.toString());
-  return <CreateRentPage shopid={shopid} userid={userid} />;
+  const bidid: number = parseInt(params.bidid.toString());
+  return <CreateRentPage shopid={shopid} userid={userid} bidid={bidid} />;
 };
 
 export default AddShop;

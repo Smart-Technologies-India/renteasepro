@@ -98,9 +98,7 @@ const BidPropertiesView = (props: BidPropertiesViewProps) => {
           Property Details
         </h1>
       </div>
-      <p className="text-sm mt-4 mb-2">
-        Get started by selecting shop and applaying for biding.
-      </p>
+
       {user?.role === "ADMIN" && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
           <div className="bg-white rounded-sm shadow-sm">

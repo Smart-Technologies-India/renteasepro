@@ -78,7 +78,7 @@ const ShopBidHistoryView = (props: ShopBidHistoryViewProps) => {
                   <TableCell className="font-medium">{bid.id}</TableCell>
                   <TableCell>{bid.shop.shopNumber}</TableCell>
                   <TableCell>5</TableCell>
-                  <TableCell>{bid.min_bid_amount}</TableCell>
+                  <TableCell>&#8377;{bid.min_bid_amount}</TableCell>
                   <TableCell>
                     {new Date(bid.bidstartdate).getDate()}-
                     {new Date(bid.bidstartdate).getMonth() + 1}-

@@ -37,6 +37,7 @@ import {
 import TextArea from "antd/es/input/TextArea";
 import { toast } from "react-toastify";
 import RejectUserBid from "@/action/bid_transact/rejactuserbid";
+import IsProfileCompleted from "@/action/user/isprofilecompleted";
 
 const UserBidHistoryPage = () => {
   const id: number = parseInt(getCookie("id") ?? "0");
@@ -82,6 +83,14 @@ const UserBidHistoryPage = () => {
   useEffect(() => {
     const init = async () => {
       setIsLoading(true);
+
+      const isprofilecompleted = await IsProfileCompleted({
+        id: id,
+      });
+
+      if (!isprofilecompleted.status) {
+        return router.push("/dashboard/userprofile/edit");
+      }
       const bidresponse = await GetUserBid({
         userid: id,
       });
@@ -177,7 +186,7 @@ const UserBidHistoryPage = () => {
                 <TableCell className="font-medium">{bid_tans.id}</TableCell>
                 <TableCell>{bid_tans.shop.property.name}</TableCell>
                 <TableCell>{bid_tans.shop.shopNumber}</TableCell>
-                <TableCell>{bid_tans.amount}</TableCell>
+                <TableCell>&#8377;{bid_tans.amount}</TableCell>
                 <TableCell>
                   {new Date(bid_tans.createdAt).toDateString()}
                 </TableCell>
@@ -197,7 +206,7 @@ const UserBidHistoryPage = () => {
                         <DropdownMenuItem
                           onClick={() => {
                             router.push(
-                              `/dashboard/shops/details/${bid_tans.shop.property.id}`
+                              `/dashboard/shops/details/${bid_tans.shop.id}`
                             );
                           }}
                           className="cursor-pointer"

@@ -19,19 +19,22 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { safeParse } from "valibot";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import { handleNumberChange } from "@/utils/methods";
 import { default as MulSelect } from "react-select";
 import GetUser from "@/action/user/getuser";
+import GetBidTran from "@/action/bid_transact/getbidtransact";
 
 interface CreateRentProps {
   shopid: number;
   userid: number;
+  bidid: number;
 }
 
 const CreateRentPage = (props: CreateRentProps) => {
   const router = useRouter();
   const createuserid: number = parseInt(getCookie("id") ?? "0");
+  const [isCreating, setIsCreating] = useState<boolean>(false);
 
   const [isLoading, setLoading] = useState<boolean>(true);
   const [shopData, setShopData] = useState<any>();
@@ -66,13 +69,25 @@ const CreateRentPage = (props: CreateRentProps) => {
       if (normaluserresponse.status) {
         setUser(normaluserresponse.data!);
       }
+      const bidresponse = await GetBidTran({
+        id: props.bidid,
+      });
+
+      if (bidresponse.status) {
+        setTimeout(() => {
+          if (amount && amount.current) {
+            amount!.current!.value = bidresponse.data?.amount.toString() ?? "0";
+          }
+        }, 1000);
+      }
 
       setLoading(false);
     };
     init();
-  }, [props.shopid, props.userid]);
+  }, [props.shopid, props.userid, props.bidid]);
 
   const create = async () => {
+    setIsCreating(true);
     const result = safeParse(CreateRentSchema, {
       rent_amount: parseInt(amount.current?.value ?? "0"),
       rent_start_date: startDate,
@@ -113,6 +128,8 @@ const CreateRentPage = (props: CreateRentProps) => {
       }
       toast.error(errorMessage);
     }
+
+    setIsCreating(false);
   };
 
   if (isLoading)
@@ -128,9 +145,6 @@ const CreateRentPage = (props: CreateRentProps) => {
         <h1 className="text-[#162f57] text-2xl font-semibold">
           Add rent for Shop
         </h1>
-        <p className="text-sm mt-4 mb-2">
-          Get started by adding your shop&apos;s rant details below.
-        </p>
 
         <div className="bg-white rounded-sm shadow-sm p-4">
           <p className="text-gray-500">GENERAL INFORMATION</p>
@@ -161,7 +175,9 @@ const CreateRentPage = (props: CreateRentProps) => {
           </div>
           <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label>Rent Start Date</Label>
+              <Label>
+                Rent Start Date <span className="text-rose-500">*</span>
+              </Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -189,7 +205,9 @@ const CreateRentPage = (props: CreateRentProps) => {
               </Popover>
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label>Rent End Date</Label>
+              <Label>
+                Rent End Date <span className="text-rose-500">*</span>
+              </Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -220,17 +238,22 @@ const CreateRentPage = (props: CreateRentProps) => {
 
           <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="amount">Amount</Label>
+              <Label htmlFor="amount">
+                Amount <span className="text-rose-500">*</span>
+              </Label>
               <Input
                 id="amount"
                 type="text"
                 className="w-full bg-gray-100"
                 onChange={handleNumberChange}
+                disabled
                 ref={amount}
               />
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="chargeone">Late Fees</Label>
+              <Label htmlFor="chargeone">
+                Late Fees <span className="text-rose-500">*</span>
+              </Label>
               <Input
                 id="chargeone"
                 type="text"
@@ -242,7 +265,9 @@ const CreateRentPage = (props: CreateRentProps) => {
           </div>
           <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="chargetwo">Interest</Label>
+              <Label htmlFor="chargetwo">
+                Interest <span className="text-rose-500">*</span>
+              </Label>
               <Input
                 id="chargetwo"
                 type="text"
@@ -252,7 +277,9 @@ const CreateRentPage = (props: CreateRentProps) => {
               />
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="chargethree">Penalty</Label>
+              <Label htmlFor="chargethree">
+                Penalty <span className="text-rose-500">*</span>
+              </Label>
               <Input
                 id="chargethree"
                 type="text"
@@ -270,7 +297,9 @@ const CreateRentPage = (props: CreateRentProps) => {
               </div>
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="duedate">Due Date</Label>
+              <Label htmlFor="duedate">
+                Due Date <span className="text-rose-500">*</span>
+              </Label>
               <MulSelect
                 isMulti={false}
                 options={Array.from({ length: 31 }, (_, i) => ({
@@ -285,9 +314,21 @@ const CreateRentPage = (props: CreateRentProps) => {
               />
             </div>
           </div>
-          <Button className="w-full mt-4" onClick={create}>
-            Submit
-          </Button>
+          {isCreating ? (
+            <Button
+              disabled
+              className="w-full mt-4 bg-[#172e57] hover:bg-[#21427d]"
+            >
+              Creating Rent...
+            </Button>
+          ) : (
+            <Button
+              className="w-full mt-4 bg-[#172e57] hover:bg-[#21427d]"
+              onClick={create}
+            >
+              Submit
+            </Button>
+          )}
         </div>
       </div>
     </>

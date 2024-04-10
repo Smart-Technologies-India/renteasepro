@@ -40,7 +40,6 @@ const ViewPdf = (props: ViewPdfProps) => {
         setBidderList(bidderresponse.data);
       }
 
-      console.log(bidderresponse.data);
 
       // get winnder of the bid and set the winnder
 
@@ -48,10 +47,8 @@ const ViewPdf = (props: ViewPdfProps) => {
         (value: any) => value.status == "WINNINGBID"
       );
 
-      console.log(winnderdata);
       if (winnderdata && winnderdata.length > 0) {
         setWinnder(winnderdata[0]);
-        console.log(winnderdata[0]);
       }
     };
 
@@ -219,22 +216,24 @@ const ViewPdf = (props: ViewPdfProps) => {
 
           <View style={styles.myflex}>
             <Text style={styles.text1}>10 Fees Amount</Text>
-            <Text style={styles.text2}>{bid?.fees_amount ?? "0"}</Text>
+            <Text style={styles.text2}>&#8377;{bid?.fees_amount ?? "0"}</Text>
           </View>
 
           <View style={styles.myflex}>
-            <Text style={styles.text1}>11 Emd Amount</Text>
-            <Text style={styles.text2}>{bid?.emd_amount ?? "0"}</Text>
+            <Text style={styles.text1}>11 EMD Amount</Text>
+            <Text style={styles.text2}>&#8377;{bid?.emd_amount ?? "0"}</Text>
           </View>
 
           <View style={styles.myflex}>
-            <Text style={styles.text1}>12 Bg Amount</Text>
-            <Text style={styles.text2}>{bid?.bg_amount ?? "0"}</Text>
+            <Text style={styles.text1}>12 BG Amount</Text>
+            <Text style={styles.text2}>&#8377;{bid?.bg_amount ?? "0"}</Text>
           </View>
 
           <View style={styles.myflex}>
             <Text style={styles.text1}>13 Minimum Bid</Text>
-            <Text style={styles.text2}>{bid?.min_bid_amount ?? "0"}</Text>
+            <Text style={styles.text2}>
+              &#8377;{bid?.min_bid_amount ?? "0"}
+            </Text>
           </View>
           <View style={styles.myflex}>
             <Text style={styles.text1}>14 Current Bid</Text>

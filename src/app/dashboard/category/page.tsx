@@ -93,9 +93,6 @@ const Category = () => {
     <>
       <div className="p-6">
         <h1 className="text-[#162f57] text-2xl font-semibold">Edit Category</h1>
-        <p className="text-sm mt-4 mb-2">
-          Get started by adding your property&apos;s address and details below.
-        </p>
 
         <div className="flex mt-2">
           <h1 className="text-xl font-medium">Shop Types</h1>
@@ -280,12 +277,6 @@ const Category = () => {
             <div className="p-4">
               <ShopCategory setShopBox={setShopBox} init={initdata} />
             </div>
-
-            {/*  <DrawerFooter className="pt-2">
-              <DrawerClose asChild>
-                <Button variant="outline">Cancel</Button>
-              </DrawerClose>
-            </DrawerFooter> */}
           </DrawerContent>
         </Drawer>
       )}

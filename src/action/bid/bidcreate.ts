@@ -200,15 +200,18 @@ const CreateBid = async (
       }
 
       for (let i = 0; i < payload.exemptfield.length; i++) {
-        if (payload.is_fees_exempt_allowed) {
-          data_to_insert["fees_for"] = getExemptfor(payload.exemptfield[i]);
-        }
-        if (payload.is_emd_exempt_allowed) {
-          data_to_insert["emd_for"] = getExemptfor(payload.exemptfield[i]);
-        }
-        if (payload.is_bg_exempt_allowed) {
-          data_to_insert["bg_for"] = getExemptfor(payload.exemptfield[i]);
-        }
+        data_to_insert["fees_for"] = getExemptfor(payload.exemptfield[i]);
+        data_to_insert["emd_for"] = getExemptfor(payload.exemptfield[i]);
+        data_to_insert["bg_for"] = getExemptfor(payload.exemptfield[i]);
+        // if (payload.is_fees_exempt_allowed) {
+        //   data_to_insert["fees_for"] = getExemptfor(payload.exemptfield[i]);
+        // }
+        // if (payload.is_emd_exempt_allowed) {
+        //   data_to_insert["emd_for"] = getExemptfor(payload.exemptfield[i]);
+        // }
+        // if (payload.is_bg_exempt_allowed) {
+        //   data_to_insert["bg_for"] = getExemptfor(payload.exemptfield[i]);
+        // }
 
         await prisma.exempt.create({
           data: {

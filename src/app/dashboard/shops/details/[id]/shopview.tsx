@@ -51,7 +51,7 @@ const ShopView = (props: ShowShopProps) => {
   }
 
   const [isLoading, setIsLoading] = useState(true);
-  const [shop, setShop] = useState<shop>();
+  const [shop, setShop] = useState<any>();
   const [bid, setBid] = useState<any>();
 
   const [userApplyed, setUserApplyed] = useState<boolean>(false);
@@ -210,26 +210,60 @@ const ShopView = (props: ShowShopProps) => {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
         <div className="bg-white rounded-sm shadow-sm">
-          <p className="text-xl p-2 border-b border-gray-300 font-semibold">
-            Details
-          </p>
-          <p className="px-2 text-sm">Shop Number : {shop?.shopNumber}</p>
-          <p className="px-2 text-sm">Shop Size : {shop?.shopSize}</p>
-          <p className="px-2 text-sm">
-            Shop Floor : {capitalcase(shop?.floor.toString() ?? "")}
-          </p>
-          {shop?.meterno && (
-            <p className="px-2 text-sm">Meter Number : {shop?.meterno}</p>
-          )}
+          <div className="flex gap-2 border-b border-gray-300 py-2 px-4">
+            <p className="text-xl  font-semibold">Details</p>
+            <div className="grow"></div>
+          </div>
+          <div className="px-4 py-2 grid grid-cols-2 gap-4 mt-2">
+            <p className="text-xs leading-3">
+              Propery Name <br />
+              <span className="text-sm text-gray-500 font-medium">
+                {shop?.property.name}
+              </span>
+            </p>
+            <p className="text-xs leading-3">
+              Shop Number <br />
+              <span className="text-sm text-gray-500 font-medium">
+                {shop?.shopNumber}
+              </span>
+            </p>
+            <p className="text-xs leading-3">
+              Shop Size <br />
+              <span className="text-sm text-gray-500 font-medium">
+                {shop?.shopSize}
+              </span>
+            </p>
+
+            <p className="text-xs leading-3">
+              Shop Category Name <br />
+              <span className="text-sm text-gray-500 font-medium">
+                {shop?.shop_category.name}
+              </span>
+            </p>
+
+            <p className="text-xs leading-3">
+              Shop Floor <br />
+              <span className="text-sm text-gray-500 font-medium">
+                {capitalcase(shop?.floor.toString() ?? "")}
+              </span>
+            </p>
+
+            <p className="text-xs leading-3">
+              Meter Number <br />
+              <span className="text-sm text-gray-500 font-medium">
+                {shop?.meterno ?? "N/A"}
+              </span>
+            </p>
+          </div>
 
           {user?.role === "ADMIN" && (
-            <div className="flex gap-2 p-2 mt-2">
+            <div className="flex gap-2 p-2">
               <div className="grow"></div>
 
               {bid && (
                 <Link
                   href={`/dashboard/shops/shopbidhistory/${props.id}`}
-                  className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 py-1 text-sm"
+                  className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                 >
                   Bid History
                 </Link>
@@ -239,7 +273,7 @@ const ShopView = (props: ShowShopProps) => {
                   onClick={() => {
                     return router.push(`/dashboard/rents/edit/${rentdata?.id}`);
                   }}
-                  className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 py-1 text-sm bg-transparent"
+                  className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                 >
                   Manage Shop
                 </button>
@@ -249,7 +283,7 @@ const ShopView = (props: ShowShopProps) => {
               ) : (
                 <Link
                   href={`/dashboard/shops/createbid/${props.id}`}
-                  className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 py-1 text-sm"
+                  className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                 >
                   Create Bid
                 </Link>
@@ -257,7 +291,7 @@ const ShopView = (props: ShowShopProps) => {
 
               <Link
                 href={`/dashboard/shops/createrent/${props.id}`}
-                className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
               >
                 Add Rent
               </Link>
@@ -278,33 +312,20 @@ const ShopView = (props: ShowShopProps) => {
       {bid && (
         <div className="bg-white rounded-sm shadow-sm pb-4 mt-4">
           <div className="border-b border-gray-300 flex items-center pr-2 gap-2">
-            <p className="text-xl p-2  font-semibold">
-              Bid Details -
-              <span className="text-sm">
-                [{bid.is_auction == true ? "Auction Bid" : "Tender Bid"}]
-              </span>
-            </p>
+            <p className="text-xl p-2  font-semibold">Bid Details</p>
             <div className="grow"></div>
-
-            {isWinnerDeclared && (
-              <h1 className="border-green-500 border-2 rounded text-green-500 bg-green-500 bg-opacity-10  px-2 py-1 text-sm">
-                Winner Declared
-              </h1>
-            )}
 
             {bid.bidstartdate > new Date() ? (
               <></>
             ) : bid.bidenddate < new Date() ? (
-              <h1 className="border-rose-500 border-2 rounded text-rose-500 bg-rose-500 bg-opacity-10  px-2 py-1 text-sm">
-                Bid Ended
-              </h1>
+              <></>
             ) : isWinnerDeclared ? (
               <></>
             ) : user?.role === "USER" ? (
               bid.is_auction == true ? (
                 <Link
                   href={`/dashboard/bids/apply/${bid.id}`}
-                  className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 py-1 text-sm"
+                  className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                 >
                   Apply Bid
                 </Link>
@@ -313,7 +334,7 @@ const ShopView = (props: ShowShopProps) => {
               ) : (
                 <Link
                   href={`/dashboard/bids/apply/${bid.id}`}
-                  className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 py-1 text-sm"
+                  className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                 >
                   Apply Bid
                 </Link>
@@ -326,43 +347,108 @@ const ShopView = (props: ShowShopProps) => {
               <>
                 <Link
                   href={`/dashboard/bids/userbidinfo/${bid?.id}`}
-                  className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                  className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                 >
                   View Bid Details
                 </Link>
                 <Link
                   href={`/dashboard/bids/biderslist/${bid?.id}`}
-                  className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                  className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                 >
                   Running Bid History
                 </Link>
               </>
             )}
           </div>
-          <div className="flex">
-            <div className="flex-1">
-              <p className="px-2 text-sm">Title : {bid.title}</p>
-              <p className="px-2 text-sm">
-                Bid Start Date : {bid.bidstartdate.toDateString()}
-              </p>
-              <p className="px-2 text-sm">
-                Bid End Date : {bid.bidenddate.toDateString()}
-              </p>
-              {user?.role != "USER" && (
-                <p className="px-2 text-sm">Total Bidders : {totalBidder}</p>
-              )}
-            </div>
-            <div className="flex-1">
-              <p className="px-2 text-sm">
-                Min Bid Amount : {bid.max_bid_amount}
-              </p>
-              <p className="px-2 text-sm">Fees Amount : {bid.fees_amount}</p>
-              <p className="px-2 text-sm">EMD Amount : {bid.emd_amount}</p>
+          <div className="px-4 pt-2 grid grid-cols-4 gap-4 mt-2">
+            <p className="text-xs leading-3">
+              Title <br />
+              <span className="text-sm text-gray-500 font-medium">
+                {shop?.property.name}
+              </span>
+            </p>
+            <p className="text-xs leading-3">
+              Bid Start Date <br />
+              <span className="text-sm text-gray-500 font-medium">
+                {formatDateTime(new Date(bid.bidstartdate))}
+              </span>
+            </p>
 
-              {user?.role != "USER" && (
-                <p className="px-2 text-sm">BG Amount : {bid.bg_amount}</p>
-              )}
-            </div>
+            <p className="text-xs leading-3">
+              Bid End Date <br />
+              <span className="text-sm text-gray-500 font-medium">
+                {formatDateTime(new Date(bid.bidenddate))}
+              </span>
+            </p>
+
+            {user?.role != "USER" && (
+              <p className="text-xs leading-3">
+                Total Bidders <br />
+                <span className="text-sm text-gray-500 font-medium">
+                  {totalBidder}
+                </span>
+              </p>
+            )}
+
+            <p className="text-xs leading-3">
+              Min Bid Amount <br />
+              <span className="text-sm text-gray-500 font-medium">
+                &#8377;{bid.max_bid_amount}
+              </span>
+            </p>
+
+            <p className="text-xs leading-3">
+              Fees Amount <br />
+              <span className="text-sm text-gray-500 font-medium">
+                &#8377;{bid.fees_amount}
+              </span>
+            </p>
+
+            <p className="text-xs leading-3">
+              EMD Amount <br />
+              <span className="text-sm text-gray-500 font-medium">
+                &#8377;{bid.emd_amount}
+              </span>
+            </p>
+
+            <p className="text-xs leading-3">
+              BG Amount <br />
+              <span className="text-sm text-gray-500 font-medium">
+                &#8377;{bid.bg_amount}
+              </span>
+            </p>
+
+            <p className="text-xs leading-3">
+              Bid Type <br />
+              <span className="text-sm text-gray-500 font-medium">
+                {bid.is_auction == true ? "Auction Bid" : "Tender Bid"}
+              </span>
+            </p>
+
+            {user?.role != "USER" && (
+              <p className="text-xs leading-3">
+                Bid Status <br />
+                <span className="text-sm text-gray-500 font-medium">
+                  {bid.bid_status}
+                </span>
+              </p>
+            )}
+            {user?.role != "USER" && (
+              <p className="text-xs leading-3">
+                Winner Status <br />
+                <span className="text-sm text-gray-500 font-medium">
+                  {isWinnerDeclared ? "Declared" : "Not Declared"}
+                </span>
+              </p>
+            )}
+            {user?.role != "USER" && (
+              <p className="text-xs leading-3">
+                Bid Ended <br />
+                <span className="text-sm text-gray-500 font-medium">
+                  {bid.bidenddate < new Date() ? "Ended" : "Running"}
+                </span>
+              </p>
+            )}
           </div>
         </div>
       )}
@@ -393,7 +479,7 @@ const ShopView = (props: ShowShopProps) => {
               {user?.role! === "USER" && (
                 <Link
                   href={`/dashboard/userrent/details/${rentdata?.id}`}
-                  className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                  className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                 >
                   Pay Rent
                 </Link>

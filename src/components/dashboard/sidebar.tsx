@@ -7,6 +7,7 @@ import {
   IcBaselineAccountCircle,
   MaterialSymbolsCloseSmall,
   MaterialSymbolsPersonRounded,
+  MdiReceiptTextClock,
   MdiStorefrontOutline,
   RiAuctionLine,
   RiMoneyRupeeCircleLine,
@@ -14,10 +15,9 @@ import {
 } from "../icons";
 import React from "react";
 import Link from "next/link";
-import { toast } from "react-toastify";
-import logout from "@/action/user/logout";
 import { Button } from "../ui/button";
 import { Role } from "@prisma/client";
+import { deleteCookie } from "cookies-next";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -30,12 +30,8 @@ const Sidebar = (props: SidebarProps) => {
   const router = useRouter();
 
   const logoutbtn = async () => {
-    const response = await logout({});
-    if (response.status) {
-      router.push("/");
-    } else {
-      toast.error(response.message);
-    }
+    deleteCookie("id");
+    return router.push("/");
   };
 
   return (
@@ -60,12 +56,12 @@ const Sidebar = (props: SidebarProps) => {
 
           <MenuTab
             icco={<RiAuctionLine className="text-gray-300  w-6" />}
-            name="Bids"
+            name="Live Bids"
             path={path}
             pathcheck={"/dashboard/userbids"}
           />
           <MenuTab
-            icco={<RiAuctionLine className="text-gray-300  w-6" />}
+            icco={<MdiReceiptTextClock className="text-gray-300  w-6" />}
             name="Bid History"
             path={path}
             pathcheck={"/dashboard/userbidhistory"}

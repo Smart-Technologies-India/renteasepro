@@ -29,6 +29,8 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
   const [field, setField] = useState<number[]>([]);
   const router = useRouter();
 
+  const [isPaying, setPaying] = useState<boolean>(false);
+
   const [amount, setAmount] = useState<number>(0);
 
   const [isLoading, setLoading] = useState<boolean>(true);
@@ -79,21 +81,25 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
 
   const payfees = async () => {
     setLoading(true);
+    setPaying(true);
     if (field.length == 0) {
       toast.error("Please select atleast one month to pay rent");
       setLoading(false);
+      setPaying(false);
       return;
     }
 
     if (!banknameRef.current?.value) {
       toast.error("Please enter bank name");
       setLoading(false);
+      setPaying(false);
       return;
     }
 
     if (!transactionRef.current?.value) {
       toast.error("Please enter transaction id");
       setLoading(false);
+      setPaying(false);
       return;
     }
 
@@ -117,7 +123,10 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
     });
 
     if (uploadfile.status != 200) {
-      return toast.error("File upload failed");
+      toast.error("File upload failed");
+      setLoading(false);
+      setPaying(false);
+      return;
     }
 
     await UploadFile({
@@ -135,13 +144,12 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
     if (rentTransactresponse.status) {
       setRentTransact(rentTransactresponse.data as rent_transact[]);
     }
-    router.push(
-      `/dashboard/rentrecept/${userid}/${props.id}/${banknameRef.current?.value}`
-    );
-
+    
     setField([]);
     setAmount(0);
     setLoading(false);
+    setPaying(false);
+    return router.push(`/dashboard/rentrecept/${userid}/${props.id}/${field[0]}`);
   };
 
   if (isLoading)
@@ -165,38 +173,51 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
           <div className="bg-white rounded-sm shadow-sm p-4 my-2 flex-1">
             <p className="text-gray-500 text-center">General Information</p>
             <Separator />
+            <div className="grid gap-4 mt-4 grid-cols-2">
+              <p className="text-xs leading-3">
+                Shop Number <br />
+                <span className="text-sm text-gray-500 font-medium">
+                  {rent.shop.shopNumber < new Date() ? "Ended" : "Running"}
+                </span>
+              </p>
 
-            <div className="mt-4">
-              <h1 className="">Shop Number:</h1>
-              <p className="">{rent.shop.shopNumber}</p>
-            </div>
+              <p className="text-xs leading-3">
+                Shop Size <br />
+                <span className="text-sm text-gray-500 font-medium">
+                  {rent.shop.shopSize < new Date() ? "Ended" : "Running"}
+                </span>
+              </p>
 
-            <div className="mt-4">
-              <h1 className="">Shop Size:</h1>
-              <p className="">{rent.shop.shopSize}</p>
-            </div>
+              <p className="text-xs leading-3">
+                Start Date <br />
+                <span className="text-sm text-gray-500 font-medium">
+                  {formateDate(new Date(rent.rent_start_date))}
+                </span>
+              </p>
 
-            <div className="mt-4">
-              <h1 className="">Start Date:</h1>
-              <p className="">{formateDate(new Date(rent.rent_start_date))}</p>
-            </div>
+              <p className="text-xs leading-3">
+                End Date <br />
+                <span className="text-sm text-gray-500 font-medium">
+                  {formateDate(new Date(rent.rent_end_date))}
+                </span>
+              </p>
 
-            <div className="mt-4">
-              <h1 className="">End Date:</h1>
-              <p className="">{formateDate(new Date(rent.rent_end_date))}</p>
-            </div>
+              <p className="text-xs leading-3">
+                Rent Amount <br />
+                <span className="text-sm text-gray-500 font-medium">
+                  &#8377;{rent.rent_amount}
+                </span>
+              </p>
 
-            <div className="mt-4">
-              <h1 className="">Rent Amount:</h1>
-              <p className="">{rent.rent_amount}</p>
-            </div>
-
-            <div className="mt-4">
-              <h1 className="">Due Date:</h1>
-              <p className="">{rent.due_date}</p>
+              <p className="text-xs leading-3">
+                Due Date <br />
+                <span className="text-sm text-gray-500 font-medium">
+                  {rent.due_date}
+                </span>
+              </p>
             </div>
           </div>
-          <div className="bg-white rounded-sm shadow-sm p-4 my-2 flex-1">
+          <div className="bg-white rounded-sm shadow-sm p-4 my-2 flex-1 text-sm">
             <p className="text-gray-500 text-center">Rent Payment</p>
 
             <Separator />
@@ -206,9 +227,11 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
               </>
             ) : (
               <>
-                <div className="mt-4">
-                  <h1 className="">Pending Rent:</h1>
+                <div className="mt-4 flex my-2">
+                  <h1 className="">Pending Rent</h1>
+                  <div className="grow"></div>
                   <p className="">
+                    &#8377;
                     {rentTransact.reduce(
                       (accumulator, currentValue) =>
                         accumulator + currentValue.amount,
@@ -254,9 +277,13 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
                       {new Date(item.formonth).toLocaleString("default", {
                         month: "long",
                       })}
+                      -
+                      {new Date(item.formonth).toLocaleString("default", {
+                        year: "numeric",
+                      })}
                     </p>
                     <div className="grow"></div>
-                    <p>{item.amount}</p>
+                    <p>&#8377;{item.amount}</p>
                   </div>
                 ))}
 
@@ -264,26 +291,29 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
 
                 <div className="flex justify-between mt-2">
                   <p>Rent</p>
-                  <p>{amount}</p>
+                  <p>&#8377;{amount}</p>
                 </div>
 
                 <div className="flex justify-between mt-2">
                   <p>Interest</p>
-                  <p>{parseInt((amount * 0.02).toString(), 0)}</p>
+                  {/* <p>{parseInt((amount * 0.02).toString(), 0)}</p> */}
+                  <p>&#8377;0</p>
                 </div>
 
                 <div className="flex justify-between mt-2">
                   <p>Penalty</p>
-                  <p>{parseInt((amount * 0.05).toString(), 0)}</p>
+                  {/* <p>{parseInt((amount * 0.05).toString(), 0)}</p> */}
+                  <p>&#8377;0</p>
                 </div>
                 <div className="flex justify-between mt-2">
                   <p>Total</p>
-                  <p>
+                  {/* <p>
                     {parseInt(
                       (amount + amount * 0.02 + amount * 0.05).toString(),
                       0
                     )}
-                  </p>
+                  </p> */}
+                  <p>&#8377;{amount.toString()}</p>
                 </div>
 
                 <div className="grid items-center gap-1.5 w-full mt-4">
@@ -340,9 +370,21 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
                   </div>
                 </div>
 
-                <Button onClick={payfees} className="w-full mt-4">
-                  Pay Rent
-                </Button>
+                {isPaying ? (
+                  <Button
+                    disabled
+                    className="w-full mt-4 bg-[#172e57] hover:bg-[#224688]"
+                  >
+                    Loading....
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={payfees}
+                    className="w-full mt-4 bg-[#172e57] hover:bg-[#224688]"
+                  >
+                    Pay Rent
+                  </Button>
+                )}
               </>
             )}
           </div>

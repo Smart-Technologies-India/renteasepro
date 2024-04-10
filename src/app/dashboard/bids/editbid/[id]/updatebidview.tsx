@@ -34,6 +34,8 @@ import GetBid from "@/action/bid/getbid";
 import dayjs, { Dayjs } from "dayjs";
 import CreateCorrigendum from "@/action/corrigendum/createcorrigendum";
 import EditBid from "@/action/bid/editbid";
+import BackButton from "@/components/backbutton";
+import GetDateTime from "@/action/getdatetime";
 
 interface CreateBidPageProps {
   bidid: number;
@@ -75,6 +77,8 @@ const UpdateBidPage = (props: CreateBidPageProps) => {
 
   const router = useRouter();
   const [isLoading, setLoading] = useState<boolean>(true);
+
+  const [showCorrigendum, setShowCorrigendum] = useState<boolean>(false);
 
   const [startDate, setStartDate] = useState<Date>();
   const [endDate, setEndDate] = useState<Date>();
@@ -289,46 +293,52 @@ const UpdateBidPage = (props: CreateBidPageProps) => {
             : RefundType.NONREFUNDABLE
         );
 
+      
         setExempt(bidresponse.data.is_exemption ? Exempt.YES : Exempt.NO);
 
-        for (let i = 0; i < bidresponse.data.exempt.length; i++) {
-          if (bidresponse.data.exempt[i].emd_for == ExemptFor.WOMEN) {
-            setExamptField((prev) => [...prev, "forwomen"]);
-          } else if (bidresponse.data.exempt[i].emd_for == ExemptFor.RESERVED) {
-            setExamptField((prev) => [...prev, "category"]);
-          } else if (
-            bidresponse.data.exempt[i].emd_for == ExemptFor.DIFFERENTLY_ABLED
-          ) {
-            setExamptField((prev) => [...prev, "abled"]);
-          } else if (bidresponse.data.exempt[i].emd_for == ExemptFor.MSME) {
-            setExamptField((prev) => [...prev, "msme"]);
+        if (bidresponse.data.is_exemption) {
+          for (let i = 0; i < bidresponse.data.exempt.length; i++) {
+            if (bidresponse.data.exempt[i].emd_for == ExemptFor.WOMEN) {
+              setExamptField((prev) => [...prev, "forwomen"]);
+            } else if (
+              bidresponse.data.exempt[i].emd_for == ExemptFor.RESERVED
+            ) {
+              setExamptField((prev) => [...prev, "category"]);
+            } else if (
+              bidresponse.data.exempt[i].emd_for == ExemptFor.DIFFERENTLY_ABLED
+            ) {
+              setExamptField((prev) => [...prev, "abled"]);
+            } else if (bidresponse.data.exempt[i].emd_for == ExemptFor.MSME) {
+              setExamptField((prev) => [...prev, "msme"]);
+            }
           }
-        }
 
-        const exemptdata = bidresponse.data.exempt[0];
+          const exemptdata = bidresponse.data.exempt[0];
 
-        if (exemptdata.is_bg_exempt_allowed) {
-          setExemptsectionsvalue((prev) => [...prev, "bg"]);
-          setExemptbg(exemptdata.bg);
-          setTimeout(() => {
-            exemptbgamount.current!.value = exemptdata.bgamount.toString();
-          }, 200);
-        }
+          if (exemptdata.is_bg_exempt_allowed) {
+            setExemptsectionsvalue((prev) => [...prev, "bg"]);
+            setExemptbg(exemptdata.bg);
+            setTimeout(() => {
+              exemptbgamount.current!.value = exemptdata.bgamount.toString();
+            }, 200);
+          }
 
-        if (exemptdata.is_emd_exempt_allowed) {
-          setExemptsectionsvalue((prev) => [...prev, "emd"]);
-          setExemptEmd(exemptdata.emd);
-          setTimeout(() => {
-            exemptemdamount.current!.value = exemptdata.emdamount.toString();
-          }, 200);
-        }
+          if (exemptdata.is_emd_exempt_allowed) {
+            setExemptsectionsvalue((prev) => [...prev, "emd"]);
+            setExemptEmd(exemptdata.emd);
+            setTimeout(() => {
+              exemptemdamount.current!.value = exemptdata.emdamount.toString();
+            }, 200);
+          }
 
-        if (exemptdata.is_fees_exempt_allowed) {
-          setExemptsectionsvalue((prev) => [...prev, "fees"]);
-          setExemptFees(exemptdata.fees);
-          setTimeout(() => {
-            exemptfeesamount.current!.value = exemptdata.feesamount.toString();
-          }, 200);
+          if (exemptdata.is_fees_exempt_allowed) {
+            setExemptsectionsvalue((prev) => [...prev, "fees"]);
+            setExemptFees(exemptdata.fees);
+            setTimeout(() => {
+              exemptfeesamount.current!.value =
+                exemptdata.feesamount.toString();
+            }, 200);
+          }
         }
 
         setIsOpen(bidresponse.data.is_open);
@@ -352,6 +362,16 @@ const UpdateBidPage = (props: CreateBidPageProps) => {
           setField((prev) => [...prev, "scst"]);
         }
       }, 500);
+
+      const getcurrentdate = await GetDateTime({});
+      if (getcurrentdate.status) {
+        if (
+          new Date(getcurrentdate.data!) <
+          new Date(bidresponse.data.bidstartdate)
+        ) {
+          setShowCorrigendum(true);
+        }
+      }
       setLoading(false);
     };
     init();
@@ -364,24 +384,26 @@ const UpdateBidPage = (props: CreateBidPageProps) => {
   const ccFile = useRef<HTMLInputElement>(null);
 
   const editbid = async () => {
-    if (
-      ctitle.current?.value == "" ||
-      ctitle.current?.value == null ||
-      ctitle.current?.value == undefined
-    ) {
-      return toast.error("Title is required");
-    }
+    if (showCorrigendum) {
+      if (
+        ctitle.current?.value == "" ||
+        ctitle.current?.value == null ||
+        ctitle.current?.value == undefined
+      ) {
+        return toast.error("Title is required");
+      }
 
-    if (
-      cdescription.current?.value == "" ||
-      cdescription.current?.value == null ||
-      cdescription.current?.value == undefined
-    ) {
-      return toast.error("Description is required");
-    }
+      if (
+        cdescription.current?.value == "" ||
+        cdescription.current?.value == null ||
+        cdescription.current?.value == undefined
+      ) {
+        return toast.error("Description is required");
+      }
 
-    if (cFile == null) {
-      return toast.error("Please upload a file");
+      if (cFile == null) {
+        return toast.error("Please upload a file");
+      }
     }
 
     const result = safeParse(CreateBidSchema, {
@@ -525,36 +547,37 @@ const UpdateBidPage = (props: CreateBidPageProps) => {
         return toast.error(createbid.message);
       }
 
-      const formData = new FormData();
-      formData.append("file", cFile);
+      if (showCorrigendum) {
+        const formData = new FormData();
+        formData.append("file", cFile!);
 
-      const uploadfile = await axios.post(props.uploadurl, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+        const uploadfile = await axios.post(props.uploadurl, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
 
-      if (uploadfile.status != 200) {
-        return toast.error("File upload failed");
-      }
+        if (uploadfile.status != 200) {
+          return toast.error("File upload failed");
+        }
 
-      const createresponse = await CreateCorrigendum({
-        bidId: props.bidid,
-        name: ctitle.current?.value!,
-        description: cdescription.current?.value!,
-        path: uploadfile.data.filePath,
-        createdById: userid,
-      });
+        const createresponse = await CreateCorrigendum({
+          bidId: props.bidid,
+          name: ctitle.current?.value!,
+          description: cdescription.current?.value!,
+          path: uploadfile.data.filePath,
+          createdById: userid,
+        });
 
-      if (!createresponse.status) {
-        return toast.error("Corrigendum creation failed");
+        if (!createresponse.status) {
+          return toast.error("Corrigendum creation failed");
+        }
       }
 
       toast.success("Bid updated successfully");
       router.back();
     } else {
       let errorMessage = "";
-      console.log(result.issues);
       if (result.issues[0].input) {
         errorMessage = result.issues[0].message;
       } else {
@@ -592,10 +615,10 @@ const UpdateBidPage = (props: CreateBidPageProps) => {
   return (
     <>
       <div className="p-6">
-        <h1 className="text-[#162f57] text-2xl font-semibold">Edit Bid</h1>
-        <p className="text-sm mt-4 mb-2">
-          Get started by adding your Bid details below.
-        </p>
+        <div className="flex gap-2">
+          <BackButton />
+          <h1 className="text-[#162f57] text-2xl font-semibold">Edit Bid</h1>
+        </div>
 
         <div className="bg-white rounded-sm shadow-sm p-4">
           <p className="text-gray-500 text-center">General Information</p>
@@ -1527,53 +1550,64 @@ const UpdateBidPage = (props: CreateBidPageProps) => {
               ))}
           </div>
 
-          <p className="text-gray-500 mt-4 text-center">Corrigendum</p>
-          <Separator />
+          {showCorrigendum && (
+            <>
+              <p className="text-gray-500 mt-4 text-center">Corrigendum</p>
+              <Separator />
 
-          <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="ctitle">Title</Label>
-            <Input id="ctitle" type="text" className="w-full" ref={ctitle} />
-          </div>
-          <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="cdescription">Description</Label>
-            <Textarea
-              id="cdescription"
-              className="w-full h-20 resize-none"
-              ref={cdescription}
-            />
-          </div>
+              <div className="grid items-center gap-1.5 w-full mt-4">
+                <Label htmlFor="ctitle">Title</Label>
+                <Input
+                  id="ctitle"
+                  type="text"
+                  className="w-full"
+                  ref={ctitle}
+                />
+              </div>
+              <div className="grid items-center gap-1.5 w-full mt-4">
+                <Label htmlFor="cdescription">Description</Label>
+                <Textarea
+                  id="cdescription"
+                  className="w-full h-20 resize-none"
+                  ref={cdescription}
+                />
+              </div>
 
-          <div className="flex gap-4 mt-4 items-center">
-            <Label htmlFor="termfile">Corrigendum File</Label>
-            <Button
-              onClick={() => ccFile.current?.click()}
-              variant={"secondary"}
-            >
-              {cFile == null ? "Upload File" : "Change File"}
-            </Button>
+              <div className="flex gap-4 mt-4 items-center">
+                <Label htmlFor="termfile">Corrigendum File</Label>
+                <Button
+                  onClick={() => ccFile.current?.click()}
+                  variant={"secondary"}
+                >
+                  {cFile == null ? "Upload File" : "Change File"}
+                </Button>
 
-            {cFile != null && (
-              <Link
-                target="_blank"
-                href={URL.createObjectURL(cFile!)}
-                className="bg-gray-100 text-black py-1 px-4 rounded-md text-sm h-10 grid place-items-center"
-              >
-                View File
-              </Link>
-            )}
-            <p className="text-sm">
-              {cFile != null ? longtext(cFile.name, 20) : "No File Selected"}
-            </p>
+                {cFile != null && (
+                  <Link
+                    target="_blank"
+                    href={URL.createObjectURL(cFile!)}
+                    className="bg-gray-100 text-black py-1 px-4 rounded-md text-sm h-10 grid place-items-center"
+                  >
+                    View File
+                  </Link>
+                )}
+                <p className="text-sm">
+                  {cFile != null
+                    ? longtext(cFile.name, 20)
+                    : "No File Selected"}
+                </p>
 
-            <div className="hidden">
-              <Input
-                type="file"
-                ref={ccFile}
-                accept="*/*"
-                onChange={(val) => handleFileChange(val, setCFile)}
-              />
-            </div>
-          </div>
+                <div className="hidden">
+                  <Input
+                    type="file"
+                    ref={ccFile}
+                    accept="*/*"
+                    onChange={(val) => handleFileChange(val, setCFile)}
+                  />
+                </div>
+              </div>
+            </>
+          )}
 
           <Button className="w-full mt-4" onClick={editbid}>
             Edit

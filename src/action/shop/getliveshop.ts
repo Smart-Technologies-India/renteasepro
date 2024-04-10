@@ -13,9 +13,17 @@ const getLiveShop = async (
   payload: getLiveShopPayload
 ): Promise<ApiResponseType<shop[] | null>> => {
   try {
+    const current_date = new Date();
     const livebids = await prisma.bid.findMany({
       where: {
         bid_status: BidStatus.PUBLISHED,
+
+        bidstartdate: {
+          lte: current_date,
+        },
+        bidenddate: {
+          gte: current_date,
+        },
       },
       include: {
         shop: {
@@ -34,7 +42,6 @@ const getLiveShop = async (
         }
       }
     }
-
 
     if (!allshops)
       return {

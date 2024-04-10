@@ -1,10 +1,14 @@
 "use client";
 import getUploadFileUser from "@/action/user/getuploadedfile";
 import GetUser from "@/action/user/getuser";
+import IsProfileCompleted from "@/action/user/isprofilecompleted";
 import updateUser from "@/action/user/updateuser";
 import UploadFileUser from "@/action/user/uploadfile";
 import BackButton from "@/components/backbutton";
-import { Fa6RegularPenToSquare } from "@/components/icons";
+import {
+  Fa6RegularPenToSquare,
+  MaterialSymbolsLightErrorOutlineRounded,
+} from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -55,6 +59,10 @@ async function uploadfile(
 }
 
 const UserBidsRunning = () => {
+  const [isProfileCompleted, setIsProfileCompleted] = useState<boolean>(false);
+
+  const [isCreating, setIsCreating] = useState<boolean>(false);
+
   const items = [
     {
       id: "forwomen",
@@ -170,7 +178,6 @@ const UserBidsRunning = () => {
   });
 
   //   file upload section end here
-
   const userid: number = parseInt(getCookie("id") ?? "0");
 
   const router = useRouter();
@@ -338,7 +345,15 @@ const UserBidsRunning = () => {
         accountnumberRef.current!.value =
           userrespone.data?.bankAccountNumber! ?? "";
         ifscRef.current!.value = userrespone.data?.ifscCode! ?? "";
-      }, 100);
+      }, 500);
+
+      const isprofilecompleted = await IsProfileCompleted({
+        id: userid,
+      });
+
+      if (isprofilecompleted.status) {
+        setIsProfileCompleted(isprofilecompleted.status);
+      }
 
       setLoading(false);
     };
@@ -581,12 +596,26 @@ const UserBidsRunning = () => {
         <div className="grow"></div>
       </div>
 
-      <div className="bg-white p-4 rounded-md shadow-md mt-6">
+      {!isProfileCompleted && (
+        <div className="bg-rose-500 px-4 py-2 rounded bg-opacity-20 mt-4 flex items-center gap-2">
+          <div>
+            <MaterialSymbolsLightErrorOutlineRounded className="text-3xl text-rose-500" />
+          </div>
+          <p className="text-rose-500 text-center text-lg">
+            Your Profile seems to be incomplete. Kindly complete your profile in
+            order to proceed.
+          </p>
+        </div>
+      )}
+
+      <div className="bg-white p-4 rounded-md shadow-md mt-4">
         <p className="text-gray-500 text-center">Edit Profile</p>
         <Separator />
         <div className="flex gap-4">
           <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="username">Username</Label>
+            <Label htmlFor="username">
+              Username <span className="text-rose-500">*</span>
+            </Label>
             <Input
               id="username"
               type="text"
@@ -597,7 +626,9 @@ const UserBidsRunning = () => {
         </div>
         <div className="flex gap-4">
           <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="firstname">First Name</Label>
+            <Label htmlFor="firstname">
+              First Name <span className="text-rose-500">*</span>
+            </Label>
             <Input
               id="firstname"
               type="text"
@@ -606,7 +637,9 @@ const UserBidsRunning = () => {
             />
           </div>
           <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="lastname">Last Name</Label>
+            <Label htmlFor="lastname">
+              Last Name <span className="text-rose-500">*</span>
+            </Label>
             <Input
               id="lastname"
               type="text"
@@ -617,7 +650,9 @@ const UserBidsRunning = () => {
         </div>
         <div className="flex gap-4">
           <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="contactone">Contact One</Label>
+            <Label htmlFor="contactone">
+              Contact One <span className="text-rose-500">*</span>
+            </Label>
             <Input
               id="contactone"
               type="text"
@@ -629,7 +664,10 @@ const UserBidsRunning = () => {
             />
           </div>
           <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="contacttwo">Contact Two</Label>
+            <Label htmlFor="contacttwo">
+              Contact Two{" "}
+              <span className="text-[0.50rem] font-normal">(Optional)</span>
+            </Label>
             <Input
               id="contacttwo"
               type="text"
@@ -642,16 +680,22 @@ const UserBidsRunning = () => {
         </div>
         <div className="flex gap-4">
           <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">
+              Email <span className="text-rose-500">*</span>
+            </Label>
             <Input id="email" type="text" className="w-full" ref={emailRef} />
           </div>
           <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="city">City</Label>
+            <Label htmlFor="city">
+              City <span className="text-rose-500">*</span>
+            </Label>
             <Input id="city" type="text" className="w-full" ref={cityRef} />
           </div>
         </div>
         <div className="grid items-center gap-1.5 w-full mt-4">
-          <Label htmlFor="address">Address</Label>
+          <Label htmlFor="address">
+            Address <span className="text-rose-500">*</span>
+          </Label>
           <Textarea
             id="address"
             className="w-full h-28 resize-none"
@@ -660,7 +704,9 @@ const UserBidsRunning = () => {
         </div>
         <div className="flex gap-4">
           <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="aadhar">Aadhar</Label>
+            <Label htmlFor="aadhar">
+              Aadhar <span className="text-rose-500">*</span>
+            </Label>
             <Input
               id="aadhar"
               type="text"
@@ -671,7 +717,9 @@ const UserBidsRunning = () => {
             />
           </div>
           <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="pan">Pan</Label>
+            <Label htmlFor="pan">
+              Pan <span className="text-rose-500">*</span>
+            </Label>
             <Input
               id="pan"
               type="text"
@@ -683,7 +731,9 @@ const UserBidsRunning = () => {
         </div>
         <div className="flex gap-4">
           <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="bankname">Bank Name</Label>
+            <Label htmlFor="bankname">
+              Bank Name <span className="text-rose-500">*</span>
+            </Label>
             <Input
               id="bankname"
               type="text"
@@ -692,7 +742,9 @@ const UserBidsRunning = () => {
             />
           </div>
           <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="accountnumber">Account Number</Label>
+            <Label htmlFor="accountnumber">
+              Account Number <span className="text-rose-500">*</span>
+            </Label>
             <Input
               id="accountnumber"
               type="text"
@@ -702,7 +754,9 @@ const UserBidsRunning = () => {
             />
           </div>
           <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="ifsccode">IFSC Code</Label>
+            <Label htmlFor="ifsccode">
+              IFSC Code <span className="text-rose-500">*</span>
+            </Label>
             <Input id="ifsccode" type="text" className="w-full" ref={ifscRef} />
           </div>
         </div>
@@ -713,7 +767,9 @@ const UserBidsRunning = () => {
           {getAadhar.status ? (
             <>
               <div className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between">
-                <p>Aadhar Card</p>
+                <p>
+                  Aadhar Card <span className="text-rose-500">*</span>
+                </p>
                 <Link
                   target="_blank"
                   href={getAadhar.path}
@@ -735,7 +791,9 @@ const UserBidsRunning = () => {
           {getPan.status ? (
             <>
               <div className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between">
-                <p>Pan Card</p>
+                <p>
+                  Pan Card <span className="text-rose-500">*</span>
+                </p>
                 <Link
                   target="_blank"
                   href={getPan.path}
@@ -757,7 +815,9 @@ const UserBidsRunning = () => {
           {getBankPassbook.status ? (
             <>
               <div className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between">
-                <p>Bank Passbook</p>
+                <p>
+                  Bank Passbook <span className="text-rose-500">*</span>
+                </p>
                 <Link
                   target="_blank"
                   href={getBankPassbook.path}
@@ -779,7 +839,9 @@ const UserBidsRunning = () => {
           {getPhoto.status ? (
             <>
               <div className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between">
-                <p>Photo</p>
+                <p>
+                  Photo <span className="text-rose-500">*</span>
+                </p>
                 <Link
                   target="_blank"
                   href={getPhoto.path}
@@ -900,7 +962,10 @@ const UserBidsRunning = () => {
             <></>
           )}
         </div>
-        <p className="text-gray-500 mt-4">Select Your Category</p>
+        <p className="text-gray-500 mt-4">
+          Select Your Category
+          <span className="text-[0.50rem] font-normal">(Optional)</span>
+        </p>
         {items.map((item, index) => (
           <div key={index} className="flex gap-2 mt-1 items-center ">
             <Checkbox
@@ -972,9 +1037,22 @@ const UserBidsRunning = () => {
             cFile={cTribal}
           />
         )}
-        <Button className="w-full mt-4" onClick={update}>
-          Submit
-        </Button>
+
+        {isCreating ? (
+          <Button
+            disabled
+            className="w-full mt-4 bg-[#172e57] hover:bg-[#21427d]"
+          >
+            Submit
+          </Button>
+        ) : (
+          <Button
+            className="w-full mt-4 bg-[#172e57] hover:bg-[#21427d]"
+            onClick={update}
+          >
+            Submit
+          </Button>
+        )}
       </div>
     </div>
   );

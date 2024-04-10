@@ -10,10 +10,17 @@ interface GetLiveBidPayload {}
 const GetLiveBid = async (
   payload: GetLiveBidPayload
 ): Promise<ApiResponseType<any | null>> => {
+  const current_date = new Date();
   try {
     const bid = await prisma.bid.findMany({
       where: {
         bid_status: BidStatus.PUBLISHED,
+        bidstartdate: {
+          lte: current_date,
+        },
+        bidenddate: {
+          gte: current_date,
+        },
         deletedAt: null,
         deletedBy: null,
       },

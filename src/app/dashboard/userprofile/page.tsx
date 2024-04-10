@@ -222,7 +222,7 @@ const UserBidsRunning = () => {
         <div className="grow"></div>
         <Link
           href={"/dashboard/userprofile/edit"}
-          className="rounded-md text-white py-1 px-4 bg-black"
+          className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
         >
           Edit Profile
         </Link>

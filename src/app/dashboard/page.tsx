@@ -21,6 +21,14 @@ const DashboardPage = () => {
   const userid: number = parseInt(getCookie("id") ?? "0");
   const router = useRouter();
 
+  function isPositive(number: number) {
+    if (number > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   const [isLoading, setLoading] = useState<boolean>(true);
   const [count, setCount] = useState<any>({});
   const [monthinfo, setMonthinfo] = useState<any>({});
@@ -33,16 +41,8 @@ const DashboardPage = () => {
   const [user, setUser] = useState<user>();
 
   const getpercentage = (currentamount: number, lastamount: number) => {
-    let dev = currentamount / lastamount;
-
-    console.log("currentamount", currentamount);
-    console.log("lastamount", lastamount);
-    console.log("dev", dev);
-    let num = Number(dev.toFixed(2));
-
-    // if value is 1.32 then 32%
-    // if value is 0.32 then -68%
-    return (num - 1) * 100;
+    let dev = ((currentamount - lastamount) / lastamount) * 100;
+    return Math.round(dev);
   };
 
   useEffect(() => {
@@ -56,7 +56,8 @@ const DashboardPage = () => {
       if (monthdatarespone.status) {
         setMonthinfo(monthdatarespone.data!);
       }
-      console.log("monthdatarespone", monthdatarespone);
+
+      console.log(monthdatarespone);
       const graphresponse = await getGraph({});
       if (graphresponse.status) {
         setGraphData(graphresponse.data!);
@@ -220,6 +221,7 @@ const DashboardPage = () => {
                 count={numberWithIndianFormat(count.totalreceivable)}
                 color="bg-teal-500"
                 subtitle="Total Receivable Amount"
+                isruppy={true}
               >
                 <Fa6RegularHourglassHalf className="text-xl text-white" />
               </DashboardCard>
@@ -228,6 +230,7 @@ const DashboardPage = () => {
                 count={numberWithIndianFormat(count.currentrent)}
                 color="bg-violet-500"
                 subtitle="Pending Rent Count"
+                isruppy={true}
               >
                 <Fa6RegularHourglassHalf className="text-xl text-white" />
               </DashboardCard>
@@ -236,6 +239,7 @@ const DashboardPage = () => {
                 count={numberWithIndianFormat(count.settledpayment)}
                 color="bg-pink-500"
                 subtitle="Settled Rent Count"
+                isruppy={true}
               >
                 <Fa6RegularHourglassHalf className="text-xl text-white" />
               </DashboardCard>
@@ -268,8 +272,16 @@ const DashboardPage = () => {
                 </div>
                 <ProgressBar
                   className="my-2"
-                  completed={60}
-                  bgColor="#22c55e"
+                  completed={Math.abs(
+                    getpercentage(monthinfo.total, monthinfo.lastmonthtotal)
+                  )}
+                  bgColor={
+                    isPositive(
+                      getpercentage(monthinfo.total, monthinfo.lastmonthtotal)
+                    )
+                      ? "#22c55e"
+                      : "#f43f5e"
+                  }
                   baseBgColor="#eeeeee"
                   borderRadius="4px"
                   labelSize="10px"
@@ -292,8 +304,19 @@ const DashboardPage = () => {
                 </div>
                 <ProgressBar
                   className="my-2"
-                  completed={80}
-                  bgColor="#22c55e"
+                  completed={Math.abs(
+                    getpercentage(monthinfo.collect, monthinfo.lastmonthcollect)
+                  )}
+                  bgColor={
+                    isPositive(
+                      getpercentage(
+                        monthinfo.collect,
+                        monthinfo.lastmonthcollect
+                      )
+                    )
+                      ? "#22c55e"
+                      : "#f43f5e"
+                  }
                   baseBgColor="#eeeeee"
                   borderRadius="4px"
                   labelSize="10px"
@@ -308,14 +331,14 @@ const DashboardPage = () => {
                 <div className="flex gap-2 text-gray-500 text-xs">
                   <p>Total Payment in period</p>
                   <div className="grow"></div>
-                  <p>
+                  {/* <p>
                     {getpercentage(
                       monthinfo.collect - monthinfo.total,
                       monthinfo.lastmonthcollect - monthinfo.lastmonthtotal
                     )}
-                  </p>
+                  </p> */}
                 </div>
-                <ProgressBar
+                {/* <ProgressBar
                   className="my-2"
                   completed={20}
                   bgColor="#f43f5e"
@@ -324,7 +347,7 @@ const DashboardPage = () => {
                   labelSize="10px"
                   height="8px"
                   isLabelVisible={false}
-                />
+                /> */}
                 <div className="grow"></div>
               </div>
             </div>
@@ -343,6 +366,7 @@ interface DashboardCardProps {
   color: string;
   subtitle: string;
   children?: React.ReactNode;
+  isruppy?: boolean;
 }
 
 const DashboardCard = (props: DashboardCardProps) => {
@@ -352,7 +376,11 @@ const DashboardCard = (props: DashboardCardProps) => {
       <div className="w-full h-[1px] bg-gray-200"></div>
       <div className="flex gap-2 items-center px-2">
         <div className="grid place-items-start my-2">
-          <p className="text-xl text-gray-600">{props.count}</p>
+          {props.isruppy ? (
+            <p className="text-xl text-gray-600">&#8377;{props.count}</p>
+          ) : (
+            <p className="text-xl text-gray-600">{props.count}</p>
+          )}
           <span className="text-xs text-gray-400">{props.subtitle}</span>
         </div>
         <div className="grow"></div>

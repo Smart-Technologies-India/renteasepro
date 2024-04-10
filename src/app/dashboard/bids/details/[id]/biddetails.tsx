@@ -111,9 +111,6 @@ const BidDetailsView = (props: BidDetailsViewProps) => {
             </>
           )}
         </div>
-        <p className="text-sm mt-4 mb-2">
-          Get started by adding your Bid details below.
-        </p>
 
         <div className="bg-white rounded-sm shadow-sm p-4">
           <p className="text-gray-500 text-center">General Information</p>

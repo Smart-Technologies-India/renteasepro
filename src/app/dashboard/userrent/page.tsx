@@ -13,10 +13,13 @@ import Link from "next/link";
 import { RentStatus } from "@prisma/client";
 import GetUserRent from "@/action/rent/getrentbyuser";
 import { formateDate } from "@/utils/methods";
+import { useRouter } from "next/navigation";
+import IsProfileCompleted from "@/action/user/isprofilecompleted";
 
 const UserRentPage = () => {
   const id: number = parseInt(getCookie("id") ?? "0");
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   const category = ["All", "Running", "Completed"];
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
@@ -44,6 +47,15 @@ const UserRentPage = () => {
   useEffect(() => {
     const init = async () => {
       setIsLoading(true);
+
+      const isprofilecompleted = await IsProfileCompleted({
+        id: id,
+      });
+
+      if (!isprofilecompleted.status) {
+        return router.push("/dashboard/userprofile/edit");
+      }
+      
       const rentresponse = await GetUserRent({
         userid: id,
       });

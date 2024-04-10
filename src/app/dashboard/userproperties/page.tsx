@@ -8,12 +8,15 @@ import { getCookie } from "cookies-next";
 import GetUser from "@/action/user/getuser";
 import GetUserRendedShop from "@/action/bid/getapplyedshopformbid";
 import { toast } from "react-toastify";
+import IsProfileCompleted from "@/action/user/isprofilecompleted";
+import { useRouter } from "next/navigation";
 
 const BidPropertiesView = () => {
   const [isLoading, setIsLoading] = useState(true);
   const userid: number = parseInt(getCookie("id") ?? "0");
+  const router = useRouter();
 
-  const [user, setUser] = useState<user>();
+  // const [user, setUser] = useState<user>();
 
   const [shops, setShops] = useState<shop[]>([]);
 
@@ -39,15 +42,21 @@ const BidPropertiesView = () => {
     const init = async () => {
       setIsLoading(true);
 
-      const userresponse = await GetUser({ id: userid });
-      if (userresponse.status) {
-        setUser(userresponse.data!);
+      const isprofilecompleted = await IsProfileCompleted({
+        id: userid,
+      });
+
+      if (!isprofilecompleted.status) {
+        return router.push("/dashboard/userprofile/edit");
       }
+      // const userresponse = await GetUser({ id: userid });
+      // if (userresponse.status) {
+      //   setUser(userresponse.data!);
+      // }
 
       const rent_transaction = await GetUserRendedShop({ userid: userid });
       if (!rent_transaction.status)
         return toast.error(rent_transaction.message);
-
 
       const propertry = rent_transaction.data?.map((item: any) => {
         return item.shop.property.name;
@@ -75,7 +84,7 @@ const BidPropertiesView = () => {
       setIsLoading(false);
     };
     init();
-  }, [userid]);
+  }, [userid, router]);
 
   if (isLoading)
     return (

@@ -5,7 +5,6 @@ import { ApiResponseType } from "@/models/response";
 import { hash } from "bcrypt";
 import { Role, user } from "@prisma/client";
 import prisma from "../../../prisma/database";
-import { cookies } from "next/headers";
 
 interface CreateUserPayload {
   username: string;

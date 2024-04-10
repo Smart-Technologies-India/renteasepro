@@ -10,7 +10,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -32,6 +31,8 @@ const AddShopPage = (props: AddShopPageProps) => {
 
   const router = useRouter();
   const [isLoading, setLoading] = useState<boolean>(true);
+
+  const [isCreating, setIsCreating] = useState<boolean>(false);
 
   const [shop_category, setShopCategory] = useState<shop_category[]>([]);
 
@@ -56,6 +57,7 @@ const AddShopPage = (props: AddShopPageProps) => {
   }, []);
 
   const create = async () => {
+    setIsCreating(true);
     const result = safeParse(CreateShopSchema, {
       id: parseInt(props.id.toString()),
       shopCategoryId: shopcategory,
@@ -65,7 +67,6 @@ const AddShopPage = (props: AddShopPageProps) => {
     });
 
     if (result.success) {
-      
       const createshop = await CreateShop({
         propertyId: parseInt(props.id.toString()),
         shopCategoryId: shopcategory,
@@ -88,6 +89,8 @@ const AddShopPage = (props: AddShopPageProps) => {
       }
       toast.error(errorMessage);
     }
+
+    setIsCreating(false);
   };
 
   if (isLoading)
@@ -100,13 +103,10 @@ const AddShopPage = (props: AddShopPageProps) => {
   return (
     <>
       <div className="p-6">
-        <h1 className="text-[#162f57] text-2xl font-semibold">Add a Shop </h1>
-        <p className="text-sm mt-4 mb-2">
-          Get started by adding your shop&apos;s details below.
-        </p>
+        {/*<h1 className="text-[#162f57] text-2xl font-semibold">Add a Shop </h1> */}
 
         <div className="bg-white rounded-sm shadow-sm p-4">
-          <p className="text-gray-500">GENERAL INFORMATION</p>
+          <p className="text-gray-500 text-xl">Add a Shop</p>
 
           <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">
@@ -120,7 +120,9 @@ const AddShopPage = (props: AddShopPageProps) => {
               />
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="category">Select Shop Category</Label>
+              <Label htmlFor="category">
+                Select Shop Category <span className="text-rose-500">*</span>
+              </Label>
               <Select
                 onValueChange={(val) => {
                   setshopcategory(parseInt(val));
@@ -143,7 +145,9 @@ const AddShopPage = (props: AddShopPageProps) => {
           </div>
           <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="shopnumber">Shop Number</Label>
+              <Label htmlFor="shopnumber">
+                Shop Number <span className="text-rose-500">*</span>
+              </Label>
               <Input
                 id="shopnumber"
                 type="text"
@@ -152,7 +156,9 @@ const AddShopPage = (props: AddShopPageProps) => {
               />
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="floornumber">Floor Number</Label>
+              <Label htmlFor="floornumber">
+                Floor Number <span className="text-rose-500">*</span>
+              </Label>
               <Select
                 onValueChange={(val: Floors) => {
                   setFloor(val);
@@ -195,7 +201,9 @@ const AddShopPage = (props: AddShopPageProps) => {
 
           <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="size">Shop Size</Label>
+              <Label htmlFor="size">
+                Shop Size <span className="text-rose-500">*</span>
+              </Label>
               <Input
                 id="size"
                 type="text"
@@ -204,7 +212,10 @@ const AddShopPage = (props: AddShopPageProps) => {
               />
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="meter">Meter Number</Label>
+              <Label htmlFor="meter">
+                Meter Number{" "}
+                <span className="text-[0.50rem] font-normal">(Optional)</span>
+              </Label>
               <Input
                 id="meter"
                 type="text"
@@ -213,9 +224,22 @@ const AddShopPage = (props: AddShopPageProps) => {
               />
             </div>
           </div>
-          <Button className="w-full mt-4" onClick={create}>
-            Submit
-          </Button>
+
+          {isCreating ? (
+            <Button
+              disabled
+              className="w-full mt-4 bg-[#172e57] hover:bg-[#21427d]"
+            >
+              Submit
+            </Button>
+          ) : (
+            <Button
+              className="w-full mt-4 bg-[#172e57] hover:bg-[#21427d]"
+              onClick={create}
+            >
+              Submit
+            </Button>
+          )}
         </div>
       </div>
     </>

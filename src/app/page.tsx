@@ -23,24 +23,30 @@ export default function Home() {
 
   const mobileNumber = useRef<HTMLInputElement>(null);
   const otpRef = useRef<HTMLInputElement>(null);
+
+  const [isLogin, setIsLogin] = useState<boolean>(false);
+
   const sendOtp = async () => {
+    setIsLogin(true);
     const mobile = mobileNumber.current?.value;
     if (!mobile) {
       toast.error("Please enter a valid mobile number");
-      return;
+      return setIsLogin(false);
     }
     const response = await SendOtp({ contact: mobile });
     if (!response.status) {
       toast.error(response.message);
-      return;
+      return setIsLogin(false);
     }
 
     toast.success(response.message);
     setIsOtpSent(true);
     setOtpResponse(response.data!);
+    setIsLogin(false);
   };
 
   const verifyOtp = async () => {
+    setIsLogin(true);
     const mobile = mobileNumber.current?.value;
     const otp = otpRef.current?.value;
     const firstnameValue = otpresponse?.firstName ?? firstname.current?.value;
@@ -48,22 +54,22 @@ export default function Home() {
 
     if (!mobile) {
       toast.error("Please enter a valid mobile number");
-      return;
+      return setIsLogin(false);
     }
 
     if (!otp) {
       toast.error("Please enter a valid otp");
-      return;
+      return setIsLogin(false);
     }
 
     if (!firstnameValue) {
       toast.error("Please enter a valid first name");
-      return;
+      return setIsLogin(false);
     }
 
     if (!lastnameValue) {
       toast.error("Please enter a valid last name");
-      return;
+      return setIsLogin(false);
     }
 
     const response = await LoginOtp({
@@ -75,11 +81,12 @@ export default function Home() {
 
     if (!response.status) {
       toast.error(response.message);
-      return;
+      return setIsLogin(false);
     }
 
     toast.success(response.message);
     router.push("/dashboard");
+    setIsLogin(false);
   };
 
   return (
@@ -95,7 +102,7 @@ export default function Home() {
         </div>
         <div className="flex-1 grid place-items-center bg-white rounded-r-md">
           <div>
-            <h1 className="text-2xl font-semibold mt-6 mb-2 border-b border-gray-300 pb-2 ">
+            <h1 className="text-2xl font-semibold mt-6 mb-2 border-b border-gray-300 pb-2">
               Login
             </h1>
             <div className="grid max-w-sm items-center gap-1.5 w-80">
@@ -128,15 +135,17 @@ export default function Home() {
                         Hello {otpresponse?.firstName} {otpresponse?.lastName}
                       </h1>
                       <Label htmlFor="mobile">Mobile Number</Label>
-                      <Input
-                        id="mobile"
-                        type="text"
-                        ref={mobileNumber}
-                        value={otpresponse?.contactone!}
-                        maxLength={10}
-                        disabled
-                        onChange={handleNumberChange}
-                      />
+                      <div className="flex">
+                        <Input
+                          id="mobile"
+                          type="text"
+                          ref={mobileNumber}
+                          value={otpresponse?.contactone!}
+                          maxLength={10}
+                          disabled
+                          onChange={handleNumberChange}
+                        />
+                      </div>
                     </>
                   )}
 
@@ -148,12 +157,18 @@ export default function Home() {
                     maxLength={4}
                     onChange={handleNumberChange}
                   />
-                  <Button
-                    onClick={verifyOtp}
-                    className="mt-4 text-center font-semibold text-white bg-black rounded-md block py-2 w-full "
-                  >
-                    Verify OTP
-                  </Button>
+                  {isLogin ? (
+                    <Button className="mt-4 text-center font-semibold text-white bg-black rounded-md block py-2 w-full ">
+                      Loading...
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={verifyOtp}
+                      className="mt-4 text-center font-semibold text-white bg-black rounded-md block py-2 w-full "
+                    >
+                      Verify OTP
+                    </Button>
+                  )}
                 </>
               ) : (
                 <>
@@ -165,12 +180,21 @@ export default function Home() {
                     maxLength={10}
                     onChange={handleNumberChange}
                   />
-                  <Button
-                    onClick={sendOtp}
-                    className="mt-4 text-center font-semibold text-white bg-black rounded-md block py-2 w-full "
-                  >
-                    Send OTP
-                  </Button>
+                  {isLogin ? (
+                    <Button
+                      disabled
+                      className="mt-4 text-center font-semibold text-white bg-black rounded-md block py-2 w-full "
+                    >
+                      Loading...
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={sendOtp}
+                      className="mt-4 text-center font-semibold text-white bg-black rounded-md block py-2 w-full "
+                    >
+                      Send OTP
+                    </Button>
+                  )}
                 </>
               )}
             </div>

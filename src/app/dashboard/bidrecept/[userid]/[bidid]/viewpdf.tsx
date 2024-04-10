@@ -221,7 +221,7 @@ const ViewPdf = (props: ViewPdfProps) => {
             <Text style={styles.text2}>{bid?.fees_amount}</Text>
           </View>
           <View style={styles.myflex}>
-            <Text style={styles.text1}>2 Emd Amount</Text>
+            <Text style={styles.text1}>2 EMD Amount</Text>
             <Text style={styles.text2}>{bid?.emd_amount}</Text>
           </View>
           <View style={styles.myflex}>

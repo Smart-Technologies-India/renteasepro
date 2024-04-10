@@ -5,7 +5,7 @@ import GetBid from "@/action/bid/getbid";
 import getFromUser from "@/action/bid_transact/getfromuser";
 import UploadFile from "@/action/file_upload/uploadfile";
 import getUploadFileUser from "@/action/user/getuploadedfile";
-import GetUser from "@/action/user/getuser";
+import BackButton from "@/components/backbutton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -45,6 +45,8 @@ interface ApplyForBidViewProps {
 const ApplyForBidView = (props: ApplyForBidViewProps) => {
   const userid: number = parseInt(getCookie("id") ?? "0");
 
+  const [isPaying, setIsPaying] = useState<boolean>(false);
+
   const router = useRouter();
   const [isLoading, setLoading] = useState<boolean>(true);
   const [bid, setBid] = useState<any>();
@@ -56,7 +58,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
 
   const [isAplicable, setIsApplicable] = useState<boolean>(false);
 
-  const [user, setUser] = useState<user>();
+  // const [user, setUser] = useState<user>();
 
   const banknameRef = useRef<HTMLInputElement>(null);
   const transactionRef = useRef<HTMLInputElement>(null);
@@ -86,12 +88,12 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
     const init = async () => {
       setLoading(true);
 
-      const userresponse = await GetUser({
-        id: userid,
-      });
-      if (userresponse.status) {
-        setUser(userresponse.data!);
-      }
+      // const userresponse = await GetUser({
+      //   id: userid,
+      // });
+      // if (userresponse.status) {
+      //   setUser(userresponse.data!);
+      // }
 
       const bidresponse = await GetBid({
         id: parseInt(props.bidid.toString()),
@@ -165,35 +167,47 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
   }, [props.bidid, userid]);
 
   const create = async (issecond: boolean) => {
+    setIsPaying(true);
     if (
       amount.current?.value === "" ||
       amount.current?.value == undefined ||
       amount.current?.value == null
-    )
-      return toast.error("Please enter bid amount");
-
+    ) {
+      toast.error("Please enter bid amount");
+      setIsPaying(true);
+      return;
+    }
     if (bid?.is_auction == false) {
       if (
         parseInt(amount.current?.value ?? "0") <
         bid.min_bid_amount + bid.min_bid_increment
-      )
-        return toast.error(
-          "Bid amount should be greater than minimum bid amount"
+      ) {
+        toast.error(
+          `Bid amount should be greater than minimum bid amount. Bid amount should be in multiple of Rs.${bid.min_bid_increment}`
         );
+        setIsPaying(true);
+        return;
+      }
     } else {
       if (
         parseInt(amount.current?.value ?? "0") <
         bid.max_bid_amount + bid.min_bid_increment
-      )
-        return toast.error(
-          "Bid amount should be greater than current bid amount"
+      ) {
+        setIsPaying(true);
+        toast.error(
+          `Bid amount should be greater than current bid amount. Bid amount should be in multiple of Rs.${bid.min_bid_increment}`
         );
+        return;
+      }
     }
 
-    if (parseInt(amount.current?.value ?? "0") % bid.min_bid_increment != 0)
-      return toast.error(
+    if (parseInt(amount.current?.value ?? "0") % bid.min_bid_increment != 0) {
+      setIsPaying(true);
+      toast.error(
         `Bid amount should be in multiple of Rs.${bid.min_bid_increment}`
       );
+      return;
+    }
 
     if (!issecond && fileUploader == null) {
       return toast.error("Please upload receipt file");
@@ -272,10 +286,10 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
   return (
     <>
       <div className="p-6">
-        <h1 className="text-[#162f57] text-2xl font-semibold">Bid Details</h1>
-        <p className="text-sm mt-4 mb-2">
-          Get started by adding your Bid details below.
-        </p>
+        <div className="flex gap-2">
+          <BackButton />
+          <h1 className="text-[#162f57] text-2xl font-semibold">Bid Details</h1>
+        </div>
 
         {page == 0 && (
           <div className="bg-white rounded-sm shadow-sm p-4 my-2">
@@ -284,32 +298,35 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
             <div className="flex gap-4">
               <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                 <h1>Property Name:</h1>
-                <p>- {bid.shop.property.name}</p>
+                <p>{bid.shop.property.name ?? "-"}</p>
               </div>
               <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                 <h1>Shop Number:</h1>
-                <p>- {bid.shop.shopNumber}</p>
+                <p>{bid.shop.shopNumber ?? "="}</p>
               </div>
             </div>
             <div className="flex gap-4">
               <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                 <h1>Bid Title:</h1>
-                <p>- {bid.title}</p>
+                <p>{bid.title ?? "-"}</p>
               </div>
               <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                 <h1>Bid Description:</h1>
-                <p>- {bid.description}</p>
+                <p>{bid.description ?? "-"}</p>
               </div>
             </div>
             <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md">
               <h1>Bid Instructions:</h1>
-              <p>- {bid.instruction}</p>
+              <p>{bid.instruction ?? "-"}</p>
             </div>
             <div className="mt-4"></div>
             <Separator />
             <div className="flex justify-between w-full mt-2">
               <div className="grow"></div>
-              <Button className="" onClick={nextpage}>
+              <Button
+                className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                onClick={nextpage}
+              >
                 Go To Next
               </Button>
             </div>
@@ -348,44 +365,50 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
               <div className="flex gap-4 items-center justify-around w-full mt-2">
                 <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                   <h1 className="text-center">Fees Amount:</h1>
-                  <p className="text-center">{bid.fees_amount}</p>
+                  <p className="text-center">&#8377;{bid.fees_amount}</p>
                 </div>
 
                 <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
-                  <h1 className="text-center">Emd Amount:</h1>
-                  <p className="text-center">{bid.emd_amount}</p>
+                  <h1 className="text-center">EMD Amount:</h1>
+                  <p className="text-center">&#8377;{bid.emd_amount}</p>
                 </div>
 
                 <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
-                  <h1 className="text-center">Bg Amount:</h1>
-                  <p className="text-center">{bid.bg_amount}</p>
+                  <h1 className="text-center">BG Amount:</h1>
+                  <p className="text-center">&#8377;{bid.bg_amount}</p>
                 </div>
               </div>
 
               <div className="flex gap-4 items-center justify-around w-full mt-2">
                 <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                   <h1 className="text-center">Minimum Bid:</h1>
-                  <p className="text-center">{bid.min_bid_amount}</p>
+                  <p className="text-center">&#8377;{bid.min_bid_amount}</p>
                 </div>
                 {bid.is_auction == true && (
                   <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                     <h1 className="text-center">Current Bid:</h1>
-                    <p className="text-center">{bid.max_bid_amount}</p>
+                    <p className="text-center">&#8377;{bid.max_bid_amount}</p>
                   </div>
                 )}
                 <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                   <h1 className="text-center">Min Bid Increment:</h1>
-                  <p className="text-center">{bid.min_bid_increment}</p>
+                  <p className="text-center">&#8377;{bid.min_bid_increment}</p>
                 </div>
               </div>
 
               <div className="mt-4"></div>
               <Separator />
               <div className="flex justify-between w-full mt-2">
-                <Button className="" onClick={prevpage}>
+                <Button
+                  className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                  onClick={prevpage}
+                >
                   Go To Previous
                 </Button>
-                <Button className="" onClick={nextpage}>
+                <Button
+                  className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                  onClick={nextpage}
+                >
                   Go To Next
                 </Button>
               </div>
@@ -398,17 +421,29 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
             <div className="bg-white rounded-sm shadow-sm p-4 my-2">
               <p className="text-gray-500 text-center">Document Required</p>
               <Separator />
-              <h1 className="mt-2">Document Title:</h1>
-              <p>- {bid.docone}</p>
 
-              <h1 className="mt-2">Document Description:</h1>
-              <p>- {bid.doconedescription}</p>
-
-              <h1 className="mt-2">File Number:</h1>
-              <p>- {bid.t_and_c_file_number}</p>
-
-              <h1 className="mt-2">File Subject:</h1>
-              <p>- {bid.t_and_c_description}</p>
+              <div className="grid grid-cols-5 gap-4 items-center justify-around w-full mt-4">
+                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1 col-span-2">
+                  <h1 className="text-center">Document Title</h1>
+                  <p className="text-center">{bid.docone ?? "-"}</p>
+                </div>
+                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1 col-span-3">
+                  <h1 className="text-center">Document Description</h1>
+                  <p className="text-center">{bid.Description ?? "-"}</p>
+                </div>
+                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1  col-span-2">
+                  <h1 className="text-center">File Number</h1>
+                  <p className="text-center">
+                    {bid.t_and_c_file_number ?? "-"}
+                  </p>
+                </div>
+                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1 col-span-3">
+                  <h1 className="text-center">File Subject</h1>
+                  <p className="text-center">
+                    {bid.t_and_c_description ?? "-"}
+                  </p>
+                </div>
+              </div>
               <div className="flex gap-4 mt-4 items-center">
                 <Label htmlFor="termfile">Terms & Conditions File</Label>
                 <a
@@ -422,10 +457,16 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
               <div className="mt-4"></div>
               <Separator />
               <div className="flex justify-between w-full mt-2">
-                <Button className="" onClick={prevpage}>
+                <Button
+                  className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                  onClick={prevpage}
+                >
                   Go To Previous
                 </Button>
-                <Button className="" onClick={nextpage}>
+                <Button
+                  className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                  onClick={nextpage}
+                >
                   Go To Next
                 </Button>
               </div>
@@ -458,7 +499,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                   {bid.is_woman == true ? (
                     <>
                       <div className="bg-gray-100 rounded-sm shadow py-1 px-4 text-xs">
-                        For Women
+                        Women
                       </div>
                     </>
                   ) : (
@@ -467,7 +508,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                   {bid.is_reserved == true ? (
                     <>
                       <div className="bg-gray-100 rounded-sm shadow py-1 px-4 text-xs">
-                        For Reserved Category
+                        Reserved Category
                       </div>
                     </>
                   ) : (
@@ -476,7 +517,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                   {bid.is_differently_abled == true ? (
                     <>
                       <div className="bg-gray-100 rounded-sm shadow py-1 px-4 text-xs">
-                        For Differently Abled
+                        Differently Abled
                       </div>
                     </>
                   ) : (
@@ -485,7 +526,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                   {bid.is_msme == true ? (
                     <>
                       <div className="bg-gray-100 rounded-sm shadow py-1 px-4 text-xs">
-                        For MSME
+                        MSME
                       </div>
                     </>
                   ) : (
@@ -493,7 +534,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                   )}
                   {bid.is_sc_st == true ? (
                     <div className="bg-gray-100 rounded-sm shadow py-1 px-4 text-xs">
-                      For SC/ST
+                      SC/ST
                     </div>
                   ) : (
                     <></>
@@ -501,7 +542,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                   {bid.tribal == true ? (
                     <>
                       <div className="bg-gray-100 rounded-sm shadow py-1 px-4 text-xs">
-                        For Tribal
+                        Tribal
                       </div>
                     </>
                   ) : (
@@ -526,21 +567,21 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                     <div className="flex gap-4 flex-wrap mt-2 items-center">
                       {bid.exempt[0].is_fees_exempt_allowed! ? (
                         <div className="bg-gray-100 rounded-sm shadow py-1 px-4 text-xs">
-                          Exempt Fees
+                          Fees
                         </div>
                       ) : (
                         <></>
                       )}
                       {bid.exempt[0].is_bg_exempt_allowed! ? (
                         <div className="bg-gray-100 rounded-sm shadow py-1 px-4  text-xs">
-                          Exempt BG
+                          BG
                         </div>
                       ) : (
                         <></>
                       )}
                       {bid.exempt[0].is_emd_exempt_allowed! ? (
                         <div className="bg-gray-100 rounded-sm shadow py-1 px-4 text-xs">
-                          Exempt EMD
+                          EMD
                         </div>
                       ) : (
                         <></>
@@ -550,26 +591,29 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                     {bid.exempt[0].is_fees_exempt_allowed! && (
                       <div className="grid items-center gap-1.5 w-full mt-4">
                         <h1 className="mt-2">Exempt Fees Amount:</h1>
-                        <p>- {bid?.exempt[0].feesamount.toString()}</p>
+                        <p>{bid?.exempt[0].feesamount ?? "-"}</p>
                       </div>
                     )}
                     {bid.exempt[0].is_bg_exempt_allowed! && (
                       <div className="grid items-center gap-1.5 w-full mt-4">
                         <h1 className="mt-2">Exempt BG Amount:</h1>
-                        <p>- {bid?.exempt[0].bgamount.toString()}</p>
+                        <p>{bid?.exempt[0].bgamount ?? "-"}</p>
                       </div>
                     )}
                     {bid.exempt[0].is_emd_exempt_allowed! && (
                       <div className="grid items-center gap-1.5 w-full mt-4">
                         <h1 className="mt-2">Exempt EMD Amount:</h1>
-                        <p>- {bid?.exempt[0].emdamount.toString()}</p>
+                        <p>{bid?.exempt[0].emdamount ?? "-"}</p>
                       </div>
                     )}
                   </>
                 )}
                 <Separator />
                 <div className="flex justify-between w-full mt-2">
-                  <Button className="" onClick={prevpage}>
+                  <Button
+                    className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                    onClick={prevpage}
+                  >
                     Go To Previous
                   </Button>
                 </div>
@@ -586,45 +630,56 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                               User Submitted Bid Information
                             </p>
                             <Separator />
-                            <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
-                              <h1>Minimum Bid:</h1>
-                              <p>{bid.min_bid_amount}</p>
-                            </div>
-
-                            <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
-                              <h1>Min Bid Increment:</h1>
-                              <p>{bid.min_bid_increment}</p>
-                            </div>
-                            {bid.is_auction == true && (
+                            <div className="flex gap-2">
                               <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
-                                <h1>Current Bid:</h1>
-                                <p>{bid.max_bid_amount}</p>
+                                <h1 className="text-center">Minimum Bid</h1>
+                                <p className="text-center text-xl">
+                                  &#8377;{bid.min_bid_amount}
+                                </p>
                               </div>
-                            )}
+
+                              <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
+                                <h1 className="text-center">
+                                  Min Bid Increment
+                                </h1>
+                                <p className="text-center text-xl">
+                                  &#8377;{bid.min_bid_increment}
+                                </p>
+                              </div>
+                              {bid.is_auction == true && (
+                                <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
+                                  <h1 className="text-center">Current Bid</h1>
+                                  <p className="text-center text-xl">
+                                    &#8377;{bid.max_bid_amount}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                      
 
                             <div className="flex justify-between mt-2">
                               <p>Fees Paid</p>
-                              <p>{bid.fees_amount}</p>
+                              <p>&#8377;{bid.fees_amount}</p>
                             </div>
                             {bid?.is_exemption == true && (
                               <div className="flex justify-between mt-2">
                                 <p>Exempted Fees Paid</p>
-                                <p>-{bid?.exempt[0].feesamount}</p>
+                                <p>&#8377;(-){bid?.exempt[0].feesamount}</p>
                               </div>
                             )}
                             <div className="flex justify-between mt-2">
-                              <p>Emd Amount Paid</p>
-                              <p>{bid.emd_amount}</p>
+                              <p>EMD Amount Paid</p>
+                              <p>&#8377;{bid.emd_amount}</p>
                             </div>
                             {bid?.is_exemption == true && (
                               <div className="flex justify-between mt-2">
-                                <p>Exempted Emd Amount Paid</p>
-                                <p>-{bid?.exempt[0].emdamount}</p>
+                                <p>Exempted EMD Amount Paid</p>
+                                <p>&#8377;(-){bid?.exempt[0].emdamount}</p>
                               </div>
                             )}
                             <div className="flex justify-between mt-2">
                               <p>User Bid Amount</p>
-                              <p>{bidTransact.amount}</p>
+                              <p>&#8377;{bidTransact.amount}</p>
                             </div>
                             <div className="mt-4"></div>
                             <Separator />
@@ -639,12 +694,18 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                               />
                             </div>
 
-                            <Button
-                              onClick={() => create(true)}
-                              className="w-full mt-4"
-                            >
-                              Freeze Bid
-                            </Button>
+                            {isPaying ? (
+                              <Button className="w-full mt-4 bg-[#172e57] hover:bg-[#224688]">
+                                Loading...
+                              </Button>
+                            ) : (
+                              <Button
+                                onClick={() => create(true)}
+                                className="w-full mt-4 bg-[#172e57] hover:bg-[#224688]"
+                              >
+                                Freeze Bid
+                              </Button>
+                            )}
                           </div>
                         </>
                       ) : (
@@ -659,7 +720,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                               <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
                                 <h1 className="text-center">Minimum Bid</h1>
                                 <p className="text-center text-xl">
-                                  {bid.min_bid_amount}
+                                  &#8377;{bid.min_bid_amount}
                                 </p>
                               </div>
 
@@ -668,14 +729,14 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                                   Min Bid Increment
                                 </h1>
                                 <p className="text-center text-xl">
-                                  {bid.min_bid_increment}
+                                  &#8377;{bid.min_bid_increment}
                                 </p>
                               </div>
                               {bid.is_auction == true && (
                                 <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
                                   <h1 className="text-center">Current Bid</h1>
                                   <p className="text-center text-xl">
-                                    {bid.max_bid_amount}
+                                    &#8377;{bid.max_bid_amount}
                                   </p>
                                 </div>
                               )}
@@ -693,23 +754,23 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                             </div>
 
                             <div className="flex justify-between mt-2">
-                              <p>Fees</p>
-                              <p>{bid.fees_amount}</p>
+                              <p>Tender Fees</p>
+                              <p>&#8377;{bid.fees_amount}</p>
                             </div>
                             {bid?.is_exemption == true && (
                               <div className="flex justify-between mt-2">
                                 <p>Exempted Fees</p>
-                                <p>-{bid?.exempt[0].feesamount}</p>
+                                <p>&#8377;(-){bid?.exempt[0].feesamount}</p>
                               </div>
                             )}
                             <div className="flex justify-between mt-2">
-                              <p>Emd Amount</p>
-                              <p>{bid.emd_amount}</p>
+                              <p>EMD Amount</p>
+                              <p>&#8377;{bid.emd_amount}</p>
                             </div>
                             {bid?.is_exemption == true && (
                               <div className="flex justify-between mt-2">
-                                <p>Exempted Emd Amount</p>
-                                <p>-{bid?.exempt[0].emdamount}</p>
+                                <p>Exempted EMD Amount</p>
+                                <p>&#8377;(-){bid?.exempt[0].emdamount}</p>
                               </div>
                             )}
                             <div className="mt-4"></div>
@@ -717,6 +778,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                             <div className="flex justify-between">
                               <p>Total Fees to be Paid</p>
                               <p>
+                                &#8377;
                                 {bid?.is_exemption == true
                                   ? parseInt(
                                       bid.fees_amount.toString() ?? "0"
@@ -796,12 +858,18 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                               </div>
                             </div>
 
-                            <Button
-                              onClick={() => create(false)}
-                              className="w-full mt-4"
-                            >
-                              Pay Fees and Freeze Bid
-                            </Button>
+                            {isPaying ? (
+                              <Button className="w-full mt-4 bg-[#172e57] hover:bg-[#224688]">
+                                Loading...
+                              </Button>
+                            ) : (
+                              <Button
+                                onClick={() => create(true)}
+                                className="w-full mt-4 bg-[#172e57] hover:bg-[#224688]"
+                              >
+                                Pay Fees and Freeze Bid
+                              </Button>
+                            )}
                           </div>
                         </>
                       )}
@@ -819,7 +887,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                               <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
                                 <h1 className="text-center">Minimum Bid</h1>
                                 <p className="text-center text-xl">
-                                  {bid.min_bid_amount}
+                                  &#8377;{bid.min_bid_amount}
                                 </p>
                               </div>
 
@@ -828,14 +896,14 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                                   Min Bid Increment
                                 </h1>
                                 <p className="text-center text-xl">
-                                  {bid.min_bid_increment}
+                                  &#8377;{bid.min_bid_increment}
                                 </p>
                               </div>
                               {bid.is_auction == true && (
                                 <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
                                   <h1 className="text-center">Current Bid</h1>
                                   <p className="text-center text-xl">
-                                    {bid.max_bid_amount}
+                                    &#8377;{bid.max_bid_amount}
                                   </p>
                                 </div>
                               )}
@@ -843,27 +911,27 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
 
                             <div className="flex justify-between mt-2">
                               <p>User Bid Amount</p>
-                              <p>{bidTransact.amount}</p>
+                              <p>&#8377;{bidTransact.amount}</p>
                             </div>
 
                             <div className="flex justify-between mt-2">
                               <p>Fees Paid</p>
-                              <p>{bid.fees_amount}</p>
+                              <p>&#8377;{bid.fees_amount}</p>
                             </div>
                             {bid?.is_exemption == true && (
                               <div className="flex justify-between mt-2">
                                 <p>Exempted Fees Paid</p>
-                                <p>-{bid?.exempt[0].feesamount}</p>
+                                <p>&#8377;(-){bid?.exempt[0].feesamount}</p>
                               </div>
                             )}
                             <div className="flex justify-between mt-2">
-                              <p>Emd Amount Paid</p>
-                              <p>{bid.emd_amount}</p>
+                              <p>EMD Amount Paid</p>
+                              <p>&#8377;{bid.emd_amount}</p>
                             </div>
                             {bid?.is_exemption == true && (
                               <div className="flex justify-between mt-2">
-                                <p>Exempted Emd Amount Paid</p>
-                                <p>-{bid?.exempt[0].emdamount}</p>
+                                <p>Exempted EMD Amount Paid</p>
+                                <p>&#8377;(-){bid?.exempt[0].emdamount}</p>
                               </div>
                             )}
                             <div className="mt-4"></div>
@@ -871,6 +939,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                             <div className="flex justify-between">
                               <p>Total Amount Paid</p>
                               <p>
+                                &#8377;
                                 {bid?.is_exemption == true
                                   ? parseInt(
                                       bid.fees_amount.toString() ?? "0"
@@ -902,7 +971,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                               <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
                                 <h1 className="text-center">Minimum Bid</h1>
                                 <p className="text-center text-xl">
-                                  {bid.min_bid_amount}
+                                  &#8377;{bid.min_bid_amount}
                                 </p>
                               </div>
 
@@ -911,14 +980,14 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                                   Min Bid Increment
                                 </h1>
                                 <p className="text-center text-xl">
-                                  {bid.min_bid_increment}
+                                  &#8377;{bid.min_bid_increment}
                                 </p>
                               </div>
                               {bid.is_auction == true && (
                                 <div className="p-2 bg-gray-100 mt-2 rounded-md flex-1 text-sm">
                                   <h1 className="text-center">Current Bid</h1>
                                   <p className="text-center text-xl">
-                                    {bid.max_bid_amount}
+                                    &#8377;{bid.max_bid_amount}
                                   </p>
                                 </div>
                               )}
@@ -935,23 +1004,23 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                             </div>
 
                             <div className="flex justify-between mt-2">
-                              <p>Fees</p>
-                              <p>{bid.fees_amount}</p>
+                              <p>Tender Fees</p>
+                              <p>&#8377;{bid.fees_amount}</p>
                             </div>
                             {bid?.is_exemption == true && (
                               <div className="flex justify-between mt-2">
                                 <p>Exempted Fees</p>
-                                <p>-{bid?.exempt[0].feesamount}</p>
+                                <p>&#8377;(-){bid?.exempt[0].feesamount}</p>
                               </div>
                             )}
                             <div className="flex justify-between mt-2">
-                              <p>Emd Amount</p>
-                              <p>{bid.emd_amount}</p>
+                              <p>EMD Amount</p>
+                              <p>&#8377;{bid.emd_amount}</p>
                             </div>
                             {bid?.is_exemption == true && (
                               <div className="flex justify-between mt-2">
-                                <p>Exempted Emd Amount</p>
-                                <p>-{bid?.exempt[0].emdamount}</p>
+                                <p>Exempted EMD Amount</p>
+                                <p>&#8377;(-){bid?.exempt[0].emdamount}</p>
                               </div>
                             )}
                             <div className="mt-4"></div>
@@ -959,6 +1028,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                             <div className="flex justify-between">
                               <p>Total Fees to be Paid</p>
                               <p>
+                                &#8377;
                                 {bid?.is_exemption == true
                                   ? parseInt(
                                       bid.fees_amount.toString() ?? "0"
@@ -1038,12 +1108,18 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                               </div>
                             </div>
 
-                            <Button
-                              onClick={() => create(false)}
-                              className="w-full mt-4"
-                            >
-                              Pay Fees and Freeze Bid
-                            </Button>
+                            {isPaying ? (
+                              <Button className="w-full mt-4 bg-[#172e57] hover:bg-[#224688]">
+                                Loading...
+                              </Button>
+                            ) : (
+                              <Button
+                                onClick={() => create(false)}
+                                className="w-full mt-4 bg-[#172e57] hover:bg-[#224688]"
+                              >
+                                Pay Fees and Freeze Bid
+                              </Button>
+                            )}
                           </div>
                         </>
                       )}
@@ -1058,8 +1134,25 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                     </p>
                     <Separator />
                     <div className="mt-4">
-                      Your are not applicable for this bid. Please Submit
-                      required document as per bid requirement.
+                      This bid is for category (
+                      {bid.is_open == true ? <>Open Bid, </> : <></>}
+                      {bid.is_woman == true ? <>Women, </> : <></>}
+                      {bid.is_reserved == true ? (
+                        <>Reserved Category, </>
+                      ) : (
+                        <></>
+                      )}
+                      {bid.is_differently_abled == true ? (
+                        <>Differently Abled, </>
+                      ) : (
+                        <></>
+                      )}
+                      {bid.is_msme == true ? <>MSME, </> : <></>}
+                      {bid.is_sc_st == true ? <>SC/ST, </> : <></>}
+                      {bid.tribal == true ? <>Tribal, </> : <></>}). You are not
+                      eligible for this bid. Please Submit required document in
+                      My Profile as per bid requirement if you belong to
+                      relevant category.
                     </div>
                   </div>
                 </>

@@ -25,15 +25,15 @@ import { toast } from "react-toastify";
 const getExemptfor = (value: ExemptFor): string => {
   switch (value) {
     case ExemptFor.WOMEN:
-      return "For Women";
+      return "Women";
     case ExemptFor.RESERVED:
-      return "For Reserved Category";
+      return "Reserved Category";
     case ExemptFor.DIFFERENTLY_ABLED:
-      return "For Differently Abled";
+      return "Differently Abled";
     case ExemptFor.MSME:
-      return "For MSME";
+      return "MSME";
     default:
-      return "For Women";
+      return "Women";
   }
 };
 
@@ -133,56 +133,68 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
           <div className="grow"></div>
           {user?.role === "ADMIN" && (
             <>
-              <Button
-                className="bg-blue-500"
-                onClick={() => router.push(`/dashboard/bids/bidreport/${bid.id}`)}
-              >
-                Print Report
-              </Button>
-              {bid.bid_status == "PUBLISHED" ? (
-                <Button
-                  className="bg-rose-500 h-auto"
-                  onClick={() => changeBidStatus(BidStatus.NOTPUBLISHED)}
-                >
-                  UNPUBLISH BID
-                </Button>
+              {bid.bidenddate < new Date() ? (
+                <>
+                  <button
+                    className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                    onClick={() =>
+                      router.push(`/dashboard/bids/bidreport/${bid.id}`)
+                    }
+                  >
+                    Print Report
+                  </button>
+                </>
               ) : (
-                <Button
-                  className="bg-green-500 h-auto"
-                  onClick={() => changeBidStatus(BidStatus.PUBLISHED)}
-                >
-                  PUBLISH BID
-                </Button>
-              )}
-              {bid.bid_status == BidStatus.NOTPUBLISHED ||
-              bid.bid_status == BidStatus.DRAFT ? (
-                <Button
-                  className="bg-black h-auto"
-                  onClick={() =>
-                    router.push(`/dashboard/bids/editbid/${bid.id}`)
-                  }
-                >
-                  Edit Bid
-                </Button>
-              ) : (
-                <></>
+                <>
+                  {bid.bid_status == "PUBLISHED" ? (
+                    <button
+                      className="text-white bg-rose-500 hover:bg-rose-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                      onClick={() => changeBidStatus(BidStatus.NOTPUBLISHED)}
+                    >
+                      Unpublish Bid
+                    </button>
+                  ) : (
+                    <button
+                      className="text-white bg-emerald-500 hover:bg-emerald-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                      onClick={() => changeBidStatus(BidStatus.PUBLISHED)}
+                    >
+                      Publish Bid
+                    </button>
+                  )}
+                </>
               )}
 
-              <Button
-                className="bg-black h-auto"
+              {bid.bidenddate < new Date() ? (
+                <></>
+              ) : (
+                <>
+                  {bid.bid_status == BidStatus.NOTPUBLISHED ||
+                  bid.bid_status == BidStatus.DRAFT ? (
+                    <button
+                      className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                      onClick={() =>
+                        router.push(`/dashboard/bids/editbid/${bid.id}`)
+                      }
+                    >
+                      Edit Bid
+                    </button>
+                  ) : (
+                    <></>
+                  )}
+                </>
+              )}
+
+              <button
+                className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                 onClick={() =>
                   router.push(`/dashboard/bids/biderslist/${bid?.id}`)
                 }
               >
                 View All Bidders
-              </Button>
+              </button>
             </>
           )}
         </div>
-
-        <p className="text-sm mt-4 mb-2">
-          Get started by adding your Bid details below.
-        </p>
 
         {page == 0 && (
           <div className="bg-white rounded-sm shadow-sm p-4 my-2">
@@ -191,34 +203,37 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
             <div className="flex gap-4">
               <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                 <h1>Property Name:</h1>
-                <p>- {bid.shop.property.name}</p>
+                <p>{bid.shop.property.name ?? "-"}</p>
               </div>
               <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                 <h1>Shop Number:</h1>
-                <p>- {bid.shop.shopNumber}</p>
+                <p>{bid.shop.shopNumber ?? "="}</p>
               </div>
             </div>
             <div className="flex gap-4">
               <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                 <h1>Bid Title:</h1>
-                <p>- {bid.title}</p>
+                <p>{bid.title ?? "-"}</p>
               </div>
               <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                 <h1>Bid Description:</h1>
-                <p>- {bid.description}</p>
+                <p>{bid.description ?? "-"}</p>
               </div>
             </div>
             <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md">
               <h1>Bid Instructions:</h1>
-              <p>- {bid.instruction}</p>
+              <p>{bid.instruction ?? "-"}</p>
             </div>
             <div className="mt-4"></div>
             <Separator />
             <div className="flex justify-between w-full mt-2">
               <div className="grow"></div>
-              <Button className="" onClick={nextpage}>
+              <button
+                className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                onClick={nextpage}
+              >
                 Go To Next
-              </Button>
+              </button>
             </div>
           </div>
         )}
@@ -255,46 +270,52 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
               <div className="flex gap-4 items-center justify-around w-full mt-2">
                 <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                   <h1 className="text-center">Fees Amount:</h1>
-                  <p className="text-center">{bid.fees_amount}</p>
+                  <p className="text-center">&#8377;{bid.fees_amount}</p>
                 </div>
 
                 <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
-                  <h1 className="text-center">Emd Amount:</h1>
-                  <p className="text-center">{bid.emd_amount}</p>
+                  <h1 className="text-center">EMD Amount:</h1>
+                  <p className="text-center">&#8377;{bid.emd_amount}</p>
                 </div>
 
                 <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
-                  <h1 className="text-center">Bg Amount:</h1>
-                  <p className="text-center">{bid.bg_amount}</p>
+                  <h1 className="text-center">BG Amount:</h1>
+                  <p className="text-center">&#8377;{bid.bg_amount}</p>
                 </div>
               </div>
 
               <div className="flex gap-4 items-center justify-around w-full mt-2">
                 <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                   <h1 className="text-center">Minimum Bid:</h1>
-                  <p className="text-center">{bid.min_bid_amount}</p>
+                  <p className="text-center">&#8377;{bid.min_bid_amount}</p>
                 </div>
                 {bid.is_auction == true && (
                   <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                     <h1 className="text-center">Current Bid:</h1>
-                    <p className="text-center">{bid.max_bid_amount}</p>
+                    <p className="text-center">&#8377;{bid.max_bid_amount}</p>
                   </div>
                 )}
                 <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                   <h1 className="text-center">Min Bid Increment:</h1>
-                  <p className="text-center">{bid.min_bid_increment}</p>
+                  <p className="text-center">&#8377;{bid.min_bid_increment}</p>
                 </div>
               </div>
 
               <div className="mt-4"></div>
               <Separator />
               <div className="flex justify-between w-full mt-2">
-                <Button className="" onClick={prevpage}>
+                <button
+                  className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                  onClick={prevpage}
+                >
                   Go To Previous
-                </Button>
-                <Button className="" onClick={nextpage}>
+                </button>
+                <button
+                  className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                  onClick={nextpage}
+                >
                   Go To Next
-                </Button>
+                </button>
               </div>
             </div>
           </>
@@ -305,17 +326,30 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
             <div className="bg-white rounded-sm shadow-sm p-4 my-2">
               <p className="text-gray-500 text-center">Document Required</p>
               <Separator />
-              <h1 className="mt-2">Document Title:</h1>
-              <p>- {bid.docone}</p>
 
-              <h1 className="mt-2">Document Description:</h1>
-              <p>- {bid.doconedescription}</p>
+              <div className="grid grid-cols-5 gap-4 items-center justify-around w-full mt-4">
+                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1 col-span-2">
+                  <h1 className="text-center">Document Title</h1>
+                  <p className="text-center">{bid.docone ?? "-"}</p>
+                </div>
+                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1 col-span-3">
+                  <h1 className="text-center">Document Description</h1>
+                  <p className="text-center">{bid.Description ?? "-"}</p>
+                </div>
+                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1  col-span-2">
+                  <h1 className="text-center">File Number</h1>
+                  <p className="text-center">
+                    {bid.t_and_c_file_number ?? "-"}
+                  </p>
+                </div>
+                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1 col-span-3">
+                  <h1 className="text-center">File Subject</h1>
+                  <p className="text-center">
+                    {bid.t_and_c_description ?? "-"}
+                  </p>
+                </div>
+              </div>
 
-              <h1 className="mt-2">File Number:</h1>
-              <p>- {bid.t_and_c_file_number}</p>
-
-              <h1 className="mt-2">File Subject:</h1>
-              <p>- {bid.t_and_c_description}</p>
               <div className="flex gap-4 mt-4 items-center">
                 <Label htmlFor="termfile">Terms & Conditions File</Label>
                 <a
@@ -329,12 +363,18 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
               <div className="mt-4"></div>
               <Separator />
               <div className="flex justify-between w-full mt-2">
-                <Button className="" onClick={prevpage}>
+                <button
+                  className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                  onClick={prevpage}
+                >
                   Go To Previous
-                </Button>
-                <Button className="" onClick={nextpage}>
+                </button>
+                <button
+                  className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                  onClick={nextpage}
+                >
                   Go To Next
-                </Button>
+                </button>
               </div>
             </div>
           </>
@@ -349,7 +389,7 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
                 </p>
                 <Separator />
 
-                <h1 className="mt-2">- Allowed Bidder Category</h1>
+                <h1 className="mt-2">Allowed Bidder Category</h1>
                 <div className="flex gap-2 flex-wrap items-center mt-4">
                   {bid.is_open == true ? (
                     <>
@@ -363,7 +403,7 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
                   {bid.is_woman == true ? (
                     <>
                       <div className="bg-gray-100 rounded-sm shadow py-1 px-4 text-xs">
-                        For Women
+                        Women
                       </div>
                     </>
                   ) : (
@@ -372,7 +412,7 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
                   {bid.is_reserved == true ? (
                     <>
                       <div className="bg-gray-100 rounded-sm shadow py-1 px-4 text-xs">
-                        For Reserved Category
+                        Reserved Category
                       </div>
                     </>
                   ) : (
@@ -381,7 +421,7 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
                   {bid.is_differently_abled == true ? (
                     <>
                       <div className="bg-gray-100 rounded-sm shadow py-1 px-4 text-xs">
-                        For Differently Abled
+                        Differently Abled
                       </div>
                     </>
                   ) : (
@@ -390,7 +430,7 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
                   {bid.is_msme == true ? (
                     <>
                       <div className="bg-gray-100 rounded-sm shadow py-1 px-4 text-xs">
-                        For MSME
+                        MSME
                       </div>
                     </>
                   ) : (
@@ -399,7 +439,7 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
                   {bid.is_sc_st == true ? (
                     <>
                       <div className="bg-gray-100 rounded-sm shadow py-1 px-4 text-xs">
-                        For SC/ST
+                        SC/ST
                       </div>
                     </>
                   ) : (
@@ -408,7 +448,7 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
                   {bid.tribal == true ? (
                     <>
                       <div className="bg-gray-100 rounded-sm shadow py-1 px-4 text-xs">
-                        For Tribal
+                        Tribal
                       </div>
                     </>
                   ) : (
@@ -433,21 +473,21 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
                     <div className="flex gap-4 flex-wrap mt-2 items-center">
                       {bid.exempt[0].is_fees_exempt_allowed! ? (
                         <div className="bg-gray-100 rounded-sm shadow py-1 px-4 text-xs">
-                          Exempt Fees
+                          Fees
                         </div>
                       ) : (
                         <></>
                       )}
                       {bid.exempt[0].is_bg_exempt_allowed! ? (
                         <div className="bg-gray-100 rounded-sm shadow py-1 px-4  text-xs">
-                          Exempt BG
+                          BG
                         </div>
                       ) : (
                         <></>
                       )}
                       {bid.exempt[0].is_emd_exempt_allowed! ? (
                         <div className="bg-gray-100 rounded-sm shadow py-1 px-4 text-xs">
-                          Exempt EMD
+                          EMD
                         </div>
                       ) : (
                         <></>
@@ -457,28 +497,31 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
                     {bid.exempt[0].is_fees_exempt_allowed! && (
                       <div className="grid items-center gap-1.5 w-full mt-4">
                         <h1 className="mt-2">Exempt Fees Amount:</h1>
-                        <p>- {bid?.exempt[0].feesamount.toString()}</p>
+                        <p>{bid?.exempt[0].feesamount ?? "-"}</p>
                       </div>
                     )}
                     {bid.exempt[0].is_bg_exempt_allowed! && (
                       <div className="grid items-center gap-1.5 w-full mt-4">
                         <h1 className="mt-2">Exempt BG Amount:</h1>
-                        <p>- {bid?.exempt[0].bgamount.toString()}</p>
+                        <p>{bid?.exempt[0].bgamount ?? "-"}</p>
                       </div>
                     )}
                     {bid.exempt[0].is_emd_exempt_allowed! && (
                       <div className="grid items-center gap-1.5 w-full mt-4">
                         <h1 className="mt-2">Exempt EMD Amount:</h1>
-                        <p>- {bid?.exempt[0].emdamount.toString()}</p>
+                        <p>{bid?.exempt[0].emdamount ?? "-"}</p>
                       </div>
                     )}
                   </>
                 )}
                 <Separator />
                 <div className="flex justify-between w-full mt-2">
-                  <Button className="" onClick={prevpage}>
+                  <button
+                    className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                    onClick={prevpage}
+                  >
                     Go To Previous
-                  </Button>
+                  </button>
                 </div>
               </div>
               {user?.role === "ADMIN" ? (
@@ -491,7 +534,7 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
                     </p>
                     <Separator />
                     <h1 className="mt-2">Amount:</h1>
-                    <p>- {bidtran.amount.toString()}</p>
+                    <p>{bidtran.amount ?? "-"}</p>
                   </div>
                 </>
               )}

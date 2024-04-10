@@ -4,6 +4,8 @@ import {
   FluentMdl2Home,
   FluentMdl2Search,
   FluentMdl2ViewDashboard,
+  MdiReceiptTextClock,
+  RiAuctionLine,
 } from "@/components/icons";
 import { getCookie } from "cookies-next";
 import Link from "next/link";
@@ -25,7 +27,7 @@ const BidsRunning = () => {
       if (propertyrunningbid.status) {
         setProperties(propertyrunningbid.data ?? []);
       }
-      
+
       setLoading(false);
     };
     init();
@@ -41,17 +43,17 @@ const BidsRunning = () => {
   return (
     <div className="p-6">
       <div className="flex gap-4 items-center">
-        <FluentMdl2Home className="text-xl" />
-        <p className="text-xl text-gray-600">Running Bids</p>
+        <RiAuctionLine className="text-xl" />
+        <p className="text-xl text-gray-600">Bids</p>
         <div className="grow"></div>
-      </div>
 
-      <div className="w-80 bg-white border-2 border-gray-300 flex items-center rounded-full px-4 my-6">
-        <FluentMdl2Search />
-        <input
-          className="  py-1 px-2 bg-transparent"
-          placeholder="Search Properties"
-        />
+        <div className="w-80 bg-white border-2 border-gray-300 flex items-center rounded-full px-4 ">
+          <FluentMdl2Search />
+          <input
+            className="  py-1 px-2 bg-transparent"
+            placeholder="Search Properties"
+          />
+        </div>
       </div>
 
       {properties.length == 0 && (
@@ -90,7 +92,7 @@ const CardDetails = (props: CardDetailsProps) => {
   return (
     <Link
       href={`/dashboard/bids/property/${props.id}`}
-      className="rounded-md my-4 bg-white w-full p-4 flex gap-4 items-center hover:shadow-lg hover:scale-105 transition-all duration-300 cursor-pointer"
+      className="rounded-md my-4 bg-white w-full p-4 flex gap-4 items-center hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-pointer"
     >
       {props.icon}
       <div>

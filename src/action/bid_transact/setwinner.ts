@@ -33,39 +33,6 @@ const setWinner = async (
         functionname: "setWinner",
       };
 
-    // const getallbidsforcheck = await prisma.bid_transact.findMany({
-    //   where: {
-    //     bidId: bid_transact.bidId,
-    //     OR: [
-    //       {
-    //         status: "ACCEPTED",
-    //       },
-    //       {
-    //         status: "PENDING",
-    //       },
-    //     ],
-    //   },
-    //   orderBy: {
-    //     amount: "desc",
-    //   },
-    // });
-
-    // if (!getallbidsforcheck)
-    //   return {
-    //     status: false,
-    //     data: null,
-    //     message: "No bids found for this bid id.",
-    //     functionname: "setWinner",
-    //   };
-
-    // if (getallbidsforcheck[0].amount > bid_transact.amount)
-    //   return {
-    //     status: false,
-    //     data: null,
-    //     message: "This bid is not the highest bid.",
-    //     functionname: "setWinner",
-    //   };
-
     const updateresponse = await prisma.bid_transact.update({
       where: {
         id: parseInt(payload.id.toString() ?? "0"),
