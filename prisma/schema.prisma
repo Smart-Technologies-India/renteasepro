@@ -129,6 +129,7 @@ enum BidStatus {
   OPEN
   CANCELLED
   RESULTDECLARED
+  EXPIRED
 }
 
 enum SMSStatus {

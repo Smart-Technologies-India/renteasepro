@@ -5,7 +5,6 @@ import { Label } from "@/components/ui/label";
 import { ApiResponseType } from "@/models/response";
 import { CreateUserSchema } from "@/schema/createuser";
 import { Role, user } from "@prisma/client";
-import Link from "next/link";
 import { useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { safeParse } from "valibot";
@@ -17,8 +16,10 @@ export default function Home() {
   const username = useRef<HTMLInputElement>(null);
   const password = useRef<HTMLInputElement>(null);
   const repassword = useRef<HTMLInputElement>(null);
+  const [isCreating, setIsCreating] = useState<boolean>(false);
 
   const onSubmit = async () => {
+    setIsCreating(true);
     const result = safeParse(CreateUserSchema, {
       username: username.current?.value,
       password: password.current?.value,
@@ -49,6 +50,7 @@ export default function Home() {
       }
       toast.error(errorMessage);
     }
+    setIsCreating(false);
   };
 
   return (
@@ -79,12 +81,21 @@ export default function Home() {
               <Label htmlFor="repassword">Re-Password : </Label>
               <Input id="repassword" type="text" ref={repassword} />
             </div>
-            <Button
-              onClick={onSubmit}
-              className="mt-4 text-center font-semibold text-white bg-black rounded-md block py-2 "
-            >
-              Register
-            </Button>
+            {isCreating ? (
+              <Button
+                disabled
+                className="mt-4 text-center font-semibold text-white bg-black rounded-md block py-2 "
+              >
+                Loading...
+              </Button>
+            ) : (
+              <Button
+                onClick={onSubmit}
+                className="mt-4 text-center font-semibold text-white bg-black rounded-md block py-2 "
+              >
+                Register
+              </Button>
+            )}
           </div>
         </div>
       </div>

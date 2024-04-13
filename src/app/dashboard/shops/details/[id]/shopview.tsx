@@ -12,18 +12,13 @@ import GetFromShop from "@/action/rent_transact/getfromshop";
 import GetShop from "@/action/shop/getshop";
 import GetUser from "@/action/user/getuser";
 import BackButton from "@/components/backbutton";
-import {
-  AntDesignCheckOutlined,
-  Fa6RegularCalendarXmark,
-  Fa6RegularHourglassHalf,
-  MaterialSymbolsCalendarClockRounded,
-} from "@/components/icons";
+
 import { capitalcase, formatDateTime, formateDate } from "@/utils/methods";
 import {
+  BidStatus,
   RentTransactStatus,
   rent,
   rent_transact,
-  shop,
   user,
 } from "@prisma/client";
 import { getCookie } from "cookies-next";
@@ -93,7 +88,7 @@ const ShopView = (props: ShowShopProps) => {
             year < currentYear; // Determine if month should be active or inactive
           rentdetails.push({
             name: monthDate.toLocaleString("default", { month: "long" }),
-            status: monthStatus ? monthStatus.status : "INACTIVE", // Set status based on existence in value array
+            status: monthStatus ? monthStatus.status : "INACTIVE",
             isActive: isActive,
           });
         }
@@ -124,6 +119,8 @@ const ShopView = (props: ShowShopProps) => {
       if (bidresponse.status) {
         setBid(bidresponse.data!);
       }
+
+      console.log("bidresponse", bidresponse);
 
       const userresponse = await GetUser({ id: userid });
       if (userresponse.status) {
@@ -260,33 +257,48 @@ const ShopView = (props: ShowShopProps) => {
             <div className="flex gap-2 p-2">
               <div className="grow"></div>
 
-              {bid && (
-                <Link
-                  href={`/dashboard/shops/shopbidhistory/${props.id}`}
-                  className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
-                >
-                  Bid History
-                </Link>
-              )}
-              {isrented && (
-                <button
-                  onClick={() => {
-                    return router.push(`/dashboard/rents/edit/${rentdata?.id}`);
-                  }}
-                  className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
-                >
-                  Manage Shop
-                </button>
-              )}
-              {bid ? (
-                <></>
+              {bid.bid_status == BidStatus.EXPIRED ? (
+                <>
+                  <Link
+                    href={`/dashboard/shops/createbid/${props.id}`}
+                    className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                  >
+                    Create Bid
+                  </Link>
+                </>
               ) : (
-                <Link
-                  href={`/dashboard/shops/createbid/${props.id}`}
-                  className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
-                >
-                  Create Bid
-                </Link>
+                <>
+                  {bid && (
+                    <Link
+                      href={`/dashboard/shops/shopbidhistory/${props.id}`}
+                      className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                    >
+                      Bid History
+                    </Link>
+                  )}
+                  {isrented && (
+                    <button
+                      onClick={() => {
+                        return router.push(
+                          `/dashboard/rents/edit/${rentdata?.id}`
+                        );
+                      }}
+                      className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                    >
+                      Manage Shop
+                    </button>
+                  )}
+                  {bid ? (
+                    <></>
+                  ) : (
+                    <Link
+                      href={`/dashboard/shops/createbid/${props.id}`}
+                      className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                    >
+                      Create Bid
+                    </Link>
+                  )}
+                </>
               )}
 
               <Link

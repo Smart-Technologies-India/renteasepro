@@ -5,6 +5,16 @@ import GetBid from "@/action/bid/getbid";
 import GetBidTran from "@/action/bid_transact/getbidtransact";
 import GetUser from "@/action/user/getuser";
 import BackButton from "@/components/backbutton";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -42,6 +52,8 @@ interface UserBidInfoViewProps {
 }
 
 const UserBidInfoView = (props: UserBidInfoViewProps) => {
+  const [isBox, setIsBox] = useState<boolean>(false);
+
   const userid: number = parseInt(getCookie("id") ?? "0");
   const router = useRouter();
   const [user, setUser] = useState<user>();
@@ -49,7 +61,6 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
   const [isLoading, setLoading] = useState<boolean>(true);
   const [bid, setBid] = useState<any>();
   const [bidtran, setBidTran] = useState<any>();
-  const [editAll, setEditAll] = useState<boolean>(false);
 
   useEffect(() => {
     const init = async () => {
@@ -117,6 +128,18 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
     }
   };
 
+  const expirebid = async () => {
+    const updateresponse = await UpdateBidStatus({
+      id: bid.id,
+      status: BidStatus.EXPIRED,
+    });
+    if (updateresponse.status) {
+      router.push("/dashboard");
+    } else {
+      toast.error(updateresponse.message);
+    }
+  };
+
   if (isLoading)
     return (
       <div className="h-screen w-full grid place-items-center text-3xl text-gray-600 bg-gray-200">
@@ -131,6 +154,18 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
           <BackButton />
           <h1 className="text-[#162f57] text-2xl font-semibold">Bid Details</h1>
           <div className="grow"></div>
+
+          {bid.bid_status != BidStatus.EXPIRED && (
+            <>
+              <button
+                className="text-white bg-rose-500 hover:bg-rose-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                onClick={() => setIsBox(true)}
+              >
+                Expired
+              </button>
+            </>
+          )}
+
           {user?.role === "ADMIN" && (
             <>
               {bid.bidenddate < new Date() ? (
@@ -541,6 +576,23 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
             </div>
           </>
         )}
+
+        <AlertDialog open={isBox} onOpenChange={setIsBox}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Warning</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to expire this bid?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={expirebid}>
+                Continue
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </>
   );

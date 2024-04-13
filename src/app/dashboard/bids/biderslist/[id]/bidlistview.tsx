@@ -266,28 +266,34 @@ const BidHistoryView = (props: BidHistoryViewProps) => {
         </div>
       </div>
       <div className="bg-white p-2 mt-4 shadow rounded">
-        <div className="flex">
-          {category.map((item: string, index: number) => (
-            <p
-              key={index}
-              onClick={() => {
-                filtershopbycategory(item);
-                setSelectedCategory(item);
-              }}
-              className={`border-b-2 border-gray-300 px-4 py-2 text-sm font-medium cursor-pointer ${
-                selectedCategory === item ? "border-green-500" : ""
-              }`}
-            >
-              {item}
-            </p>
-          ))}
-          <p className="border-b-2 border-gray-300 px-4 grow"></p>
-        </div>
+        {isSearch ? (
+          <></>
+        ) : (
+          <>
+            <div className="flex">
+              {category.map((item: string, index: number) => (
+                <p
+                  key={index}
+                  onClick={() => {
+                    filtershopbycategory(item);
+                    setSelectedCategory(item);
+                  }}
+                  className={`border-b-2 border-gray-300 px-4 py-2 text-sm font-medium cursor-pointer ${
+                    selectedCategory === item ? "border-green-500" : ""
+                  }`}
+                >
+                  {item}
+                </p>
+              ))}
+              <p className="border-b-2 border-gray-300 px-4 grow"></p>
+            </div>
+          </>
+        )}
 
         {(isSearch && paginationsearch.paginatedItems.length == 0) ||
         (!isSearch && pagination.paginatedItems.length == 0) ? (
           <>
-            <p className="mt-4 text-lg">No Bid Found</p>
+            <p className="mt-2 text-lg">No Bid Found</p>
           </>
         ) : (
           <>

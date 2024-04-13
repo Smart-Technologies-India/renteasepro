@@ -30,17 +30,13 @@ import { Input } from "@/components/ui/input";
 import { toast } from "react-toastify";
 import CreateShopCategory from "@/action/shop_category/createshopcategory";
 import { getCookie } from "cookies-next";
-import { shop_category, user_category } from "@prisma/client";
+import { Status, shop_category, user_category } from "@prisma/client";
 import AllShopCategorys from "@/action/shop_category/allshopcategory";
 import AllUserCategorys from "@/action/user_category/allusercategory";
 import CreateUserCategory from "@/action/user_category/createusercategory";
 import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Switch } from "@/components/ui/switch";
+import CahangeShopCategory from "@/action/shop_category/shopcateogrystatus";
 
 const Category = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -82,6 +78,24 @@ const Category = () => {
     init();
   }, []);
 
+  const changeStatus = async (id: number, status: Status) => {
+    const statusresponse = await CahangeShopCategory({
+      id: id,
+      status: status,
+      userId: parseInt(getCookie("id") ?? "0"),
+    });
+
+    if (statusresponse.status) {
+      // toast.success(statusresponse.message);
+      const shopcategoryresponse = await AllShopCategorys({});
+      if (shopcategoryresponse.status) {
+        setShops(shopcategoryresponse.data ?? []);
+      }
+    } else {
+      toast.error(statusresponse.message);
+    }
+  };
+
   if (isLoading)
     return (
       <div className="h-screen w-full grid place-items-center text-3xl text-gray-600 bg-gray-200">
@@ -98,7 +112,7 @@ const Category = () => {
           <h1 className="text-xl font-medium">Shop Types</h1>
           <div className="grow"></div>
           <button
-            className="flex items-center gap-2 bg-green-500 rounded-full text-white text-sm px-4 font-medium py-2"
+            className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm flex items-center gap-2  font-medium py-2"
             onClick={() => setShopBox(true)}
           >
             <AntDesignPlusCircleOutlined className="text-white text-xl" />
@@ -119,8 +133,15 @@ const Category = () => {
               key={index}
             >
               <h1 className="mr-4">{shop.name}</h1>
+              <Switch
+                className="data-[state=checked]:bg-blue-500"
+                checked={shop.status == "ACTIVE" ? true : false}
+                onCheckedChange={async (val) => {
+                  await changeStatus(shop.id, val ? "ACTIVE" : "INACTIVE");
+                }}
+              />
 
-              <TooltipProvider>
+              {/* <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button className="p-0 bg-transparent m-0 h-auto hover:bg-transparent">
@@ -163,7 +184,7 @@ const Category = () => {
                     </p>
                   </TooltipContent>
                 </Tooltip>
-              </TooltipProvider>
+              </TooltipProvider> */}
             </div>
           ))}
         </div>
@@ -173,7 +194,7 @@ const Category = () => {
             <h1 className="text-xl font-medium">User Types</h1>
             <div className="grow"></div>
             <button
-              className="flex items-center gap-2 bg-green-500 rounded-full text-white text-sm px-4 font-medium py-2"
+              className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm flex items-center gap-2  font-medium py-2"
               onClick={() => setUserBox(true)}
             >
               <AntDesignPlusCircleOutlined className="text-white text-xl" />
@@ -193,9 +214,11 @@ const Category = () => {
                 className="bg-white px-4 py-2 rounded-full flex items-center gap-2"
                 key={index}
               >
+                <h1>{shop.name}</h1>
+                {/* 
                 <h1 className="mr-4">{shop.name}</h1>
 
-                <TooltipProvider>
+             <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button className="p-0 bg-transparent m-0 h-auto hover:bg-transparent">
@@ -238,7 +261,7 @@ const Category = () => {
                       </p>
                     </TooltipContent>
                   </Tooltip>
-                </TooltipProvider>
+                </TooltipProvider> */}
               </div>
             ))}
           </div>
@@ -369,7 +392,7 @@ const ShopCategory = (props: ShopCategoryProps) => {
       </div>
       <Button
         onClick={createshop}
-        className="text-center font-semibold text-white bg-black rounded-md block py-2 w-full mt-2"
+        className="text-center font-semibold text-white rounded-md block py-2 w-full mt-2   bg-[#172e57] hover:bg-[#21427d]"
       >
         Create
       </Button>
@@ -419,7 +442,7 @@ const UserCategory = (props: UserCategoryProps) => {
       </div>
       <Button
         onClick={createshop}
-        className="text-center font-semibold text-white bg-black rounded-md block py-2 w-full mt-2"
+        className="text-center font-semibold text-white rounded-md block py-2 w-full mt-2   bg-[#172e57] hover:bg-[#21427d]"
       >
         Create
       </Button>

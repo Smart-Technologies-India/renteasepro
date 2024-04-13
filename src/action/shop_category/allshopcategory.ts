@@ -13,6 +13,7 @@ const AllShopCategorys = async (
   try {
     const allshop_categorys = await prisma.shop_category.findMany({
       where: {
+        status: "ACTIVE",
         deletedAt: null,
         deletedBy: null,
       },

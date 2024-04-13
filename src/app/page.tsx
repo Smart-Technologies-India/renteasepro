@@ -31,12 +31,20 @@ export default function Home() {
     const mobile = mobileNumber.current?.value;
     if (!mobile) {
       toast.error("Please enter a valid mobile number");
-      return setIsLogin(false);
+      setIsLogin(false);
+      return;
+    }
+
+    if (mobile.length !== 10) {
+      toast.error("Mobile number should be 10 digits long");
+      setIsLogin(false);
+      return;
     }
     const response = await SendOtp({ contact: mobile });
     if (!response.status) {
       toast.error(response.message);
-      return setIsLogin(false);
+      setIsLogin(false);
+      return;
     }
 
     toast.success(response.message);
@@ -54,12 +62,14 @@ export default function Home() {
 
     if (!mobile) {
       toast.error("Please enter a valid mobile number");
-      return setIsLogin(false);
+      setIsLogin(false);
+      return;
     }
 
     if (!otp) {
       toast.error("Please enter a valid otp");
-      return setIsLogin(false);
+      setIsLogin(false);
+      return;
     }
 
     if (!firstnameValue) {

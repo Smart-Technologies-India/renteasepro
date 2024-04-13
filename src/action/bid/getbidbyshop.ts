@@ -15,12 +15,17 @@ const GetBidByShop = async (
   try {
     const bid: any = await prisma.bid.findFirst({
       where: {
-        shopId: payload.shopid,
+        shopId: parseInt(payload.shopid.toString() ?? "0"),
         status: "ACTIVE",
         deletedAt: null,
         deletedBy: null,
       },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
+
+    console.log("bid", payload.shopid);
 
     if (!bid)
       return {

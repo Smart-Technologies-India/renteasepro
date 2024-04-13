@@ -77,8 +77,7 @@ const CreateUserPage = () => {
 
   const category: string[] = ["All", "Department", "Users"];
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
-  
-  const [searchUserFilter, setSearchUserFilter] = useState<any[]>([]);
+
   // search and filter start from here
 
   const searchRef = useRef<HTMLInputElement>(null);
@@ -117,10 +116,6 @@ const CreateUserPage = () => {
       if (usersresponse.status) {
         setUsers(usersresponse.data!);
         setFilterUser(usersresponse.data ?? []);
-      }
-
-      if (usersresponse.status) {
-        setUsers(usersresponse.data!);
       } else {
         toast.error(usersresponse.message);
       }
@@ -190,7 +185,7 @@ const CreateUserPage = () => {
         <h1 className="text-[#162f57] text-2xl font-semibold">Users</h1>
         <div className="grow"></div>
         <button
-          className="flex items-center gap-2 bg-green-500 rounded-full text-white text-sm px-4 font-medium py-2"
+          className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm flex items-center gap-2  font-medium py-2"
           onClick={() => setuserBox(true)}
         >
           <AntDesignPlusCircleOutlined className="text-white text-xl" />
@@ -216,29 +211,36 @@ const CreateUserPage = () => {
           )}
         </div>
       </div>
+
       <div className="bg-white p-2 mt-4 shadow rounded">
-        <div className="flex">
-          {category.map((item: string, index: number) => (
-            <p
-              key={index}
-              onClick={() => {
-                filtershopbycategory(item);
-                setSelectedCategory(item);
-              }}
-              className={`border-b-2 border-gray-300 px-4 py-2 text-sm font-medium cursor-pointer ${
-                selectedCategory === item ? "border-green-500" : ""
-              }`}
-            >
-              {item}
-            </p>
-          ))}
-          <p className="border-b-2 border-gray-300 px-4 grow"></p>
-        </div>
+        {isSearch ? (
+          <></>
+        ) : (
+          <>
+            <div className="flex">
+              {category.map((item: string, index: number) => (
+                <p
+                  key={index}
+                  onClick={() => {
+                    filtershopbycategory(item);
+                    setSelectedCategory(item);
+                  }}
+                  className={`border-b-2 border-gray-300 px-4 py-2 text-sm font-medium cursor-pointer ${
+                    selectedCategory === item ? "border-green-500" : ""
+                  }`}
+                >
+                  {item}
+                </p>
+              ))}
+              <p className="border-b-2 border-gray-300 px-4 grow"></p>
+            </div>
+          </>
+        )}
 
         {users.length > 0 ? (
           <>
-            <Table className="mt-4">
-              <TableHeader>
+            <Table className="mt-2">
+              <TableHeader className="bg-gray-100">
                 <TableRow>
                   <TableHead className="w-[100px]">Id</TableHead>
                   <TableHead>Name</TableHead>
@@ -379,10 +381,6 @@ interface UserBoxProps {
   init: () => Promise<void>;
 }
 const UserBox = (props: UserBoxProps) => {
-  const name = useRef<HTMLInputElement>(null);
-
-  const userid: number = parseInt(getCookie("id") ?? "0");
-
   const [role, setRole] = useState<string | null>(null);
 
   const username = useRef<HTMLInputElement>(null);

@@ -52,12 +52,13 @@ export default function LoginPage() {
       }
       toast.error(errorMessage);
     }
+    setIsLogin(false);
   };
 
   return (
     <>
       <div className="p-10 rounded-md min-h-screen w-full bg-[#f5f6f8] flex">
-        <div className="flex-1 relative bg-[#2350f0] grid place-items-center  rounded-l-md">
+        <div className="flex-1 relative bg-gradient-to-tr from-[#2350f0] to-blue-400  grid place-items-center  rounded-l-md">
           <div></div>
           <p className="text-white text-3xl text-center leading-relaxed">
             Welcome To
@@ -66,12 +67,12 @@ export default function LoginPage() {
             <br />
             Authority, DNH
           </p>
-          <div className="w-80 h-60 relative">
+          <div className="w-[28rem] h-64 relative">
             <Image
               fill={true}
               src="/login.png"
               alt="error"
-              className="w-80 object-cover object-center h-80 rounded-sm"
+              className=" object-cover object-center rounded-sm drop-shadow-2xl"
             />
           </div>
           <div></div>
@@ -135,10 +136,11 @@ export default function LoginPage() {
               </Button>
             )}
 
-            <div className="w-full mt-6 grid place-items-center">
+            <div className="flex w-full mt-6 items-center gap-4 justify-center">
               <a href="/" className="text-center text-xs text-[#2350f0]">
                 Login With OTP
               </a>
+              
             </div>
           </div>
         </div>

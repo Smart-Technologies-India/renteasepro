@@ -1,3 +1,4 @@
+"use client";
 import UpdateRentTrasact from "@/action/rent_transact/updaterenttransact";
 import {
   IcBaselineRefresh,
@@ -15,15 +16,12 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { toast } from "react-toastify";
+import { deleteCookie } from "cookies-next";
+import { useRouter } from "next/navigation";
 
 interface NavbarProps {
   isOpen: boolean;
@@ -32,6 +30,7 @@ interface NavbarProps {
 }
 
 const Navbar = (props: NavbarProps) => {
+  const router = useRouter();
   const refreshrent = async () => {
     const response = await UpdateRentTrasact({});
     if (response.status) {
@@ -39,6 +38,11 @@ const Navbar = (props: NavbarProps) => {
     } else {
       toast.error(response.message);
     }
+  };
+
+  const logoutbtn = async () => {
+    deleteCookie("id");
+    return router.push("/");
   };
 
   return (
@@ -67,7 +71,8 @@ const Navbar = (props: NavbarProps) => {
       <SolarLightbulbMinimalisticBold className="text-xl md:block hidden" />
       <div className="w-[1px] h-6 bg-black"></div>
       <div className="rounded-full bg-[#6d99e1] shrink-0 h-8 w-8 grid place-items-center text-lg font-semibold ">
-        TC
+        {props.name[0].toUpperCase()}
+        {props.name[1].toUpperCase()}
       </div>
 
       <DropdownMenu>
@@ -81,17 +86,19 @@ const Navbar = (props: NavbarProps) => {
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem>
-              Profile
-              <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+            <DropdownMenuItem
+              onClick={() => router.push("/dashboard/changepassword")}
+              className="cursor-pointer"
+            >
+              Change Password
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            {/* <DropdownMenuItem>
               Keyboard shortcuts
               <DropdownMenuShortcut>⌘K</DropdownMenuShortcut>
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuGroup>
+          {/* <DropdownMenuGroup>
             <DropdownMenuItem>Team</DropdownMenuItem>
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>Invite users</DropdownMenuSubTrigger>
@@ -112,11 +119,11 @@ const Navbar = (props: NavbarProps) => {
           <DropdownMenuSeparator />
           <DropdownMenuItem>GitHub</DropdownMenuItem>
           <DropdownMenuItem>Support</DropdownMenuItem>
-          <DropdownMenuItem disabled>API</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>
+          <DropdownMenuItem disabled>API</DropdownMenuItem> */}
+          {/* <DropdownMenuSeparator /> */}
+          <DropdownMenuItem onClick={logoutbtn} className="cursor-pointer">
             Log out
-            <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+            {/* <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut> */}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

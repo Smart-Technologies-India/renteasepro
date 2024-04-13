@@ -94,7 +94,7 @@ const Sidebar = (props: SidebarProps) => {
             icco={<Fa6RegularFileLines className="text-gray-300  w-6" />}
             name="Reports"
             path={path}
-            pathcheck={"/dashboard"}
+            pathcheck={"/dashboard/reports"}
           />
 
           <MenuTab
