@@ -120,7 +120,6 @@ const ShopView = (props: ShowShopProps) => {
         setBid(bidresponse.data!);
       }
 
-      console.log("bidresponse", bidresponse);
 
       const userresponse = await GetUser({ id: userid });
       if (userresponse.status) {

@@ -5,6 +5,7 @@ import {
   FluentMdl2ViewDashboard,
   GgAlbum,
   IcBaselineAccountCircle,
+  IcOutlineReceiptLong,
   MaterialSymbolsCloseSmall,
   MaterialSymbolsPersonRounded,
   MdiReceiptTextClock,
@@ -117,15 +118,24 @@ const Sidebar = (props: SidebarProps) => {
             path={path}
             pathcheck={"/dashboard/users"}
           />
+          <MenuTab
+            icco={<GgAlbum className="text-gray-300  w-6" />}
+            name="Category"
+            path={path}
+            pathcheck={"/dashboard/category"}
+          />
         </>
       )}
-      {["ADMIN"].includes(props.role) && (
-        <MenuTab
-          icco={<GgAlbum className="text-gray-300  w-6" />}
-          name="Category"
-          path={path}
-          pathcheck={"/dashboard/category"}
-        />
+
+      {["ACCOUNTANT", "ADMIN"].includes(props.role) && (
+        <>
+          <MenuTab
+            icco={<IcOutlineReceiptLong className="text-gray-300  w-6" />}
+            name="Misc Receipt"
+            path={path}
+            pathcheck={"/dashboard/miscreceipt"}
+          />
+        </>
       )}
 
       {/* <MenuTab

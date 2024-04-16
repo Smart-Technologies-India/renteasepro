@@ -60,9 +60,7 @@ export default function LoginPage() {
       <div className="p-10 rounded-md min-h-screen w-full bg-[#f5f6f8] flex">
         <div className="flex-1 relative bg-gradient-to-tr from-[#2350f0] to-blue-400  grid place-items-center  rounded-l-md">
           <div></div>
-          <p className="text-white text-3xl text-center leading-relaxed">
-            Welcome To
-            <br />
+          <p className="text-white text-3xl text-center leading-relaxed font-bold">
             Planning and Development
             <br />
             Authority, DNH
@@ -79,22 +77,29 @@ export default function LoginPage() {
         </div>
         <div className="flex-1 grid place-items-center bg-white  rounded-r-md">
           <div>
-            <h1 className="text-2xl font-semibold mt-6 mb-2 border-b border-gray-300 pb-2 ">
-              Login
+            <h1 className="text-lg font-semibold mt-6 text-center">
+              Welcome to PDA,DNH
             </h1>
-            <div className="grid max-w-sm items-center gap-1.5 w-80">
-              <Label htmlFor="mobile">Mobile : </Label>
+            <h1 className="text-sm font-normal pb-2 text-center">
+              Login to access your Account
+            </h1>
+            <div className="grid max-w-sm items-center gap-1.5 w-80 mt-4">
+              <Label htmlFor="mobile" className="text-xs">
+                Mobile{" "}
+              </Label>
               <input
                 id="mobile"
                 type="text"
                 ref={mobile}
-                className="border border-gray-300 grow outline-none focus:ring-0 ring-0 focus:outline-none rounded-md py-2 focus-visible:right-0 px-2"
+                className="border border-gray-300 grow outline-none focus:ring-0 ring-0 focus:outline-none rounded-md py-2 focus-visible:right-0 px-2 bg-transparent fill-none appearance-none"
               />
             </div>
             <div className="grid max-w-sm items-center gap-1.5 w-80 mt-6">
-              <Label htmlFor="password">Password : </Label>
+              <Label htmlFor="password" className="text-xs">
+                Password{" "}
+              </Label>
               <div>
-                <div className="flex items-center gap-2 px-2 rounded border border-gray-300">
+                <div className="flex items-center gap-2 px-2 rounded border border-gray-300 bg-[#e8f0fe]">
                   <input
                     id="password"
                     type={isShow ? "text" : "password"}
@@ -140,7 +145,6 @@ export default function LoginPage() {
               <a href="/" className="text-center text-xs text-[#2350f0]">
                 Login With OTP
               </a>
-              
             </div>
           </div>
         </div>

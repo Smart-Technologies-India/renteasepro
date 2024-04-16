@@ -677,7 +677,7 @@ const UpdateBidPage = (props: CreateBidPageProps) => {
                     {startDate ? (
                       format(startDate, "PPP")
                     ) : (
-                      <span>Pick start date</span>
+                      <span>Select start date</span>
                     )}
                   </Button>
                 </PopoverTrigger>
@@ -726,7 +726,7 @@ const UpdateBidPage = (props: CreateBidPageProps) => {
                     {endDate ? (
                       format(endDate, "PPP")
                     ) : (
-                      <span>Pick end date</span>
+                      <span>Select end date</span>
                     )}
                   </Button>
                 </PopoverTrigger>
@@ -775,7 +775,7 @@ const UpdateBidPage = (props: CreateBidPageProps) => {
                     {deadlineDate ? (
                       format(deadlineDate, "PPP")
                     ) : (
-                      <span>Pick deadline date</span>
+                      <span>Select deadline date</span>
                     )}
                   </Button>
                 </PopoverTrigger>

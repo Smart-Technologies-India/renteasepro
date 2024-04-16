@@ -137,6 +137,19 @@ enum SMSStatus {
   SENT
 }
 
+enum AccountPaymentMode {
+  CASH
+  CHEQUE
+  RTGS
+  NEFT
+  DD
+  UPI
+  ERECEIPT
+  BANKTRANSFER
+  BANKGUARANTEE
+  OTHER
+}
+
 model user {
   id                Int       @id @default(autoincrement())
   username          String?
@@ -242,6 +255,16 @@ model user {
   user_doc_upload_delete user_doc_upload[] @relation("user_doc_upload_deletedBy_userId")
   user_doc_upload        user_doc_upload[]
   rent_sms               rent_sms[]
+
+  // acount category
+  acount_category_create account_category[] @relation("account_category_createdBy_userId")
+  acount_category_update account_category[] @relation("account_category_updatedBy_userId")
+  acount_category_delete account_category[] @relation("account_category_deletedBy_userId")
+
+  // account receipt
+  account_receipt_create account_receipt[] @relation("account_receipt_createdBy_userId")
+  account_receipt_update account_receipt[] @relation("account_receipt_updatedBy_userId")
+  account_receipt_delete account_receipt[] @relation("account_receipt_deletedBy_userId")
 }
 
 model shop_category {
@@ -700,4 +723,46 @@ model rent_sms {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   deletedAt      DateTime?
+}
+
+model account_category {
+  id              Int               @id @default(autoincrement())
+  name            String
+  description     String?
+  remarks         String?
+  status          Status            @default(ACTIVE)
+  createdAt       DateTime          @default(now())
+  createdBy       user              @relation("account_category_createdBy_userId", fields: [createdById], references: [id])
+  createdById     Int
+  updatedAt       DateTime          @updatedAt
+  updatedBy       user?             @relation("account_category_updatedBy_userId", fields: [updatedById], references: [id])
+  updatedById     Int?
+  deletedAt       DateTime?
+  deletedBy       user?             @relation("account_category_deletedBy_userId", fields: [deletedById], references: [id])
+  deletedById     Int?
+  account_receipt account_receipt[]
+}
+
+model account_receipt {
+  id                Int                @id @default(autoincrement())
+  customername      String
+  customercontact   String
+  account_category  account_category   @relation(fields: [accountCategoryId], references: [id])
+  accountCategoryId Int
+  amount            Int                @db.MediumInt
+  transaction_date  DateTime           @default(now())
+  paymentmode       AccountPaymentMode @default(NEFT)
+  transactionid     String?
+  bankname          String?
+  remarks           String?            @db.MediumText
+  status            Status             @default(ACTIVE)
+  createdAt         DateTime           @default(now())
+  createdBy         user               @relation("account_receipt_createdBy_userId", fields: [createdById], references: [id])
+  createdById       Int
+  updatedAt         DateTime           @updatedAt
+  updatedBy         user?              @relation("account_receipt_updatedBy_userId", fields: [updatedById], references: [id])
+  updatedById       Int?
+  deletedAt         DateTime?
+  deletedBy         user?              @relation("account_receipt_deletedBy_userId", fields: [deletedById], references: [id])
+  deletedById       Int?
 }

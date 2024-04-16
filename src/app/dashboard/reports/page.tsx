@@ -29,7 +29,6 @@ const DashboardPage = () => {
       const response = await getReportCount({});
       if (response.status) {
         setCount(response.data!);
-        console.log(response.data!);
       }
 
       const userresponse = await GetUser({ id: userid });

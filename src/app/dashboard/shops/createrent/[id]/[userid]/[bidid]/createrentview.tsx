@@ -190,7 +190,7 @@ const CreateRentPage = (props: CreateRentProps) => {
                     {startDate ? (
                       format(startDate, "PPP")
                     ) : (
-                      <span>Pick start date</span>
+                      <span>Select start date</span>
                     )}
                   </Button>
                 </PopoverTrigger>
@@ -220,7 +220,7 @@ const CreateRentPage = (props: CreateRentProps) => {
                     {endDate ? (
                       format(endDate, "PPP")
                     ) : (
-                      <span>Pick end date</span>
+                      <span>Select end date</span>
                     )}
                   </Button>
                 </PopoverTrigger>

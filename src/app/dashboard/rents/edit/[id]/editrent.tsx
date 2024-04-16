@@ -249,7 +249,7 @@ const EditRentPage = (props: EditRentProps) => {
                     {startDate ? (
                       format(startDate, "PPP")
                     ) : (
-                      <span>Pick start date</span>
+                      <span>Select start date</span>
                     )}
                   </Button>
                 </PopoverTrigger>
@@ -278,7 +278,7 @@ const EditRentPage = (props: EditRentProps) => {
                     {endDate ? (
                       format(endDate, "PPP")
                     ) : (
-                      <span>Pick end date</span>
+                      <span>Select end date</span>
                     )}
                   </Button>
                 </PopoverTrigger>

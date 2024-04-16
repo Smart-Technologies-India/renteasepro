@@ -1,4 +1,5 @@
 "use client";
+import * as crypto from "crypto";
 
 import LoginOtp from "@/action/user/loginotp";
 import SendOtp from "@/action/user/sendotp";
@@ -9,8 +10,9 @@ import { handleNumberChange } from "@/utils/methods";
 import { user } from "@prisma/client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
+import { encrypt } from "@/utils/paymentmethods";
 
 export default function Home() {
   const router = useRouter();
@@ -99,23 +101,53 @@ export default function Home() {
     setIsLogin(false);
   };
 
+  useEffect(() => {
+    var md5 = crypto
+      .createHash("md5")
+      .update("57FB24E2244503977161F4C9445D48D5")
+      .digest();
+    var keyBase64 = Buffer.from(md5).toString("base64");
+
+    var ivBase64 = Buffer.from([
+      0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b,
+      0x0c, 0x0d, 0x0e, 0x0f,
+    ]).toString("base64");
+    const value = encrypt(
+      "i don't know anything i am just wow",
+      keyBase64,
+      ivBase64
+    );
+  }, []);
+
   return (
     <>
       <div className="p-10 rounded-md min-h-screen w-full bg-[#f5f6f8] flex">
-        <div className="flex-1 w-20 relative">
-          <Image
-            src="/log_in_bg.png"
-            alt="error"
-            fill={true}
-            className="w-full object-cover object-center h-screen  rounded-l-md"
-          />
+        <div className="flex-1 relative bg-gradient-to-tr from-[#2350f0] to-blue-400  grid place-items-center  rounded-l-md">
+          <div></div>
+          <p className="text-white text-3xl text-center leading-relaxed font-bold">
+            Planning and Development
+            <br />
+            Authority, DNH
+          </p>
+          <div className="w-[28rem] h-64 relative">
+            <Image
+              fill={true}
+              src="/login.png"
+              alt="error"
+              className=" object-cover object-center rounded-sm drop-shadow-2xl"
+            />
+          </div>
+          <div></div>
         </div>
         <div className="flex-1 grid place-items-center bg-white rounded-r-md">
           <div>
-            <h1 className="text-2xl font-semibold mt-6 mb-2 border-b border-gray-300 pb-2">
-              Login
+            <h1 className="text-lg font-semibold mt-6 text-center">
+              Welcome to PDA,DNH
             </h1>
-            <div className="grid max-w-sm items-center gap-1.5 w-80">
+            <h1 className="text-sm font-normal pb-2 text-center">
+              Login to access your Account
+            </h1>
+            <div className="grid max-w-sm items-center gap-1.5 w-80 mt-4">
               {isOtpSent ? (
                 <>
                   {otpresponse?.firstName == null ||
@@ -123,7 +155,9 @@ export default function Home() {
                   otpresponse?.lastName == null ||
                   otpresponse?.lastName == "" ? (
                     <>
-                      <Label htmlFor="mobile">Mobile Number</Label>
+                      <Label htmlFor="mobile" className="text-xs">
+                        Mobile Number
+                      </Label>
                       <Input
                         id="mobile"
                         type="text"
@@ -133,10 +167,14 @@ export default function Home() {
                         maxLength={10}
                         onChange={handleNumberChange}
                       />
-                      <Label htmlFor="firstname">First Name</Label>
+                      <Label htmlFor="firstname" className="text-xs">
+                        First Name
+                      </Label>
                       <Input id="firstname" type="text" ref={firstname} />
 
-                      <Label htmlFor="lastname">Last Name</Label>
+                      <Label htmlFor="lastname" className="text-xs">
+                        Last Name
+                      </Label>
                       <Input id="lastname" type="text" ref={lastname} />
                     </>
                   ) : (
@@ -144,7 +182,9 @@ export default function Home() {
                       <h1 className="text-left text-xl mb-6">
                         Hello {otpresponse?.firstName} {otpresponse?.lastName}
                       </h1>
-                      <Label htmlFor="mobile">Mobile Number</Label>
+                      <Label htmlFor="mobile" className="text-xs">
+                        Mobile Number
+                      </Label>
                       <div className="flex">
                         <Input
                           id="mobile"
@@ -159,7 +199,9 @@ export default function Home() {
                     </>
                   )}
 
-                  <Label htmlFor="otp">OTP</Label>
+                  <Label htmlFor="otp" className="text-xs">
+                    OTP
+                  </Label>
                   <Input
                     id="otp"
                     type="text"
@@ -168,13 +210,13 @@ export default function Home() {
                     onChange={handleNumberChange}
                   />
                   {isLogin ? (
-                    <Button className="mt-4 text-center font-semibold text-white bg-black rounded-md block py-2 w-full ">
+                    <Button className="mt-4 text-center font-semibold text-white bg-[#2350f0] hover:bg-blue-600 rounded-md block py-2 w-full ">
                       Loading...
                     </Button>
                   ) : (
                     <Button
                       onClick={verifyOtp}
-                      className="mt-4 text-center font-semibold text-white bg-black rounded-md block py-2 w-full "
+                      className="mt-4 text-center font-semibold text-white bg-[#2350f0] hover:bg-blue-600 rounded-md block py-2 w-full "
                     >
                       Verify OTP
                     </Button>
@@ -182,7 +224,9 @@ export default function Home() {
                 </>
               ) : (
                 <>
-                  <Label htmlFor="mobile">Mobile Number</Label>
+                  <Label htmlFor="mobile" className="text-xs">
+                    Mobile Number
+                  </Label>
                   <Input
                     id="mobile"
                     type="text"
@@ -193,14 +237,14 @@ export default function Home() {
                   {isLogin ? (
                     <Button
                       disabled
-                      className="mt-4 text-center font-semibold text-white bg-black rounded-md block py-2 w-full "
+                      className="mt-4 text-center font-semibold text-white bg-[#2350f0] hover:bg-blue-600 rounded-md block py-2 w-full "
                     >
                       Loading...
                     </Button>
                   ) : (
                     <Button
                       onClick={sendOtp}
-                      className="mt-4 text-center font-semibold text-white bg-black rounded-md block py-2 w-full "
+                      className="mt-4 text-center font-semibold text-white bg-[#2350f0] hover:bg-blue-600 rounded-md block py-2 w-full "
                     >
                       Send OTP
                     </Button>

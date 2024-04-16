@@ -57,7 +57,6 @@ const DashboardPage = () => {
         setMonthinfo(monthdatarespone.data!);
       }
 
-      console.log(monthdatarespone);
       const graphresponse = await getGraph({});
       if (graphresponse.status) {
         setGraphData(graphresponse.data!);

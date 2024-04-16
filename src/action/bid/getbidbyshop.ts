@@ -25,8 +25,6 @@ const GetBidByShop = async (
       },
     });
 
-    console.log("bid", payload.shopid);
-
     if (!bid)
       return {
         status: false,

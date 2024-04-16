@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  AntDesignDeleteOutlined,
-  AntDesignEditOutlined,
-  AntDesignEyeOutlined,
-  AntDesignPlusCircleOutlined,
-} from "@/components/icons";
+import { AntDesignPlusCircleOutlined } from "@/components/icons";
 import { useEffect, useRef, useState } from "react";
 
 import { useWindowSize } from "@uidotdev/usehooks";
@@ -30,20 +25,30 @@ import { Input } from "@/components/ui/input";
 import { toast } from "react-toastify";
 import CreateShopCategory from "@/action/shop_category/createshopcategory";
 import { getCookie } from "cookies-next";
-import { Status, shop_category, user_category } from "@prisma/client";
+import {
+  Status,
+  account_category,
+  shop_category,
+  user_category,
+} from "@prisma/client";
 import AllShopCategorys from "@/action/shop_category/allshopcategory";
 import AllUserCategorys from "@/action/user_category/allusercategory";
 import CreateUserCategory from "@/action/user_category/createusercategory";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import CahangeShopCategory from "@/action/shop_category/shopcateogrystatus";
+import AllAccountCategorys from "@/action/account/getallaccountcategory";
+import CreateAccountCategory from "@/action/account/createaccountcategory";
 
 const Category = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [shops, setShops] = useState<shop_category[]>([]);
   const [users, setUsers] = useState<user_category[]>([]);
+  const [account, setAccout] = useState<account_category[]>([]);
+
   const [shopBox, setShopBox] = useState(false);
   const [userBox, setUserBox] = useState(false);
+  const [accountBox, setAccountBox] = useState(false);
 
   const windowwidth = useWindowSize();
 
@@ -58,6 +63,12 @@ const Category = () => {
     if (usercategoryresponse.status) {
       setUsers(usercategoryresponse.data ?? []);
     }
+
+    const accountcategoryresonse = await AllAccountCategorys({});
+    if (accountcategoryresonse.status) {
+      setAccout(accountcategoryresonse.data ?? []);
+    }
+
     setIsLoading(false);
   };
 
@@ -72,6 +83,11 @@ const Category = () => {
       const usercategoryresponse = await AllUserCategorys({});
       if (usercategoryresponse.status) {
         setUsers(usercategoryresponse.data ?? []);
+      }
+
+      const accountcategoryresonse = await AllAccountCategorys({});
+      if (accountcategoryresonse.status) {
+        setAccout(accountcategoryresonse.data ?? []);
       }
       setIsLoading(false);
     };
@@ -266,6 +282,37 @@ const Category = () => {
             ))}
           </div>
         </div>
+        <Separator className="my-10" />
+        <div>
+          <div className="flex mt-2">
+            <h1 className="text-xl font-medium">Account Category</h1>
+            <div className="grow"></div>
+            <button
+              className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm flex items-center gap-2  font-medium py-2"
+              onClick={() => setAccountBox(true)}
+            >
+              <AntDesignPlusCircleOutlined className="text-white text-xl" />
+              <p>Add</p>
+            </button>
+          </div>
+
+          {account.length == 0 && (
+            <>
+              <p className="text-sm mb-2">No Account Category Found</p>
+            </>
+          )}
+
+          <div className="flex gap-4 mt-4 items-center flex-wrap">
+            {account.map((shop, index) => (
+              <div
+                className="bg-white px-4 py-2 rounded-full flex items-center gap-2"
+                key={index}
+              >
+                <h1>{shop.name}</h1>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {windowwidth.width! > 768 ? (
@@ -329,7 +376,7 @@ const Category = () => {
             <DrawerHeader className="text-left">
               <DrawerTitle>Create Shop Category</DrawerTitle>
               <DrawerDescription>
-                Write shop category name in order to create shop category.
+                Write account category name in order to create account category.
               </DrawerDescription>
             </DrawerHeader>
             {/* <ProfileForm className="px-4" /> */}
@@ -342,6 +389,41 @@ const Category = () => {
                 <Button variant="outline">Cancel</Button>
               </DrawerClose>
             </DrawerFooter> */}
+          </DrawerContent>
+        </Drawer>
+      )}
+      {windowwidth.width! > 768 ? (
+        <Dialog open={accountBox} onOpenChange={setAccountBox}>
+          <DialogTrigger asChild>
+            {/* <Button variant="outline">Edit Profile</Button> */}
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Create Account Category</DialogTitle>
+              <DialogDescription>
+                Write account category name in order to create account category.
+              </DialogDescription>
+            </DialogHeader>
+            {/* <ProfileForm /> */}
+            <AccountCategory setAccountBox={setAccountBox} init={initdata} />
+          </DialogContent>
+        </Dialog>
+      ) : (
+        <Drawer open={accountBox} onOpenChange={setAccountBox}>
+          <DrawerTrigger asChild>
+            {/* <Button variant="outline">Edit Profile</Button> */}
+          </DrawerTrigger>
+          <DrawerContent>
+            <DrawerHeader className="text-left">
+              <DrawerTitle>Create Shop Category</DrawerTitle>
+              <DrawerDescription>
+                Write account category name in order to create account category.
+              </DrawerDescription>
+            </DrawerHeader>
+            {/* <ProfileForm className="px-4" /> */}
+            <div className="p-4">
+              <AccountCategory setAccountBox={setAccountBox} init={initdata} />
+            </div>
           </DrawerContent>
         </Drawer>
       )}
@@ -436,12 +518,62 @@ const UserCategory = (props: UserCategoryProps) => {
         <Input
           type="text"
           ref={name}
-          placeholder="Shop Category Name"
+          placeholder="User Category Name"
           className="w-full"
         />
       </div>
       <Button
         onClick={createshop}
+        className="text-center font-semibold text-white rounded-md block py-2 w-full mt-2   bg-[#172e57] hover:bg-[#21427d]"
+      >
+        Create
+      </Button>
+    </>
+  );
+};
+
+interface AccountCategoryProps {
+  setAccountBox: (val: boolean) => void;
+  init: () => Promise<void>;
+}
+const AccountCategory = (props: AccountCategoryProps) => {
+  const name = useRef<HTMLInputElement>(null);
+
+  const userid: number = parseInt(getCookie("id") ?? "0");
+
+  const createaccout = async () => {
+    if (
+      name.current?.value == "" ||
+      name.current?.value == undefined ||
+      name.current?.value == null
+    ) {
+      toast.error("Shop Category Name is required");
+    } else {
+      const shopcategory = await CreateAccountCategory({
+        name: name.current?.value ?? "",
+        createdById: userid,
+      });
+      if (shopcategory.status) {
+        toast.success(shopcategory.message);
+      } else {
+        toast.error(shopcategory.message);
+      }
+      await props.init();
+      props.setAccountBox(false);
+    }
+  };
+  return (
+    <>
+      <div className="grid items-center gap-1.5 w-full">
+        <Input
+          type="text"
+          ref={name}
+          placeholder="Account Category Name"
+          className="w-full"
+        />
+      </div>
+      <Button
+        onClick={createaccout}
         className="text-center font-semibold text-white rounded-md block py-2 w-full mt-2   bg-[#172e57] hover:bg-[#21427d]"
       >
         Create
