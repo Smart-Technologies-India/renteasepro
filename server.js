@@ -115,8 +115,7 @@ const postRes = (request, response) => {
           data: {
             transactionid: result.bank_ref_no,
             trackid: result.tracking_id,
-            status: "PAID",
-            transaction_date: new Date(),
+            transaction_date: new Date().toISOString(),
             paymentmode: result.payment_mode.toString().toUpperCase(),
             remarks: result.order_status,
           },
@@ -132,7 +131,7 @@ const postRes = (request, response) => {
             transactionid: result.bank_ref_no,
             trackid: result.tracking_id,
             status: "PAID",
-            transaction_date: new Date(),
+            transaction_date: new Date().toISOString(),
             paymentmode: result.payment_mode.toString().toUpperCase(),
             remarks: result.order_status,
           },
