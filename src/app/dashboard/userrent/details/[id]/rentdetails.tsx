@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import axios from "axios";
 import UploadFile from "@/action/file_upload/uploadfile";
 import GetRentTran from "@/action/rent_transact/getrenttransact";
-import { customAlphabet } from 'nanoid'
+import { customAlphabet } from "nanoid";
 
 interface UserRentDetailsViewProps {
   id: number;
@@ -39,11 +39,11 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
   const [rent, setRent] = useState<any>();
   const [rentTransact, setRentTransact] = useState<rent_transact[]>([]);
 
-  const banknameRef = useRef<HTMLInputElement>(null);
-  const transactionRef = useRef<HTMLInputElement>(null);
+  // const banknameRef = useRef<HTMLInputElement>(null);
+  // const transactionRef = useRef<HTMLInputElement>(null);
 
-  const [fileUploader, setFileUploader] = useState<File | null>(null);
-  const cFileUploader = useRef<HTMLInputElement>(null);
+  // const [fileUploader, setFileUploader] = useState<File | null>(null);
+  // const cFileUploader = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (
     value: React.ChangeEvent<HTMLInputElement>,
@@ -91,7 +91,7 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
 
     const rentresponse = await GetRentTran({ id: field[0] });
 
-    const nanoid = customAlphabet('1234567890abcdef', 10)
+    const nanoid = customAlphabet("1234567890abcdef", 10);
 
     const uniqueid = nanoid();
     if (rentresponse.status) {
@@ -335,7 +335,7 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
                   <p>&#8377;{amount.toString()}</p>
                 </div>
 
-                <div className="grid items-center gap-1.5 w-full mt-4">
+                {/* <div className="grid items-center gap-1.5 w-full mt-4">
                   <Label htmlFor="bankname">Enter Bank Name</Label>
                   <Input
                     id="bankname"
@@ -383,11 +383,10 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
                     <Input
                       type="file"
                       ref={cFileUploader}
-                      accept="*/*"
                       onChange={(val) => handleFileChange(val, setFileUploader)}
                     />
                   </div>
-                </div>
+                </div> */}
 
                 {isPaying ? (
                   <Button

@@ -61,11 +61,11 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
 
   // const [user, setUser] = useState<user>();
 
-  const banknameRef = useRef<HTMLInputElement>(null);
-  const transactionRef = useRef<HTMLInputElement>(null);
+  // const banknameRef = useRef<HTMLInputElement>(null);
+  // const transactionRef = useRef<HTMLInputElement>(null);
 
-  const [fileUploader, setFileUploader] = useState<File | null>(null);
-  const cFileUploader = useRef<HTMLInputElement>(null);
+  // const [fileUploader, setFileUploader] = useState<File | null>(null);
+  // const cFileUploader = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (
     value: React.ChangeEvent<HTMLInputElement>,
@@ -210,17 +210,17 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
       return;
     }
 
-    if (!issecond && fileUploader == null) {
-      return toast.error("Please upload receipt file");
-    }
+    // if (!issecond && fileUploader == null) {
+    //   return toast.error("Please upload receipt file");
+    // }
 
-    if (!issecond && banknameRef.current?.value == "") {
-      return toast.error("Please enter bank name");
-    }
+    // if (!issecond && banknameRef.current?.value == "") {
+    //   return toast.error("Please enter bank name");
+    // }
 
-    if (!issecond && transactionRef.current?.value == "") {
-      return toast.error("Please enter transaction id");
-    }
+    // if (!issecond && transactionRef.current?.value == "") {
+    //   return toast.error("Please enter transaction id");
+    // }
 
     const createbid = await ApplyBid({
       amount: parseInt(amount.current?.value ?? "0"),
@@ -231,31 +231,29 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
       fees: bid.fees_amount,
       emd: bid.emd_amount,
       bg: bid.bg_amount,
-      bankname: banknameRef.current?.value ?? "",
-      transactionid: transactionRef.current?.value ?? "",
     });
     if (!createbid.status) return toast.error(createbid.message);
 
     if (!issecond) {
-      const formData = new FormData();
-      formData.append("file", fileUploader!);
+      // const formData = new FormData();
+      // formData.append("file", fileUploader!);
 
-      const uploadfile = await axios.post(process.env.UPLOAD_LINK!, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      // const uploadfile = await axios.post(process.env.UPLOAD_LINK!, formData, {
+      //   headers: {
+      //     "Content-Type": "multipart/form-data",
+      //   },
+      // });
 
-      if (uploadfile.status != 200) {
-        return toast.error("File upload failed");
-      }
+      // if (uploadfile.status != 200) {
+      //   return toast.error("File upload failed");
+      // }
 
-      await UploadFile({
-        name: "receipt",
-        path: uploadfile.data.filePath,
-        createdById: userid,
-        bidId: createbid.data?.id,
-      });
+      // await UploadFile({
+      //   name: "receipt",
+      //   path: uploadfile.data.filePath,
+      //   createdById: userid,
+      //   bidId: createbid.data?.id,
+      // });
 
       // return router.push(`/dashboard/bidrecept/${userid}/${props.bidid}`);
       // return router.push(`/dashboard/bidrecept/${userid}/${props.bidid}`);
@@ -809,7 +807,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                               </p>
                             </div>
 
-                            <div className="grid items-center gap-1.5 w-full mt-4">
+                            {/* <div className="grid items-center gap-1.5 w-full mt-4">
                               <Label htmlFor="bankname">Enter Bank Name</Label>
                               <Input
                                 id="bankname"
@@ -861,13 +859,12 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                                 <Input
                                   type="file"
                                   ref={cFileUploader}
-                                  accept="*/*"
                                   onChange={(val) =>
                                     handleFileChange(val, setFileUploader)
                                   }
                                 />
                               </div>
-                            </div>
+                            </div> */}
 
                             {isPaying ? (
                               <Button className="w-full mt-4 bg-[#172e57] hover:bg-[#224688]">
@@ -875,7 +872,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                               </Button>
                             ) : (
                               <Button
-                                onClick={() => create(true)}
+                                onClick={() => create(false)}
                                 className="w-full mt-4 bg-[#172e57] hover:bg-[#224688]"
                               >
                                 Pay Fees and Freeze Bid
@@ -1059,7 +1056,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                               </p>
                             </div>
 
-                            <div className="grid items-center gap-1.5 w-full mt-4">
+                            {/* <div className="grid items-center gap-1.5 w-full mt-4">
                               <Label htmlFor="bankname">Enter Bank Name</Label>
                               <Input
                                 id="bankname"
@@ -1111,13 +1108,12 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                                 <Input
                                   type="file"
                                   ref={cFileUploader}
-                                  accept="*/*"
                                   onChange={(val) =>
                                     handleFileChange(val, setFileUploader)
                                   }
                                 />
                               </div>
-                            </div>
+                            </div> */}
 
                             {isPaying ? (
                               <Button className="w-full mt-4 bg-[#172e57] hover:bg-[#224688]">

@@ -32,6 +32,7 @@ import Link from "next/link";
 import { longtext } from "@/utils/methods";
 import UploadFile from "@/action/file_upload/uploadfile";
 import AddFileBid from "@/action/bid/addbidfile";
+import BackButton from "@/components/backbutton";
 
 interface CreateBidPageProps {
   shopid: number;
@@ -468,7 +469,10 @@ const CreateBidPage = (props: CreateBidPageProps) => {
   return (
     <>
       <div className="p-6">
-        <h1 className="text-[#162f57] text-2xl font-semibold">Create Bid</h1>
+        <div className="flex gap-4">
+          <BackButton />
+          <h1 className="text-[#162f57] text-2xl font-semibold">Create Bid</h1>
+        </div>
 
         <div className="bg-white rounded-sm shadow-sm p-4">
           <p className="text-gray-500 text-center">General Information</p>
