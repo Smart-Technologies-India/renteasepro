@@ -131,17 +131,15 @@ const RentPropertiesView = (props: RentPropertiesViewProps) => {
             {capitalcase(selectedCategory)} Shops
           </p>
 
-          <div className="flex p-2 gap-4">
-            <div className="grow flex gap-2 overflow-x-hidden justify-start items-center">
-              {filtershop.map((item: shop, index: number) => (
-                <PropertiesDeatils
-                  key={index}
-                  id={item.id.toString()}
-                  status={item.status}
-                  count={item.shopNumber}
-                />
-              ))}
-            </div>
+          <div className="flex p-2 gap-4 flex-wrap justify-evenly">
+            {filtershop.map((item: shop, index: number) => (
+              <PropertiesDeatils
+                key={index}
+                id={item.id.toString()}
+                status={item.status}
+                count={item.shopNumber}
+              />
+            ))}
           </div>
         </div>
       </div>

@@ -2,7 +2,6 @@
 
 import GetProperty from "@/action/property/getproperty";
 import GetShopFromProperty from "@/action/property/getshopsfromproperty";
-import AllShops from "@/action/shop/allshop";
 import { capitalcase, removeDuplicates } from "@/utils/methods";
 import { property, shop } from "@prisma/client";
 import Link from "next/link";
@@ -32,6 +31,7 @@ const PropertiesView = (props: PropertiesViewProps) => {
       });
       setFilterShop(temp);
     }
+
   };
 
   useEffect(() => {
@@ -140,17 +140,15 @@ const PropertiesView = (props: PropertiesViewProps) => {
                 {capitalcase(selectedCategory)} Shops
               </p>
 
-              <div className="flex p-2 gap-4">
-                <div className="grow flex gap-2 overflow-x-hidden justify-start items-center">
-                  {filtershop.map((item: shop, index: number) => (
-                    <PropertiesDeatils
-                      key={index}
-                      id={item.id.toString()}
-                      status={item.status}
-                      count={item.shopNumber}
-                    />
-                  ))}
-                </div>
+              <div className="flex p-2 gap-4 flex-wrap justify-evenly">
+                {filtershop.map((item: shop, index: number) => (
+                  <PropertiesDeatils
+                    key={index}
+                    id={item.id.toString()}
+                    status={item.status}
+                    count={item.shopNumber}
+                  />
+                ))}
               </div>
             </div>
           </div>

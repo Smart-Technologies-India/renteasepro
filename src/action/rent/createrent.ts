@@ -122,7 +122,7 @@ const CreateRent = async (
             status: false,
             data: null,
             message: messageresponse.message,
-            functionname: "ApplyBid",
+            functionname: "CreateRent",
           };
         }
 
@@ -203,7 +203,7 @@ const CreateRent = async (
           status: false,
           data: null,
           message: messageresponse.message,
-          functionname: "ApplyBid",
+          functionname: "CreateRent",
         };
       }
       return {

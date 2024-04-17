@@ -120,7 +120,6 @@ const ShopView = (props: ShowShopProps) => {
         setBid(bidresponse.data!);
       }
 
-
       const userresponse = await GetUser({ id: userid });
       if (userresponse.status) {
         setUser(userresponse.data!);
@@ -256,7 +255,53 @@ const ShopView = (props: ShowShopProps) => {
             <div className="flex gap-2 p-2">
               <div className="grow"></div>
 
-              {bid.bid_status == BidStatus.EXPIRED ? (
+              {bid ? (
+                <>
+                  {bid.bid_status == BidStatus.EXPIRED ? (
+                    <>
+                      <Link
+                        href={`/dashboard/shops/createbid/${props.id}`}
+                        className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                      >
+                        Create Bid
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      {bid && (
+                        <Link
+                          href={`/dashboard/shops/shopbidhistory/${props.id}`}
+                          className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                        >
+                          Bid History
+                        </Link>
+                      )}
+                      {isrented && (
+                        <button
+                          onClick={() => {
+                            return router.push(
+                              `/dashboard/rents/edit/${rentdata?.id}`
+                            );
+                          }}
+                          className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                        >
+                          Manage Shop
+                        </button>
+                      )}
+                      {bid ? (
+                        <></>
+                      ) : (
+                        <Link
+                          href={`/dashboard/shops/createbid/${props.id}`}
+                          className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                        >
+                          Create Bid
+                        </Link>
+                      )}
+                    </>
+                  )}
+                </>
+              ) : (
                 <>
                   <Link
                     href={`/dashboard/shops/createbid/${props.id}`}
@@ -264,39 +309,6 @@ const ShopView = (props: ShowShopProps) => {
                   >
                     Create Bid
                   </Link>
-                </>
-              ) : (
-                <>
-                  {bid && (
-                    <Link
-                      href={`/dashboard/shops/shopbidhistory/${props.id}`}
-                      className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
-                    >
-                      Bid History
-                    </Link>
-                  )}
-                  {isrented && (
-                    <button
-                      onClick={() => {
-                        return router.push(
-                          `/dashboard/rents/edit/${rentdata?.id}`
-                        );
-                      }}
-                      className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
-                    >
-                      Manage Shop
-                    </button>
-                  )}
-                  {bid ? (
-                    <></>
-                  ) : (
-                    <Link
-                      href={`/dashboard/shops/createbid/${props.id}`}
-                      className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
-                    >
-                      Create Bid
-                    </Link>
-                  )}
                 </>
               )}
 

@@ -106,19 +106,35 @@ const postRes = (request, response) => {
       const type = result.merchant_param1.toString().split("_")[3];
 
       if (type == "bid") {
-      } else if (type == "rent") {
-        const update_response = await prisma.rent_transact.updateMany({
+        const update_response = await prisma.bid_payment.updateMany({
           where: {
             userId: userid ? parseInt(userid) : 0,
             shopId: shopid ? parseInt(shopid) : 0,
             bidId: bidid ? parseInt(bidid) : 0,
           },
           data: {
-            bankname: result.bank_ref_no,
-            transactionid: result.tracking_id,
+            transactionid: result.bank_ref_no,
+            trackid: result.tracking_id,
             status: "PAID",
             transaction_date: new Date(),
-            paymentmode: "CASH",
+            paymentmode: result.payment_mode.toString().toUpperCase(),
+            remarks: result.order_status,
+          },
+        });
+      } else if (type == "rent") {
+        const update_response = await prisma.rent_transact.updateMany({
+          where: {
+            userId: userid ? parseInt(userid) : 0,
+            shopId: shopid ? parseInt(shopid) : 0,
+            rentId: bidid ? parseInt(bidid) : 0,
+          },
+          data: {
+            transactionid: result.bank_ref_no,
+            trackid: result.tracking_id,
+            status: "PAID",
+            transaction_date: new Date(),
+            paymentmode: result.payment_mode.toString().toUpperCase(),
+            remarks: result.order_status,
           },
           include: {
             user: true,
@@ -381,7 +397,7 @@ const postReq = (request, response) => {
     body += data;
     encRequest = encrypt(body, keyBase64, ivBase64);
     formbody =
-      '<form id="nonseamless" method="post" name="redirect" action="https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction"/> <input type="hidden" id="encRequest" name="encRequest" value="' +
+      '<form id="nonseamless" method="post" name="redirect" action="https://test.ccavenue.com/transaction/transaction.do?command=initiateTransaction"/> <input type="hidden" id="encRequest" name="encRequest" value="' +
       encRequest +
       '"><input type="hidden" name="access_code" id="access_code" value="' +
       accessCode +
@@ -462,11 +478,6 @@ app.prepare().then(() => {
 
   server.post("/ccavResponseHandler", function (request, response) {
     postRes(request, response);
-  });
-  server.get("/rec", function (request, response) {
-    response.writeHeader(200, { "Content-Type": "text/html" });
-    response.write("Hello World!");
-    response.end();
   });
 
   // server.post("/getuser", async function (request, response) {

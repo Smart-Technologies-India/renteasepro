@@ -76,7 +76,7 @@ const PayRent = async (
         status: false,
         data: null,
         message: messageresponse.message,
-        functionname: "ApplyBid",
+        functionname: "PayRent",
       };
     }
 

@@ -23,6 +23,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { SetStateAction, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
+import { customAlphabet } from "nanoid";
 
 const getExemptfor = (value: ExemptFor): string => {
   switch (value) {
@@ -256,7 +257,18 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
         bidId: createbid.data?.id,
       });
 
-      return router.push(`/dashboard/bidrecept/${userid}/${props.bidid}`);
+      // return router.push(`/dashboard/bidrecept/${userid}/${props.bidid}`);
+      // return router.push(`/dashboard/bidrecept/${userid}/${props.bidid}`);
+
+      const nanoid = customAlphabet("1234567890abcdef", 10);
+
+      const uniqueid = nanoid();
+
+      router.push(
+        `/payamount?xlmnx=${amount}&ynboy=${uniqueid}&zgvfz=${parseInt(
+          props.bidid.toString()
+        )}_${parseInt(userid.toString())}_${bid?.shopId ?? 0}_bid`
+      );
     }
     router.back();
     toast.success(createbid.message);
@@ -655,7 +667,6 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                                 </div>
                               )}
                             </div>
-                      
 
                             <div className="flex justify-between mt-2">
                               <p>Fees Paid</p>

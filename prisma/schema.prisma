@@ -565,6 +565,7 @@ model rent_transact {
   paymentmode      String?
   transactionid    String?
   bankname         String?
+  trackid          String?
   remarks          String?            @db.MediumText
   status           RentTransactStatus @default(INACTIVE)
   createdAt        DateTime           @default(now())
@@ -593,6 +594,7 @@ model bid_payment {
   transaction_date DateTime       @default(now())
   paymentmode      String?
   transactionid    String?
+  trackid          String?
   bankname         String?
   remarks          String?        @db.MediumText
   status           Status         @default(ACTIVE)

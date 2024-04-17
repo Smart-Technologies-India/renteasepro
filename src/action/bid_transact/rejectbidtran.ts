@@ -69,7 +69,7 @@ const RejectBidTran = async (
         status: false,
         data: null,
         message: messageresponse.message,
-        functionname: "ApplyBid",
+        functionname: "RejectBidTran",
       };
     }
 

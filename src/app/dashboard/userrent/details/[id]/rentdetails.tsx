@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import axios from "axios";
 import UploadFile from "@/action/file_upload/uploadfile";
 import GetRentTran from "@/action/rent_transact/getrenttransact";
+import { customAlphabet } from 'nanoid'
 
 interface UserRentDetailsViewProps {
   id: number;
@@ -89,9 +90,13 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
     }
 
     const rentresponse = await GetRentTran({ id: field[0] });
+
+    const nanoid = customAlphabet('1234567890abcdef', 10)
+
+    const uniqueid = nanoid();
     if (rentresponse.status) {
       router.push(
-        `/payamount?xlmnx=${amount}&zgvfz=rent&ynboy=${rentresponse.data?.rentId}_${rentresponse.data?.userId}_${rentresponse.data?.shopId}_rent`
+        `/payamount?xlmnx=${amount}&ynboy=${uniqueid}&zgvfz=${rentresponse.data?.rentId}_${rentresponse.data?.userId}_${rentresponse.data?.shopId}_rent`
       );
     }
     // setLoading(true);
