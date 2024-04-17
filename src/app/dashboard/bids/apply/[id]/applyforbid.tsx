@@ -175,7 +175,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
       amount.current?.value == null
     ) {
       toast.error("Please enter bid amount");
-      setIsPaying(true);
+      setIsPaying(false);
       return;
     }
     if (bid?.is_auction == false) {
@@ -186,7 +186,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
         toast.error(
           `Bid amount should be greater than minimum bid amount. Bid amount should be in multiple of Rs.${bid.min_bid_increment}`
         );
-        setIsPaying(true);
+        setIsPaying(false);
         return;
       }
     } else {
@@ -194,7 +194,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
         parseInt(amount.current?.value ?? "0") <
         bid.max_bid_amount + bid.min_bid_increment
       ) {
-        setIsPaying(true);
+        setIsPaying(false);
         toast.error(
           `Bid amount should be greater than current bid amount. Bid amount should be in multiple of Rs.${bid.min_bid_increment}`
         );
@@ -203,7 +203,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
     }
 
     if (parseInt(amount.current?.value ?? "0") % bid.min_bid_increment != 0) {
-      setIsPaying(true);
+      setIsPaying(false);
       toast.error(
         `Bid amount should be in multiple of Rs.${bid.min_bid_increment}`
       );
@@ -262,8 +262,17 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
 
       const uniqueid = nanoid();
 
+      const amounttopaid: number =
+        bid?.is_exemption == true
+          ? parseInt(bid.fees_amount.toString() ?? "0") -
+            parseInt(bid?.exempt[0].feesamount.toString() ?? "0") +
+            parseInt(bid.emd_amount.toString() ?? "0") -
+            parseInt(bid?.exempt[0].emdamount.toString() ?? "0")
+          : parseInt(bid.fees_amount.toString() ?? "0") +
+            parseInt(bid.emd_amount.toString() ?? "0");
+
       router.push(
-        `/payamount?xlmnx=${amount}&ynboy=${uniqueid}&zgvfz=${parseInt(
+        `/payamount?xlmnx=${amounttopaid}&ynboy=${uniqueid}&zgvfz=${parseInt(
           props.bidid.toString()
         )}_${parseInt(userid.toString())}_${bid?.shopId ?? 0}_bid`
       );
