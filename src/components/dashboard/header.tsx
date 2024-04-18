@@ -66,9 +66,9 @@ const Navbar = (props: NavbarProps) => {
         className="text-xl md:block hidden cursor-pointer"
         onClick={refreshrent}
       />
-      <SolarCalendarMinimalisticBold className="text-xl md:block hidden" />
+      {/* <SolarCalendarMinimalisticBold className="text-xl md:block hidden" />
       <SolarBellBold className="text-2xl md:block hidden" />
-      <SolarLightbulbMinimalisticBold className="text-xl md:block hidden" />
+      <SolarLightbulbMinimalisticBold className="text-xl md:block hidden" /> */}
       <div className="w-[1px] h-6 bg-black"></div>
       <div className="rounded-full bg-[#6d99e1] shrink-0 h-8 w-8 grid place-items-center text-lg font-semibold ">
         {props.name[0].toUpperCase()}

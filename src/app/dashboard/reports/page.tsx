@@ -1,5 +1,12 @@
 "use client";
-import { Fa6RegularHourglassHalf } from "@/components/icons";
+import {
+  Fa6RegularBuilding,
+  Fa6RegularClock,
+  Fa6RegularHourglassHalf,
+  FluentMdl2Home,
+  RiAuctionLine,
+  RiMoneyRupeeCircleLine,
+} from "@/components/icons";
 import { useEffect, useState } from "react";
 import { getCookie } from "cookies-next";
 import GetUser from "@/action/user/getuser";
@@ -81,7 +88,7 @@ const DashboardPage = () => {
                 color="bg-rose-500"
                 subtitle="Total Property Count"
               >
-                <Fa6RegularHourglassHalf className="text-xl text-white" />
+                <Fa6RegularBuilding className="text-xl text-white" />
               </DashboardCard>
               <DashboardCard
                 name="Total Shop"
@@ -89,7 +96,7 @@ const DashboardPage = () => {
                 color="bg-green-500"
                 subtitle="Total Shop Count"
               >
-                <Fa6RegularHourglassHalf className="text-xl text-white" />
+                <FluentMdl2Home className="text-xl text-white" />
               </DashboardCard>
               <DashboardCard
                 name="Bid Ending"
@@ -97,7 +104,7 @@ const DashboardPage = () => {
                 color="bg-orange-500"
                 subtitle="Bid is Ending in 5 days"
               >
-                <Fa6RegularHourglassHalf className="text-xl text-white" />
+                <Fa6RegularClock className="text-xl text-white" />
               </DashboardCard>
               <DashboardCard
                 name="Rent Ending"
@@ -105,13 +112,13 @@ const DashboardPage = () => {
                 color="bg-blue-500"
                 subtitle="Rent is Ending in 30 days"
               >
-                <Fa6RegularHourglassHalf className="text-xl text-white" />
+                <Fa6RegularClock className="text-xl text-white" />
               </DashboardCard>
               <DashboardCard
-                name="No Action Bids"
+                name="Action Needed"
                 count={count.bidwithnoaction}
                 color="bg-teal-500"
-                subtitle="No Action Bid Count"
+                subtitle="Bid Count"
               >
                 <Fa6RegularHourglassHalf className="text-xl text-white" />
               </DashboardCard>
@@ -121,7 +128,7 @@ const DashboardPage = () => {
                 color="bg-violet-500"
                 subtitle="Bid with no Bidders Count"
               >
-                <Fa6RegularHourglassHalf className="text-xl text-white" />
+                <RiAuctionLine className="text-xl text-white" />
               </DashboardCard>
               <DashboardCard
                 name="Pending Shop Rent"
@@ -129,7 +136,7 @@ const DashboardPage = () => {
                 color="bg-pink-500"
                 subtitle="Pending Shop Rent Count"
               >
-                <Fa6RegularHourglassHalf className="text-xl text-white" />
+                <RiMoneyRupeeCircleLine className="text-xl text-white" />
               </DashboardCard>
               <DashboardCard
                 name="Month Cross Shop Rent"
@@ -137,7 +144,7 @@ const DashboardPage = () => {
                 color="bg-cyan-500"
                 subtitle="Month Cross Rent Count"
               >
-                <Fa6RegularHourglassHalf className="text-xl text-white" />
+                <RiMoneyRupeeCircleLine className="text-xl text-white" />
               </DashboardCard>
             </div>
             {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">

@@ -1,6 +1,14 @@
 "use client";
 import getDashboardCount from "@/action/dashboard/count";
-import { Fa6RegularHourglassHalf } from "@/components/icons";
+import {
+  Fa6RegularBuilding,
+  Fa6RegularHourglassHalf,
+  FluentMdl2Home,
+  IcOutlineReceiptLong,
+  MaterialSymbolsPersonRounded,
+  RiAuctionLine,
+  RiMoneyRupeeCircleLine,
+} from "@/components/icons";
 import { useEffect, useState } from "react";
 import { Chart as ChartJS, registerables } from "chart.js";
 import { Bar } from "react-chartjs-2";
@@ -189,7 +197,7 @@ const DashboardPage = () => {
                 color="bg-rose-500"
                 subtitle="Total Property Count"
               >
-                <Fa6RegularHourglassHalf className="text-xl text-white" />
+                <Fa6RegularBuilding className="text-xl text-white" />
               </DashboardCard>
               <DashboardCard
                 name="Total Shop"
@@ -197,7 +205,7 @@ const DashboardPage = () => {
                 color="bg-green-500"
                 subtitle="Total Shop Count"
               >
-                <Fa6RegularHourglassHalf className="text-xl text-white" />
+                <FluentMdl2Home className="text-xl text-white" />
               </DashboardCard>
               <DashboardCard
                 name="Live Bids"
@@ -205,7 +213,7 @@ const DashboardPage = () => {
                 color="bg-orange-500"
                 subtitle="Live Bids Count"
               >
-                <Fa6RegularHourglassHalf className="text-xl text-white" />
+                <RiAuctionLine className="text-xl text-white" />
               </DashboardCard>
               <DashboardCard
                 name="Rented shop"
@@ -213,7 +221,7 @@ const DashboardPage = () => {
                 color="bg-blue-500"
                 subtitle="Rented Shop Count"
               >
-                <Fa6RegularHourglassHalf className="text-xl text-white" />
+                <MaterialSymbolsPersonRounded className="text-xl text-white" />
               </DashboardCard>
               <DashboardCard
                 name="Total Receivable"
@@ -222,7 +230,7 @@ const DashboardPage = () => {
                 subtitle="Total Receivable Amount"
                 isruppy={true}
               >
-                <Fa6RegularHourglassHalf className="text-xl text-white" />
+                <RiMoneyRupeeCircleLine className="text-xl text-white" />
               </DashboardCard>
               <DashboardCard
                 name="Current rent"
@@ -231,7 +239,7 @@ const DashboardPage = () => {
                 subtitle="Pending Rent Count"
                 isruppy={true}
               >
-                <Fa6RegularHourglassHalf className="text-xl text-white" />
+                <RiMoneyRupeeCircleLine className="text-xl text-white" />
               </DashboardCard>
               <DashboardCard
                 name="Settled Rent"
@@ -240,7 +248,7 @@ const DashboardPage = () => {
                 subtitle="Settled Rent Count"
                 isruppy={true}
               >
-                <Fa6RegularHourglassHalf className="text-xl text-white" />
+                <IcOutlineReceiptLong className="text-xl text-white" />
               </DashboardCard>
               <DashboardCard
                 name="Vacant Shop"
