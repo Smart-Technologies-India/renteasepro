@@ -12,6 +12,7 @@ import { safeParse } from "valibot";
 import createUser from "@/action/user/createuser";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { RegisterUserSchema } from "@/schema/registeruser";
 export default function Home() {
   const username = useRef<HTMLInputElement>(null);
   const password = useRef<HTMLInputElement>(null);
@@ -20,7 +21,7 @@ export default function Home() {
 
   const onSubmit = async () => {
     setIsCreating(true);
-    const result = safeParse(CreateUserSchema, {
+    const result = safeParse(RegisterUserSchema, {
       username: username.current?.value,
       password: password.current?.value,
       repassword: repassword.current?.value,

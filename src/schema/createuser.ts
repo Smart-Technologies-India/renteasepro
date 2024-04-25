@@ -2,11 +2,9 @@ import { isContainSpace } from "@/utils/methods";
 import {
   Input,
   custom,
-  forward,
   maxLength,
   minLength,
   object,
-  regex,
   string,
 } from "valibot";
 

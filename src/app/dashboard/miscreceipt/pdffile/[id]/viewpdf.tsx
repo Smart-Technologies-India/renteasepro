@@ -173,7 +173,7 @@ const ViewPdf = (props: ViewPdfProps) => {
       position: "absolute",
       display: "flex",
       width: "100vw",
-      top: "130px",
+      top: "40px",
       alignItems: "center",
     },
     image: {
@@ -186,7 +186,7 @@ const ViewPdf = (props: ViewPdfProps) => {
     <Document>
       <Page style={styles.body} size={"A4"}>
         <View style={styles.imagebox}>
-          <Image src="/tenders_logo.png" style={styles.image} />
+          <Image src="/dnhpda_logo.png" style={styles.image} />
         </View>
 
         <View>
