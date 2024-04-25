@@ -52,7 +52,6 @@ const ViewPdf = (props: ViewPdfProps) => {
       if (historyresponse.status) {
         setHistory(historyresponse.data);
       }
-
     };
 
     init();
@@ -277,6 +276,8 @@ const ViewPdf = (props: ViewPdfProps) => {
               signature.
             </Text>
           </View>
+
+       
         </View>
       </Page>
     </Document>

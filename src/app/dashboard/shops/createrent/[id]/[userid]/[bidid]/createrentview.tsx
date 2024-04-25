@@ -1,7 +1,6 @@
 "use client";
 import CreateRent from "@/action/rent/createrent";
 import GetShop from "@/action/shop/getshop";
-import GetNormalUser from "@/action/user/getnormalusers";
 import { IcBaselineCalendarMonth } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -52,6 +51,9 @@ const CreateRentPage = (props: CreateRentProps) => {
   const [duedate, setDueDate] = useState<number>(0);
 
   const [user, setUser] = useState<user>();
+
+  const [startDPop, setStartDPop] = useState<boolean>(false);
+  const [endDPop, setEndDPop] = useState<boolean>(false);
 
   useEffect(() => {
     const init = async () => {
@@ -178,7 +180,7 @@ const CreateRentPage = (props: CreateRentProps) => {
               <Label>
                 Rent Start Date <span className="text-rose-500">*</span>
               </Label>
-              <Popover>
+              <Popover open={startDPop} onOpenChange={setStartDPop}>
                 <PopoverTrigger asChild>
                   <Button
                     variant={"outline"}
@@ -198,7 +200,10 @@ const CreateRentPage = (props: CreateRentProps) => {
                   <Calendar
                     mode="single"
                     selected={startDate}
-                    onSelect={setStartDate}
+                    onSelect={(e) => {
+                      setStartDate(e);
+                      setStartDPop(false);
+                    }}
                     initialFocus
                   />
                 </PopoverContent>
@@ -208,7 +213,7 @@ const CreateRentPage = (props: CreateRentProps) => {
               <Label>
                 Rent End Date <span className="text-rose-500">*</span>
               </Label>
-              <Popover>
+              <Popover open={endDPop} onOpenChange={setEndDPop}>
                 <PopoverTrigger asChild>
                   <Button
                     variant={"outline"}
@@ -228,7 +233,10 @@ const CreateRentPage = (props: CreateRentProps) => {
                   <Calendar
                     mode="single"
                     selected={endDate}
-                    onSelect={setEndDate}
+                    onSelect={(e) => {
+                      setEndDate(e);
+                      setEndDPop(false);
+                    }}
                     initialFocus
                   />
                 </PopoverContent>

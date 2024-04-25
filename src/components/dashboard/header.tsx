@@ -46,7 +46,7 @@ const Navbar = (props: NavbarProps) => {
   };
 
   return (
-    <nav className="py-1 px-4 w-full bg-[#f0f1f5] flex items-center gap-4">
+    <nav className="py-1 px-4 w-full bg-[#f0f1f5] flex items-center gap-4 shadow fixed top-0 left-0 z-10">
       <div className="md:hidden">
         {props.isOpen ? (
           <MaterialSymbolsCloseSmall

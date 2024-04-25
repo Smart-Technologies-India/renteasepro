@@ -49,6 +49,7 @@ export default function DashboardLayout({
           setIsOpen={setIsOpen}
           name={userdata?.username ?? ""}
         ></Navbar>
+        <div className="h-10"></div>
         {children}
       </div>
     </div>

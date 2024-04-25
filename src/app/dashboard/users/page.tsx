@@ -41,7 +41,6 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { getCookie } from "cookies-next";
 import GetAllUser from "@/action/user/getallusers";
 import {
   Table,
@@ -55,6 +54,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -62,6 +62,8 @@ import {
 import { useRouter } from "next/navigation";
 import { usePagination } from "@/hooks/usepagination";
 import Pagination from "@/components/pagination";
+import CreateUserMobile from "@/action/user/createusermobile";
+import { handleNumberChange } from "@/utils/methods";
 
 const CreateUserPage = () => {
   const initdata = async () => {};
@@ -274,16 +276,16 @@ const CreateUserPage = () => {
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuSeparator />
                           <DropdownMenuGroup>
-                            {/* <DropdownMenuItem
-                            onClick={() => {
-                              router.push(
-                                `/dashboard/userprofile/viewprofile/${bid_tans.id}`
-                              );
-                            }}
-                            className="cursor-pointer"
-                          >
-                            View user Docs
-                          </DropdownMenuItem> */}
+                            <DropdownMenuItem
+                              onClick={() => {
+                                router.push(
+                                  `/dashboard/userprofile/adminview/${bid_tans.id}`
+                                );
+                              }}
+                              className="cursor-pointer"
+                            >
+                              View user Profile
+                            </DropdownMenuItem>
                           </DropdownMenuGroup>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -384,28 +386,30 @@ const UserBox = (props: UserBoxProps) => {
   const [role, setRole] = useState<string | null>(null);
 
   const username = useRef<HTMLInputElement>(null);
-  const password = useRef<HTMLInputElement>(null);
-  const repassword = useRef<HTMLInputElement>(null);
+  const contact = useRef<HTMLInputElement>(null);
+  // const password = useRef<HTMLInputElement>(null);
+  // const repassword = useRef<HTMLInputElement>(null);
 
   const onSubmit = async () => {
     const result = safeParse(CreateUserSchema, {
       username: username.current?.value,
-      password: password.current?.value,
-      repassword: repassword.current?.value,
+      contactone: contact.current?.value,
       role: role,
     });
 
     if (result.success) {
-      const registerrespone: ApiResponseType<user | null> = await createUser({
-        password: result.output.password,
-        username: result.output.username,
-        role: role as Role,
-      });
+      const registerrespone: ApiResponseType<user | null> =
+        await CreateUserMobile({
+          username: result.output.username,
+          role: role as Role,
+          contactone: result.output.contactone,
+        });
       if (registerrespone.status) {
         toast.success(registerrespone.message);
         username.current!.value = "";
-        password.current!.value = "";
-        repassword.current!.value = "";
+        contact.current!.value = "";
+        props.setUserBox(false);
+        await props.init();
       } else {
         toast.error(registerrespone.message);
       }
@@ -427,13 +431,16 @@ const UserBox = (props: UserBoxProps) => {
         <Input id="username" type="text" ref={username} />
       </div>
       <div className="grid md:max-w-sm items-center gap-1.5 mt-4">
-        <Label htmlFor="password">Password : </Label>
-        <Input id="password" type="text" ref={password} />
+        <Label htmlFor="password">Contact Number : </Label>
+        <Input
+          id="text"
+          type="text"
+          ref={contact}
+          maxLength={10}
+          onChange={handleNumberChange}
+        />
       </div>
-      <div className="grid md:max-w-sm items-center gap-1.5 mt-4">
-        <Label htmlFor="repassword">Re-Password : </Label>
-        <Input id="repassword" type="text" ref={repassword} />
-      </div>
+
       <div className="mt-4">
         <label htmlFor="role">Role</label>
         <Select
@@ -452,6 +459,7 @@ const UserBox = (props: UserBoxProps) => {
               {/* <SelectItem value={"DYCOLLECTOR"}>DYCOLLECTOR</SelectItem> */}
               <SelectItem value={"ACCOUNTANT"}>ACCOUNTANT</SelectItem>
               <SelectItem value={"MANAGER"}>MANAGER</SelectItem>
+              <SelectItem value={"USER"}>USER</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>

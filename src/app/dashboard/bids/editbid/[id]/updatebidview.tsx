@@ -361,7 +361,7 @@ const UpdateBidPage = (props: CreateBidPageProps) => {
         if (bidresponse.data.is_sc_st) {
           setField((prev) => [...prev, "scst"]);
         }
-      }, 500);
+      }, 1000);
 
       const getcurrentdate = await GetDateTime({});
       if (getcurrentdate.status) {

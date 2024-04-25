@@ -52,6 +52,9 @@ const CreateRentPage = (props: CreateRentProps) => {
 
   const [user, setUsers] = useState<user[]>([]);
 
+  const [startDPop, setStartDPop] = useState<boolean>(false);
+  const [endDPop, setEndDPop] = useState<boolean>(false);
+
   useEffect(() => {
     const init = async () => {
       setLoading(true);
@@ -159,7 +162,7 @@ const CreateRentPage = (props: CreateRentProps) => {
               <Label>
                 Rent Start Date <span className="text-rose-500">*</span>
               </Label>
-              <Popover>
+              <Popover open={startDPop} onOpenChange={setStartDPop}>
                 <PopoverTrigger asChild>
                   <Button
                     variant={"outline"}
@@ -179,7 +182,10 @@ const CreateRentPage = (props: CreateRentProps) => {
                   <Calendar
                     mode="single"
                     selected={startDate}
-                    onSelect={setStartDate}
+                    onSelect={(e) => {
+                      setStartDate(e);
+                      setStartDPop(false);
+                    }}
                     initialFocus
                   />
                 </PopoverContent>
@@ -189,7 +195,7 @@ const CreateRentPage = (props: CreateRentProps) => {
               <Label>
                 Rent End Date <span className="text-rose-500">*</span>
               </Label>
-              <Popover>
+              <Popover open={endDPop} onOpenChange={setEndDPop}>
                 <PopoverTrigger asChild>
                   <Button
                     variant={"outline"}
@@ -209,7 +215,10 @@ const CreateRentPage = (props: CreateRentProps) => {
                   <Calendar
                     mode="single"
                     selected={endDate}
-                    onSelect={setEndDate}
+                    onSelect={(e) => {
+                      setEndDate(e);
+                      setEndDPop(false);
+                    }}
                     initialFocus
                   />
                 </PopoverContent>

@@ -16,6 +16,8 @@ const Properties = () => {
   const [properties, setProperties] = useState<property[]>([]);
   const [search, setSearch] = useState<boolean>(false);
 
+  const [searchbox, setSeachBox] = useState<boolean>(false);
+
   const searchtext = useRef<HTMLInputElement>(null);
   const [searchresult, setSearchresult] = useState<property[]>([]);
 
@@ -44,6 +46,14 @@ const Properties = () => {
         <FluentMdl2Home className="text-xl" />
         <p className="text-xl text-gray-600">Your Properties</p>
         <div className="grow"></div>
+        <Button
+          onClick={() => {
+            setSeachBox(!searchbox);
+          }}
+          className="bg-blue-500 text-white rounded-md py-2 px-3 hover:bg-blue-600"
+        >
+          <FluentMdl2Search />
+        </Button>
         <Link
           href={"/dashboard/properties/add"}
           className="bg-blue-500 text-white rounded-md py-2 px-4"
@@ -52,7 +62,7 @@ const Properties = () => {
         </Link>
       </div>
 
-      <div className="flex gap-4 items-center">
+      <div className={`flex gap-4 items-center ${searchbox ? "" : "hidden"}`}>
         <div className="w-80 bg-white border-2 border-gray-300 flex items-center rounded-full px-4 my-4">
           <FluentMdl2Search />
           <Input
@@ -100,7 +110,7 @@ const Properties = () => {
                 }
               }}
             >
-              Fount {searchresult.length} Result
+              Found {searchresult.length} Result
             </div>
           </>
         )}

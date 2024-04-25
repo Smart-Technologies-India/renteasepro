@@ -32,6 +32,8 @@ const GetShopFromProperty = async (
         functionname: "GetShopFromProperty",
       };
 
+      
+
     return {
       status: true,
       data: shops,

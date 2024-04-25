@@ -20,6 +20,7 @@ const GetBidsByShop = async (
         deletedBy: null,
       },
       include: {
+        bid_transact: true,
         shop: true,
       },
     });
@@ -32,9 +33,20 @@ const GetBidsByShop = async (
         functionname: "GetBidsByShop",
       };
 
+    let bidsdetails = [];
+    for (let i = 0; i < bid.length; i++) {
+      let biddetail: any = bid[i];
+      let uniquebidders = bid[i].bid_transact.filter(
+        (v, i, a) => a.findIndex((t) => t.userId === v.userId) === i
+      );
+      biddetail.bidderscount = uniquebidders.length;
+
+      bidsdetails.push(biddetail);
+    }
+
     return {
       status: true,
-      data: bid,
+      data: bidsdetails,
       message: "Bid data get successfully",
       functionname: "GetBidsByShop",
     };

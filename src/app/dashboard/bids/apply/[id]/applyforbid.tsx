@@ -234,6 +234,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
     });
     if (!createbid.status) return toast.error(createbid.message);
 
+
     if (!issecond) {
       // const formData = new FormData();
       // formData.append("file", fileUploader!);

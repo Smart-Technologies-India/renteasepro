@@ -858,3 +858,45 @@ export function Fa6RegularClock(props: SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+export function LucideArrowBigLeft(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      viewBox="0 0 24 24"
+      {...props}
+    >
+      <path
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M18 15h-6v4l-7-7l7-7v4h6z"
+      ></path>
+    </svg>
+  );
+}
+
+export function LucideArrowBigRight(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      viewBox="0 0 24 24"
+      {...props}
+    >
+      <path
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M6 9h6V5l7 7l-7 7v-4H6z"
+      ></path>
+    </svg>
+  );
+}

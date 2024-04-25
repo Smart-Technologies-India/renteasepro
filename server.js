@@ -123,9 +123,9 @@ const postRes = (request, response) => {
       } else if (type == "rent") {
         const update_response = await prisma.rent_transact.updateMany({
           where: {
-            userId: userid ? parseInt(userid) : 0,
-            shopId: shopid ? parseInt(shopid) : 0,
-            rentId: bidid ? parseInt(bidid) : 0,
+            id: {
+              in: bidid.split(",").map((id) => parseInt(id)),
+            },
           },
           data: {
             transactionid: result.bank_ref_no,

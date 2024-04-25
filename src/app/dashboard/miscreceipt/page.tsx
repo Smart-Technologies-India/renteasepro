@@ -1,25 +1,10 @@
 "use client";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { ApiResponseType } from "@/models/response";
-import { CreateUserSchema } from "@/schema/createuser";
-import { Role, user } from "@prisma/client";
+import { Role, account_receipt } from "@prisma/client";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { safeParse } from "valibot";
 
-import createUser from "@/action/user/createuser";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import BackButton from "@/components/backbutton";
+
 import {
   AntDesignPlusCircleOutlined,
   Fa6SolidXmark,
@@ -27,7 +12,6 @@ import {
   SolarAltArrowDownLinear,
 } from "@/components/icons";
 import { useWindowSize } from "@uidotdev/usehooks";
-import GetAllUser from "@/action/user/getallusers";
 import {
   Table,
   TableBody,
@@ -48,19 +32,22 @@ import { useRouter } from "next/navigation";
 import { usePagination } from "@/hooks/usepagination";
 import Pagination from "@/components/pagination";
 import Link from "next/link";
+import AllAccount from "@/action/account/getallaccont";
+import AllAccountCategorys from "@/action/account/getallaccountcategory";
+import { capitalcase, removeDuplicates } from "@/utils/methods";
 
-const CreateUserPage = () => {
+const CreateAccountPage = () => {
   const initdata = async () => {};
 
   const router = useRouter();
   const windowwidth = useWindowSize();
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const [users, setUsers] = useState<user[]>([]);
+  const [allaccount, setAllAccount] = useState<account_receipt[]>([]);
 
-  const [filterUser, setFilterUser] = useState<any[]>([]);
+  const [filterAccount, setFilterAccount] = useState<any[]>([]);
 
-  const category: string[] = ["All", "Department", "Users"];
+  const [category, setCategory] = useState<string[]>(["All"]);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
   // search and filter start from here
@@ -70,40 +57,64 @@ const CreateUserPage = () => {
 
   const [searchresult, setSearchresult] = useState<any[]>([]);
 
-  const pagination = usePagination(filterUser);
+  const pagination = usePagination(filterAccount);
 
   const paginationsearch = usePagination(searchresult);
 
   // serach and filter end here
 
+  // const filtershopbycategory = (category: string) => {
+  //   if (category === "All") {
+  //     setFilterAccount(allaccount);
+  //   } else if (category === "Department") {
+  //     const temp = allaccount.filter((item: any) => {
+  //       return item.role != Role.USER;
+  //     });
+  //     setFilterAccount(temp);
+  //   } else if (category === "Users") {
+  //     const temp = allaccount.filter((item: any) => {
+  //       return item.role === Role.USER;
+  //     });
+  //     setFilterAccount(temp);
+  //   }
+  // };
+
   const filtershopbycategory = (category: string) => {
     if (category === "All") {
-      setFilterUser(users);
-    } else if (category === "Department") {
-      const temp = users.filter((item: any) => {
-        return item.role != Role.USER;
+      setFilterAccount(allaccount);
+    } else {
+      const temp = allaccount.filter((item: any) => {
+        return capitalcase(item.account_category.name) === category;
       });
-      setFilterUser(temp);
-    } else if (category === "Users") {
-      const temp = users.filter((item: any) => {
-        return item.role === Role.USER;
-      });
-      setFilterUser(temp);
+      setFilterAccount(temp);
     }
   };
 
   useEffect(() => {
     const init = async () => {
-      setIsLoading(false);
+      setIsLoading(true);
 
-      const usersresponse = await GetAllUser({});
+      const accountinfo = await AllAccount({});
 
-      if (usersresponse.status) {
-        setUsers(usersresponse.data!);
-        setFilterUser(usersresponse.data ?? []);
+      if (accountinfo.status) {
+        setAllAccount(accountinfo.data!);
+        setFilterAccount(accountinfo.data ?? []);
       } else {
-        toast.error(usersresponse.message);
+        toast.error(accountinfo.message);
       }
+
+      const accountcategory = await AllAccountCategorys({});
+
+      let temp: string[] = [];
+
+      accountcategory.data?.map((item: any) => {
+        if (!temp.includes(item.name)) {
+          temp.push(capitalcase(item.name));
+        }
+      });
+
+      setCategory(["All", ...removeDuplicates(temp)]);
+      setIsLoading(false);
     };
 
     init();
@@ -115,27 +126,36 @@ const CreateUserPage = () => {
         setIsSearch(true);
 
         setSearchresult(
-          filterUser.filter(
-            (users: user) =>
-              (users.firstName !== null ? users.firstName : "")
+          filterAccount.filter(
+            (account: any) =>
+              (account.customername !== null ? account.customername : "")
                 .toString()
                 .toLowerCase()
                 .includes(
                   searchRef.current?.value.toString().toLowerCase() ?? ""
                 ) ||
-              (users.lastName !== null ? users.lastName : "")
+              (account.customercontact !== null ? account.customercontact : "")
                 .toString()
                 .toLowerCase()
                 .includes(
                   searchRef.current?.value.toString().toLowerCase() ?? ""
                 ) ||
-              (users.contactone !== null ? users.contactone : "")
+              (account.amount !== null ? account.amount : "")
                 .toString()
                 .toLowerCase()
                 .includes(
                   searchRef.current?.value.toString().toLowerCase() ?? ""
                 ) ||
-              users.role
+              (account.account_category_one.name !== null
+                ? account.account_category_one.name
+                : ""
+              )
+                .toString()
+                .toLowerCase()
+                .includes(
+                  searchRef.current?.value.toString().toLowerCase() ?? ""
+                ) ||
+              (account.bankname !== null ? account.bankname : "")
                 .toString()
                 .toLowerCase()
                 .includes(
@@ -199,36 +219,40 @@ const CreateUserPage = () => {
           <></>
         ) : (
           <>
-            <div className="flex">
-              {category.map((item: string, index: number) => (
-                <p
-                  key={index}
-                  onClick={() => {
-                    filtershopbycategory(item);
-                    setSelectedCategory(item);
-                  }}
-                  className={`border-b-2 border-gray-300 px-4 py-2 text-sm font-medium cursor-pointer ${
-                    selectedCategory === item ? "border-green-500" : ""
-                  }`}
-                >
-                  {item}
-                </p>
-              ))}
-              <p className="border-b-2 border-gray-300 px-4 grow"></p>
-            </div>
+            {filterAccount.length > 0 && (
+              <div className="flex flex-wrap gap-2 border-b bg-gray-50 p-2 pb-2 rounded-md">
+                {category.map((item: string, index: number) => (
+                  <p
+                    key={index}
+                    onClick={() => {
+                      filtershopbycategory(item);
+                      setSelectedCategory(item);
+                    }}
+                    className={`border rounded-full  px-2 py-1 text-sm   cursor-pointer shrink-0 ${
+                      selectedCategory === item
+                        ? "border-gray-500 text-gray-700 font-medium bg-white"
+                        : "border-gray-300 text-gray-400 font-normal "
+                    }`}
+                  >
+                    {item}
+                  </p>
+                ))}
+              </div>
+            )}
           </>
         )}
 
-        {users.length > 0 ? (
+        {filterAccount.length > 0 ? (
           <>
             <Table className="mt-2">
               <TableHeader className="bg-gray-100">
                 <TableRow>
                   <TableHead className="w-[100px]">Id</TableHead>
-                  <TableHead>Name</TableHead>
+                  <TableHead>Customer Name</TableHead>
                   <TableHead>Contact Number</TableHead>
-                  <TableHead>Type</TableHead>
                   <TableHead>Amount</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Bankname</TableHead>
                   <TableHead>Action</TableHead>
                 </TableRow>
               </TableHeader>
@@ -236,40 +260,30 @@ const CreateUserPage = () => {
                 {(isSearch
                   ? paginationsearch.paginatedItems
                   : pagination.paginatedItems
-                ).map((bid_tans: any, index: number) => (
+                ).map((accoutn_rec: any, index: number) => (
                   <TableRow key={index}>
-                    <TableCell className="font-medium">{bid_tans.id}</TableCell>
-                    <TableCell>
-                      {bid_tans.firstName} {bid_tans.lastName}
+                    <TableCell className="font-medium">
+                      {accoutn_rec.id}
                     </TableCell>
-                    <TableCell>{bid_tans.contactone ?? "-"}</TableCell>
-                    <TableCell>{bid_tans.role}</TableCell>
+                    <TableCell>{accoutn_rec.customername}</TableCell>
+                    <TableCell>{accoutn_rec.customercontact}</TableCell>
+                    <TableCell>{accoutn_rec.amount}</TableCell>
+                    <TableCell>
+                      {accoutn_rec.account_category_one.name}
+                    </TableCell>
+                    <TableCell>{accoutn_rec.bankname}</TableCell>
 
                     <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="gap-2 flex">
-                            <p className="font-medium text-sm">View</p>
-                            <SolarAltArrowDownLinear className="textx-2xl" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-56">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuGroup>
-                            {/* <DropdownMenuItem
-                            onClick={() => {
-                              router.push(
-                                `/dashboard/userprofile/viewprofile/${bid_tans.id}`
-                              );
-                            }}
-                            className="cursor-pointer"
-                          >
-                            View user Docs
-                          </DropdownMenuItem> */}
-                          </DropdownMenuGroup>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <Button
+                        onClick={() => {
+                          router.push(
+                            `/dashboard/miscreceipt/pdffile/${accoutn_rec.id}`
+                          );
+                        }}
+                        className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm flex items-center gap-2  font-medium py-2"
+                      >
+                        <p>View</p>
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -278,8 +292,8 @@ const CreateUserPage = () => {
           </>
         ) : (
           <>
-            <div className=" mt-4 w-full grid place-items-center text-3xl text-gray-600 bg-gray-200">
-              No Users Found
+            <div className=" mt-4 w-full grid place-items-center text-xl text-gray-600">
+              No account receipt Found
             </div>
           </>
         )}
@@ -327,94 +341,4 @@ const CreateUserPage = () => {
     </div>
   );
 };
-export default CreateUserPage;
-
-interface UserBoxProps {
-  setUserBox: (val: boolean) => void;
-  init: () => Promise<void>;
-}
-const UserBox = (props: UserBoxProps) => {
-  const [role, setRole] = useState<string | null>(null);
-
-  const username = useRef<HTMLInputElement>(null);
-  const password = useRef<HTMLInputElement>(null);
-  const repassword = useRef<HTMLInputElement>(null);
-
-  const onSubmit = async () => {
-    const result = safeParse(CreateUserSchema, {
-      username: username.current?.value,
-      password: password.current?.value,
-      repassword: repassword.current?.value,
-      role: role,
-    });
-
-    if (result.success) {
-      const registerrespone: ApiResponseType<user | null> = await createUser({
-        password: result.output.password,
-        username: result.output.username,
-        role: role as Role,
-      });
-      if (registerrespone.status) {
-        toast.success(registerrespone.message);
-        username.current!.value = "";
-        password.current!.value = "";
-        repassword.current!.value = "";
-      } else {
-        toast.error(registerrespone.message);
-      }
-    } else {
-      let errorMessage = "";
-      if (result.issues[0].input) {
-        errorMessage = result.issues[0].message;
-      } else {
-        errorMessage = result.issues[0].path![0].key + " is required";
-      }
-      toast.error(errorMessage);
-    }
-  };
-
-  return (
-    <>
-      <div className="grid md:max-w-sm items-center w-full gap-1.5">
-        <Label htmlFor="username">Username : </Label>
-        <Input id="username" type="text" ref={username} />
-      </div>
-      <div className="grid md:max-w-sm items-center gap-1.5 mt-4">
-        <Label htmlFor="password">Password : </Label>
-        <Input id="password" type="text" ref={password} />
-      </div>
-      <div className="grid md:max-w-sm items-center gap-1.5 mt-4">
-        <Label htmlFor="repassword">Re-Password : </Label>
-        <Input id="repassword" type="text" ref={repassword} />
-      </div>
-      <div className="mt-4">
-        <label htmlFor="role">Role</label>
-        <Select
-          onValueChange={(val) => {
-            setRole(val);
-          }}
-        >
-          <SelectTrigger className="">
-            <SelectValue placeholder="Select Role" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Role</SelectLabel>
-              {/* <SelectItem value={"SYSTEM"}>SYSTEM</SelectItem> */}
-              {/* <SelectItem value={"ADMIN"}>ADMIN</SelectItem> */}
-              {/* <SelectItem value={"DYCOLLECTOR"}>DYCOLLECTOR</SelectItem> */}
-              <SelectItem value={"ACCOUNTANT"}>ACCOUNTANT</SelectItem>
-              <SelectItem value={"MANAGER"}>MANAGER</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
-      <Button
-        onClick={onSubmit}
-        className="w-full mt-4 text-center font-semibold text-white bg-black rounded-md block py-2 "
-      >
-        Create User
-      </Button>
-    </>
-  );
-};
+export default CreateAccountPage;

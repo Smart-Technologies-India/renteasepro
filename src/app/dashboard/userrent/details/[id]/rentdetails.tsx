@@ -89,16 +89,21 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
       return;
     }
 
-    const rentresponse = await GetRentTran({ id: field[0] });
-
     const nanoid = customAlphabet("1234567890abcdef", 10);
 
     const uniqueid = nanoid();
-    if (rentresponse.status) {
-      router.push(
-        `/payamount?xlmnx=${amount}&ynboy=${uniqueid}&zgvfz=${rentresponse.data?.rentId}_${rentresponse.data?.userId}_${rentresponse.data?.shopId}_rent`
-      );
-    }
+    const ids: string = field.join(",");
+
+    router.push(
+      `/payamount?xlmnx=${amount}&ynboy=${uniqueid}&zgvfz=${ids}_0_0_rent`
+    );
+
+    // const rentresponse = await GetRentTran({ id: field[0] });
+    // if (rentresponse.status) {
+    //   router.push(
+    //     `/payamount?xlmnx=${amount}&ynboy=${uniqueid}&zgvfz=${rentresponse.data?.rentId}_${rentresponse.data?.userId}_${rentresponse.data?.shopId}_rent`
+    //   );
+    // }
     // setLoading(true);
     // setPaying(true);
     // if (field.length == 0) {

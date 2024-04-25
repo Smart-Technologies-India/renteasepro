@@ -37,7 +37,7 @@ const Sidebar = (props: SidebarProps) => {
 
   return (
     <div
-      className={`fixed gap-2 top-0 left-0 z-10 shrink-0 w-52 h-screen flex flex-col bg-gradient-to-t from-[#172e57] to-[#162f57] md:translate-x-0 py-6 ${
+      className={`fixed gap-2 top-0 left-0 z-20 shrink-0 w-52 h-screen flex flex-col bg-gradient-to-t from-[#172e57] to-[#162f57] md:translate-x-0 py-6 ${
         props.isOpen ? "translate-x-0" : "-translate-x-52"
       }  transition-transform duration-300 ease-in-out`}
     >
@@ -76,7 +76,7 @@ const Sidebar = (props: SidebarProps) => {
         </>
       )}
 
-      {["ADMIN"].includes(props.role) && (
+      {["ADMIN", "ACCOUNTANT", "MANAGER"].includes(props.role) && (
         <>
           <MenuTab
             icco={<FluentMdl2ViewDashboard className="text-gray-300 w-6" />}

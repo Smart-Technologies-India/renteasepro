@@ -67,7 +67,7 @@ const CreateBid = async (
   try {
     const bidExist = await prisma.bid.findFirst({
       where: {
-        title: payload.title,
+        shopId: payload.shopId,
         bidstartdate: payload.bidstartdate,
       },
     });

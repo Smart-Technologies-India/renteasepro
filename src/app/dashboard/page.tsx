@@ -21,6 +21,7 @@ import { getCookie } from "cookies-next";
 import GetUser from "@/action/user/getuser";
 import { user } from "@prisma/client";
 import { useRouter } from "next/navigation";
+import { is } from "valibot";
 
 // ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale);
 ChartJS.register(...registerables);
@@ -274,17 +275,35 @@ const DashboardPage = () => {
                   <p>Receivable In {currentmonthname}</p>
                   <div className="grow"></div>
                   <p>
-                    {getpercentage(monthinfo.total, monthinfo.lastmonthtotal)}
+                    {isNaN(
+                      getpercentage(monthinfo.total, monthinfo.lastmonthtotal)
+                    )
+                      ? 0
+                      : getpercentage(
+                          monthinfo.total,
+                          monthinfo.lastmonthtotal
+                        )}
                   </p>
                 </div>
                 <ProgressBar
                   className="my-2"
                   completed={Math.abs(
-                    getpercentage(monthinfo.total, monthinfo.lastmonthtotal)
+                    isNaN(
+                      getpercentage(monthinfo.total, monthinfo.lastmonthtotal)
+                    )
+                      ? 0
+                      : getpercentage(monthinfo.total, monthinfo.lastmonthtotal)
                   )}
                   bgColor={
                     isPositive(
-                      getpercentage(monthinfo.total, monthinfo.lastmonthtotal)
+                      isNaN(
+                        getpercentage(monthinfo.total, monthinfo.lastmonthtotal)
+                      )
+                        ? 0
+                        : getpercentage(
+                            monthinfo.total,
+                            monthinfo.lastmonthtotal
+                          )
                     )
                       ? "#22c55e"
                       : "#f43f5e"
@@ -303,23 +322,47 @@ const DashboardPage = () => {
                   <p>Received In {currentmonthname}</p>
                   <div className="grow"></div>
                   <p>
-                    {getpercentage(
-                      monthinfo.collect,
-                      monthinfo.lastmonthcollect
-                    )}
+                    {isNaN(
+                      getpercentage(
+                        monthinfo.collect,
+                        monthinfo.lastmonthcollect
+                      )
+                    )
+                      ? 0
+                      : getpercentage(
+                          monthinfo.collect,
+                          monthinfo.lastmonthcollect
+                        )}
                   </p>
                 </div>
                 <ProgressBar
                   className="my-2"
                   completed={Math.abs(
-                    getpercentage(monthinfo.collect, monthinfo.lastmonthcollect)
-                  )}
-                  bgColor={
-                    isPositive(
+                    isNaN(
                       getpercentage(
                         monthinfo.collect,
                         monthinfo.lastmonthcollect
                       )
+                    )
+                      ? 0
+                      : getpercentage(
+                          monthinfo.collect,
+                          monthinfo.lastmonthcollect
+                        )
+                  )}
+                  bgColor={
+                    isPositive(
+                      isNaN(
+                        getpercentage(
+                          monthinfo.collect,
+                          monthinfo.lastmonthcollect
+                        )
+                      )
+                        ? 0
+                        : getpercentage(
+                            monthinfo.collect,
+                            monthinfo.lastmonthcollect
+                          )
                     )
                       ? "#22c55e"
                       : "#f43f5e"

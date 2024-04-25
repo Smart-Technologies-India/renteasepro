@@ -12,7 +12,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface ShopBidHistoryViewProps {
@@ -21,15 +20,16 @@ interface ShopBidHistoryViewProps {
 
 const ShopBidHistoryView = (props: ShopBidHistoryViewProps) => {
   const [isLoading, setLoading] = useState<boolean>(true);
-
   const [bids, setBids] = useState<any[]>([]);
 
   useEffect(() => {
     const init = async () => {
       setLoading(true);
+
       const bids = await GetBidsByShop({
         shopid: parseInt(props.id.toString()),
       });
+
       if (bids.status) {
         setBids(bids.data ?? []);
       }
@@ -62,8 +62,7 @@ const ShopBidHistoryView = (props: ShopBidHistoryViewProps) => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[100px]">Id</TableHead>
-                <TableHead>Shop No.</TableHead>
+                <TableHead className="w-[100px]">Shop No.</TableHead>
                 <TableHead>Bidders Count</TableHead>
                 <TableHead>Bid Amount</TableHead>
                 <TableHead>Start Date</TableHead>
@@ -75,9 +74,8 @@ const ShopBidHistoryView = (props: ShopBidHistoryViewProps) => {
             <TableBody>
               {bids.map((bid, index) => (
                 <TableRow key={index}>
-                  <TableCell className="font-medium">{bid.id}</TableCell>
                   <TableCell>{bid.shop.shopNumber}</TableCell>
-                  <TableCell>5</TableCell>
+                  <TableCell>{bid.bidderscount}</TableCell>
                   <TableCell>&#8377;{bid.min_bid_amount}</TableCell>
                   <TableCell>
                     {new Date(bid.bidstartdate).getDate()}-

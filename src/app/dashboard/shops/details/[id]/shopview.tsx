@@ -17,7 +17,6 @@ import { capitalcase, formatDateTime, formateDate } from "@/utils/methods";
 import {
   BidStatus,
   RentTransactStatus,
-  rent,
   rent_transact,
   user,
 } from "@prisma/client";
@@ -57,7 +56,7 @@ const ShopView = (props: ShowShopProps) => {
 
   const [isrented, setIsRented] = useState<boolean>(false);
 
-  const [rentdata, setRentData] = useState<rent>();
+  const [rentdata, setRentData] = useState<any>();
 
   const [rentdetails, setRentDetails] = useState<yearsDetails[]>([]);
 
@@ -483,9 +482,9 @@ const ShopView = (props: ShowShopProps) => {
               Tenant Details
             </p>
             <p className="px-2 text-sm">
-              {user?.firstName} {user?.lastName}
+              {rentdata!.user.firstName} {rentdata!.user?.lastName}
             </p>
-            <p className="px-2 text-sm">{user?.contactone}</p>
+            <p className="px-2 text-sm">{rentdata!.user?.contactone}</p>
           </div>
           <div className="bg-white rounded-sm shadow-sm pb-4">
             <div className="border-b border-gray-300 flex items-center pr-2">

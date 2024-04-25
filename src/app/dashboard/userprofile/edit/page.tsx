@@ -345,7 +345,7 @@ const UserBidsRunning = () => {
         accountnumberRef.current!.value =
           userrespone.data?.bankAccountNumber! ?? "";
         ifscRef.current!.value = userrespone.data?.ifscCode! ?? "";
-      }, 500);
+      }, 1000);
 
       const isprofilecompleted = await IsProfileCompleted({
         id: userid,

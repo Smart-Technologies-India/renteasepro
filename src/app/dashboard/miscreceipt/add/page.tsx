@@ -13,10 +13,13 @@ import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { IcBaselineCalendarMonth } from "@/components/icons";
 import { useRouter } from "next/navigation";
-import { AccountPaymentMode, account_category, user } from "@prisma/client";
+import {
+  AccountPaymentMode,
+  account_category,
+  account_receipt,
+} from "@prisma/client";
 import { handleNumberChange } from "@/utils/methods";
 import { default as MulSelect } from "react-select";
-import GetNormalUser from "@/action/user/getnormalusers";
 import { getCookie } from "cookies-next";
 import { Textarea } from "@/components/ui/textarea";
 import AllAccountCategorys from "@/action/account/getallaccountcategory";
@@ -25,6 +28,7 @@ import { toast } from "react-toastify";
 import { safeParse } from "valibot";
 import { AccountSchema } from "@/schema/createaccount";
 import { ApiResponseType } from "@/models/response";
+import CreateAccount from "@/action/account/createacount";
 
 const CreateRentPage = () => {
   const router = useRouter();
@@ -40,14 +44,20 @@ const CreateRentPage = () => {
   const [transcationDate, setTranscationDate] = useState<Date>();
 
   const amount = useRef<HTMLInputElement>(null);
+  const amountTwo = useRef<HTMLInputElement>(null);
+  const amountThree = useRef<HTMLInputElement>(null);
 
   const banknameRef = useRef<HTMLInputElement>(null);
   const transcationIdRef = useRef<HTMLInputElement>(null);
   const remarkRef = useRef<HTMLTextAreaElement>(null);
 
   const [categoryId, setCategoryId] = useState<number>(0);
+  const [categoryIdtwo, setCategoryIdtwo] = useState<number>(0);
+  const [categoryIdthree, setCategoryIdthree] = useState<number>(0);
 
   const [category, setCategory] = useState<account_category[]>([]);
+
+  const [startDPop, setStartDPop] = useState<boolean>(false);
 
   const paymentModes = [
     "CASH",
@@ -69,9 +79,7 @@ const CreateRentPage = () => {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
-
       const accountcategoryresponse = await AllAccountCategorys({});
-
       if (accountcategoryresponse.status) {
         setCategory(accountcategoryresponse.data ?? []);
       }
@@ -84,31 +92,42 @@ const CreateRentPage = () => {
   const create = async () => {
     setIsCreating(true);
 
-
-
     const result = safeParse(AccountSchema, {
       customername: nameRef.current?.value,
       customercontact: contactRef.current?.value,
       accountCategoryId: categoryId,
       paymentmode: paymentMode,
       transaction_date: transcationDate,
-      amount: amount.current?.value,
+      amount: parseInt(amount.current?.value ?? "0"),
       transactionid: transcationIdRef.current?.value,
       bankname: banknameRef.current?.value,
       remarks: remarkRef.current?.value,
     });
 
     if (result.success) {
-      // const loginrespone: ApiResponseType<user | null> = await CreateAccountCategory({
-      //   password: result.output.password,
-      //   contactone: result.output.contactone,
-      // });
-      // if (loginrespone.status) {
-      //   toast.success(loginrespone.message);
-      //   router.back();
-      // } else {
-      //   toast.error(loginrespone.message);
-      // }
+      const accountrespone: ApiResponseType<account_receipt | null> =
+        await CreateAccount({
+          createdById: createuserid,
+          accountCategoryId: result.output.accountCategoryId,
+          accountCategoryIdTwo: categoryIdtwo,
+          accountCategoryIdThree: categoryIdthree,
+          amount: result.output.amount,
+          amountTwo: parseInt(amountTwo.current?.value ?? "0"),
+          amountThree: parseInt(amountThree.current?.value ?? "0"),
+          bankname: result.output.bankname,
+          customercontact: result.output.customercontact,
+          customername: result.output.customername,
+          paymentmode: result.output.paymentmode,
+          remarks: result.output.remarks,
+          transaction_date: result.output.transaction_date,
+          transactionid: result.output.transactionid,
+        });
+      if (accountrespone.status) {
+        toast.success(accountrespone.message);
+        router.back();
+      } else {
+        toast.error(accountrespone.message);
+      }
     } else {
       let errorMessage = "";
       if (result.issues[0].input) {
@@ -164,10 +183,12 @@ const CreateRentPage = () => {
               />
             </div>
           </div>
+
+          {/* category one start here */}
           <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">
               <Label htmlFor="category">
-                Category <span className="text-rose-500">*</span>
+                Category One <span className="text-rose-500">*</span>
               </Label>
               <MulSelect
                 isMulti={false}
@@ -178,34 +199,92 @@ const CreateRentPage = () => {
                 className="w-full accent-slate-900"
                 onChange={(val: any) => {
                   if (!val) return;
-                  setCategoryId(val);
+                  setCategoryId(val.value);
                 }}
               />
             </div>
+
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="mode">
-                Payment Mode <span className="text-rose-500">*</span>
+              <Label htmlFor="amount">
+                Amount One<span className="text-rose-500">*</span>
               </Label>
+              <Input
+                id="amount"
+                type="text"
+                className="w-full bg-gray-100"
+                onChange={handleNumberChange}
+                ref={amount}
+              />
+            </div>
+          </div>
+          {/* category one end here */}
+          {/* category two start here */}
+          <div className="flex gap-4">
+            <div className="grid items-center gap-1.5 w-full mt-4">
+              <Label htmlFor="category">Category Two</Label>
               <MulSelect
                 isMulti={false}
-                options={paymentModes.map((u: string) => ({
-                  value: u,
-                  label: u,
+                options={category.map((u: account_category) => ({
+                  value: u.id,
+                  label: u.name,
                 }))}
                 className="w-full accent-slate-900"
                 onChange={(val: any) => {
                   if (!val) return;
-                  setPaymentMode(val.value);
+                  setCategoryIdtwo(val.value);
                 }}
               />
             </div>
+
+            <div className="grid items-center gap-1.5 w-full mt-4">
+              <Label htmlFor="amount">Amount Two</Label>
+              <Input
+                id="amount"
+                type="text"
+                className="w-full bg-gray-100"
+                onChange={handleNumberChange}
+                ref={amountTwo}
+              />
+            </div>
           </div>
+          {/* category two end here */}
+          {/* category three start here */}
+          <div className="flex gap-4">
+            <div className="grid items-center gap-1.5 w-full mt-4">
+              <Label htmlFor="category">Category Three</Label>
+              <MulSelect
+                isMulti={false}
+                options={category.map((u: account_category) => ({
+                  value: u.id,
+                  label: u.name,
+                }))}
+                className="w-full accent-slate-900"
+                onChange={(val: any) => {
+                  if (!val) return;
+                  setCategoryIdthree(val.value);
+                }}
+              />
+            </div>
+
+            <div className="grid items-center gap-1.5 w-full mt-4">
+              <Label htmlFor="amount">Amount Three</Label>
+              <Input
+                id="amount"
+                type="text"
+                className="w-full bg-gray-100"
+                onChange={handleNumberChange}
+                ref={amountThree}
+              />
+            </div>
+          </div>
+          {/* category three end here */}
+
           <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">
               <Label>
                 Transaction Date <span className="text-rose-500">*</span>
               </Label>
-              <Popover>
+              <Popover open={startDPop} onOpenChange={setStartDPop}>
                 <PopoverTrigger asChild>
                   <Button
                     variant={"outline"}
@@ -225,22 +304,31 @@ const CreateRentPage = () => {
                   <Calendar
                     mode="single"
                     selected={transcationDate}
-                    onSelect={setTranscationDate}
+                    onSelect={(e) => {
+                      setTranscationDate(e);
+                      setStartDPop(false);
+                    }}
                     initialFocus
                   />
                 </PopoverContent>
               </Popover>
             </div>
+
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="amount">
-                Amount <span className="text-rose-500">*</span>
+              <Label htmlFor="mode">
+                Payment Mode <span className="text-rose-500">*</span>
               </Label>
-              <Input
-                id="amount"
-                type="text"
-                className="w-full bg-gray-100"
-                onChange={handleNumberChange}
-                ref={amount}
+              <MulSelect
+                isMulti={false}
+                options={paymentModes.map((u: string) => ({
+                  value: u,
+                  label: u,
+                }))}
+                className="w-full accent-slate-900"
+                onChange={(val: any) => {
+                  if (!val) return;
+                  setPaymentMode(val.value);
+                }}
               />
             </div>
           </div>

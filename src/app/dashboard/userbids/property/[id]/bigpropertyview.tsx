@@ -147,7 +147,7 @@ const BidPropertiesView = (props: BidPropertiesViewProps) => {
                 {capitalcase(selectedCategory)} Shops
               </p>
 
-              <div className="flex p-2 gap-4 flex-wrap justify-evenly">
+              <div className="flex p-2 gap-4 flex-wrap justify-start">
                 {filtershop.map((item: shop, index: number) => (
                   <PropertiesDeatils
                     key={index}

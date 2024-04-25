@@ -2,8 +2,10 @@
 
 import GetProperty from "@/action/property/getproperty";
 import GetShopFromProperty from "@/action/property/getshopsfromproperty";
+import { LucideArrowBigLeft, LucideArrowBigRight } from "@/components/icons";
 import { capitalcase, removeDuplicates } from "@/utils/methods";
-import { property, shop } from "@prisma/client";
+import { ShopStatus, property, shop } from "@prisma/client";
+import { set } from "date-fns";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -31,7 +33,6 @@ const PropertiesView = (props: PropertiesViewProps) => {
       });
       setFilterShop(temp);
     }
-
   };
 
   useEffect(() => {
@@ -136,20 +137,10 @@ const PropertiesView = (props: PropertiesViewProps) => {
           </div>
           <div className="w-full bg-white rounded-sm shadow-sm mt-4">
             <div className="bg-white rounded-sm shadow-sm">
-              <p className="text-lg p-2 border-b border-gray-300 font-medium">
-                {capitalcase(selectedCategory)} Shops
-              </p>
-
-              <div className="flex p-2 gap-4 flex-wrap justify-evenly">
-                {filtershop.map((item: shop, index: number) => (
-                  <PropertiesDeatils
-                    key={index}
-                    id={item.id.toString()}
-                    status={item.status}
-                    count={item.shopNumber}
-                  />
-                ))}
-              </div>
+              <ShowShops
+                shops={filtershop}
+                name={capitalcase(selectedCategory) + " Shops"}
+              />
             </div>
           </div>
         </>
@@ -160,6 +151,62 @@ const PropertiesView = (props: PropertiesViewProps) => {
 
 export default PropertiesView;
 
+const ShowShops = (props: { shops: shop[]; name: string }) => {
+  const count = 20;
+  const [skip, setSkip] = useState(0);
+  const [shop, setShop] = useState<shop[]>(props.shops.slice(0, count));
+
+  const next = () => {
+    if (skip + count < props.shops.length) {
+      setSkip(skip + count);
+      setShop(props.shops.slice(skip + count, skip + count + count));
+    }
+  };
+  const prev = () => {
+    if (skip - count >= 0) {
+      setSkip(skip - count);
+      setShop(props.shops.slice(skip - count, skip));
+    }
+  };
+
+  useEffect(() => {
+    setSkip(0);
+    setShop(props.shops.slice(0, count));
+  }, [props.shops]);
+  return (
+    <>
+      <div className="flex  border-b border-gray-300 pr-4 items-center gap-2">
+        <p className="text-lg p-2 font-medium">{props.name}</p>
+        <div className="grow"></div>
+
+        <button
+          className="bg-white text-2xl rounded-full border border-black"
+          onClick={prev}
+        >
+          <LucideArrowBigLeft />
+        </button>
+
+        <button
+          className="bg-white text-2xl rounded-full border border-black"
+          onClick={next}
+        >
+          <LucideArrowBigRight />
+        </button>
+      </div>
+      <div className="flex p-2 gap-4 flex-wrap justify-start">
+        {shop.map((item: shop, index: number) => (
+          <PropertiesDeatils
+            key={index}
+            id={item.id.toString()}
+            status={item.status}
+            count={item.shopNumber}
+          />
+        ))}
+      </div>
+    </>
+  );
+};
+
 interface PropertiesDeatilsProps {
   count: string;
   status: string;
@@ -167,12 +214,36 @@ interface PropertiesDeatilsProps {
 }
 
 const PropertiesDeatils = (props: PropertiesDeatilsProps) => {
+  const getColor = (value: ShopStatus): string => {
+    switch (value) {
+      case ShopStatus.VACANT:
+        return "border-green-500 bg-gradient-to-r from-green-400 to-green-500";
+      case ShopStatus.AUCTION:
+        return "border-yellow-500 bg-gradient-to-r from-yellow-400 to-yellow-500";
+      case ShopStatus.MAINTENANCE:
+        return "border-blue-500 bg-gradient-to-r from-blue-400 to-blue-500";
+      case ShopStatus.RENTED:
+        return "border-red-500 bg-gradient-to-r from-red-400 to-red-500";
+      case ShopStatus.UNAVAILABLE:
+        return "border-purple-500 bg-gradient-to-r from-purple-400 to-purple-500";
+      default:
+        return "border-green-500 bg-gradient-to-r from-green-400 to-green-500";
+    }
+  };
   return (
     <Link href={`/dashboard/shops/details/${props.id}`}>
-      <div className="border p-2 rounded-md grid place-items-center px-4 py-2 min-w-28">
+      <div
+        className={`border rounded-md grid place-items-center p-2 min-w-24 `}
+      >
         <p className="text-xs">Shop No:</p>
         <p className="text-lg">{props.count}</p>
-        <p className="text-sm">{props.status}</p>
+        <p
+          className={`text-sm   text-white px-2 rounded ${getColor(
+            props.status as ShopStatus
+          )}`}
+        >
+          {props.status}
+        </p>
       </div>
     </Link>
   );
