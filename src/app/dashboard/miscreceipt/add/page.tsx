@@ -97,7 +97,7 @@ const CreateRentPage = () => {
       accountCategoryId: categoryId,
       paymentmode: paymentMode,
       transaction_date: transcationDate,
-      amount: parseInt(amount.current?.value ?? "0"),
+      amount: amount.current?.value,
     });
 
     if (result.success) {

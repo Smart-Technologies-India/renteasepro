@@ -31,6 +31,7 @@ import { AccountSchema } from "@/schema/createaccount";
 import { ApiResponseType } from "@/models/response";
 import CreateAccount from "@/action/account/createacount";
 import CreateInvoice from "@/action/invoice/createinvoice";
+import { InvoiceSchema } from "@/schema/createinvoice";
 
 const CreateRentPage = () => {
   const router = useRouter();
@@ -139,7 +140,7 @@ const CreateRentPage = () => {
   const create = async () => {
     setIsCreating(true);
 
-    const result = safeParse(AccountSchema, {
+    const result = safeParse(InvoiceSchema, {
       customername: nameRef.current?.value,
       customergst: gstRef.current?.value,
       customerplaceofsupply: placeOfSupply,

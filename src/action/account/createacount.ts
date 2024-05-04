@@ -7,7 +7,7 @@ import { AccountPaymentMode, account_receipt } from "@prisma/client";
 
 interface CreateAcountPayload {
   customername: string;
-  customercontact: string;
+  customercontact?: string;
   accountCategoryId: number;
   accountCategoryIdTwo?: number;
   accountCategoryIdThree?: number;
@@ -16,9 +16,9 @@ interface CreateAcountPayload {
   amount: number;
   amountTwo?: number;
   amountThree?: number;
-  transactionid: string;
-  bankname: string;
-  remarks: string;
+  transactionid?: string;
+  bankname?: string;
+  remarks?: string;
   createdById: number;
 }
 
@@ -28,14 +28,10 @@ const CreateAccount = async (
   try {
     let data_to_update: any = {
       customername: payload.customername,
-      customercontact: payload.customercontact,
       accountCategoryOneId: payload.accountCategoryId,
       paymentmode: payload.paymentmode,
       transaction_date: payload.transaction_date,
       amount: parseInt(payload.amount.toString()),
-      transactionid: payload.transactionid,
-      bankname: payload.bankname,
-      remarks: payload.remarks,
       createdById: payload.createdById,
     };
     const account_receipt = await prisma.account_receipt.create({
@@ -48,6 +44,10 @@ const CreateAccount = async (
         ...(payload.accountCategoryIdThree && {
           accountCategoryThreeId: payload.accountCategoryIdThree,
           amount_three: parseInt(payload.amountThree?.toString() || "0"),
+          ...(payload.remarks && { remarks: payload.remarks }),
+          ...(payload.transactionid && { transactionid: payload.transactionid }),
+          ...(payload.bankname && { bankname: payload.bankname }),
+          ...(payload.customercontact && { customercontact: payload.customercontact }),
         }),
       },
     });
