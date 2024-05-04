@@ -12,7 +12,7 @@ const CreateUserSchema = object(
   {
     username: string([
       minLength(1, "Please enter your username."),
-      custom(isContainSpace, "Username cannot contain space."),
+      // custom(isContainSpace, "Username cannot contain space."),
     ]),
     contactone: string([
       minLength(1, "Please enter contact number."),

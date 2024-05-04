@@ -311,12 +311,14 @@ const ShopView = (props: ShowShopProps) => {
                 </>
               )}
 
-              <Link
-                href={`/dashboard/shops/createrent/${props.id}`}
-                className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
-              >
-                Add Rent
-              </Link>
+              {!isrented && (
+                <Link
+                  href={`/dashboard/shops/createrent/${props.id}`}
+                  className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                >
+                  Add Rent
+                </Link>
+              )}
             </div>
           )}
         </div>

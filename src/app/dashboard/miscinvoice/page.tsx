@@ -1,5 +1,4 @@
 "use client";
-import { Role, account_receipt } from "@prisma/client";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -9,7 +8,6 @@ import {
   AntDesignPlusCircleOutlined,
   Fa6SolidXmark,
   FluentMdl2Search,
-  SolarAltArrowDownLinear,
 } from "@/components/icons";
 import { useWindowSize } from "@uidotdev/usehooks";
 import {
@@ -20,21 +18,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
 import { usePagination } from "@/hooks/usepagination";
 import Pagination from "@/components/pagination";
 import Link from "next/link";
-import AllAccount from "@/action/account/getallaccont";
 import AllAccountCategorys from "@/action/account/getallaccountcategory";
 import { capitalcase, removeDuplicates } from "@/utils/methods";
+import AllInvoice from "@/action/invoice/getallinvoice";
+import { misc_invoice } from "@prisma/client";
 
 const CreateAccountPage = () => {
   const initdata = async () => {};
@@ -43,7 +34,7 @@ const CreateAccountPage = () => {
   const windowwidth = useWindowSize();
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const [allaccount, setAllAccount] = useState<account_receipt[]>([]);
+  const [allaccount, setAllAccount] = useState<misc_invoice[]>([]);
 
   const [filterAccount, setFilterAccount] = useState<any[]>([]);
 
@@ -61,6 +52,24 @@ const CreateAccountPage = () => {
 
   const paginationsearch = usePagination(searchresult);
 
+  // serach and filter end here
+
+  // const filtershopbycategory = (category: string) => {
+  //   if (category === "All") {
+  //     setFilterAccount(allaccount);
+  //   } else if (category === "Department") {
+  //     const temp = allaccount.filter((item: any) => {
+  //       return item.role != Role.USER;
+  //     });
+  //     setFilterAccount(temp);
+  //   } else if (category === "Users") {
+  //     const temp = allaccount.filter((item: any) => {
+  //       return item.role === Role.USER;
+  //     });
+  //     setFilterAccount(temp);
+  //   }
+  // };
+
   const filtershopbycategory = (category: string) => {
     if (category === "All") {
       setFilterAccount(allaccount);
@@ -76,7 +85,7 @@ const CreateAccountPage = () => {
     const init = async () => {
       setIsLoading(true);
 
-      const accountinfo = await AllAccount({});
+      const accountinfo = await AllInvoice({});
 
       if (accountinfo.status) {
         setAllAccount(accountinfo.data!);
@@ -166,10 +175,10 @@ const CreateAccountPage = () => {
   return (
     <div className="p-6">
       <div className="flex gap-2 items-center">
-        <h1 className="text-[#162f57] text-2xl font-semibold">Receipts</h1>
+        <h1 className="text-[#162f57] text-2xl font-semibold">Invoice</h1>
         <div className="grow"></div>
         <Link
-          href={"/dashboard/miscreceipt/add"}
+          href={"/dashboard/miscinvoice/add"}
           className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm flex items-center gap-2  font-medium py-2"
         >
           <AntDesignPlusCircleOutlined className="text-white text-xl" />
@@ -257,7 +266,7 @@ const CreateAccountPage = () => {
                       <Button
                         onClick={() => {
                           router.push(
-                            `/dashboard/miscreceipt/pdffile/${accoutn_rec.id}`
+                            `/dashboard/miscinvoice/pdffile/${accoutn_rec.id}`
                           );
                         }}
                         className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm flex items-center gap-2  font-medium py-2"
@@ -273,7 +282,7 @@ const CreateAccountPage = () => {
         ) : (
           <>
             <div className=" mt-4 w-full grid place-items-center text-xl text-gray-600">
-              No account receipt Found
+              No account invoice Found
             </div>
           </>
         )}

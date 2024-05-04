@@ -26,20 +26,6 @@ const CreateAccount = async (
   payload: CreateAcountPayload
 ): Promise<ApiResponseType<account_receipt | null>> => {
   try {
-    // customername: payload.customername,
-    // customercontact: payload.customercontact,
-    // accountCategoryOneId: payload.accountCategoryId,
-    // accountCategoryTwoId: payload.accountCategoryIdTwo,
-    // accountCategoryThreeId: payload.accountCategoryIdThree,
-    // paymentmode: payload.paymentmode,
-    // transaction_date: payload.transaction_date,
-    // amount: parseInt(payload.amount.toString()),
-    // amount_two: parseInt(payload.amountTwo?.toString() || "0"),
-    // amount_three: parseInt(payload.amountThree?.toString() || "0"),
-    // transactionid: payload.transactionid,
-    // bankname: payload.bankname,
-    // remarks: payload.remarks,
-    // createdById: payload.createdById,
     let data_to_update: any = {
       customername: payload.customername,
       customercontact: payload.customercontact,

@@ -6,6 +6,7 @@ import {
   GgAlbum,
   IcBaselineAccountCircle,
   IcOutlineReceiptLong,
+  LucideNewspaper,
   MaterialSymbolsCloseSmall,
   MaterialSymbolsPersonRounded,
   MdiReceiptTextClock,
@@ -76,7 +77,9 @@ const Sidebar = (props: SidebarProps) => {
         </>
       )}
 
-      {["ADMIN", "ACCOUNTANT", "MANAGER"].includes(props.role) && (
+      {["ADMIN", "ACCOUNTANT", "MANAGER", "DYCOLLECTOR"].includes(
+        props.role
+      ) && (
         <>
           <MenuTab
             icco={<FluentMdl2ViewDashboard className="text-gray-300 w-6" />}
@@ -130,10 +133,16 @@ const Sidebar = (props: SidebarProps) => {
       {["ACCOUNTANT", "ADMIN"].includes(props.role) && (
         <>
           <MenuTab
-            icco={<IcOutlineReceiptLong className="text-gray-300  w-6" />}
+            icco={<LucideNewspaper className="text-gray-300  w-6" />}
             name="Misc Receipt"
             path={path}
             pathcheck={"/dashboard/miscreceipt"}
+          />
+          <MenuTab
+            icco={<IcOutlineReceiptLong className="text-gray-300  w-6" />}
+            name="Misc Invoice"
+            path={path}
+            pathcheck={"/dashboard/miscinvoice"}
           />
         </>
       )}

@@ -265,6 +265,11 @@ model user {
   account_receipt_create account_receipt[] @relation("account_receipt_createdBy_userId")
   account_receipt_update account_receipt[] @relation("account_receipt_updatedBy_userId")
   account_receipt_delete account_receipt[] @relation("account_receipt_deletedBy_userId")
+
+  // misc invoice
+  misc_invoice_create misc_invoice[] @relation("misc_invoice_createdBy_userId")
+  misc_invoice_update misc_invoice[] @relation("misc_invoice_updatedBy_userId")
+  misc_invoice_delete misc_invoice[] @relation("misc_invoice_deletedBy_userId")
 }
 
 model shop_category {
@@ -745,12 +750,17 @@ model account_category {
   account_receipt_one   account_receipt[] @relation("account_category_one")
   account_receipt_two   account_receipt[] @relation("account_category_two")
   account_receipt_three account_receipt[] @relation("account_category_three")
+
+  // misc invoice
+  misc_invoice_one   misc_invoice[] @relation("misc_invoice_one")
+  misc_invoice_two   misc_invoice[] @relation("misc_invoice_two")
+  misc_invoice_three misc_invoice[] @relation("misc_invoice_three")
 }
 
 model account_receipt {
   id                     Int                @id @default(autoincrement())
   customername           String
-  customercontact        String
+  customercontact        String?
   account_category_one   account_category   @relation("account_category_one", fields: [accountCategoryOneId], references: [id])
   accountCategoryOneId   Int
   account_category_two   account_category?  @relation("account_category_two", fields: [accountCategoryTwoId], references: [id])
@@ -774,5 +784,46 @@ model account_receipt {
   updatedById            Int?
   deletedAt              DateTime?
   deletedBy              user?              @relation("account_receipt_deletedBy_userId", fields: [deletedById], references: [id])
+  deletedById            Int?
+}
+
+model misc_invoice {
+  id                     Int                @id @default(autoincrement())
+  customername           String
+  customercontact        String?
+  customeraddress        String?
+  customergst            String?
+  customerplaceofsupply  String?
+  account_category_one   account_category   @relation("misc_invoice_one", fields: [accountCategoryOneId], references: [id])
+  accountCategoryOneId   Int
+  account_category_two   account_category?  @relation("misc_invoice_two", fields: [accountCategoryTwoId], references: [id])
+  accountCategoryTwoId   Int?
+  account_category_three account_category?  @relation("misc_invoice_three", fields: [accountCategoryThreeId], references: [id])
+  accountCategoryThreeId Int?
+  remark_cat_one         String?
+  remark_cat_two         String?
+  remark_cat_three       String?
+  hsn                    String?
+  cgst                   String?
+  ugst                   String?
+  igst                   String?
+  cgst_percent           String?
+  amount                 String?
+  amount_two             String?
+  amount_three           String?
+  transaction_date       DateTime           @default(now())
+  paymentmode            AccountPaymentMode @default(NEFT)
+  transactionid          String?
+  bankname               String?
+  remarks                String?            @db.MediumText
+  status                 Status             @default(ACTIVE)
+  createdAt              DateTime           @default(now())
+  createdBy              user               @relation("misc_invoice_createdBy_userId", fields: [createdById], references: [id])
+  createdById            Int
+  updatedAt              DateTime           @updatedAt
+  updatedBy              user?              @relation("misc_invoice_updatedBy_userId", fields: [updatedById], references: [id])
+  updatedById            Int?
+  deletedAt              DateTime?
+  deletedBy              user?              @relation("misc_invoice_deletedBy_userId", fields: [deletedById], references: [id])
   deletedById            Int?
 }

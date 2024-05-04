@@ -3,11 +3,7 @@ import UpdateRentTrasact from "@/action/rent_transact/updaterenttransact";
 import {
   IcBaselineRefresh,
   MaterialSymbolsCloseSmall,
-  SolarAltArrowDownLinear,
-  SolarBellBold,
-  SolarCalendarMinimalisticBold,
   SolarHamburgerMenuOutline,
-  SolarLightbulbMinimalisticBold,
 } from "../icons";
 import { Button } from "../ui/button";
 import {
@@ -27,6 +23,7 @@ interface NavbarProps {
   isOpen: boolean;
   setIsOpen: (arg: (val: boolean) => boolean) => void;
   name: string;
+  role: string;
 }
 
 const Navbar = (props: NavbarProps) => {
@@ -46,7 +43,7 @@ const Navbar = (props: NavbarProps) => {
   };
 
   return (
-    <nav className="py-1 px-4 w-full bg-[#f0f1f5] flex items-center gap-4 shadow fixed top-0 left-0 z-10">
+    <nav className="py-1 px-4 w-full bg-[#f0f1f5] flex items-center gap-2 shadow fixed top-0 left-0 z-10">
       <div className="md:hidden">
         {props.isOpen ? (
           <MaterialSymbolsCloseSmall
@@ -62,43 +59,46 @@ const Navbar = (props: NavbarProps) => {
       </div>
 
       <div className="grow"></div>
-      <IcBaselineRefresh
-        className="text-xl md:block hidden cursor-pointer"
-        onClick={refreshrent}
-      />
+      {["ADMIN", "MANAGER"].includes(props.role) && (
+        <>
+          <IcBaselineRefresh
+            className="text-xl md:block hidden cursor-pointer"
+            onClick={refreshrent}
+          />
+          <div className="w-[1px] h-6 bg-gray-500"></div>
+        </>
+      )}
+
       {/* <SolarCalendarMinimalisticBold className="text-xl md:block hidden" />
       <SolarBellBold className="text-2xl md:block hidden" />
       <SolarLightbulbMinimalisticBold className="text-xl md:block hidden" /> */}
-      <div className="w-[1px] h-6 bg-black"></div>
-      <div className="rounded-full bg-[#6d99e1] shrink-0 h-8 w-8 grid place-items-center text-lg font-semibold ">
-        {props.name[0].toUpperCase()}
-        {props.name[1].toUpperCase()}
-      </div>
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="gap-2 flex">
-            <p className="font-semibold text-lg">{props.name}</p>
-            <SolarAltArrowDownLinear className="textx-2xl" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56">
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem
-              onClick={() => router.push("/dashboard/changepassword")}
-              className="cursor-pointer"
-            >
-              Change Password
-            </DropdownMenuItem>
-            {/* <DropdownMenuItem>
+      <div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild className="px-1">
+            <Button variant="ghost" className="gap-2 flex text-right">
+              <div>
+                <p className="font-medium text-sm">{props.name}</p>
+                <p className="text-xs text-gray-500">{props.role}</p>
+              </div>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56">
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem
+                onClick={() => router.push("/dashboard/changepassword")}
+                className="cursor-pointer"
+              >
+                Change Password
+              </DropdownMenuItem>
+              {/* <DropdownMenuItem>
               Keyboard shortcuts
               <DropdownMenuShortcut>⌘K</DropdownMenuShortcut>
             </DropdownMenuItem> */}
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          {/* <DropdownMenuGroup>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            {/* <DropdownMenuGroup>
             <DropdownMenuItem>Team</DropdownMenuItem>
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>Invite users</DropdownMenuSubTrigger>
@@ -120,13 +120,16 @@ const Navbar = (props: NavbarProps) => {
           <DropdownMenuItem>GitHub</DropdownMenuItem>
           <DropdownMenuItem>Support</DropdownMenuItem>
           <DropdownMenuItem disabled>API</DropdownMenuItem> */}
-          {/* <DropdownMenuSeparator /> */}
-          <DropdownMenuItem onClick={logoutbtn} className="cursor-pointer">
-            Log out
-            {/* <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut> */}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+            {/* <DropdownMenuSeparator /> */}
+            <DropdownMenuItem onClick={logoutbtn} className="cursor-pointer">
+              Log out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+      <div className="rounded-full bg-[#172e57] shrink-0 h-8 w-8 grid place-items-center text-lg font-semibold text-white">
+        {props.name[0].toUpperCase()}
+      </div>
     </nav>
   );
 };

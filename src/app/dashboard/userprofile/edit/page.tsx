@@ -1074,10 +1074,15 @@ const DocUploader = (props: DocUploaderProps) => {
       const fileSize = selectedFile.size / (1024 * 1024);
 
       if (fileSize < 5) {
-        if (selectedFile.type.startsWith("image/")) {
+        if (
+          selectedFile.type.startsWith("image/") ||
+          selectedFile.type.startsWith("application/pdf")
+        ) {
           props.setFile(selectedFile);
         } else {
-          toast.error("Please select an image file.", { theme: "light" });
+          toast.error("Please select an image or pdf file.", {
+            theme: "light",
+          });
         }
       } else {
         toast.error("File size must be less than 5 MB.", { theme: "light" });
@@ -1091,7 +1096,7 @@ const DocUploader = (props: DocUploaderProps) => {
       <div className="grow"></div>
       <p className="text-sm">
         {props.file != null
-          ? longtext(props.file.name, 20)
+          ? longtext(props.file.name, 10)
           : "No File Selected"}
       </p>
       <Button

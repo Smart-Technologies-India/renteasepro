@@ -14,17 +14,21 @@ import {
 const AccountSchema = object(
   {
     customername: string([minLength(1, "Please enter name.")]),
-    customercontact: string([
-      minLength(1, "Please enter contact number."),
-      maxLength(10, "Please enter valid contact number."),
+    customergst: string([minLength(1, "Please enter customer GST.")]),
+    customerplaceofsupply: string([
+      minLength(1, "Please select customer place of supply."),
+    ]),
+    hsn: string([minLength(1, "Please enter HSN.")]),
+    cgst: string([minLength(1, "Please enter HSN.")]),
+    ugst: string([minLength(1, "Please enter HSN.")]),
+    igst: string([minLength(1, "Please enter HSN.")]),
+    cgst_percent: string([
+      minLength(1, "Please enter CGST/UGST/IGST Percent."),
     ]),
     accountCategoryId: number([minValue(1, "Please Select Category.")]),
     paymentmode: enum_(AccountPaymentMode, "Please select payment mode type."),
     transaction_date: date("Please select transaction date."),
     amount: number([minValue(1, "Please enter amount.")]),
-    transactionid: string([minLength(1, "Please enter transactionid.")]),
-    bankname: string([minLength(1, "Please enter bank name.")]),
-    remarks: string([minLength(1, "Please enter remark.")]),
   },
   []
 );

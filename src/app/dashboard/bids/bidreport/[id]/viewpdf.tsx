@@ -150,16 +150,16 @@ const ViewPdf = (props: ViewPdfProps) => {
     <Document>
       <Page style={styles.body} size={"A4"}>
         <View style={styles.imagebox}>
-          <Image src="/tenders_logo.png" style={styles.image} />
+          <Image src="/dnhpda_logo.png" style={styles.image} />
         </View>
 
         <View>
           <View>
-            <Text style={styles.title}>Rent Acknowledgement</Text>
+            <Text style={styles.title}>Bid Report</Text>
           </View>
 
           <View>
-            <Text style={styles.header}>1. Rent Details</Text>
+            <Text style={styles.header}>Bid Details</Text>
           </View>
           <View style={styles.myflex}>
             <Text style={styles.text1}>1 Organization Name</Text>
@@ -280,7 +280,7 @@ const ViewPdf = (props: ViewPdfProps) => {
           {winnder && (
             <>
               <View>
-                <Text style={styles.header}>2. Winner Bidder Details</Text>
+                <Text style={styles.header}>Winner Bidder Details</Text>
               </View>
               <View style={styles.myflex}>
                 <Text style={styles.text1}>1 Winner Name</Text>
@@ -296,7 +296,7 @@ const ViewPdf = (props: ViewPdfProps) => {
           )}
 
           <View>
-            <Text style={styles.header}>3. Bidder List Details</Text>
+            <Text style={styles.header}>Bidder List Details</Text>
           </View>
 
           <View style={styles.myflex}>

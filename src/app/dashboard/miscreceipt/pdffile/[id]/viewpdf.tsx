@@ -16,7 +16,6 @@ import {
 } from "@react-pdf/renderer";
 import { useEffect, useState } from "react";
 import { capitalcase, formateDate } from "@/utils/methods";
-import { formatDate } from "date-fns";
 
 interface ViewPdfProps {
   id: number;
@@ -109,8 +108,10 @@ const ViewPdf = (props: ViewPdfProps) => {
       color: "#374151",
       flex: 3,
       padding: "4px 8px",
-      border: "1px solid #6b7280",
+      // border: "1px solid #6b7280",
       textAlign: "center",
+      borderTop: "1px solid #6b7280",
+      borderBottom: "1px solid #6b7280",
     },
 
     mbottom: {
@@ -120,8 +121,8 @@ const ViewPdf = (props: ViewPdfProps) => {
       flex: 3,
       padding: "4px 8px",
       borderBottom: "1px solid #6b7280",
-      borderRight: "1px solid #6b7280",
-      borderLeft: "1px solid #6b7280",
+      // borderRight: "1px solid #6b7280",
+      // borderLeft: "1px solid #6b7280",
     },
 
     rtop: {
@@ -194,20 +195,18 @@ const ViewPdf = (props: ViewPdfProps) => {
             <Text style={styles.subtitle}>Form 2</Text>
             <Text style={styles.subtitle}>(Rule 11)</Text>
             <Text style={styles.title}>Dadra and Nagar Haveli</Text>
-            <Text style={styles.title}>
-              Planning and development A uthority
-            </Text>
+            <Text style={styles.title}>Planning and development Authority</Text>
             <View
               style={{
                 height: "10px",
               }}
             ></View>
             <Text style={styles.titledescription}>
-              1st Floor, Right wing . New Collectorate Building,
+              &quot;A&quot; WING, Second Floor, District Secretariat,
               Silvassa-396230.
             </Text>
             <Text style={styles.titledescription}>
-              U.T. of Dadra and Nager Haveli.
+              GSTIN/UIN: 26AAALD0940J1ZE
             </Text>
           </View>
 
@@ -256,6 +255,11 @@ const ViewPdf = (props: ViewPdfProps) => {
                 RECEIPT
               </Text>
             </View>
+            <View
+              style={{
+                width: "80px",
+              }}
+            ></View>
 
             <View
               style={{
@@ -287,8 +291,9 @@ const ViewPdf = (props: ViewPdfProps) => {
               }}
               fixed
             >
-              Received with thanks from {account?.customername} [
-              {account?.customercontact}] a sum of Rs. {account?.amount} (
+              Received with thanks from {account?.customername}{" "}
+              {account?.customercontact && `[${account?.customercontact}]`} a
+              sum of Rs. {account?.amount} (
               {account?.amount
                 ? capitalcase(
                     numberToWrods.toWords(parseInt(account?.amount) ?? "0")
@@ -430,12 +435,17 @@ const ViewPdf = (props: ViewPdfProps) => {
                 textAlign: "center",
               }}
             >
-              <Image
+              {/* <Image
                 src="/signtwo.jpg"
                 style={{
                   width: "100%",
                 }}
-              />
+              /> */}
+              <View
+                style={{
+                  height: "60px",
+                }}
+              ></View>
 
               <Text
                 style={{

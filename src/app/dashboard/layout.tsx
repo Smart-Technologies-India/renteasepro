@@ -45,6 +45,7 @@ export default function DashboardLayout({
       />
       <div className="relative p-0 md:pl-52 h-full">
         <Navbar
+          role={userdata?.role as Role}
           isOpen={isOpen}
           setIsOpen={setIsOpen}
           name={userdata?.username ?? ""}
