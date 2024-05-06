@@ -1,9 +1,10 @@
 "use client";
+import numberToWrods from "number-to-words";
 
 import GetBid from "@/action/bid/getbid";
 import GetFromUserBid from "@/action/bidpayment/getfromuserbid";
 import GetUser from "@/action/user/getuser";
-import { formatDateTime } from "@/utils/methods";
+import { capitalcase, formatDateTime, formateDate } from "@/utils/methods";
 import { bid_payment, user } from "@prisma/client";
 import {
   Page,
@@ -47,6 +48,7 @@ const ViewPdf = (props: ViewPdfProps) => {
         userid: props.userid,
       });
 
+      console.log(bidpaymentresponse);
       if (bidpaymentresponse.status) {
         setPayment(bidpaymentresponse.data!);
       }
@@ -61,55 +63,163 @@ const ViewPdf = (props: ViewPdfProps) => {
 
   const styles = StyleSheet.create({
     body: {
-      paddingTop: 35,
-      paddingBottom: 65,
-      paddingHorizontal: 35,
+      paddingTop: 20,
+      paddingBottom: 25,
+      paddingHorizontal: 20,
     },
     title: {
-      fontSize: 24,
+      fontSize: 20,
+      lineHeight: 1,
       textAlign: "center",
       fontFamily: "Oswald",
     },
     subtitle: {
-      marginTop: "10px",
+      fontSize: 10,
+      textAlign: "center",
+      color: "grey",
+      width: "100%",
+    },
+    titledescription: {
       fontSize: 12,
       textAlign: "center",
       color: "grey",
       width: "100%",
     },
     header: {
-      paddingLeft: "10px",
-      marginTop: "15px",
-      marginBottom: "10px",
-      backgroundColor: "#c1dafe88",
-      paddingVertical: "8px",
-      fontSize: "14px",
+      marginTop: 10,
+      marginBottom: 10,
+      fontSize: "16px",
       color: "#1f2937",
-      textAlign: "left",
+      textAlign: "center",
       fontWeight: "normal",
+      textDecoration: "underline",
     },
     myflex: {
       display: "flex",
       flexDirection: "row",
       width: "100%",
-      borderBottom: "1px solid #6b7280",
     },
-    text1: {
-      fontSize: "12px",
+
+    ltop: {
+      fontSize: "10px",
       fontWeight: "normal",
       color: "#374151",
-      flex: 2,
-      padding: "4px 8px",
-      //   backgroundColor: "#f6f7f8",
-      borderRight: "1px solid #6b7280",
+      width: "80px",
+      padding: "4px 4px",
+      border: "1px solid #6b7280",
+      textAlign: "center",
     },
-    text2: {
-      fontSize: "12px",
+
+    ltop2: {
+      fontSize: "10px",
+      fontWeight: "normal",
+      color: "#374151",
+      width: "60px",
+      padding: "4px 4px",
+      borderBottom: "1px solid #6b7280",
+      borderRight: "1px solid #6b7280",
+      // borderLeft: "1px solid #6b7280",
+      textAlign: "center",
+    },
+
+    lbottom: {
+      fontSize: "10px",
+      fontWeight: "normal",
+      color: "#374151",
+      width: "80px",
+      padding: "4px 4px",
+      textAlign: "center",
+      borderBottom: "1px solid #6b7280",
+      borderRight: "1px solid #6b7280",
+      borderLeft: "1px solid #6b7280",
+    },
+
+    mtop: {
+      fontSize: "10px",
       fontWeight: "normal",
       color: "#374151",
       flex: 3,
-      padding: "4px 8px",
+      padding: "4px 4px",
+      // border: "1px solid #6b7280",
+      textAlign: "center",
+      borderTop: "1px solid #6b7280",
+      borderBottom: "1px solid #6b7280",
     },
+
+    mbottom: {
+      fontSize: "10px",
+      fontWeight: "normal",
+      color: "#374151",
+      flex: 3,
+      padding: "4px 4px",
+      borderBottom: "1px solid #6b7280",
+      // borderRight: "1px solid #6b7280",
+      // borderLeft: "1px solid #6b7280",
+    },
+    mtop2: {
+      fontSize: "10px",
+      fontWeight: "normal",
+      color: "#374151",
+      flex: 3,
+      padding: "4px 4px",
+      // border: "1px solid #6b7280",
+      textAlign: "center",
+      borderTop: "1px solid #6b7280",
+      borderBottom: "1px solid #6b7280",
+      borderRight: "1px solid #6b7280",
+    },
+
+    mbottom2: {
+      fontSize: "10px",
+      fontWeight: "normal",
+      color: "#374151",
+      flex: 3,
+      padding: "4px 4px",
+      borderBottom: "1px solid #6b7280",
+      borderRight: "1px solid #6b7280",
+    },
+
+    rtop: {
+      fontSize: "10px",
+      fontWeight: "normal",
+      color: "#374151",
+      flex: 1,
+      padding: "4px 4px",
+      border: "1px solid #6b7280",
+      textAlign: "center",
+    },
+    rtop2: {
+      fontSize: "10px",
+      fontWeight: "normal",
+      color: "#374151",
+      padding: "4px 4px",
+      borderBottom: "1px solid #6b7280",
+      borderTop: "1px solid #6b7280",
+      borderLeft: "1px solid #6b7280",
+      width: "60px",
+      textAlign: "center",
+    },
+
+    rbottom: {
+      fontSize: "10px",
+      fontWeight: "normal",
+      color: "#374151",
+      flex: 1,
+      padding: "4px 4px",
+      borderBottom: "1px solid #6b7280",
+      borderRight: "1px solid #6b7280",
+      borderLeft: "1px solid #6b7280",
+    },
+    rbottom2: {
+      fontSize: "10px",
+      fontWeight: "normal",
+      color: "#374151",
+      width: "60px",
+      padding: "4px 4px",
+      borderBottom: "1px solid #6b7280",
+      borderLeft: "1px solid #6b7280",
+    },
+
     divider: {
       width: "100%",
       height: "1px",
@@ -138,127 +248,442 @@ const ViewPdf = (props: ViewPdfProps) => {
       position: "absolute",
       display: "flex",
       width: "100vw",
-      top: "130px",
+      top: "40px",
       alignItems: "center",
     },
     image: {
-      width: "60%",
+      marginTop: "200px",
+      width: "80%",
       opacity: 0.1,
     },
   });
 
   const Quixote = () => (
     <Document>
-      <Page style={styles.body} size={"A4"}>
+      <Page style={styles.body} size={"A4"} wrap>
         <View style={styles.imagebox}>
-          <Image src="/tenders_logo.png" style={styles.image} />
+          <Image src="/dnhpda_logo.png" style={styles.image} />
         </View>
 
         <View>
-          <View>
-            <Text style={styles.title}>Bid Acknowledgement</Text>
-          </View>
+          <Text style={styles.subtitle}>Form 2</Text>
+          <Text style={styles.subtitle}>(Rule 11)</Text>
+          <Text style={styles.title}>Dadra and Nagar Haveli</Text>
+          <Text style={styles.title}>Planning and development Authority</Text>
+          <View
+            style={{
+              height: "10px",
+            }}
+          ></View>
+          <Text style={styles.titledescription}>
+            &quot;A&quot; WING, Second Floor, District Secretariat,
+            Silvassa-396230.
+          </Text>
+          <Text style={styles.titledescription}>
+            GSTIN/UIN: 26AAALD0940J1ZE
+          </Text>
+        </View>
 
-          <View>
-            <Text style={styles.header}>1. Bid Details</Text>
-          </View>
-          <View style={styles.myflex}>
-            <Text style={styles.text1}>1 Organization Name</Text>
-            <Text style={styles.text2}>PDA DNH</Text>
-          </View>
-          <View style={styles.myflex}>
-            <Text style={styles.text1}>2 Tender Id</Text>
-            <Text style={styles.text2}>{`${
-              bid?.is_auction ? "AUCTION" : "TENDER"
-            }_${new Date(payment?.transaction_date!).getFullYear()}_${
-              bid?.id
-            }`}</Text>
-          </View>
-
-          <View style={styles.myflex}>
-            <Text style={styles.text1}>3 Property Name</Text>
-            <Text style={styles.text2}>{bid?.shop.property.name}</Text>
-          </View>
-          <View style={styles.myflex}>
-            <Text style={styles.text1}>4 Shop Number</Text>
-            <Text style={styles.text2}>{bid?.shop.shopNumber}</Text>
-          </View>
-
-          <View style={styles.myflex}>
-            <Text style={styles.text1}>5 Bid Start Date & Time</Text>
-            <Text style={styles.text2}>
-              {formatDateTime(new Date(bid?.bidstartdate))}
+        <View
+          style={{
+            marginTop: "10px",
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <View
+            style={{
+              flexGrow: 1,
+              display: "flex",
+              justifyContent: "center",
+              flexDirection: "row",
+            }}
+          >
+            <Text
+              style={{
+                fontSize: "16px",
+                color: "#1f2937",
+                textAlign: "center",
+                fontWeight: "normal",
+                textDecoration: "underline",
+              }}
+            >
+              Invoice - Cum - Receipt
             </Text>
           </View>
-          <View style={styles.myflex}>
-            <Text style={styles.text1}>6 Bid End Date & Time</Text>
-            <Text style={styles.text2}>
-              {" "}
-              {formatDateTime(new Date(bid?.bidenddate))}
-            </Text>
-          </View>
-          <View>
-            <Text style={styles.header}>2. Bidder Details</Text>
-          </View>
-          <View style={styles.myflex}>
-            <Text style={styles.text1}>1 Bidder Name</Text>
-            <Text style={styles.text2}>
-              {user?.firstName} {user?.lastName}
-            </Text>
-          </View>
-          <View style={styles.myflex}>
-            <Text style={styles.text1}>2 Bid Submitted Date & Time</Text>
+        </View>
+        <View
+          style={{
+            marginTop: "10px",
+          }}
+        ></View>
 
-            <Text style={styles.text2}>
-              {formatDateTime(new Date(payment?.createdAt!))}
+        <View style={styles.myflex}>
+          <Text style={styles.ltop}>Property Name</Text>
+          <Text
+            style={{
+              fontSize: "10px",
+              fontWeight: "normal",
+              color: "#374151",
+              flex: 3,
+              padding: "4px 4px",
+              textAlign: "left",
+              borderTop: "1px solid #6b7280",
+              borderBottom: "1px solid #6b7280",
+            }}
+          >
+            {bid?.shop.property.name}
+          </Text>
+          <Text
+            style={{
+              fontSize: "10px",
+              fontWeight: "normal",
+              color: "#374151",
+              flex: 1,
+              padding: "4px 4px",
+              border: "1px solid #6b7280",
+              textAlign: "left",
+            }}
+          >
+            Date
+          </Text>
+          <Text
+            style={{
+              fontSize: "10px",
+              fontWeight: "normal",
+              color: "#374151",
+              flex: 3,
+              padding: "4px 4px",
+              textAlign: "left",
+              borderTop: "1px solid #6b7280",
+              borderBottom: "1px solid #6b7280",
+              borderRight: "1px solid #6b7280",
+            }}
+          >
+            {formateDate(new Date(bid?.createdAt))}
+          </Text>
+        </View>
+
+        <View style={styles.myflex}>
+          <Text style={styles.lbottom}>Shop Number</Text>
+          <Text style={styles.mbottom}>{bid?.shop.shopNumber}</Text>
+          <Text style={styles.rbottom}>Invoice No.</Text>
+          <Text style={styles.mbottom2}>
+            BID /{bid?.id ?? "-"}/
+            {new Date(bid?.createdAt).getFullYear().toString().slice(2)}-
+            {(new Date(bid?.createdAt).getFullYear() + 1).toString().slice(2)}
+          </Text>
+        </View>
+
+        <View style={styles.myflex}>
+          <Text style={styles.lbottom}>Name</Text>
+          <Text style={styles.mbottom}>
+            {user?.firstName} {user?.lastName} [{user?.contactone!}]
+          </Text>
+          <Text style={styles.rbottom}>Start Date</Text>
+          <Text style={styles.mbottom2}>
+            {formateDate(new Date(bid?.bidstartdate))}
+          </Text>
+        </View>
+
+        <View style={styles.myflex}>
+          <Text style={styles.lbottom}>Submit Date</Text>
+          <Text style={styles.mbottom}>
+            {formatDateTime(new Date(payment?.createdAt!))}
+          </Text>
+          <Text style={styles.rbottom}>End Date</Text>
+          <Text style={styles.mbottom2}>
+            {formateDate(new Date(bid?.bidenddate))}
+          </Text>
+        </View>
+
+        <View
+          style={{
+            marginTop: "5px",
+          }}
+        ></View>
+
+        <View style={styles.myflex}>
+          <Text style={styles.ltop}>Sr. No</Text>
+          <Text style={styles.mtop}>Rent For Months</Text>
+          <Text style={styles.rtop}>Amount</Text>
+        </View>
+        <View style={styles.myflex}>
+          <Text style={styles.lbottom}>1</Text>
+          <Text style={styles.mbottom}>Fees Amount</Text>
+          <Text style={styles.rbottom}>{bid?.fees_amount}</Text>
+        </View>
+
+        {bid?.emd_amount && (
+          <View style={styles.myflex}>
+            <Text style={styles.lbottom}>2</Text>
+            <Text style={styles.mbottom}>EMD Amount</Text>
+            <Text style={styles.rbottom}>{bid?.emd_amount}</Text>
+          </View>
+        )}
+        {bid?.bg_amount && (
+          <View style={styles.myflex}>
+            <Text style={styles.lbottom}>3</Text>
+            <Text style={styles.mbottom}>BG Amount</Text>
+            <Text style={styles.rbottom}>{bid?.bg_amount}</Text>
+          </View>
+        )}
+
+        <View style={styles.myflex}>
+          <Text style={styles.lbottom}></Text>
+          <Text
+            style={{
+              textAlign: "right",
+              fontSize: "10px",
+              color: "#000",
+              flex: 3,
+              padding: "4px 4px",
+              borderBottom: "1px solid #6b7280",
+              fontFamily: "Oswald",
+            }}
+          >
+            Total
+          </Text>
+          <Text
+            style={{
+              fontSize: "10px",
+              fontWeight: "normal",
+              color: "#374151",
+              flex: 1,
+              padding: "4px 4px",
+              borderBottom: "1px solid #6b7280",
+              borderRight: "1px solid #6b7280",
+              borderLeft: "1px solid #6b7280",
+              fontFamily: "Oswald",
+            }}
+          >
+            {parseFloat(bid?.fees_amount ?? "0") +
+              parseFloat(bid?.emd_amount ?? "0") +
+              parseFloat(bid?.bg_amount ?? "0")}
+          </Text>
+        </View>
+        <Text
+          style={{
+            fontSize: "10px",
+            fontWeight: "normal",
+            color: "#374151",
+            width: "100%",
+            padding: "4px 4px",
+            borderLeft: "1px solid #6b7280",
+            borderBottom: "1px solid #6b7280",
+            borderRight: "1px solid #6b7280",
+            textAlign: "left",
+          }}
+        >
+          Amount Chargeable (in words) :{" "}
+          {"Indian Rupees " +
+            capitalcase(
+              numberToWrods.toWords(
+                parseFloat(bid?.fees_amount ?? "0") +
+                  parseFloat(bid?.emd_amount ?? "0") +
+                  parseFloat(bid?.bg_amount ?? "0")
+              )
+            ) +
+            " Only"}
+        </Text>
+
+        <View
+          style={{
+            marginVertical: "5px",
+          }}
+        ></View>
+
+        <View
+          style={{
+            marginTop: "5px",
+          }}
+        ></View>
+
+        <View>
+          <Text
+            style={{
+              fontSize: 10,
+              color: "grey",
+              width: "100%",
+            }}
+          >
+            Received with thanks from {user?.firstName} {user?.lastName}{" "}
+            {user?.contactone && `[${user?.contactone}]`} a sum of Rs.{" "}
+            {parseFloat(bid?.fees_amount ?? "0") +
+              parseFloat(bid?.emd_amount ?? "0") +
+              parseFloat(bid?.bg_amount ?? "0")}
+            (
+            {capitalcase(
+              numberToWrods.toWords(
+                parseFloat(bid?.fees_amount ?? "0") +
+                  parseFloat(bid?.emd_amount ?? "0") +
+                  parseFloat(bid?.bg_amount ?? "0")
+              )
+            ) + " Only"}
+            )
+          </Text>
+          <Text
+            style={{
+              fontSize: 10,
+              color: "grey",
+            }}
+          >
+            on account as below :-
+          </Text>
+          <Text
+            style={{
+              fontSize: 10,
+              color: "grey",
+              margin: "2px 0",
+            }}
+          >
+            1. Fees amount: {bid?.fees_amount}
+          </Text>
+          {bid?.emd_amount && (
+            <Text
+              style={{
+                fontSize: 10,
+                color: "grey",
+                margin: "2px 0",
+              }}
+            >
+              2. EMD amount: {bid?.emd_amount}
             </Text>
-          </View>
-          <View>
-            <Text style={styles.header}>3. Fees & EMD Details</Text>
-          </View>
-          <View style={styles.myflex}>
-            <Text style={styles.text1}>1 Fees Amount</Text>
-            <Text style={styles.text2}>{bid?.fees_amount}</Text>
-          </View>
-          <View style={styles.myflex}>
-            <Text style={styles.text1}>2 EMD Amount</Text>
-            <Text style={styles.text2}>{bid?.emd_amount}</Text>
-          </View>
-          <View style={styles.myflex}>
-            <Text style={styles.text1}>3 Transaction Id</Text>
-            <Text style={styles.text2}>{payment?.transactionid}</Text>
-          </View>
-          <View style={styles.myflex}>
-            <Text style={styles.text1}>4 Payment Mode</Text>
-            <Text style={styles.text2}>{payment?.paymentmode}</Text>
-          </View>
-          <View style={styles.myflex}>
-            <Text style={styles.text1}>5 Bank Name</Text>
-            <Text style={styles.text2}>{payment?.bankname}</Text>
-          </View>
-          <View style={styles.myflex}>
-            <Text style={styles.text1}>6 Transaction Date & Time</Text>
-            <Text style={styles.text2}>
-              {formatDateTime(new Date(payment?.transaction_date!))}
+          )}
+          {bid?.bg_amount && (
+            <Text
+              style={{
+                fontSize: 10,
+                color: "grey",
+                margin: "2px 0",
+              }}
+            >
+              3. BG amount: {bid?.bg_amount}
+            </Text>
+          )}
+
+          <Text
+            style={{
+              fontSize: 10,
+              color: "grey",
+              margin: "2px 0",
+            }}
+          >
+            In the form of {payment?.paymentmode} vide Reference No.{" "}
+            {payment?.transactionid} dated{" "}
+            {formateDate(new Date(payment?.transaction_date!))}
+          </Text>
+        </View>
+
+        <View
+          style={{
+            marginTop: "80px",
+          }}
+        ></View>
+
+        <View
+          fixed
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            position: "absolute",
+            bottom: "30px",
+            left: "0px",
+            width: "100%",
+            margin: "0px 20px",
+          }}
+        >
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "4px",
+              justifyContent: "flex-end",
+              paddingBottom: "10px",
+            }}
+          >
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+              }}
+            >
+              <Image
+                src="/rupee.jpg"
+                style={{
+                  width: "30px",
+                  height: "30px",
+                }}
+              />
+              <Text
+                style={{
+                  fontSize: "16px",
+                  fontWeight: "normal",
+                  color: "#374151",
+                  padding: "5px 8px",
+                  border: "1px solid #6b7280",
+                  textAlign: "center",
+                }}
+              >
+                {parseFloat(bid?.fees_amount ?? "0") +
+                  parseFloat(bid?.emd_amount ?? "0") +
+                  parseFloat(bid?.bg_amount ?? "0")}
+                /-
+              </Text>
+            </View>
+
+            <Text
+              style={{
+                fontSize: "10px",
+                textAlign: "center",
+                color: "#6b7280",
+              }}
+            >
+              Cheques/Draft subjects to realization
             </Text>
           </View>
 
           <View
             style={{
-              height: "40px",
+              flexGrow: 1,
             }}
           ></View>
 
-          <View>
-            <Text style={styles.subtitle} fixed>
-              This is a computer generated document and does not require any
-              signature.
+          <View
+            style={{
+              textAlign: "center",
+            }}
+          >
+            <View
+              style={{
+                height: "60px",
+              }}
+            ></View>
+
+            <Text
+              style={{
+                fontSize: "10px",
+                color: "#6b7280",
+              }}
+            >
+              For Dadra and Nagar Haveli
+            </Text>
+            <Text
+              style={{
+                marginTop: "2px",
+                fontSize: "10px",
+                color: "#6b7280",
+              }}
+            >
+              Planning and Development Authority
             </Text>
           </View>
         </View>
       </Page>
     </Document>
   );
+
 
   const [isClient, setIsClient] = useState(false);
 

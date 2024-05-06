@@ -36,10 +36,10 @@ const ViewPdf = (props: ViewPdfProps) => {
       }
 
       const bidderresponse = await GetFromBidId({ id: props.id });
+      console.log("bidderresponse", bidderresponse);
       if (bidderresponse.status) {
         setBidderList(bidderresponse.data);
       }
-
 
       // get winnder of the bid and set the winnder
 
@@ -61,54 +61,184 @@ const ViewPdf = (props: ViewPdfProps) => {
 
   const styles = StyleSheet.create({
     body: {
-      paddingTop: 35,
-      paddingBottom: 65,
-      paddingHorizontal: 35,
+      paddingTop: 20,
+      paddingBottom: 25,
+      paddingHorizontal: 20,
     },
     title: {
-      fontSize: 24,
+      fontSize: 20,
+      lineHeight: 1,
       textAlign: "center",
       fontFamily: "Oswald",
     },
     subtitle: {
-      marginTop: "10px",
+      fontSize: 10,
+      textAlign: "center",
+      color: "grey",
+      width: "100%",
+    },
+    titledescription: {
       fontSize: 12,
       textAlign: "center",
       color: "grey",
       width: "100%",
     },
     header: {
-      paddingLeft: "10px",
-      marginTop: "15px",
-      marginBottom: "10px",
-      backgroundColor: "#c1dafe88",
-      paddingVertical: "8px",
-      fontSize: "14px",
+      marginTop: 10,
+      marginBottom: 10,
+      fontSize: "16px",
       color: "#1f2937",
-      textAlign: "left",
+      textAlign: "center",
       fontWeight: "normal",
+      textDecoration: "underline",
     },
     myflex: {
       display: "flex",
       flexDirection: "row",
       width: "100%",
-      borderBottom: "1px solid #6b7280",
     },
-    text1: {
-      fontSize: "12px",
+
+    ltop: {
+      fontSize: "10px",
       fontWeight: "normal",
       color: "#374151",
-      flex: 2,
-      padding: "4px 8px",
-      borderRight: "1px solid #6b7280",
+      width: "80px",
+      padding: "4px 4px",
+      border: "1px solid #6b7280",
+      textAlign: "center",
     },
-    text2: {
-      fontSize: "12px",
+
+    ltop2: {
+      fontSize: "10px",
+      fontWeight: "normal",
+      color: "#374151",
+      width: "60px",
+      padding: "4px 4px",
+      borderBottom: "1px solid #6b7280",
+      borderRight: "1px solid #6b7280",
+      // borderLeft: "1px solid #6b7280",
+      textAlign: "center",
+    },
+
+    lbottom: {
+      fontSize: "10px",
+      fontWeight: "normal",
+      color: "#374151",
+      width: "80px",
+      padding: "4px 4px",
+      textAlign: "center",
+      borderBottom: "1px solid #6b7280",
+      borderRight: "1px solid #6b7280",
+      borderLeft: "1px solid #6b7280",
+    },
+
+    mtop: {
+      fontSize: "10px",
       fontWeight: "normal",
       color: "#374151",
       flex: 3,
-      padding: "4px 8px",
+      padding: "4px 4px",
+      // border: "1px solid #6b7280",
+      textAlign: "center",
+      borderTop: "1px solid #6b7280",
+      borderBottom: "1px solid #6b7280",
     },
+
+    mbottom: {
+      fontSize: "10px",
+      fontWeight: "normal",
+      color: "#374151",
+      flex: 3,
+      padding: "4px 4px",
+      borderBottom: "1px solid #6b7280",
+      // borderRight: "1px solid #6b7280",
+      // borderLeft: "1px solid #6b7280",
+    },
+    mtop2: {
+      fontSize: "10px",
+      fontWeight: "normal",
+      color: "#374151",
+      flex: 3,
+      padding: "4px 4px",
+      // border: "1px solid #6b7280",
+      textAlign: "center",
+      borderTop: "1px solid #6b7280",
+      borderBottom: "1px solid #6b7280",
+      borderRight: "1px solid #6b7280",
+    },
+    mtop3: {
+      fontSize: "10px",
+      fontWeight: "normal",
+      color: "#374151",
+      width: "60px",
+      padding: "4px 4px",
+      // border: "1px solid #6b7280",
+      textAlign: "center",
+      borderTop: "1px solid #6b7280",
+      borderBottom: "1px solid #6b7280",
+      borderRight: "1px solid #6b7280",
+    },
+
+    mbottom2: {
+      fontSize: "10px",
+      fontWeight: "normal",
+      color: "#374151",
+      flex: 3,
+      padding: "4px 4px",
+      borderBottom: "1px solid #6b7280",
+      borderRight: "1px solid #6b7280",
+    },
+    mbottom3: {
+      fontSize: "10px",
+      fontWeight: "normal",
+      color: "#374151",
+      width: "60px",
+      padding: "4px 4px",
+      borderBottom: "1px solid #6b7280",
+      borderRight: "1px solid #6b7280",
+    },
+
+    rtop: {
+      fontSize: "10px",
+      fontWeight: "normal",
+      color: "#374151",
+      flex: 1,
+      padding: "4px 4px",
+      border: "1px solid #6b7280",
+      textAlign: "center",
+    },
+    rtop2: {
+      fontSize: "10px",
+      fontWeight: "normal",
+      color: "#374151",
+      padding: "4px 4px",
+      borderBottom: "1px solid #6b7280",
+      borderTop: "1px solid #6b7280",
+      borderLeft: "1px solid #6b7280",
+      width: "60px",
+      textAlign: "center",
+    },
+
+    rbottom: {
+      fontSize: "10px",
+      fontWeight: "normal",
+      color: "#374151",
+      flex: 1,
+      padding: "4px 4px",
+      borderBottom: "1px solid #6b7280",
+      borderRight: "1px solid #6b7280",
+      borderLeft: "1px solid #6b7280",
+    },
+    rbottom2: {
+      fontSize: "10px",
+      fontWeight: "normal",
+      color: "#374151",
+      width: "60px",
+      padding: "4px 4px",
+      borderBottom: "1px solid #6b7280",
+      borderLeft: "1px solid #6b7280",
+    },
+
     divider: {
       width: "100%",
       height: "1px",
@@ -137,63 +267,374 @@ const ViewPdf = (props: ViewPdfProps) => {
       position: "absolute",
       display: "flex",
       width: "100vw",
-      top: "130px",
+      top: "40px",
       alignItems: "center",
     },
     image: {
-      width: "60%",
+      marginTop: "200px",
+      width: "80%",
       opacity: 0.1,
     },
   });
 
   const Quixote = () => (
     <Document>
-      <Page style={styles.body} size={"A4"}>
+      <Page style={styles.body} size={"A4"} wrap>
         <View style={styles.imagebox}>
           <Image src="/dnhpda_logo.png" style={styles.image} />
         </View>
 
         <View>
-          <View>
-            <Text style={styles.title}>Bid Report</Text>
-          </View>
+          <Text style={styles.subtitle}>Form 2</Text>
+          <Text style={styles.subtitle}>(Rule 11)</Text>
+          <Text style={styles.title}>Dadra and Nagar Haveli</Text>
+          <Text style={styles.title}>Planning and development Authority</Text>
+          <View
+            style={{
+              height: "10px",
+            }}
+          ></View>
+          <Text style={styles.titledescription}>
+            &quot;A&quot; WING, Second Floor, District Secretariat,
+            Silvassa-396230.
+          </Text>
+          <Text style={styles.titledescription}>
+            GSTIN/UIN: 26AAALD0940J1ZE
+          </Text>
+        </View>
 
-          <View>
-            <Text style={styles.header}>Bid Details</Text>
+        <View
+          style={{
+            marginTop: "10px",
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <View
+            style={{
+              flexGrow: 1,
+              display: "flex",
+              justifyContent: "center",
+              flexDirection: "row",
+            }}
+          >
+            <Text
+              style={{
+                fontSize: "16px",
+                color: "#1f2937",
+                textAlign: "center",
+                fontWeight: "normal",
+                textDecoration: "underline",
+              }}
+            >
+              Bid - Report
+            </Text>
           </View>
-          <View style={styles.myflex}>
+        </View>
+        <View
+          style={{
+            marginTop: "10px",
+          }}
+        ></View>
+
+        <View style={styles.myflex}>
+          <Text style={styles.ltop}>Bid No.</Text>
+          <Text
+            style={{
+              fontSize: "10px",
+              fontWeight: "normal",
+              color: "#374151",
+              flex: 3,
+              padding: "4px 4px",
+              textAlign: "left",
+              borderTop: "1px solid #6b7280",
+              borderBottom: "1px solid #6b7280",
+            }}
+          >
+            {bid?.id}
+          </Text>
+          <Text
+            style={{
+              fontSize: "10px",
+              fontWeight: "normal",
+              color: "#374151",
+              flex: 1,
+              padding: "4px 4px",
+              border: "1px solid #6b7280",
+              textAlign: "left",
+            }}
+          >
+            Bid Date
+          </Text>
+          <Text
+            style={{
+              fontSize: "10px",
+              fontWeight: "normal",
+              color: "#374151",
+              flex: 3,
+              padding: "4px 4px",
+              textAlign: "left",
+              borderTop: "1px solid #6b7280",
+              borderBottom: "1px solid #6b7280",
+              borderRight: "1px solid #6b7280",
+            }}
+          >
+            {formateDate(new Date(bid?.createdAt))}
+          </Text>
+        </View>
+
+        <View style={styles.myflex}>
+          <Text style={styles.lbottom}>Property Name</Text>
+          <Text style={styles.mbottom}>{bid?.shop.property.name}</Text>
+          <Text style={styles.rbottom}>Shop Number</Text>
+          <Text style={styles.mbottom2}>{bid?.shop.shopNumber}</Text>
+        </View>
+
+        <View style={styles.myflex}>
+          <Text style={styles.lbottom}>Bid Title</Text>
+          <Text style={styles.mbottom}>{bid?.title}</Text>
+          <Text style={styles.rbottom}>Fees Amount</Text>
+          <Text style={styles.mbottom2}>{bid?.fees_amount ?? "-"}</Text>
+        </View>
+        <View style={styles.myflex}>
+          <Text style={styles.lbottom}>Emd Amount</Text>
+          <Text style={styles.mbottom}>{bid?.emd_amount ?? "-"}</Text>
+          <Text style={styles.rbottom}>Bg Amount</Text>
+          <Text style={styles.mbottom2}>{bid?.bg_amount ?? "-"}</Text>
+        </View>
+
+        <View style={styles.myflex}>
+          <Text style={styles.lbottom}>Bid Start Date</Text>
+          <Text style={styles.mbottom}>
+            {formatDateTime(new Date(bid?.bidstartdate))}
+          </Text>
+          <Text style={styles.rbottom}>Bid End Date</Text>
+          <Text style={styles.mbottom2}>
+            {" "}
+            {formateDate(new Date(bid?.bidenddate))}
+          </Text>
+        </View>
+        <View style={styles.myflex}>
+          <Text style={styles.lbottom}>Min Bid Value</Text>
+          <Text style={styles.mbottom}>
+            &#8377;{bid?.min_bid_amount ?? "0"}
+          </Text>
+          <Text style={styles.rbottom}>Max Bidding</Text>
+          <Text style={styles.mbottom2}>
+            {bid?.is_auction == true ? bid?.max_bid_amount ?? "0" : "N/A"}
+          </Text>
+        </View>
+
+        <View style={styles.myflex}>
+          <Text style={styles.lbottom}>Allowed Bidder Category</Text>
+          <Text style={styles.mbottom}>
+            {" "}
+            {bid?.is_open ? "Open Bid, " : ""}
+            {bid?.is_woman ? "For Women, " : ""}
+            {bid?.is_reserved ? "For Reserved Category, " : ""}
+            {bid?.is_differently_abled ? "For Differently Abled, " : ""}
+            {bid?.is_msme ? "For MSME, " : ""}
+            {bid?.is_sc_st ? "For SC/ST, " : ""}
+          </Text>
+          <Text style={styles.rbottom}>Bidders Count</Text>
+          <Text style={styles.mbottom2}>{bid?.bidderscount ?? "-"}</Text>
+        </View>
+
+        {winnder && (
+          <>
+            <View style={styles.myflex}>
+              <Text style={styles.lbottom}>Winner Name</Text>
+              <Text style={styles.mbottom}>
+                {winnder?.user.firstName} {winnder?.user.lastName}
+              </Text>
+              <Text style={styles.rbottom}>Winner Mobile</Text>
+              <Text style={styles.mbottom2}>{winnder?.user.contactone}</Text>
+            </View>
+          </>
+        )}
+
+        <View
+          style={{
+            marginTop: "5px",
+          }}
+        ></View>
+
+        <View style={styles.myflex}>
+          <Text
+            style={{
+              fontSize: "10px",
+              fontWeight: "normal",
+              color: "#374151",
+              width: "40px",
+              padding: "4px 4px",
+              border: "1px solid #6b7280",
+              textAlign: "center",
+            }}
+          >
+            No
+          </Text>
+          <Text style={styles.mtop2}>Bidder Name</Text>
+          <Text style={styles.mtop3}>Date</Text>
+          <Text style={styles.mtop3}>Amount</Text>
+          <Text style={styles.mtop3}>Status</Text>
+          <Text style={styles.mtop2}>Remark</Text>
+        </View>
+
+        {bidderList.map((bidder: any, index: number) => (
+          <View key={index} style={styles.myflex}>
+            <Text
+              style={{
+                fontSize: "10px",
+                fontWeight: "normal",
+                color: "#374151",
+                width: "40px",
+                padding: "4px 4px",
+                textAlign: "center",
+                borderBottom: "1px solid #6b7280",
+                borderRight: "1px solid #6b7280",
+                borderLeft: "1px solid #6b7280",
+              }}
+            >
+              1
+            </Text>
+            <Text style={styles.mbottom2}>
+              {bidder.firstName} - {bidder.lastName}
+            </Text>
+            <Text style={styles.mbottom3}>
+              {formateDate(new Date(bidder.createdAt))}
+            </Text>
+            <Text style={styles.mbottom3}>{bidder.amount ?? "-"}</Text>
+            <Text style={styles.mbottom3}>{bidder.status ?? "-"}</Text>
+            <Text style={styles.mbottom2}>{bidder.reamaks ?? "-"}</Text>
+          </View>
+        ))}
+
+        <View
+          fixed
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            position: "absolute",
+            bottom: "30px",
+            left: "0px",
+            width: "100%",
+            margin: "0px 20px",
+          }}
+        >
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "4px",
+              justifyContent: "flex-end",
+              paddingBottom: "10px",
+            }}
+          ></View>
+
+          <View
+            style={{
+              flexGrow: 1,
+            }}
+          ></View>
+
+          <View
+            style={{
+              textAlign: "center",
+            }}
+          >
+            <View
+              style={{
+                height: "60px",
+              }}
+            ></View>
+
+            <Text
+              style={{
+                fontSize: "10px",
+                color: "#6b7280",
+              }}
+            >
+              For Dadra and Nagar Haveli
+            </Text>
+            <Text
+              style={{
+                marginTop: "2px",
+                fontSize: "10px",
+                color: "#6b7280",
+              }}
+            >
+              Planning and Development Authority
+            </Text>
+          </View>
+        </View>
+      </Page>
+    </Document>
+  );
+
+  // const Quixote = () => (
+  //   <Document>
+  //     <Page style={styles.body} size={"A4"}>
+  //       <View style={styles.imagebox}>
+  //         <Image src="/dnhpda_logo.png" style={styles.image} />
+  //       </View>
+
+  //       <View>
+  //         <View>
+  //           <Text style={styles.title}>Bid Report</Text>
+  //         </View>
+
+  //         <View>
+  //           <Text style={styles.header}>Bid Details</Text>
+  //         </View>
+  {
+    /* <View style={styles.myflex}>
             <Text style={styles.text1}>1 Organization Name</Text>
             <Text style={styles.text2}>PDA DNH</Text>
-          </View>
+          </View> */
+  }
 
-          <View style={styles.myflex}>
+  {
+    /* <View style={styles.myflex}>
             <Text style={styles.text1}>2 Property Name</Text>
             <Text style={styles.text2}>{bid?.shop.property.name}</Text>
-          </View>
+          </View> */
+  }
 
-          <View style={styles.myflex}>
+  {
+    /* <View style={styles.myflex}>
             <Text style={styles.text1}>3 Shop Number</Text>
             <Text style={styles.text2}>{bid?.shop.shopNumber}</Text>
-          </View>
+          </View> */
+  }
 
-          <View style={styles.myflex}>
+  {
+    /* <View style={styles.myflex}>
             <Text style={styles.text1}>4 Bid Title</Text>
             <Text style={styles.text2}>{bid?.title}</Text>
-          </View>
+          </View> */
+  }
 
-          <View style={styles.myflex}>
+  {
+    /* <View style={styles.myflex}>
             <Text style={styles.text1}>5 Bid Description</Text>
             <Text style={styles.text2}>{bid?.description ?? "-"}</Text>
-          </View>
+          </View> */
+  }
 
-          <View style={styles.myflex}>
+  {
+    /* <View style={styles.myflex}>
             <Text style={styles.text1}>6 Bid Instructions</Text>
             <Text style={styles.text2}>{bid?.instruction ?? "-"}</Text>
-          </View>
+          </View> */
+  }
 
-          {/* second section start from here */}
+  {
+    /* second section start from here */
+  }
 
-          <View style={styles.myflex}>
+  {
+    /* <View style={styles.myflex}>
             <Text style={styles.text1}>7 Bid Start Date Time</Text>
             <Text style={styles.text2}>
               {formatDateTime(new Date(bid?.bidstartdate))}
@@ -205,16 +646,20 @@ const ViewPdf = (props: ViewPdfProps) => {
             <Text style={styles.text2}>
               {formatDateTime(new Date(bid?.bidenddate))}
             </Text>
-          </View>
+          </View> */
+  }
 
-          <View style={styles.myflex}>
+  {
+    /* <View style={styles.myflex}>
             <Text style={styles.text1}>9 Bid Deadline Date</Text>
             <Text style={styles.text2}>
               {formateDate(new Date(bid?.biddeclarationdate))}
             </Text>
-          </View>
+          </View> */
+  }
 
-          <View style={styles.myflex}>
+  {
+    /* <View style={styles.myflex}>
             <Text style={styles.text1}>10 Fees Amount</Text>
             <Text style={styles.text2}>&#8377;{bid?.fees_amount ?? "0"}</Text>
           </View>
@@ -227,45 +672,58 @@ const ViewPdf = (props: ViewPdfProps) => {
           <View style={styles.myflex}>
             <Text style={styles.text1}>12 BG Amount</Text>
             <Text style={styles.text2}>&#8377;{bid?.bg_amount ?? "0"}</Text>
-          </View>
+          </View> */
+  }
 
-          <View style={styles.myflex}>
+  {
+    /* <View style={styles.myflex}>
             <Text style={styles.text1}>13 Minimum Bid</Text>
             <Text style={styles.text2}>
               &#8377;{bid?.min_bid_amount ?? "0"}
             </Text>
-          </View>
-          <View style={styles.myflex}>
+          </View> */
+  }
+  {
+    /* <View style={styles.myflex}>
             <Text style={styles.text1}>14 Current Bid</Text>
             <Text style={styles.text2}>
               {bid?.is_auction == true ? bid?.max_bid_amount ?? "0" : "N/A"}
             </Text>
           </View>
 
-          {/* thired section start here */}
           <View style={styles.myflex}>
             <Text style={styles.text1}>16 Document Title</Text>
             <Text style={styles.text2}>{bid?.docone ?? "-"}</Text>
-          </View>
+          </View> */
+  }
 
-          <View style={styles.myflex}>
+  {
+    /* <View style={styles.myflex}>
             <Text style={styles.text1}>17 Document Description</Text>
             <Text style={styles.text2}>{bid?.doconedescription ?? "-"}</Text>
-          </View>
-          <View style={styles.myflex}>
+          </View> */
+  }
+  {
+    /* <View style={styles.myflex}>
             <Text style={styles.text1}>18 File Number</Text>
             <Text style={styles.text2}>{bid?.t_and_c_file_number ?? "-"}</Text>
-          </View>
-          <View style={styles.myflex}>
+          </View> */
+  }
+  {
+    /* <View style={styles.myflex}>
             <Text style={styles.text1}>19 File Subject</Text>
             <Text style={styles.text2}>{bid?.t_and_c_description ?? "-"}</Text>
-          </View>
-          {/* <View style={styles.myflex}>
+          </View> */
+  }
+  {
+    /* <View style={styles.myflex}>
             <Text style={styles.text1}>20 Terms & Conditions File</Text>
             <Text style={styles.text2}>{bid?.t_and_c_upload ?? "-"}</Text>
-          </View> */}
+          </View> */
+  }
 
-          <View style={styles.myflex}>
+  {
+    /* <View style={styles.myflex}>
             <Text style={styles.text1}>20 Allowed Bidder Category</Text>
             <Text style={styles.text2}>
               {bid?.is_open ? "Open Bid, " : ""}
@@ -275,9 +733,11 @@ const ViewPdf = (props: ViewPdfProps) => {
               {bid?.is_msme ? "For MSME, " : ""}
               {bid?.is_sc_st ? "For SC/ST, " : ""}
             </Text>
-          </View>
+          </View> */
+  }
 
-          {winnder && (
+  {
+    /* {winnder && (
             <>
               <View>
                 <Text style={styles.header}>Winner Bidder Details</Text>
@@ -293,9 +753,11 @@ const ViewPdf = (props: ViewPdfProps) => {
                 <Text style={styles.text2}>{winnder?.user.contactone}</Text>
               </View>
             </>
-          )}
+          )} */
+  }
 
-          <View>
+  {
+    /* <View>
             <Text style={styles.header}>Bidder List Details</Text>
           </View>
 
@@ -334,7 +796,8 @@ const ViewPdf = (props: ViewPdfProps) => {
         </View>
       </Page>
     </Document>
-  );
+  ); */
+  }
 
   const [isClient, setIsClient] = useState(false);
 

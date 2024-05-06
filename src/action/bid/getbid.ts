@@ -51,6 +51,12 @@ const GetBid = async (
       bid.max_bid_amount = bid.min_bid_amount;
     }
 
+    let uniquebidders = bid.bid_transact.filter(
+      (v: any, i: any, a: any) =>
+        a.findIndex((t: any) => t.userId === v.userId) === i
+    );
+    bid.bidderscount = uniquebidders.length;
+
     return {
       status: true,
       data: bid,

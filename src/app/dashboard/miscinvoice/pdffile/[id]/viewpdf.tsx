@@ -801,7 +801,15 @@ const ViewPdf = (props: ViewPdfProps) => {
                   )
                 ) + " Only"
               : "-"}
-            ) on account as below :-
+            )
+          </Text>
+          <Text
+            style={{
+              fontSize: 10,
+              color: "grey",
+            }}
+          >
+            on account as below :-
           </Text>
           {account?.remark_cat_one && account?.remark_cat_one != "" ? (
             <Text
