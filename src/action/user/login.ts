@@ -27,8 +27,7 @@ const Login = async (
         functionname: "Login",
       };
 
-    const password = compare(payload.password, user.password!);
-
+    const password = await compare(payload.password, user.password!);
     if (!password)
       return {
         status: false,

@@ -2,6 +2,7 @@
 
 import GetProperty from "@/action/property/getproperty";
 import GetShopFromProperty from "@/action/property/getshopsfromproperty";
+import BackButton from "@/components/backbutton";
 import { LucideArrowBigLeft, LucideArrowBigRight } from "@/components/icons";
 import { capitalcase, removeDuplicates } from "@/utils/methods";
 import { ShopStatus, property, shop } from "@prisma/client";
@@ -82,15 +83,43 @@ const PropertiesView = (props: PropertiesViewProps) => {
     <div className="p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
         <div className="bg-white rounded-sm shadow-sm">
-          <p className="text-xl p-2 border-b border-gray-300 font-semibold">
-            Property Details
-          </p>
-          <p className="px-2 text-sm">{property?.name}</p>
-          <p className="px-2 text-sm">{property?.address}</p>
-          <p className="px-2 text-sm">{property?.locality}</p>
-          <p className="px-2 text-sm">
-            {property?.city}-{property?.pincode}
-          </p>
+          <div className="flex gap-2 border-b border-gray-300">
+            <BackButton />
+            <p className="text-xl p-2  font-semibold">Property Details</p>
+          </div>
+          <div className="px-4 py-2 grid grid-cols-2 gap-4 mt-2">
+            <p className="text-xs leading-3">
+              Propery Name <br />
+              <span className="text-sm text-gray-500 font-medium">
+                {property?.name}
+              </span>
+            </p>
+            <p className="text-xs leading-3">
+              Locality <br />
+              <span className="text-sm text-gray-500 font-medium">
+                {property?.locality}
+              </span>
+            </p>
+            <p className="text-xs leading-3">
+              City <br />
+              <span className="text-sm text-gray-500 font-medium">
+                {property?.city}
+              </span>
+            </p>
+
+            <p className="text-xs leading-3">
+              Pin Code <br />
+              <span className="text-sm text-gray-500 font-medium">
+                {property?.pincode}
+              </span>
+            </p>
+            <p className="text-xs leading-3 col-span-2">
+              Address <br />
+              <span className="text-sm text-gray-500 font-medium">
+                {property?.address}
+              </span>
+            </p>
+          </div>
           <div className="flex gap-2 p-2 mt-2">
             <div className="grow"></div>
 

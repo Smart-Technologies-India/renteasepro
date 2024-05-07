@@ -923,3 +923,60 @@ export function LucideNewspaper(props: SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+export function CarbonWarningSquare(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      viewBox="0 0 32 32"
+      {...props}
+    >
+      <path
+        fill="currentColor"
+        d="M16 20a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 16 20M15 9h2v9h-2z"
+      ></path>
+      <path
+        fill="currentColor"
+        d="M26 28H6a2.002 2.002 0 0 1-2-2V6a2.002 2.002 0 0 1 2-2h20a2.002 2.002 0 0 1 2 2v20a2.002 2.002 0 0 1-2 2M6 6v20h20.001L26 6Z"
+      ></path>
+    </svg>
+  );
+}
+
+export function CarbonSoftwareResourceResource(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      viewBox="0 0 32 32"
+      {...props}
+    >
+      <path
+        fill="currentColor"
+        d="m6.899 10.283l3.394-3.394l1.414 1.414l-3.394 3.394zM4.9 19.7l-2.3-2.3C2.2 17 2 16.5 2 16s.2-1 .6-1.4l2.3-2.3l1.4 1.4L4 16l2.3 2.3zm1.989 2.007l1.414-1.414l3.394 3.394l-1.414 1.414zM16 30c-.5 0-1-.2-1.4-.6l-2.3-2.3l1.4-1.4L16 28l2.3-2.3l1.4 1.4l-2.3 2.3c-.4.4-.9.6-1.4.6m4.293-6.303l3.394-3.394l1.414 1.414l-3.394 3.394zM27.1 19.7l-1.4-1.4L28 16l-2.3-2.3l1.4-1.4l2.3 2.3c.4.4.6.9.6 1.4s-.2 1-.6 1.4zM20.303 8.313l1.414-1.414l3.394 3.394l-1.414 1.414zM16 2c-.5 0-1 .2-1.4.6l-2.3 2.3l1.4 1.4L16 4l2.3 2.3l1.4-1.4l-2.3-2.3C17 2.2 16.5 2 16 2"
+      ></path>
+    </svg>
+  );
+}
+
+export function MaterialSymbolsDoNotDisturbOnOutline(
+  props: SVGProps<SVGSVGElement>
+) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      viewBox="0 0 24 24"
+      {...props}
+    >
+      <path
+        fill="currentColor"
+        d="M7 13h10v-2H7zm5 9q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12q0-3.35-2.325-5.675T12 4Q8.65 4 6.325 6.325T4 12q0 3.35 2.325 5.675T12 20m0-8"
+      ></path>
+    </svg>
+  );
+}

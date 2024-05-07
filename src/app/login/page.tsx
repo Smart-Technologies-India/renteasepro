@@ -58,21 +58,21 @@ export default function LoginPage() {
   return (
     <>
       <div className="p-10 rounded-md min-h-screen w-full bg-[#f5f6f8] flex">
-        <div className="flex-2 relative bg-gradient-to-tr from-[#2350f0] to-blue-400  grid place-items-center  rounded-l-md">
+        <div className="flex-1 relative bg-gradient-to-tr from-[#2350f0] to-blue-400  grid place-items-center  rounded-l-md">
           <div></div>
+          <div className="w-[28rem] h-64 relative bg-white rounded-md mt-10">
+            <Image
+              fill={true}
+              src="/loginbg.png"
+              alt="error"
+              className=" object-cover object-center rounded-sm drop-shadow-2xl"
+            />
+          </div>
           <p className="text-white text-3xl text-center leading-relaxed font-bold">
             Planning and Development
             <br />
             Authority, DNH
           </p>
-          <div className="w-[28rem] h-64 relative">
-            <Image
-              fill={true}
-              src="/login.png"
-              alt="error"
-              className=" object-cover object-center rounded-sm drop-shadow-2xl"
-            />
-          </div>
           <div></div>
         </div>
         <div className="flex-1 grid place-items-center bg-white  rounded-r-md">

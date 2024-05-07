@@ -24,6 +24,15 @@ import { getCookie } from "cookies-next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  AntDesignCheckOutlined,
+  CarbonSoftwareResourceResource,
+  CarbonWarningSquare,
+  Fa6RegularCalendarXmark,
+  Fa6RegularHourglassHalf,
+  MaterialSymbolsCalendarClockRounded,
+  MaterialSymbolsDoNotDisturbOnOutline,
+} from "@/components/icons";
 
 interface ShowShopProps {
   id: number;
@@ -87,7 +96,7 @@ const ShopView = (props: ShowShopProps) => {
             year < currentYear; // Determine if month should be active or inactive
           rentdetails.push({
             name: monthDate.toLocaleString("default", { month: "long" }),
-            status: monthStatus ? monthStatus.status : "INACTIVE",
+            status: monthStatus ? monthStatus.status : "NONE",
             isActive: isActive,
           });
         }
@@ -201,12 +210,82 @@ const ShopView = (props: ShowShopProps) => {
       <div className="flex gap-4 items-center mb-4">
         <BackButton />
         <h1 className="text-[#162f57] text-2xl font-semibold">Shop Details</h1>
+        <div className="grow"></div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
         <div className="bg-white rounded-sm shadow-sm">
           <div className="flex gap-2 border-b border-gray-300 py-2 px-4">
             <p className="text-xl  font-semibold">Details</p>
             <div className="grow"></div>
+            {user?.role === "ADMIN" && (
+              <div>
+                {bid ? (
+                  <>
+                    {bid.bid_status == BidStatus.EXPIRED ? (
+                      <>
+                        <Link
+                          href={`/dashboard/shops/createbid/${props.id}`}
+                          className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                        >
+                          Create Bid
+                        </Link>
+                      </>
+                    ) : (
+                      <>
+                        {bid && (
+                          <Link
+                            href={`/dashboard/shops/shopbidhistory/${props.id}`}
+                            className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                          >
+                            Bid History
+                          </Link>
+                        )}
+                        {isrented && (
+                          <button
+                            onClick={() => {
+                              return router.push(
+                                `/dashboard/rents/edit/${rentdata?.id}`
+                              );
+                            }}
+                            className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                          >
+                            Manage Shop
+                          </button>
+                        )}
+                        {bid ? (
+                          <></>
+                        ) : (
+                          <Link
+                            href={`/dashboard/shops/createbid/${props.id}`}
+                            className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                          >
+                            Create Bid
+                          </Link>
+                        )}
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href={`/dashboard/shops/createbid/${props.id}`}
+                      className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                    >
+                      Create Bid
+                    </Link>
+                  </>
+                )}
+
+                {!isrented && (
+                  <Link
+                    href={`/dashboard/shops/createrent/${props.id}`}
+                    className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                  >
+                    Add Rent
+                  </Link>
+                )}
+              </div>
+            )}
           </div>
           <div className="px-4 py-2 grid grid-cols-2 gap-4 mt-2">
             <p className="text-xs leading-3">
@@ -215,6 +294,13 @@ const ShopView = (props: ShowShopProps) => {
                 {shop?.property.name}
               </span>
             </p>
+            <p className="text-xs leading-3">
+              Shop Category Name <br />
+              <span className="text-sm text-gray-500 font-medium">
+                {shop?.shop_category.name}
+              </span>
+            </p>
+
             <p className="text-xs leading-3">
               Shop Number <br />
               <span className="text-sm text-gray-500 font-medium">
@@ -225,13 +311,6 @@ const ShopView = (props: ShowShopProps) => {
               Shop Size <br />
               <span className="text-sm text-gray-500 font-medium">
                 {shop?.shopSize}
-              </span>
-            </p>
-
-            <p className="text-xs leading-3">
-              Shop Category Name <br />
-              <span className="text-sm text-gray-500 font-medium">
-                {shop?.shop_category.name}
               </span>
             </p>
 
@@ -249,78 +328,6 @@ const ShopView = (props: ShowShopProps) => {
               </span>
             </p>
           </div>
-
-          {user?.role === "ADMIN" && (
-            <div className="flex gap-2 p-2">
-              <div className="grow"></div>
-
-              {bid ? (
-                <>
-                  {bid.bid_status == BidStatus.EXPIRED ? (
-                    <>
-                      <Link
-                        href={`/dashboard/shops/createbid/${props.id}`}
-                        className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
-                      >
-                        Create Bid
-                      </Link>
-                    </>
-                  ) : (
-                    <>
-                      {bid && (
-                        <Link
-                          href={`/dashboard/shops/shopbidhistory/${props.id}`}
-                          className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
-                        >
-                          Bid History
-                        </Link>
-                      )}
-                      {isrented && (
-                        <button
-                          onClick={() => {
-                            return router.push(
-                              `/dashboard/rents/edit/${rentdata?.id}`
-                            );
-                          }}
-                          className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
-                        >
-                          Manage Shop
-                        </button>
-                      )}
-                      {bid ? (
-                        <></>
-                      ) : (
-                        <Link
-                          href={`/dashboard/shops/createbid/${props.id}`}
-                          className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
-                        >
-                          Create Bid
-                        </Link>
-                      )}
-                    </>
-                  )}
-                </>
-              ) : (
-                <>
-                  <Link
-                    href={`/dashboard/shops/createbid/${props.id}`}
-                    className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
-                  >
-                    Create Bid
-                  </Link>
-                </>
-              )}
-
-              {!isrented && (
-                <Link
-                  href={`/dashboard/shops/createrent/${props.id}`}
-                  className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
-                >
-                  Add Rent
-                </Link>
-              )}
-            </div>
-          )}
         </div>
         <div className="bg-white rounded-sm shadow-sm">
           <iframe
@@ -483,10 +490,21 @@ const ShopView = (props: ShowShopProps) => {
             <p className="text-xl p-2 border-b border-gray-300 font-semibold">
               Tenant Details
             </p>
-            <p className="px-2 text-sm">
-              {rentdata!.user.firstName} {rentdata!.user?.lastName}
-            </p>
-            <p className="px-2 text-sm">{rentdata!.user?.contactone}</p>
+
+            <div className="px-4 py-2 grid grid-cols-2 gap-4 mt-2">
+              <p className="text-xs leading-3">
+                Tenant Name <br />
+                <span className="text-sm text-gray-500 font-medium">
+                  {rentdata!.user.firstName} {rentdata!.user?.lastName}
+                </span>
+              </p>
+              <p className="text-xs leading-3">
+                Tenant Number <br />
+                <span className="text-sm text-gray-500 font-medium">
+                  {rentdata!.user?.contactone}
+                </span>
+              </p>
+            </div>
           </div>
           <div className="bg-white rounded-sm shadow-sm pb-4">
             <div className="border-b border-gray-300 flex items-center pr-2">
@@ -495,7 +513,7 @@ const ShopView = (props: ShowShopProps) => {
               {user?.role! === "ADMIN" && (
                 <Link
                   href={`/dashboard/userrent/history/${rentdata?.id}`}
-                  className="text-blue-500 border-blue-500 border-2 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                  className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                 >
                   Rent History
                 </Link>
@@ -509,27 +527,37 @@ const ShopView = (props: ShowShopProps) => {
                 </Link>
               )}
             </div>
-            <p className="px-2 text-sm">{}</p>
-            <p className="px-2 text-sm">
-              Start Date & Time :
-              {formateDate(new Date(rentdata?.rent_start_date ?? ""))}
-            </p>
-            <p className="px-2 text-sm">
-              End Date & Time :
-              {formateDate(new Date(rentdata?.rent_end_date ?? ""))}
-            </p>
-            <p className="px-2 text-sm">
-              Rent Amount : {rentdata?.rent_amount}
-            </p>
-            <p className="px-2 text-sm">
-              Pending Amount :
-              {rentTransact.reduce(
-                (accumulator, currentValue) =>
-                  accumulator + currentValue.amount,
-                0
-              )}{" "}
-              - ({rentTransact.length} Months)
-            </p>
+            <div className="px-4 py-2 grid grid-cols-2 gap-4 mt-2">
+              <p className="text-xs leading-3">
+                Start Date & Time <br />
+                <span className="text-sm text-gray-500 font-medium">
+                  {formateDate(new Date(rentdata?.rent_start_date ?? ""))}
+                </span>
+              </p>
+              <p className="text-xs leading-3">
+                End Date & Time <br />
+                <span className="text-sm text-gray-500 font-medium">
+                  {formateDate(new Date(rentdata?.rent_end_date ?? ""))}
+                </span>
+              </p>
+              <p className="text-xs leading-3">
+                Rent Amount <br />
+                <span className="text-sm text-gray-500 font-medium">
+                  {rentdata?.rent_amount}
+                </span>
+              </p>
+              <p className="text-xs leading-3">
+                Pending Amount <br />
+                <span className="text-sm text-gray-500 font-medium">
+                  {rentTransact.reduce(
+                    (accumulator, currentValue) =>
+                      accumulator + currentValue.amount,
+                    0
+                  )}
+                  - ({rentTransact.length} Months)
+                </span>
+              </p>
+            </div>
           </div>
         </div>
       )}
@@ -545,7 +573,7 @@ const ShopView = (props: ShowShopProps) => {
                 Rent History - {item.year}
               </p>
 
-              <div className="grow grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 md:grid-cols-4 gap-2 flex-wrap justify-center items-center">
+              <div className="grow grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 md:grid-cols-4 gap-2 flex-wrap justify-center items-center p-2">
                 {item.rentdetails.map((item, index) => (
                   <PropertiesDeatils key={index} {...item} />
                 ))}
@@ -565,64 +593,82 @@ interface PropertiesDeatilsProps {
 }
 
 const PropertiesDeatils = (props: PropertiesDeatilsProps) => {
+  const textname = (): string => {
+    switch (props.status) {
+      case RentTransactStatus.INACTIVE:
+        return "No Due";
+
+      case RentTransactStatus.PAID:
+        return "Paid";
+
+      case RentTransactStatus.DUE:
+        return "Due";
+
+      case RentTransactStatus.LATE:
+        return "Late";
+
+      case RentTransactStatus.MONTHCROSS:
+        return "Month Cross";
+
+      default:
+        return "Vacant";
+    }
+  };
+
   const Component = (): React.ReactNode => {
     switch (props.status) {
       case RentTransactStatus.INACTIVE:
         return (
-          <div className="bg-gray-200 px-3 grid place-items-center border border-gray-200 mt-1 rounded-sm">
-            <p className="text-black font-semibold leading-4 text-xs">N/A</p>
-            {/* <AntDesignCheckOutlined className="text-green-500 text-xl" /> */}
+          <div className="bg-indigo-200 grid place-items-center border border-gray-200 rounded-full w-8 h-8">
+            <CarbonWarningSquare className="text-indigo-500 text-lg" />
           </div>
         );
 
       case RentTransactStatus.PAID:
         return (
-          <div className="bg-green-400 px-3 grid place-items-center border border-green-400 mt-1 rounded-sm">
-            <p className="text-black font-semibold leading-4 text-xs">Paid</p>
-            {/* <AntDesignCheckOutlined className="text-green-500 text-xl" /> */}
+          <div className="bg-green-200 grid place-items-center border border-gray-200 rounded-full w-8 h-8">
+            <AntDesignCheckOutlined className="text-green-500 text-lg" />
           </div>
         );
 
       case RentTransactStatus.DUE:
         return (
-          <div className="bg-yellow-400 px-3 grid place-items-center border border-yellow-400 mt-1 rounded-sm">
-            <p className="text-black font-semibold leading-4 text-xs">Due</p>
-            {/* <MaterialSymbolsCalendarClockRounded className="text-yellow-500 text-xl" /> */}
+          <div className="bg-yellow-200 grid place-items-center border border-gray-200 rounded-full w-8 h-8">
+            <MaterialSymbolsCalendarClockRounded className="text-yellow-500 text-lg" />
           </div>
         );
       case RentTransactStatus.LATE:
         return (
-          <div className="bg-orange-400 px-3 grid place-items-center border border-orange-400 mt-1 rounded-sm">
-            <p className="text-black font-semibold leading-4 text-xs">Late</p>
-
-            {/* <Fa6RegularHourglassHalf className="text-orange-500 text-xl" /> */}
+          <div className="bg-orange-200 px-3 grid place-items-center border border-orange-400 mt-1 rounded-full">
+            <Fa6RegularHourglassHalf className="text-orange-500 text-lg" />
           </div>
         );
 
       case RentTransactStatus.MONTHCROSS:
         return (
-          <div className="bg-rose-400 px-3 grid place-items-center border border-rose-400 mt-1 rounded-sm">
-            <p className="text-black font-semibold leading-4 text-xs">
-              Month Cross
-            </p>
-            {/* <Fa6RegularCalendarXmark className="text-rose-500 text-xl" /> */}
+          <div className="bg-rose-200 grid place-items-center border border-gray-200 rounded-full w-8 h-8">
+            <Fa6RegularCalendarXmark className="text-rose-500 text-lg" />
           </div>
         );
 
       default:
         return (
-          <></>
-          // <div className="bg-gray-500 bg-opacity-10 h-7 grid place-items-center w-10 border border-gray-500 mt-1 rounded-sm"></div>
+          <div className="bg-rose-200 grid place-items-center border border-gray-200 rounded-full w-8 h-8">
+            <MaterialSymbolsDoNotDisturbOnOutline className="text-rose-500 text-lg" />
+          </div>
         );
     }
   };
 
   return (
     <div
-      className={`p-2  flex flex-col  items-center justify-start px-4 py-2 min-w-28`}
+      className={`p-1 flex items-center justify-start min-w-28 bg-[#F5F5F5] rounded-md gap-2`}
     >
-      <p className={`text-sm text-black`}>{props.name}</p>
       <Component />
+      <div>
+        <p className={`text-xs text-black`}>{props.name}</p>
+        <p className={`text-xs text-gray-500`}>{textname()}</p>
+      </div>
     </div>
   );
 };

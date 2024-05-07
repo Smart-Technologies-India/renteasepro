@@ -10,6 +10,7 @@ import { getCookie } from "cookies-next";
 import GetUser from "@/action/user/getuser";
 import BackButton from "@/components/backbutton";
 import searchShop from "@/action/shop/searchshop";
+import { LucideArrowBigLeft, LucideArrowBigRight } from "lucide-react";
 
 interface BidPropertiesViewProps {
   id: number;
@@ -92,25 +93,46 @@ const BidPropertiesView = (props: BidPropertiesViewProps) => {
 
   return (
     <div className="p-6">
-      <div className="flex gap-4 items-center">
-        <BackButton />
-        <h1 className="text-[#162f57] text-2xl font-semibold">
-          Property Details
-        </h1>
-      </div>
-
       {user?.role === "ADMIN" && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
           <div className="bg-white rounded-sm shadow-sm">
-            <p className="text-xl p-2 border-b border-gray-300 font-semibold">
-              Property Details
-            </p>
-            <p className="px-2 text-sm">{property?.name}</p>
-            <p className="px-2 text-sm">{property?.address}</p>
-            <p className="px-2 text-sm">{property?.locality}</p>
-            <p className="px-2 text-sm">
-              {property?.city}-{property?.pincode}
-            </p>
+            <div className="flex gap-1 border-b border-gray-300 px-2">
+              <BackButton />
+              <p className="text-lg p-2  font-semibold">Property Details</p>
+            </div>
+            <div className="px-4 py-2 grid grid-cols-2 gap-4 mt-2">
+              <p className="text-xs leading-3">
+                Propery Name <br />
+                <span className="text-sm text-gray-500 font-medium">
+                  {property?.name}
+                </span>
+              </p>
+              <p className="text-xs leading-3">
+                Locality <br />
+                <span className="text-sm text-gray-500 font-medium">
+                  {property?.locality}
+                </span>
+              </p>
+              <p className="text-xs leading-3">
+                City <br />
+                <span className="text-sm text-gray-500 font-medium">
+                  {property?.city}
+                </span>
+              </p>
+
+              <p className="text-xs leading-3">
+                Pin Code <br />
+                <span className="text-sm text-gray-500 font-medium">
+                  {property?.pincode}
+                </span>
+              </p>
+              <p className="text-xs leading-3 col-span-2">
+                Address <br />
+                <span className="text-sm text-gray-500 font-medium">
+                  {property?.address}
+                </span>
+              </p>
+            </div>
           </div>
 
           <div className="bg-white rounded-sm shadow-sm">
@@ -146,20 +168,10 @@ const BidPropertiesView = (props: BidPropertiesViewProps) => {
           </div>
           <div className="w-full bg-white rounded-sm shadow-sm mt-4">
             <div className="bg-white rounded-sm shadow-sm">
-              <p className="text-lg p-2 border-b border-gray-300 font-medium">
-                {capitalcase(selectedCategory)} Shops
-              </p>
-
-              <div className="flex p-2 gap-4 flex-wrap justify-start">
-                {filtershop.map((item: shop, index: number) => (
-                  <PropertiesDeatils
-                    key={index}
-                    id={item.id.toString()}
-                    status={item.status}
-                    count={item.shopNumber}
-                  />
-                ))}
-              </div>
+              <ShowShops
+                shops={filtershop}
+                name={capitalcase(selectedCategory) + " Shops"}
+              />
             </div>
           </div>
         </>
@@ -170,6 +182,62 @@ const BidPropertiesView = (props: BidPropertiesViewProps) => {
 
 export default BidPropertiesView;
 
+const ShowShops = (props: { shops: shop[]; name: string }) => {
+  const count = 20;
+  const [skip, setSkip] = useState(0);
+  const [shop, setShop] = useState<shop[]>(props.shops.slice(0, count));
+
+  const next = () => {
+    if (skip + count < props.shops.length) {
+      setSkip(skip + count);
+      setShop(props.shops.slice(skip + count, skip + count + count));
+    }
+  };
+  const prev = () => {
+    if (skip - count >= 0) {
+      setSkip(skip - count);
+      setShop(props.shops.slice(skip - count, skip));
+    }
+  };
+
+  useEffect(() => {
+    setSkip(0);
+    setShop(props.shops.slice(0, count));
+  }, [props.shops]);
+  return (
+    <>
+      <div className="flex  border-b border-gray-300 pr-4 items-center gap-2">
+        <p className="text-lg p-2 font-medium">{props.name}</p>
+        <div className="grow"></div>
+
+        <button
+          className="bg-white text-2xl rounded-full border border-black"
+          onClick={prev}
+        >
+          <LucideArrowBigLeft />
+        </button>
+
+        <button
+          className="bg-white text-2xl rounded-full border border-black"
+          onClick={next}
+        >
+          <LucideArrowBigRight />
+        </button>
+      </div>
+      <div className="flex p-2 gap-4 flex-wrap justify-start">
+        {shop.map((item: shop, index: number) => (
+          <PropertiesDeatils
+            key={index}
+            id={item.id.toString()}
+            status={item.status}
+            count={item.shopNumber}
+          />
+        ))}
+      </div>
+    </>
+  );
+};
+
 interface PropertiesDeatilsProps {
   count: string;
   status: string;
@@ -177,12 +245,36 @@ interface PropertiesDeatilsProps {
 }
 
 const PropertiesDeatils = (props: PropertiesDeatilsProps) => {
+  const getColor = (value: ShopStatus): string => {
+    switch (value) {
+      case ShopStatus.VACANT:
+        return "border-green-500 bg-gradient-to-r from-green-400 to-green-500";
+      case ShopStatus.AUCTION:
+        return "border-yellow-500 bg-gradient-to-r from-yellow-400 to-yellow-500";
+      case ShopStatus.MAINTENANCE:
+        return "border-blue-500 bg-gradient-to-r from-blue-400 to-blue-500";
+      case ShopStatus.RENTED:
+        return "border-red-500 bg-gradient-to-r from-red-400 to-red-500";
+      case ShopStatus.UNAVAILABLE:
+        return "border-purple-500 bg-gradient-to-r from-purple-400 to-purple-500";
+      default:
+        return "border-green-500 bg-gradient-to-r from-green-400 to-green-500";
+    }
+  };
   return (
     <Link href={`/dashboard/shops/details/${props.id}`}>
-      <div className="border p-2 rounded-md grid place-items-center px-4 py-2 min-w-28">
+      <div
+        className={`border rounded-md grid place-items-center p-2 min-w-24 `}
+      >
         <p className="text-xs">Shop No:</p>
         <p className="text-lg">{props.count}</p>
-        <p className="text-sm">{props.status}</p>
+        <p
+          className={`text-sm   text-white px-2 rounded ${getColor(
+            props.status as ShopStatus
+          )}`}
+        >
+          {props.status}
+        </p>
       </div>
     </Link>
   );

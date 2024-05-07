@@ -418,31 +418,3 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
 };
 
 export default UserRentDetailsView;
-
-interface PropertiesDeatilsProps {
-  name: string;
-  status: boolean;
-}
-
-const PropertiesDeatils = (props: PropertiesDeatilsProps) => {
-  return (
-    <>
-      <div
-        className={`p-2  flex flex-col  items-center justify-start px-4 py-2 min-w-28`}
-      >
-        <p className={`text-sm text-black`}>{props.name}</p>
-        <div
-          className={`text-sm h-7  mx-auto rounded-md mt-2 py-1 grid place-items-center w-10 border ${
-            props.status
-              ? "border-green-500 bg-green-500 bg-opacity-10"
-              : "border-gray-100 bg-gray-100"
-          }`}
-        >
-          {props.status && (
-            <AntDesignCheckOutlined className="text-green-500 text-xl" />
-          )}
-        </div>
-      </div>
-    </>
-  );
-};
