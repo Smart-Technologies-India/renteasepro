@@ -352,7 +352,7 @@ const ViewPdf = (props: ViewPdfProps) => {
           <Text style={styles.mbottom2}>
             PDADNH/INV/
             {new Date(account?.createdAt).getFullYear().toString()}/
-            {(parseInt(account?.id ?? "0") + 26).toString().padStart(4, "0")}
+            {(parseInt(account?.id ?? "0") + 25).toString().padStart(4, "0")}
           </Text>
         </View>
 
