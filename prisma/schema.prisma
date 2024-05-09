@@ -767,9 +767,9 @@ model account_receipt {
   accountCategoryTwoId   Int?
   account_category_three account_category?  @relation("account_category_three", fields: [accountCategoryThreeId], references: [id])
   accountCategoryThreeId Int?
-  amount                 Int                @db.MediumInt
-  amount_two             Int?
-  amount_three           Int?
+  amount                 String
+  amount_two             String?
+  amount_three           String?
   transaction_date       DateTime           @default(now())
   paymentmode            AccountPaymentMode @default(NEFT)
   transactionid          String?

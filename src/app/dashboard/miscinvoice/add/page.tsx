@@ -204,20 +204,30 @@ const CreateRentPage = () => {
   };
 
   const getcgest = () => {
-    const totalamount =
-      parseInt(amount.current?.value ?? "0") +
-      parseInt(amountTwo.current?.value ?? "0") +
-      parseInt(amountThree.current?.value ?? "0");
+    const amtone = amount.current?.value ? parseInt(amount.current?.value) : 0;
+    const amttwo = amountTwo.current?.value
+      ? parseInt(amountTwo.current?.value)
+      : 0;
+    const amtthree = amountThree.current?.value
+      ? parseInt(amountThree.current?.value)
+      : 0;
+
+    const totalamount = amtone + amttwo + amtthree;
 
     const cgest = parseInt(cgstPercentRef.current?.value ?? "0");
 
     return (totalamount * (cgest * 2)) / (100 + cgest * 2) / 2;
   };
   const getigest = () => {
-    const totalamount =
-      parseInt(amount.current?.value ?? "0") +
-      parseInt(amountTwo.current?.value ?? "0") +
-      parseInt(amountThree.current?.value ?? "0");
+    const amtone = amount.current?.value ? parseInt(amount.current?.value) : 0;
+    const amttwo = amountTwo.current?.value
+      ? parseInt(amountTwo.current?.value)
+      : 0;
+    const amtthree = amountThree.current?.value
+      ? parseInt(amountThree.current?.value)
+      : 0;
+
+    const totalamount = amtone + amttwo + amtthree;
 
     const igest = parseInt(igstPercentRef.current?.value ?? "0");
     return (totalamount * igest) / (100 + igest);

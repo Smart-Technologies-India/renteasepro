@@ -13,9 +13,9 @@ interface CreateAcountPayload {
   accountCategoryIdThree?: number;
   paymentmode: AccountPaymentMode;
   transaction_date: Date;
-  amount: number;
-  amountTwo?: number;
-  amountThree?: number;
+  amount: string;
+  amountTwo?: string;
+  amountThree?: string;
   transactionid?: string;
   bankname?: string;
   remarks?: string;
@@ -45,9 +45,13 @@ const CreateAccount = async (
           accountCategoryThreeId: payload.accountCategoryIdThree,
           amount_three: parseInt(payload.amountThree?.toString() || "0"),
           ...(payload.remarks && { remarks: payload.remarks }),
-          ...(payload.transactionid && { transactionid: payload.transactionid }),
+          ...(payload.transactionid && {
+            transactionid: payload.transactionid,
+          }),
           ...(payload.bankname && { bankname: payload.bankname }),
-          ...(payload.customercontact && { customercontact: payload.customercontact }),
+          ...(payload.customercontact && {
+            customercontact: payload.customercontact,
+          }),
         }),
       },
     });
