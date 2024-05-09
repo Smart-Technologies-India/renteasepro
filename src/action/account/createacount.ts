@@ -31,7 +31,7 @@ const CreateAccount = async (
       accountCategoryOneId: payload.accountCategoryId,
       paymentmode: payload.paymentmode,
       transaction_date: payload.transaction_date,
-      amount: parseInt(payload.amount.toString()),
+      amount: payload.amount.toString(),
       createdById: payload.createdById,
     };
     const account_receipt = await prisma.account_receipt.create({
@@ -39,11 +39,11 @@ const CreateAccount = async (
         ...data_to_update,
         ...(payload.accountCategoryIdTwo && {
           accountCategoryTwoId: payload.accountCategoryIdTwo,
-          amount_two: parseInt(payload.amountTwo?.toString() || "0"),
+          amount_two: payload.amountTwo?.toString(),
         }),
         ...(payload.accountCategoryIdThree && {
           accountCategoryThreeId: payload.accountCategoryIdThree,
-          amount_three: parseInt(payload.amountThree?.toString() || "0"),
+          amount_three: payload.amountThree?.toString(),
           ...(payload.remarks && { remarks: payload.remarks }),
           ...(payload.transactionid && {
             transactionid: payload.transactionid,
