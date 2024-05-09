@@ -350,11 +350,9 @@ const ViewPdf = (props: ViewPdfProps) => {
           <Text style={styles.mbottom}>{account?.customergst}</Text>
           <Text style={styles.rbottom}>Invoice No.</Text>
           <Text style={styles.mbottom2}>
-            PDA /{account?.id ?? "-"}/
-            {new Date(account?.createdAt).getFullYear().toString().slice(2)}-
-            {(new Date(account?.createdAt).getFullYear() + 1)
-              .toString()
-              .slice(2)}
+            PDADNH/INV/
+            {new Date(account?.createdAt).getFullYear().toString()}/
+            {(parseInt(account?.id ?? "0") + 26).toString().padStart(4, "0")}
           </Text>
         </View>
 

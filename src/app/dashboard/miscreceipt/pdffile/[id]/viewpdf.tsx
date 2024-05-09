@@ -226,12 +226,9 @@ const ViewPdf = (props: ViewPdfProps) => {
                   color: "#6b7280",
                 }}
               >
-                Receipt No. PDA /{account?.id ?? "-"}/{" "}
-                {new Date(account?.createdAt).getFullYear().toString().slice(2)}
-                -
-                {(new Date(account?.createdAt).getFullYear() + 1)
-                  .toString()
-                  .slice(2)}
+                Receipt No. PDADNH/online/
+                {new Date(account?.createdAt).getFullYear().toString()}/
+                {(account?.id ?? "0").toString().padStart(4, "0")}
               </Text>
             </View>
 
