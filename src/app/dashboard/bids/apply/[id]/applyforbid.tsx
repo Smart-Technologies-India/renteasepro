@@ -697,7 +697,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                               </div>
                             )}
                             <div className="flex justify-between mt-2">
-                              <p>User Bid Amount</p>
+                              <p>Your Last Bid</p>
                               <p>&#8377;{bidTransact.amount}</p>
                             </div>
                             <div className="mt-4"></div>
@@ -928,7 +928,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                             </div>
 
                             <div className="flex justify-between mt-2">
-                              <p>User Bid Amount</p>
+                              <p>Your Last Bid</p>
                               <p>&#8377;{bidTransact.amount}</p>
                             </div>
 

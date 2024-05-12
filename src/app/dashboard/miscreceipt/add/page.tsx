@@ -362,7 +362,7 @@ const CreateRentPage = () => {
               disabled
               className="w-full mt-4 bg-[#172e57] hover:bg-[#21427d]"
             >
-              Creating Rent...
+              Creating Receipt...
             </Button>
           ) : (
             <Button

@@ -1,5 +1,5 @@
 "use client";
-import numberToWrods from "number-to-words";
+import { ToWords } from "to-words";
 
 import GetBid from "@/action/bid/getbid";
 import GetFromUserBid from "@/action/bidpayment/getfromuserbid";
@@ -26,6 +26,8 @@ interface ViewPdfProps {
 }
 
 const ViewPdf = (props: ViewPdfProps) => {
+  const toWords = new ToWords();
+
   const [bid, setBid] = useState<any>();
   const [user, setUser] = useState<user>();
   const [payment, setPayment] = useState<bid_payment>();
@@ -479,10 +481,14 @@ const ViewPdf = (props: ViewPdfProps) => {
           Amount Chargeable (in words) :{" "}
           {"Indian Rupees " +
             capitalcase(
-              numberToWrods.toWords(
-                parseFloat(bid?.fees_amount ?? "0") +
-                  parseFloat(bid?.emd_amount ?? "0") +
-                  parseFloat(bid?.bg_amount ?? "0")
+              toWords.convert(
+                parseInt(
+                  (
+                    parseFloat(bid?.fees_amount ?? "0") +
+                    parseFloat(bid?.emd_amount ?? "0") +
+                    parseFloat(bid?.bg_amount ?? "0")
+                  ).toString()
+                )
               )
             ) +
             " Only"}
@@ -515,10 +521,14 @@ const ViewPdf = (props: ViewPdfProps) => {
               parseFloat(bid?.bg_amount ?? "0")}
             (
             {capitalcase(
-              numberToWrods.toWords(
-                parseFloat(bid?.fees_amount ?? "0") +
-                  parseFloat(bid?.emd_amount ?? "0") +
-                  parseFloat(bid?.bg_amount ?? "0")
+              toWords.convert(
+                parseInt(
+                  (
+                    parseFloat(bid?.fees_amount ?? "0") +
+                    parseFloat(bid?.emd_amount ?? "0") +
+                    parseFloat(bid?.bg_amount ?? "0")
+                  ).toString()
+                )
               )
             ) + " Only"}
             )
@@ -683,7 +693,6 @@ const ViewPdf = (props: ViewPdfProps) => {
       </Page>
     </Document>
   );
-
 
   const [isClient, setIsClient] = useState(false);
 

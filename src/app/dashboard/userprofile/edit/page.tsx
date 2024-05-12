@@ -651,7 +651,7 @@ const UserBidsRunning = () => {
         <div className="flex gap-4">
           <div className="grid items-center gap-1.5 w-full mt-4">
             <Label htmlFor="contactone">
-              Contact One <span className="text-rose-500">*</span>
+              Mobile Number <span className="text-rose-500">*</span>
             </Label>
             <Input
               id="contactone"
@@ -665,7 +665,7 @@ const UserBidsRunning = () => {
           </div>
           <div className="grid items-center gap-1.5 w-full mt-4">
             <Label htmlFor="contacttwo">
-              Contact Two{" "}
+               Alternate Contact Number
               <span className="text-[0.50rem] font-normal">(Optional)</span>
             </Label>
             <Input
@@ -1096,7 +1096,7 @@ const DocUploader = (props: DocUploaderProps) => {
       <div className="grow"></div>
       <p className="text-sm">
         {props.file != null
-          ? longtext(props.file.name, 10)
+          ? longtext(props.file.name, 6)
           : "No File Selected"}
       </p>
       <Button

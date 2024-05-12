@@ -12,6 +12,8 @@ import { useEffect, useState } from "react";
 const UserBidsRunning = () => {
   const userid: number = parseInt(getCookie("id") ?? "0");
 
+  const [pdffile, setPdffile] = useState<string | null>(null);
+
   const router = useRouter();
   const [isLoading, setLoading] = useState<boolean>(true);
 
@@ -256,12 +258,12 @@ const UserBidsRunning = () => {
 
         <div className="mt-2 flex gap-2">
           <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
-            <h1 className="text-sm text-black">Contact One</h1>
+            <h1 className="text-sm text-black">Mobile Number</h1>
             <p className="text-sm font-semibold">{user?.contactone ?? "-"}</p>
           </div>
 
           <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
-            <h1 className="text-sm text-black">Contact Two</h1>
+            <h1 className="text-sm text-black">Alternate Contact Number</h1>
             <p className="text-sm font-semibold">{user?.contacttwo ?? "-"}</p>
           </div>
         </div>
@@ -313,13 +315,20 @@ const UserBidsRunning = () => {
             <>
               <div className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between">
                 <p>Aadhar Card</p>
-                <Link
-                  target="_blank"
-                  href={getAadhar.path}
+                <button
+                  onClick={() => {
+                    setPdffile(getAadhar.path);
+                    setTimeout(() => {
+                      window.scrollTo({
+                        top: document.documentElement.scrollHeight,
+                        behavior: "smooth",
+                      });
+                    }, 500);
+                  }}
                   className="bg-gray-200 text-black py-1 px-4 rounded-md text-sm h-8 grid place-items-center"
                 >
                   View File
-                </Link>
+                </button>
               </div>
             </>
           ) : (
@@ -330,13 +339,20 @@ const UserBidsRunning = () => {
             <>
               <div className="flex gap-4 items-center  bg-gray-100 p-2 rounded justify-between">
                 <p>Pan Card</p>
-                <Link
-                  target="_blank"
-                  href={getPan.path}
+                <button
+                  onClick={() => {
+                    setPdffile(getPan.path);
+                    setTimeout(() => {
+                      window.scrollTo({
+                        top: document.documentElement.scrollHeight,
+                        behavior: "smooth",
+                      });
+                    }, 500);
+                  }}
                   className="bg-gray-200 text-black py-1 px-4 rounded-md text-sm h-8 grid place-items-center"
                 >
                   View File
-                </Link>
+                </button>
               </div>
             </>
           ) : (
@@ -347,13 +363,20 @@ const UserBidsRunning = () => {
             <>
               <div className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between">
                 <p>Bank Passbook</p>
-                <Link
-                  target="_blank"
-                  href={getBankPassbook.path}
+                <button
+                  onClick={() => {
+                    setPdffile(getBankPassbook.path);
+                    setTimeout(() => {
+                      window.scrollTo({
+                        top: document.documentElement.scrollHeight,
+                        behavior: "smooth",
+                      });
+                    }, 500);
+                  }}
                   className="bg-gray-200 text-black py-1 px-4 rounded-md text-sm h-8 grid place-items-center"
                 >
                   View File
-                </Link>
+                </button>
               </div>
             </>
           ) : (
@@ -364,13 +387,20 @@ const UserBidsRunning = () => {
             <>
               <div className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between">
                 <p>Photo</p>
-                <Link
-                  target="_blank"
-                  href={getPhoto.path}
+                <button
+                  onClick={() => {
+                    setPdffile(getPhoto.path);
+                    setTimeout(() => {
+                      window.scrollTo({
+                        top: document.documentElement.scrollHeight,
+                        behavior: "smooth",
+                      });
+                    }, 500);
+                  }}
                   className="bg-gray-200 text-black py-1 px-4 rounded-md text-sm h-8 grid place-items-center"
                 >
                   View File
-                </Link>
+                </button>
               </div>
             </>
           ) : (
@@ -381,13 +411,20 @@ const UserBidsRunning = () => {
             <>
               <div className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between">
                 <p>For Women</p>
-                <Link
-                  target="_blank"
-                  href={getWomenFile.path}
+                <button
+                  onClick={() => {
+                    setPdffile(getWomenFile.path);
+                    setTimeout(() => {
+                      window.scrollTo({
+                        top: document.documentElement.scrollHeight,
+                        behavior: "smooth",
+                      });
+                    }, 500);
+                  }}
                   className="bg-gray-200 text-black py-1 px-4 rounded-md text-sm h-8 grid place-items-center"
                 >
                   View File
-                </Link>
+                </button>
               </div>
             </>
           ) : (
@@ -398,13 +435,20 @@ const UserBidsRunning = () => {
             <>
               <div className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between">
                 <p>For Reserved Category</p>
-                <Link
-                  target="_blank"
-                  href={getCategory.path}
+                <button
+                  onClick={() => {
+                    setPdffile(getCategory.path);
+                    setTimeout(() => {
+                      window.scrollTo({
+                        top: document.documentElement.scrollHeight,
+                        behavior: "smooth",
+                      });
+                    }, 500);
+                  }}
                   className="bg-gray-200 text-black py-1 px-4 rounded-md text-sm h-8 grid place-items-center"
                 >
                   View File
-                </Link>
+                </button>
               </div>
             </>
           ) : (
@@ -415,13 +459,20 @@ const UserBidsRunning = () => {
             <>
               <div className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between">
                 <p>For Differently Abled</p>
-                <Link
-                  target="_blank"
-                  href={getAbled.path}
+                <button
+                  onClick={() => {
+                    setPdffile(getAbled.path);
+                    setTimeout(() => {
+                      window.scrollTo({
+                        top: document.documentElement.scrollHeight,
+                        behavior: "smooth",
+                      });
+                    }, 500);
+                  }}
                   className="bg-gray-200 text-black py-1 px-4 rounded-md text-sm h-8 grid place-items-center"
                 >
                   View File
-                </Link>
+                </button>
               </div>
             </>
           ) : (
@@ -432,13 +483,20 @@ const UserBidsRunning = () => {
             <>
               <div className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between">
                 <p>For MSME</p>
-                <Link
-                  target="_blank"
-                  href={getMsme.path}
+                <button
+                  onClick={() => {
+                    setPdffile(getMsme.path);
+                    setTimeout(() => {
+                      window.scrollTo({
+                        top: document.documentElement.scrollHeight,
+                        behavior: "smooth",
+                      });
+                    }, 500);
+                  }}
                   className="bg-gray-200 text-black py-1 px-4 rounded-md text-sm h-8 grid place-items-center"
                 >
                   View File
-                </Link>
+                </button>
               </div>
             </>
           ) : (
@@ -449,13 +507,20 @@ const UserBidsRunning = () => {
             <>
               <div className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between">
                 <p>For SC/ST</p>
-                <Link
-                  target="_blank"
-                  href={getStsc.path}
+                <button
+                  onClick={() => {
+                    setPdffile(getStsc.path);
+                    setTimeout(() => {
+                      window.scrollTo({
+                        top: document.documentElement.scrollHeight,
+                        behavior: "smooth",
+                      });
+                    }, 500);
+                  }}
                   className="bg-gray-200 text-black py-1 px-4 rounded-md text-sm h-8 grid place-items-center"
                 >
                   View File
-                </Link>
+                </button>
               </div>
             </>
           ) : (
@@ -466,13 +531,20 @@ const UserBidsRunning = () => {
             <>
               <div className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between">
                 <p>For Tribal</p>
-                <Link
-                  target="_blank"
-                  href={getTribal.path}
+                <button
+                  onClick={() => {
+                    setPdffile(getTribal.path);
+                    setTimeout(() => {
+                      window.scrollTo({
+                        top: document.documentElement.scrollHeight,
+                        behavior: "smooth",
+                      });
+                    }, 500);
+                  }}
                   className="bg-gray-200 text-black py-1 px-4 rounded-md text-sm h-8 grid place-items-center"
                 >
                   View File
-                </Link>
+                </button>
               </div>
             </>
           ) : (
@@ -480,6 +552,27 @@ const UserBidsRunning = () => {
           )}
         </div>
       </div>
+      {pdffile !== null && (
+        <>
+          <div className="w-full my-4">
+            {pdffile.endsWith(".pdf") && (
+              <embed
+                src={pdffile}
+                className="w-full h-[calc(100vh-50px)]"
+                type="application/pdf"
+              />
+            )}
+
+            {pdffile.endsWith(".jpg") ||
+            pdffile.endsWith(".jpeg") ||
+            pdffile.endsWith(".png") ? (
+              <div className="relative w-full">
+                <img src={pdffile} fill={true} alt="image" className="w-full" />
+              </div>
+            ) : null}
+          </div>
+        </>
+      )}
     </div>
   );
 };

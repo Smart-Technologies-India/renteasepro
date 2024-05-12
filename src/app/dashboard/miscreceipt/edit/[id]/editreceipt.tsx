@@ -16,9 +16,9 @@ import { useRouter } from "next/navigation";
 import {
   AccountPaymentMode,
   account_category,
-  misc_invoice,
+  account_receipt,
 } from "@prisma/client";
-import { handleDecimalChange, handleNumberChange } from "@/utils/methods";
+import { handleNumberChange } from "@/utils/methods";
 import { default as MulSelect } from "react-select";
 import { getCookie } from "cookies-next";
 import { Textarea } from "@/components/ui/textarea";
@@ -26,11 +26,17 @@ import AllAccountCategorys from "@/action/account/getallaccountcategory";
 import BackButton from "@/components/backbutton";
 import { toast } from "react-toastify";
 import { safeParse } from "valibot";
+import { AccountSchema } from "@/schema/createaccount";
 import { ApiResponseType } from "@/models/response";
-import CreateInvoice from "@/action/invoice/createinvoice";
-import { InvoiceSchema } from "@/schema/createinvoice";
+import UpdateAccount from "@/action/account/updateacount";
+import GetAccount from "@/action/account/getaccount";
+import { kMaxLength } from "buffer";
 
-const CreateRentPage = () => {
+interface UpdateReciptProps {
+  id: number;
+}
+
+const UpdateRecipt = (props: UpdateReciptProps) => {
   const router = useRouter();
   const createuserid: number = parseInt(getCookie("id") ?? "0");
 
@@ -59,22 +65,6 @@ const CreateRentPage = () => {
 
   const [startDPop, setStartDPop] = useState<boolean>(false);
 
-  const gstRef = useRef<HTMLInputElement>(null);
-  // const placeOfSupplyRef = useRef<HTMLInputElement>(null);
-  const [placeOfSupply, setPlaceOfSupply] = useState<string>("");
-  const customerAddressRef = useRef<HTMLTextAreaElement>(null);
-
-  const cgstRef = useRef<HTMLInputElement>(null);
-  const ugstRef = useRef<HTMLInputElement>(null);
-  const igstRef = useRef<HTMLInputElement>(null);
-  const cgstPercentRef = useRef<HTMLInputElement>(null);
-  const igstPercentRef = useRef<HTMLInputElement>(null);
-  const hsnRef = useRef<HTMLInputElement>(null);
-
-  const remarkoneRef = useRef<HTMLTextAreaElement>(null);
-  const remarktwoRef = useRef<HTMLTextAreaElement>(null);
-  const remarkthreeRef = useRef<HTMLTextAreaElement>(null);
-
   const paymentModes = [
     "CASH",
     "CHEQUE",
@@ -100,86 +90,67 @@ const CreateRentPage = () => {
         setCategory(accountcategoryresponse.data ?? []);
       }
 
+      const accountinfo = await GetAccount({ id: props.id });
+
+      if (accountinfo.status) {
+        console.log(accountinfo.data);
+        setTimeout(() => {
+          nameRef.current!.value = accountinfo.data?.customername ?? "0";
+          contactRef.current!.value = accountinfo.data?.customercontact ?? "0";
+          amount.current!.value = accountinfo.data?.amount.toString() ?? "0";
+          amountTwo.current!.value =
+            accountinfo.data?.amount_two?.toString() ?? "0";
+          amountThree.current!.value =
+            accountinfo.data?.amount_three?.toString() ?? "0";
+
+          setCategoryId(accountinfo.data?.accountCategoryOneId ?? 0);
+          setCategoryIdtwo(accountinfo.data?.accountCategoryTwoId ?? 0);
+          setCategoryIdthree(accountinfo.data?.accountCategoryThreeId ?? 0);
+          setTranscationDate(
+            new Date(accountinfo.data?.transaction_date ?? "")
+          );
+          setPaymentMode(accountinfo.data?.paymentmode ?? "NEFT");
+          transcationIdRef.current!.value =
+            accountinfo.data?.transactionid ?? "0";
+          banknameRef.current!.value = accountinfo.data?.bankname ?? "0";
+          remarkRef.current!.value = accountinfo.data?.remarks ?? "";
+        }, 500);
+      }
+
       setLoading(false);
     };
     init();
   }, []);
 
-  const getCgestPercent = (): string => {
-    const cgstpercent = cgstPercentRef.current?.value;
-    const igstpercent = igstPercentRef.current?.value;
-    if (cgstpercent && cgstpercent != "0" && cgstpercent != "") {
-      return cgstpercent ?? "0";
-    } else {
-      return igstpercent ?? "0";
-    }
-  };
-
-  const amounttogst = (amount: number): string => {
-    const tempamount: number = amount;
-
-    const cgest = cgstPercentRef.current?.value;
-    const igest = igstPercentRef.current?.value;
-
-    if (cgest && cgest != "0" && cgest != "") {
-      const percentage: number = parseInt(cgest ?? "0");
-      const value = amount * ((percentage * 2) / (100 + percentage * 2));
-
-      return (tempamount - value).toFixed(2);
-    } else {
-      const percentage: number = parseInt(igest ?? "0");
-      return (tempamount - (amount * percentage) / (100 + percentage)).toFixed(
-        2
-      );
-    }
-  };
-
-  const create = async () => {
+  const update = async () => {
     setIsCreating(true);
 
-    const result = safeParse(InvoiceSchema, {
+    const result = safeParse(AccountSchema, {
       customername: nameRef.current?.value,
-      customergst: gstRef.current?.value,
-      customerplaceofsupply: placeOfSupply,
       accountCategoryId: categoryId,
       paymentmode: paymentMode,
       transaction_date: transcationDate,
-      amount: parseInt(amount.current?.value ?? "0"),
-      hsn: hsnRef.current?.value,
-      cgst: cgstRef.current?.value ?? "0",
-      igst: igstRef.current?.value ?? "0",
-      ugst: ugstRef.current?.value ?? "0",
-      cgst_percent: getCgestPercent(),
+      amount: amount.current?.value,
     });
 
     if (result.success) {
-      const accountrespone: ApiResponseType<misc_invoice | null> =
-        await CreateInvoice({
+      const accountrespone: ApiResponseType<account_receipt | null> =
+        await UpdateAccount({
+          id: props.id,
           createdById: createuserid,
           accountCategoryId: result.output.accountCategoryId,
           accountCategoryIdTwo: categoryIdtwo,
           accountCategoryIdThree: categoryIdthree,
-          amount: amounttogst(result.output.amount),
-          amountTwo: amounttogst(parseInt(amountTwo.current?.value ?? "0")),
-          amountThree: amounttogst(parseInt(amountThree.current?.value ?? "0")),
+          amount: result.output.amount,
+          amountTwo: amountTwo.current?.value,
+          amountThree: amountThree.current?.value,
           bankname: banknameRef.current?.value,
           customercontact: contactRef.current?.value,
           customername: result.output.customername,
-          customeraddress: customerAddressRef.current?.value,
-          customergst: result.output.customergst,
-          customerplaceofsupply: result.output.customerplaceofsupply,
           paymentmode: result.output.paymentmode,
           remarks: remarkRef.current?.value,
           transaction_date: result.output.transaction_date,
           transactionid: transcationIdRef.current?.value,
-          hsn: result.output.hsn,
-          cgst: result.output.cgst,
-          igst: result.output.igst,
-          ugst: result.output.ugst,
-          cgst_percent: result.output.cgst_percent,
-          remarkOne: remarkoneRef.current?.value,
-          remarkTwo: remarktwoRef.current?.value,
-          remarkThree: remarkthreeRef.current?.value,
         });
       if (accountrespone.status) {
         toast.success(accountrespone.message);
@@ -198,36 +169,6 @@ const CreateRentPage = () => {
     }
 
     setIsCreating(false);
-  };
-
-  const getcgest = () => {
-    const amtone = amount.current?.value ? parseInt(amount.current?.value) : 0;
-    const amttwo = amountTwo.current?.value
-      ? parseInt(amountTwo.current?.value)
-      : 0;
-    const amtthree = amountThree.current?.value
-      ? parseInt(amountThree.current?.value)
-      : 0;
-
-    const totalamount = amtone + amttwo + amtthree;
-
-    const cgest = parseInt(cgstPercentRef.current?.value ?? "0");
-
-    return (totalamount * (cgest * 2)) / (100 + cgest * 2) / 2;
-  };
-  const getigest = () => {
-    const amtone = amount.current?.value ? parseInt(amount.current?.value) : 0;
-    const amttwo = amountTwo.current?.value
-      ? parseInt(amountTwo.current?.value)
-      : 0;
-    const amtthree = amountThree.current?.value
-      ? parseInt(amountThree.current?.value)
-      : 0;
-
-    const totalamount = amtone + amttwo + amtthree;
-
-    const igest = parseInt(igstPercentRef.current?.value ?? "0");
-    return (totalamount * igest) / (100 + igest);
   };
 
   if (isLoading)
@@ -270,59 +211,6 @@ const CreateRentPage = () => {
               />
             </div>
           </div>
-          <div className="flex gap-4">
-            <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="customergst">
-                Customer GST <span className="text-rose-500">*</span>
-              </Label>
-              <Input
-                id="customergst"
-                type="text"
-                className="w-full bg-gray-100"
-                ref={gstRef}
-              />
-            </div>
-            <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="customerplaceofsupply">
-                Place Of Supply <span className="text-rose-500">*</span>
-              </Label>
-              <MulSelect
-                isMulti={false}
-                options={[
-                  {
-                    value: "26-Dadra and Nagar Haveli and Daman and Diu",
-                    label: "26-Dadra and Nagar Haveli and Daman and Diu",
-                  },
-                  {
-                    value: "24-Gujarat",
-                    label: "24-Gujarat",
-                  },
-                  {
-                    value: "27-Maharashtra",
-                    label: "27-Maharashtra",
-                  },
-                  {
-                    value: "07-Delhi",
-                    label: "07-Delhi",
-                  },
-                ]}
-                className="w-full accent-slate-900"
-                onChange={(val: any) => {
-                  if (!val) return;
-                  setPlaceOfSupply(val.value);
-                }}
-              />
-            </div>
-          </div>
-
-          <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="address">Customer Address</Label>
-            <Textarea
-              id="address"
-              className="w-full bg-gray-100 resize-none"
-              ref={customerAddressRef}
-            />
-          </div>
 
           {/* category one start here */}
           <div className="flex gap-4">
@@ -332,6 +220,14 @@ const CreateRentPage = () => {
               </Label>
               <MulSelect
                 isMulti={false}
+                value={
+                  category.find((u) => u.id === categoryId)
+                    ? {
+                        value: categoryId,
+                        label: category.find((u) => u.id === categoryId)?.name,
+                      }
+                    : null
+                }
                 options={category.map((u: account_category) => ({
                   value: u.id,
                   label: u.name,
@@ -358,21 +254,21 @@ const CreateRentPage = () => {
             </div>
           </div>
           {/* category one end here */}
-
-          <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="reamarkone">Remark One</Label>
-            <Textarea
-              id="reamarkone"
-              className="w-full bg-gray-100 resize-none"
-              ref={remarkoneRef}
-            />
-          </div>
           {/* category two start here */}
           <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">
               <Label htmlFor="category">Category Two</Label>
               <MulSelect
                 isMulti={false}
+                value={
+                  category.find((u) => u.id === categoryIdtwo)
+                    ? {
+                        value: categoryIdtwo,
+                        label: category.find((u) => u.id === categoryIdtwo)
+                          ?.name,
+                      }
+                    : null
+                }
                 options={category.map((u: account_category) => ({
                   value: u.id,
                   label: u.name,
@@ -397,20 +293,21 @@ const CreateRentPage = () => {
             </div>
           </div>
           {/* category two end here */}
-          <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="reamarktwo">Remark Two</Label>
-            <Textarea
-              id="reamarktwo"
-              className="w-full bg-gray-100 resize-none"
-              ref={remarktwoRef}
-            />
-          </div>
           {/* category three start here */}
           <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">
               <Label htmlFor="category">Category Three</Label>
               <MulSelect
                 isMulti={false}
+                value={
+                  category.find((u) => u.id === categoryIdthree)
+                    ? {
+                        value: categoryIdthree,
+                        label: category.find((u) => u.id === categoryIdthree)
+                          ?.name,
+                      }
+                    : null
+                }
                 options={category.map((u: account_category) => ({
                   value: u.id,
                   label: u.name,
@@ -435,14 +332,6 @@ const CreateRentPage = () => {
             </div>
           </div>
           {/* category three end here */}
-          <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="reamarkthree">Remark Three</Label>
-            <Textarea
-              id="reamarkthree"
-              className="w-full bg-gray-100 resize-none"
-              ref={remarkthreeRef}
-            />
-          </div>
 
           <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">
@@ -485,6 +374,14 @@ const CreateRentPage = () => {
               </Label>
               <MulSelect
                 isMulti={false}
+                value={
+                  paymentModes.find((u) => u === paymentMode)
+                    ? {
+                        value: paymentMode,
+                        label: paymentMode,
+                      }
+                    : null
+                }
                 options={paymentModes.map((u: string) => ({
                   value: u,
                   label: u,
@@ -518,94 +415,6 @@ const CreateRentPage = () => {
               />
             </div>
           </div>
-          <div className="flex gap-4">
-            <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="hsn">HSN</Label>
-              <Input
-                id="hsn"
-                type="text"
-                className="w-full bg-gray-100"
-                ref={hsnRef}
-                onChange={handleDecimalChange}
-              />
-            </div>
-            <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="cgstpercent">CGST/UGST Percent</Label>
-              <Input
-                id="cgstpercent"
-                type="text"
-                className="w-full bg-gray-100"
-                ref={cgstPercentRef}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  const onlyDecimalRegex = /^[0-9.]*$/;
-                  const { value } = event.target;
-                  if (!onlyDecimalRegex.test(value)) {
-                    event.target.value = event.target.value.slice(0, -1);
-                  }
-                  igstPercentRef.current!.value = "0";
-                  igstRef.current!.value = "0";
-                  cgstRef.current!.value = getcgest().toFixed(2).toString();
-                  ugstRef.current!.value = getcgest().toFixed(2).toString();
-                }}
-              />
-            </div>
-            <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="cgstpercent">IGST Percent</Label>
-              <Input
-                id="igstpercent"
-                type="text"
-                className="w-full bg-gray-100"
-                ref={igstPercentRef}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  const onlyDecimalRegex = /^[0-9.]*$/;
-                  const { value } = event.target;
-                  if (!onlyDecimalRegex.test(value)) {
-                    event.target.value = event.target.value.slice(0, -1);
-                  }
-                  cgstPercentRef.current!.value = "0";
-                  cgstRef.current!.value = "0";
-                  ugstRef.current!.value = "0";
-                  igstRef.current!.value = getigest().toFixed(2).toString();
-                }}
-              />
-            </div>
-          </div>
-
-          <div className="flex gap-4">
-            <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="cgst">CGST</Label>
-              <Input
-                id="cgst"
-                type="text"
-                className="w-full bg-gray-100"
-                ref={cgstRef}
-                disabled
-                onChange={handleDecimalChange}
-              />
-            </div>
-            <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="ugst">UGST</Label>
-              <Input
-                id="ugst"
-                type="text"
-                className="w-full bg-gray-100"
-                ref={ugstRef}
-                disabled
-                onChange={handleDecimalChange}
-              />
-            </div>
-            <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="igst">IGST</Label>
-              <Input
-                id="igst"
-                type="text"
-                className="w-full bg-gray-100"
-                disabled
-                ref={igstRef}
-                onChange={handleDecimalChange}
-              />
-            </div>
-          </div>
 
           <div className="grid items-center gap-1.5 w-full mt-4">
             <Label htmlFor="remark">Remark</Label>
@@ -621,14 +430,14 @@ const CreateRentPage = () => {
               disabled
               className="w-full mt-4 bg-[#172e57] hover:bg-[#21427d]"
             >
-              Creating Invoice...
+              Updating Receipt...
             </Button>
           ) : (
             <Button
               className="w-full mt-4 bg-[#172e57] hover:bg-[#21427d]"
-              onClick={create}
+              onClick={update}
             >
-              Submit
+              Update
             </Button>
           )}
         </div>
@@ -636,4 +445,4 @@ const CreateRentPage = () => {
     </>
   );
 };
-export default CreateRentPage;
+export default UpdateRecipt;

@@ -262,7 +262,7 @@ const CreateAccountPage = () => {
                     </TableCell>
                     <TableCell>{accoutn_rec.bankname}</TableCell>
 
-                    <TableCell>
+                    <TableCell className="flex gap-2">
                       <Button
                         onClick={() => {
                           router.push(
@@ -272,6 +272,15 @@ const CreateAccountPage = () => {
                         className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm flex items-center gap-2  font-medium py-2"
                       >
                         <p>View</p>
+                      </Button>
+                      <Button 
+                      onClick={() => {
+                        router.push(
+                          `/dashboard/miscinvoice/edit/${accoutn_rec.id}`
+                        );
+                      }}
+                      className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm flex items-center gap-2  font-medium py-2">
+                        Edit
                       </Button>
                     </TableCell>
                   </TableRow>

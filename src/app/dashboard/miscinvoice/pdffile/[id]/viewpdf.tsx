@@ -1,6 +1,6 @@
 "use client";
 
-import numberToWrods from "number-to-words";
+import { ToWords } from "to-words";
 import {
   Page,
   Text,
@@ -14,7 +14,10 @@ import {
   Image,
 } from "@react-pdf/renderer";
 import { useEffect, useState } from "react";
-import { capitalcase, formateDate } from "@/utils/methods";
+import numberWithIndianFormat, {
+  capitalcase,
+  formateDate,
+} from "@/utils/methods";
 import GetInvoice from "@/action/invoice/getinvoice";
 
 interface ViewPdfProps {
@@ -22,6 +25,7 @@ interface ViewPdfProps {
 }
 
 const ViewPdf = (props: ViewPdfProps) => {
+  const toWords = new ToWords();
   const [account, setAccount] = useState<any>();
 
   useEffect(() => {
@@ -311,6 +315,7 @@ const ViewPdf = (props: ViewPdfProps) => {
               textAlign: "left",
               borderTop: "1px solid #6b7280",
               borderBottom: "1px solid #6b7280",
+              fontFamily: "Oswald",
             }}
           >
             {account?.customername}
@@ -400,7 +405,9 @@ const ViewPdf = (props: ViewPdfProps) => {
             ) : null}
           </Text>
           <Text style={styles.rbottom2}>{account?.hsn}</Text>
-          <Text style={styles.rbottom}>{account?.amount}</Text>
+          <Text style={styles.rbottom}>
+            {numberWithIndianFormat(parseFloat(account?.amount))}
+          </Text>
         </View>
         {account?.account_category_two && account?.account_category_two.name ? (
           <View style={styles.myflex}>
@@ -420,7 +427,9 @@ const ViewPdf = (props: ViewPdfProps) => {
               ) : null}
             </Text>
             <Text style={styles.rbottom2}>{account?.hsn}</Text>
-            <Text style={styles.rbottom}>{account?.amount_two}</Text>
+            <Text style={styles.rbottom}>
+              {numberWithIndianFormat(parseFloat(account?.amount_two))}
+            </Text>
           </View>
         ) : null}
 
@@ -443,7 +452,9 @@ const ViewPdf = (props: ViewPdfProps) => {
               ) : null}
             </Text>
             <Text style={styles.rbottom2}>{account?.hsn}</Text>
-            <Text style={styles.rbottom}>{account?.amount_three}</Text>
+            <Text style={styles.rbottom}>
+              {numberWithIndianFormat(parseFloat(account?.amount_three))}
+            </Text>
           </View>
         ) : null}
 
@@ -464,7 +475,9 @@ const ViewPdf = (props: ViewPdfProps) => {
               CGST
             </Text>
             <Text style={styles.rbottom2}></Text>
-            <Text style={styles.rbottom}>{account?.cgst}</Text>
+            <Text style={styles.rbottom}>
+              {numberWithIndianFormat(parseFloat(account?.cgst))}
+            </Text>
           </View>
         ) : null}
         {account?.ugst && account?.ugst != "0" ? (
@@ -484,7 +497,9 @@ const ViewPdf = (props: ViewPdfProps) => {
               UGST
             </Text>
             <Text style={styles.rbottom2}></Text>
-            <Text style={styles.rbottom}>{account?.ugst}</Text>
+            <Text style={styles.rbottom}>
+              {numberWithIndianFormat(parseFloat(account?.ugst))}
+            </Text>
           </View>
         ) : null}
         {account?.igst && account?.igst != "0" ? (
@@ -504,7 +519,9 @@ const ViewPdf = (props: ViewPdfProps) => {
               IGST
             </Text>
             <Text style={styles.rbottom2}></Text>
-            <Text style={styles.rbottom}>{account?.igst}</Text>
+            <Text style={styles.rbottom}>
+              {numberWithIndianFormat(parseFloat(account?.igst))}
+            </Text>
           </View>
         ) : null}
 
@@ -537,14 +554,18 @@ const ViewPdf = (props: ViewPdfProps) => {
               fontFamily: "Oswald",
             }}
           >
-            {(
-              parseFloat(account?.amount.toString() ?? "0") +
-              parseFloat(account?.amount_two ?? "0") +
-              parseFloat(account?.amount_three ?? "0") +
-              parseFloat(account?.cgst.toString() ?? "0") +
-              parseFloat(account?.ugst.toString() ?? "0") +
-              parseFloat(account?.igst.toString() ?? "0")
-            ).toFixed(0)}
+            {numberWithIndianFormat(
+              parseFloat(
+                (
+                  parseFloat(account?.amount.toString() ?? "0") +
+                  parseFloat(account?.amount_two ?? "0") +
+                  parseFloat(account?.amount_three ?? "0") +
+                  parseFloat(account?.cgst.toString() ?? "0") +
+                  parseFloat(account?.ugst.toString() ?? "0") +
+                  parseFloat(account?.igst.toString() ?? "0")
+                ).toFixed(0)
+              )
+            )}
           </Text>
         </View>
         <Text
@@ -563,13 +584,17 @@ const ViewPdf = (props: ViewPdfProps) => {
           Amount Chargeable (in words) :{" "}
           {"Indian Rupees " +
             capitalcase(
-              numberToWrods.toWords(
-                parseFloat(account?.amount.toString() ?? "0") +
-                  parseFloat(account?.amount_two ?? "0") +
-                  parseFloat(account?.amount_three ?? "0") +
-                  parseFloat(account?.cgst.toString() ?? "0") +
-                  parseFloat(account?.ugst.toString() ?? "0") +
-                  parseFloat(account?.igst.toString() ?? "0")
+              toWords.convert(
+                parseInt(
+                  (
+                    parseFloat(account?.amount.toString() ?? "0") +
+                    parseFloat(account?.amount_two ?? "0") +
+                    parseFloat(account?.amount_three ?? "0") +
+                    parseFloat(account?.cgst.toString() ?? "0") +
+                    parseFloat(account?.ugst.toString() ?? "0") +
+                    parseFloat(account?.igst.toString() ?? "0")
+                  ).toString()
+                )
               )
             ) +
             " Only"}
@@ -694,17 +719,25 @@ const ViewPdf = (props: ViewPdfProps) => {
             {account?.hsn}
           </Text>
           <Text style={styles.ltop2}>
-            {parseFloat(account?.amount.toString() ?? "0") +
-              parseFloat(account?.amount_two ?? "0") +
-              parseFloat(account?.amount_three ?? "0")}
+            {numberWithIndianFormat(
+              parseFloat(account?.amount.toString() ?? "0") +
+                parseFloat(account?.amount_two ?? "0") +
+                parseFloat(account?.amount_three ?? "0")
+            )}
           </Text>
           <Text style={styles.ltop2}>{account?.cgst_percent}%</Text>
-          <Text style={styles.ltop2}>{account?.cgst}</Text>
-          <Text style={styles.ltop2}>{account?.cgst_percent}%</Text>
-          <Text style={styles.ltop2}>{account?.ugst}</Text>
           <Text style={styles.ltop2}>
-            {parseFloat(account?.cgst.toString() ?? "0") +
-              parseFloat(account?.ugst.toString() ?? "0")}
+            {numberWithIndianFormat(parseFloat(account?.cgst))}
+          </Text>
+          <Text style={styles.ltop2}>{account?.cgst_percent}%</Text>
+          <Text style={styles.ltop2}>
+            {numberWithIndianFormat(parseFloat(account?.ugst))}
+          </Text>
+          <Text style={styles.ltop2}>
+            {numberWithIndianFormat(
+              parseFloat(account?.cgst.toString() ?? "0") +
+                parseFloat(account?.ugst.toString() ?? "0")
+            )}
           </Text>
         </View>
         <View style={styles.myflex}>
@@ -725,17 +758,25 @@ const ViewPdf = (props: ViewPdfProps) => {
           </Text>
           <Text style={styles.ltop2}>
             {" "}
-            {parseFloat(account?.amount.toString() ?? "0") +
-              parseFloat(account?.amount_two ?? "0") +
-              parseFloat(account?.amount_three ?? "0")}
+            {numberWithIndianFormat(
+              parseFloat(account?.amount.toString() ?? "0") +
+                parseFloat(account?.amount_two ?? "0") +
+                parseFloat(account?.amount_three ?? "0")
+            )}
           </Text>
           <Text style={styles.ltop2}></Text>
-          <Text style={styles.ltop2}>{account?.cgst}</Text>
-          <Text style={styles.ltop2}></Text>
-          <Text style={styles.ltop2}>{account?.ugst}</Text>
           <Text style={styles.ltop2}>
-            {parseFloat(account?.cgst.toString() ?? "0") +
-              parseFloat(account?.ugst.toString() ?? "0")}
+            {numberWithIndianFormat(parseFloat(account?.cgst))}
+          </Text>
+          <Text style={styles.ltop2}></Text>
+          <Text style={styles.ltop2}>
+            {numberWithIndianFormat(parseFloat(account?.ugst))}
+          </Text>
+          <Text style={styles.ltop2}>
+            {numberWithIndianFormat(
+              parseFloat(account?.cgst.toString() ?? "0") +
+                parseFloat(account?.ugst.toString() ?? "0")
+            )}
           </Text>
         </View>
         <Text
@@ -754,13 +795,35 @@ const ViewPdf = (props: ViewPdfProps) => {
           Tax Amount Chargeable (in words) :{" "}
           {"Indian Rupees " +
             capitalcase(
-              numberToWrods.toWords(
-                parseFloat(account?.cgst.toString() ?? "0") +
-                  parseFloat(account?.ugst.toString() ?? "0")
+              toWords.convert(
+                parseInt(
+                  (
+                    parseFloat(account?.cgst.toString() ?? "0") +
+                    parseFloat(account?.ugst.toString() ?? "0")
+                  ).toString()
+                )
               )
             ) +
             " Only"}
         </Text>
+        {account?.remarks != null && account?.remarks != "" ? (
+          <Text
+            style={{
+              fontSize: "10px",
+              fontWeight: "normal",
+              color: "#374151",
+              width: "100%",
+              padding: "4px 4px",
+              borderLeft: "1px solid #6b7280",
+              borderBottom: "1px solid #6b7280",
+              borderRight: "1px solid #6b7280",
+              textAlign: "left",
+            }}
+          >
+            Remark : {account?.remarks}
+          </Text>
+        ) : null}
+
         <View
           style={{
             marginTop: "5px",
@@ -778,24 +841,32 @@ const ViewPdf = (props: ViewPdfProps) => {
             Received with thanks from {account?.customername}{" "}
             {account?.customercontact && `[${account?.customercontact}]`} a sum
             of Rs.{" "}
-            {(
-              parseFloat(account?.amount.toString() ?? "0") +
-              parseFloat(account?.amount_two ?? "0") +
-              parseFloat(account?.amount_three ?? "0") +
-              parseFloat(account?.cgst.toString() ?? "0") +
-              parseFloat(account?.ugst.toString() ?? "0") +
-              parseFloat(account?.igst.toString() ?? "0")
-            ).toFixed(0)}{" "}
+            {numberWithIndianFormat(
+              parseFloat(
+                (
+                  parseFloat(account?.amount.toString() ?? "0") +
+                  parseFloat(account?.amount_two ?? "0") +
+                  parseFloat(account?.amount_three ?? "0") +
+                  parseFloat(account?.cgst.toString() ?? "0") +
+                  parseFloat(account?.ugst.toString() ?? "0") +
+                  parseFloat(account?.igst.toString() ?? "0")
+                ).toFixed(0)
+              )
+            )}
             (
             {account?.amount
               ? capitalcase(
-                  numberToWrods.toWords(
-                    parseFloat(account?.amount.toString() ?? "0") +
-                      parseFloat(account?.amount_two ?? "0") +
-                      parseFloat(account?.amount_three ?? "0") +
-                      parseFloat(account?.cgst.toString() ?? "0") +
-                      parseFloat(account?.ugst.toString() ?? "0") +
-                      parseFloat(account?.igst.toString() ?? "0")
+                  toWords.convert(
+                    parseInt(
+                      (
+                        parseFloat(account?.amount.toString() ?? "0") +
+                        parseFloat(account?.amount_two ?? "0") +
+                        parseFloat(account?.amount_three ?? "0") +
+                        parseFloat(account?.cgst.toString() ?? "0") +
+                        parseFloat(account?.ugst.toString() ?? "0") +
+                        parseFloat(account?.igst.toString() ?? "0")
+                      ).toString()
+                    )
                   )
                 ) + " Only"
               : "-"}
@@ -916,14 +987,18 @@ const ViewPdf = (props: ViewPdfProps) => {
                   textAlign: "center",
                 }}
               >
-                {(
-                  parseFloat(account?.amount.toString() ?? "0") +
-                  parseFloat(account?.amount_two ?? "0") +
-                  parseFloat(account?.amount_three ?? "0") +
-                  parseFloat(account?.cgst.toString() ?? "0") +
-                  parseFloat(account?.ugst.toString() ?? "0") +
-                  parseFloat(account?.igst.toString() ?? "0")
-                ).toFixed(0)}
+                {numberWithIndianFormat(
+                  parseFloat(
+                    (
+                      parseFloat(account?.amount.toString() ?? "0") +
+                      parseFloat(account?.amount_two ?? "0") +
+                      parseFloat(account?.amount_three ?? "0") +
+                      parseFloat(account?.cgst.toString() ?? "0") +
+                      parseFloat(account?.ugst.toString() ?? "0") +
+                      parseFloat(account?.igst.toString() ?? "0")
+                    ).toFixed(0)
+                  )
+                )}
                 /-
               </Text>
             </View>
@@ -974,6 +1049,17 @@ const ViewPdf = (props: ViewPdfProps) => {
               Planning and Development Authority
             </Text>
           </View>
+          <Text
+            style={{
+              textAlign: "center",
+              fontSize: "8px",
+              position: "absolute",
+              width: "100%",
+              bottom: "-16px",
+            }}
+          >
+            This is a computer generated statement
+          </Text>
         </View>
       </Page>
     </Document>

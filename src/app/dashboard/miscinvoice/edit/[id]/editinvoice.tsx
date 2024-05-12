@@ -29,8 +29,14 @@ import { safeParse } from "valibot";
 import { ApiResponseType } from "@/models/response";
 import CreateInvoice from "@/action/invoice/createinvoice";
 import { InvoiceSchema } from "@/schema/createinvoice";
+import GetInvoice from "@/action/invoice/getinvoice";
+import UpdateAcount from "@/action/invoice/updateinvoice";
 
-const CreateRentPage = () => {
+interface EditInvoiceProps {
+  id: number;
+}
+
+const EditInvoice = (props: EditInvoiceProps) => {
   const router = useRouter();
   const createuserid: number = parseInt(getCookie("id") ?? "0");
 
@@ -60,7 +66,6 @@ const CreateRentPage = () => {
   const [startDPop, setStartDPop] = useState<boolean>(false);
 
   const gstRef = useRef<HTMLInputElement>(null);
-  // const placeOfSupplyRef = useRef<HTMLInputElement>(null);
   const [placeOfSupply, setPlaceOfSupply] = useState<string>("");
   const customerAddressRef = useRef<HTMLTextAreaElement>(null);
 
@@ -100,6 +105,53 @@ const CreateRentPage = () => {
         setCategory(accountcategoryresponse.data ?? []);
       }
 
+      const invoice = await GetInvoice({ id: props.id });
+
+      if (invoice.status) {
+        console.log(invoice.data);
+
+        setTimeout(() => {
+          nameRef.current!.value = invoice.data?.customername ?? "";
+          contactRef.current!.value = invoice.data?.customercontact ?? "";
+          gstRef.current!.value = invoice.data?.customergst ?? "";
+          setPlaceOfSupply(invoice.data?.customerplaceofsupply ?? "");
+          customerAddressRef.current!.value =
+            invoice.data?.customeraddress ?? "";
+
+          setCategoryId(invoice.data?.accountCategoryOneId ?? 0);
+          amount.current!.value = invoice.data?.amount ?? "0";
+          remarkoneRef.current!.value = invoice.data?.remark_cat_one ?? "";
+
+          setCategoryIdtwo(invoice.data?.accountCategoryTwoId ?? 0);
+          amountTwo.current!.value = invoice.data?.amount_two ?? "0";
+          remarktwoRef.current!.value = invoice.data?.remark_cat_two ?? "";
+
+          setCategoryIdthree(invoice.data?.accountCategoryThreeId ?? 0);
+          amountThree.current!.value = invoice.data?.amount_three ?? "0";
+          remarkthreeRef.current!.value = invoice.data?.remark_cat_three ?? "";
+
+          setTranscationDate(new Date(invoice.data?.transaction_date ?? ""));
+
+          setPaymentMode(invoice.data?.paymentmode ?? AccountPaymentMode.NEFT);
+
+          transcationIdRef.current!.value = invoice.data?.transactionid ?? "";
+          banknameRef.current!.value = invoice.data?.bankname ?? "";
+          hsnRef.current!.value = invoice.data?.hsn ?? "";
+
+          cgstRef.current!.value = invoice.data?.cgst ?? "0";
+          ugstRef.current!.value = invoice.data?.ugst ?? "0";
+          igstRef.current!.value = invoice.data?.igst ?? "0";
+
+          if (invoice.data?.cgst_percent == "9") {
+            cgstPercentRef.current!.value = invoice.data?.cgst_percent ?? "0";
+          } else {
+            igstPercentRef.current!.value = invoice.data?.cgst_percent ?? "0";
+          }
+
+          remarkRef.current!.value = invoice.data?.remarks ?? "";
+        }, 500);
+      }
+
       setLoading(false);
     };
     init();
@@ -134,7 +186,7 @@ const CreateRentPage = () => {
     }
   };
 
-  const create = async () => {
+  const update = async () => {
     setIsCreating(true);
 
     const result = safeParse(InvoiceSchema, {
@@ -154,7 +206,8 @@ const CreateRentPage = () => {
 
     if (result.success) {
       const accountrespone: ApiResponseType<misc_invoice | null> =
-        await CreateInvoice({
+        await UpdateAcount({
+          id: props.id,
           createdById: createuserid,
           accountCategoryId: result.output.accountCategoryId,
           accountCategoryIdTwo: categoryIdtwo,
@@ -243,7 +296,7 @@ const CreateRentPage = () => {
         <div className="bg-white rounded-sm shadow-sm p-4">
           <div className="flex gap-4">
             <BackButton />
-            <p className="text-gray-500 text-xl">Create Misc Receipt</p>
+            <p className="text-gray-500 text-xl">Edit Misc Receipt</p>
           </div>
 
           <div className="flex gap-4">
@@ -288,6 +341,11 @@ const CreateRentPage = () => {
               </Label>
               <MulSelect
                 isMulti={false}
+                value={{
+                  value: placeOfSupply,
+                  label: placeOfSupply,
+                }}
+                defaultValue={placeOfSupply}
                 options={[
                   {
                     value: "26-Dadra and Nagar Haveli and Daman and Diu",
@@ -332,6 +390,14 @@ const CreateRentPage = () => {
               </Label>
               <MulSelect
                 isMulti={false}
+                value={
+                  category.find((u) => u.id === categoryId)
+                    ? {
+                        value: categoryId,
+                        label: category.find((u) => u.id === categoryId)?.name,
+                      }
+                    : null
+                }
                 options={category.map((u: account_category) => ({
                   value: u.id,
                   label: u.name,
@@ -373,6 +439,15 @@ const CreateRentPage = () => {
               <Label htmlFor="category">Category Two</Label>
               <MulSelect
                 isMulti={false}
+                value={
+                  categoryIdtwo
+                    ? {
+                        value: categoryIdtwo,
+                        label: category.find((u) => u.id === categoryIdtwo)
+                          ?.name,
+                      }
+                    : null
+                }
                 options={category.map((u: account_category) => ({
                   value: u.id,
                   label: u.name,
@@ -411,6 +486,15 @@ const CreateRentPage = () => {
               <Label htmlFor="category">Category Three</Label>
               <MulSelect
                 isMulti={false}
+                value={
+                  categoryIdthree
+                    ? {
+                        value: categoryIdthree,
+                        label: category.find((u) => u.id === categoryIdthree)
+                          ?.name,
+                      }
+                    : null
+                }
                 options={category.map((u: account_category) => ({
                   value: u.id,
                   label: u.name,
@@ -621,14 +705,14 @@ const CreateRentPage = () => {
               disabled
               className="w-full mt-4 bg-[#172e57] hover:bg-[#21427d]"
             >
-              Creating Invoice...
+              Updating Invoice...
             </Button>
           ) : (
             <Button
               className="w-full mt-4 bg-[#172e57] hover:bg-[#21427d]"
-              onClick={create}
+              onClick={update}
             >
-              Submit
+              Update
             </Button>
           )}
         </div>
@@ -636,4 +720,4 @@ const CreateRentPage = () => {
     </>
   );
 };
-export default CreateRentPage;
+export default EditInvoice;

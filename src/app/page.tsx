@@ -101,24 +101,6 @@ export default function Home() {
     setIsLogin(false);
   };
 
-  useEffect(() => {
-    var md5 = crypto
-      .createHash("md5")
-      .update("57FB24E2244503977161F4C9445D48D5")
-      .digest();
-    var keyBase64 = Buffer.from(md5).toString("base64");
-
-    var ivBase64 = Buffer.from([
-      0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b,
-      0x0c, 0x0d, 0x0e, 0x0f,
-    ]).toString("base64");
-    const value = encrypt(
-      "i don't know anything i am just wow",
-      keyBase64,
-      ivBase64
-    );
-  }, []);
-
   return (
     <>
       <div className="p-10 rounded-md min-h-screen w-full bg-[#f5f6f8] flex">

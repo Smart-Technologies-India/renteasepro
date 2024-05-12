@@ -1,5 +1,5 @@
 "use client";
-import { Role, account_receipt } from "@prisma/client";
+import { account_receipt } from "@prisma/client";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -9,7 +9,6 @@ import {
   AntDesignPlusCircleOutlined,
   Fa6SolidXmark,
   FluentMdl2Search,
-  SolarAltArrowDownLinear,
 } from "@/components/icons";
 import { useWindowSize } from "@uidotdev/usehooks";
 import {
@@ -20,14 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import { useRouter } from "next/navigation";
 import { usePagination } from "@/hooks/usepagination";
 import Pagination from "@/components/pagination";
@@ -96,6 +88,8 @@ const CreateAccountPage = () => {
       });
 
       setCategory(["All", ...removeDuplicates(temp)]);
+
+
       setIsLoading(false);
     };
 
@@ -253,7 +247,7 @@ const CreateAccountPage = () => {
                     </TableCell>
                     <TableCell>{accoutn_rec.bankname}</TableCell>
 
-                    <TableCell>
+                    <TableCell className="flex gap-2">
                       <Button
                         onClick={() => {
                           router.push(
@@ -262,7 +256,17 @@ const CreateAccountPage = () => {
                         }}
                         className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm flex items-center gap-2  font-medium py-2"
                       >
-                        <p>View</p>
+                        View
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          router.push(
+                            `/dashboard/miscreceipt/edit/${accoutn_rec.id}`
+                          );
+                        }}
+                        className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm flex items-center gap-2  font-medium py-2"
+                      >
+                        Edit
                       </Button>
                     </TableCell>
                   </TableRow>

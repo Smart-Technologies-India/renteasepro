@@ -449,11 +449,12 @@ const CreateBidPage = (props: CreateBidPageProps) => {
       (value!.target.files![0].size / 1024 / 1024).toString()
     );
     if (file_size < 5) {
-      if (value!.target.files![0].type.startsWith("image/")) {
-        setFun((val) => value!.target.files![0]);
-      } else {
-        toast.error("Please select a file.", { theme: "light" });
-      }
+      setFun((val) => value!.target.files![0]);
+      // if (value!.target.files![0].type.startsWith("image/")) {
+      //   setFun((val) => value!.target.files![0]);
+      // } else {
+      //   toast.error("Please select a file.", { theme: "light" });
+      // }
     } else {
       toast.error("File size must be less then 5 mb", { theme: "light" });
     }
@@ -1091,7 +1092,7 @@ const CreateBidPage = (props: CreateBidPageProps) => {
                     By Amount
                   </Label>
                 </div>
-                <div className="flex items-center space-x-2">
+                {/* <div className="flex items-center space-x-2">
                   <RadioGroupItem
                     value="PERCENTAGE"
                     id="fr1"
@@ -1104,7 +1105,7 @@ const CreateBidPage = (props: CreateBidPageProps) => {
                   >
                     By Percentage
                   </Label>
-                </div>
+                </div> */}
               </RadioGroup>
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
@@ -1185,7 +1186,7 @@ const CreateBidPage = (props: CreateBidPageProps) => {
                     By Amount
                   </Label>
                 </div>
-                <div className="flex items-center space-x-2">
+                {/* <div className="flex items-center space-x-2">
                   <RadioGroupItem
                     value="PERCENTAGE"
                     id="emdr1"
@@ -1198,7 +1199,7 @@ const CreateBidPage = (props: CreateBidPageProps) => {
                   >
                     By Percentage
                   </Label>
-                </div>
+                </div> */}
               </RadioGroup>
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
@@ -1279,7 +1280,7 @@ const CreateBidPage = (props: CreateBidPageProps) => {
                     By Amount
                   </Label>
                 </div>
-                <div className="flex items-center space-x-2">
+                {/* <div className="flex items-center space-x-2">
                   <RadioGroupItem
                     value="PERCENTAGE"
                     id="bgfr1"
@@ -1292,7 +1293,7 @@ const CreateBidPage = (props: CreateBidPageProps) => {
                   >
                     By Percentage
                   </Label>
-                </div>
+                </div> */}
               </RadioGroup>
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">

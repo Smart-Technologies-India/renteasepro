@@ -4,7 +4,7 @@ import GetRent from "@/action/rent/getrent";
 import GetRentRecept from "@/action/rentrecept/getrentrecept";
 import GetUser from "@/action/user/getuser";
 import { capitalcase, formateDate } from "@/utils/methods";
-import numberToWrods from "number-to-words";
+import { ToWords } from "to-words";
 
 import { user } from "@prisma/client";
 import {
@@ -28,6 +28,8 @@ interface ViewPdfProps {
 }
 
 const ViewPdf = (props: ViewPdfProps) => {
+  const toWords = new ToWords();
+
   const [rent, setRent] = useState<any>();
   const [user, setUser] = useState<user>();
   const [history, setHistory] = useState<any>([]);
@@ -556,10 +558,12 @@ const ViewPdf = (props: ViewPdfProps) => {
           Amount Chargeable (in words) :{" "}
           {"Indian Rupees " +
             capitalcase(
-              numberToWrods.toWords(
-                history
-                  .flatMap((arr: any) => arr.amount)
-                  .reduce((acc: any, curr: any) => acc + curr, 0)
+              toWords.convert(
+                parseInt(
+                  history
+                    .flatMap((arr: any) => arr.amount)
+                    .reduce((acc: any, curr: any) => acc + curr, 0)
+                )
               )
             ) +
             " Only"}
@@ -802,12 +806,16 @@ const ViewPdf = (props: ViewPdfProps) => {
           Tax Amount Chargeable (in words) :{" "}
           {"Indian Rupees " +
             capitalcase(
-              numberToWrods.toWords(
-                (history
-                  .flatMap((arr: any) => arr.amount)
-                  .reduce((acc: any, curr: any) => acc + curr, 0) *
-                  18) /
-                  118
+              toWords.convert(
+                parseInt(
+                  (
+                    (history
+                      .flatMap((arr: any) => arr.amount)
+                      .reduce((acc: any, curr: any) => acc + curr, 0) *
+                      18) /
+                    118
+                  ).toString()
+                )
               )
             ) +
             " Only"}
@@ -833,10 +841,13 @@ const ViewPdf = (props: ViewPdfProps) => {
               .reduce((acc: any, curr: any) => acc + curr, 0)}
             (
             {capitalcase(
-              numberToWrods.toWords(
-                history
-                  .flatMap((arr: any) => arr.amount)
-                  .reduce((acc: any, curr: any) => acc + curr, 0)
+              toWords.convert(
+                parseInt(
+                  history
+                    .flatMap((arr: any) => arr.amount)
+                    .reduce((acc: any, curr: any) => acc + curr, 0)
+                    .toString()
+                )
               )
             ) + " Only"}
             )

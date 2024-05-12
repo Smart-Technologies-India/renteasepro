@@ -207,18 +207,14 @@ const ShopView = (props: ShowShopProps) => {
 
   return (
     <div className="p-6">
-      <div className="flex gap-4 items-center mb-4">
-        <BackButton />
-        <h1 className="text-[#162f57] text-2xl font-semibold">Shop Details</h1>
-        <div className="grow"></div>
-      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
         <div className="bg-white rounded-sm shadow-sm">
           <div className="flex gap-2 border-b border-gray-300 py-2 px-4">
-            <p className="text-xl  font-semibold">Details</p>
+            <BackButton />
+            <p className="text-xl  font-semibold">Shop Details</p>
             <div className="grow"></div>
             {user?.role === "ADMIN" && (
-              <div>
+              <>
                 {bid ? (
                   <>
                     {bid.bid_status == BidStatus.EXPIRED ? (
@@ -284,7 +280,7 @@ const ShopView = (props: ShowShopProps) => {
                     Add Rent
                   </Link>
                 )}
-              </div>
+              </>
             )}
           </div>
           <div className="px-4 py-2 grid grid-cols-2 gap-4 mt-2">

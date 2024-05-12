@@ -1,7 +1,8 @@
 "use client";
 
 import GetAccount from "@/action/account/getaccount";
-import numberToWrods from "number-to-words";
+import { ToWords } from "to-words";
+
 import {
   Page,
   Text,
@@ -15,13 +16,18 @@ import {
   Image,
 } from "@react-pdf/renderer";
 import { useEffect, useState } from "react";
-import { capitalcase, formateDate } from "@/utils/methods";
+import numberWithIndianFormat, {
+  capitalcase,
+  formateDate,
+} from "@/utils/methods";
 
 interface ViewPdfProps {
   id: number;
 }
 
 const ViewPdf = (props: ViewPdfProps) => {
+  const toWords = new ToWords();
+
   const [account, setAccount] = useState<any>();
 
   useEffect(() => {
@@ -290,10 +296,10 @@ const ViewPdf = (props: ViewPdfProps) => {
             >
               Received with thanks from {account?.customername}{" "}
               {account?.customercontact && `[${account?.customercontact}]`} a
-              sum of Rs. {account?.amount} (
+              sum of Rs. {numberWithIndianFormat(parseInt(account?.amount))} (
               {account?.amount
                 ? capitalcase(
-                    numberToWrods.toWords(parseInt(account?.amount) ?? "0")
+                    toWords.convert(parseInt(account?.amount) ?? "0")
                   ) + " Only"
                 : "-"}
               ) on account as below
@@ -321,7 +327,9 @@ const ViewPdf = (props: ViewPdfProps) => {
             <Text style={styles.mbottom}>
               {account?.account_category_one.name}
             </Text>
-            <Text style={styles.rbottom}>{account?.amount}</Text>
+            <Text style={styles.rbottom}>
+              {numberWithIndianFormat(parseInt(account?.amount))}
+            </Text>
           </View>
           {account?.account_category_two &&
           account?.account_category_two.name ? (
@@ -330,7 +338,9 @@ const ViewPdf = (props: ViewPdfProps) => {
               <Text style={styles.mbottom}>
                 {account?.account_category_two.name}
               </Text>
-              <Text style={styles.rbottom}>{account?.amount_two}</Text>
+              <Text style={styles.rbottom}>
+                {numberWithIndianFormat(parseInt(account?.amount_two))}
+              </Text>
             </View>
           ) : null}
 
@@ -341,8 +351,27 @@ const ViewPdf = (props: ViewPdfProps) => {
               <Text style={styles.mbottom}>
                 {account?.account_category_three.name}
               </Text>
-              <Text style={styles.rbottom}>{account?.amount_three}</Text>
+              <Text style={styles.rbottom}>
+                {numberWithIndianFormat(parseInt(account?.amount_three))}
+              </Text>
             </View>
+          ) : null}
+          {account?.remarks != null && account?.remarks != "" ? (
+            <Text
+              style={{
+                fontSize: "10px",
+                fontWeight: "normal",
+                color: "#374151",
+                width: "100%",
+                padding: "4px 4px",
+                borderLeft: "1px solid #6b7280",
+                borderBottom: "1px solid #6b7280",
+                borderRight: "1px solid #6b7280",
+                textAlign: "left",
+              }}
+            >
+              Remark : {account?.remarks}
+            </Text>
           ) : null}
 
           <View
@@ -403,9 +432,11 @@ const ViewPdf = (props: ViewPdfProps) => {
                     textAlign: "center",
                   }}
                 >
-                  {parseInt(account?.amount ?? "0") +
-                    parseInt(account?.amount_two ?? "0") +
-                    parseInt(account?.amount_three ?? "0")}{" "}
+                  {numberWithIndianFormat(
+                    parseInt(account?.amount ?? "0") +
+                      parseInt(account?.amount_two ?? "0") +
+                      parseInt(account?.amount_three ?? "0")
+                  )}{" "}
                   /-
                 </Text>
               </View>
@@ -463,6 +494,17 @@ const ViewPdf = (props: ViewPdfProps) => {
               </Text>
             </View>
           </View>
+          <Text
+            style={{
+              textAlign: "center",
+              fontSize: "8px",
+              position: "absolute",
+              width: "100%",
+              bottom: "-16px",
+            }}
+          >
+            This is a computer generated statement
+          </Text>
         </View>
       </Page>
     </Document>
