@@ -802,7 +802,7 @@ const UserProfile = (props: UserProfileProps) => {
             pdffile.endsWith(".jpeg") ||
             pdffile.endsWith(".png") ? (
               <div className="relative w-full">
-                <img src={pdffile} fill={true} alt="image" className="w-full" />
+                <img src={pdffile} alt="image" className="w-full" />
               </div>
             ) : null}
           </div>
