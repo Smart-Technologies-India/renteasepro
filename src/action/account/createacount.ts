@@ -44,14 +44,14 @@ const CreateAccount = async (
         ...(payload.accountCategoryIdThree && {
           accountCategoryThreeId: payload.accountCategoryIdThree,
           amount_three: payload.amountThree?.toString(),
-          ...(payload.remarks && { remarks: payload.remarks }),
-          ...(payload.transactionid && {
-            transactionid: payload.transactionid,
-          }),
-          ...(payload.bankname && { bankname: payload.bankname }),
-          ...(payload.customercontact && {
-            customercontact: payload.customercontact,
-          }),
+        }),
+        ...(payload.remarks && { remarks: payload.remarks }),
+        ...(payload.transactionid && {
+          transactionid: payload.transactionid,
+        }),
+        ...(payload.bankname && { bankname: payload.bankname }),
+        ...(payload.customercontact && {
+          customercontact: payload.customercontact,
         }),
       },
     });
