@@ -72,6 +72,9 @@ const getGraph = async (
             {
               status: "PAID",
             },
+            {
+              status: "INACTIVE",
+            },
           ],
         },
       });

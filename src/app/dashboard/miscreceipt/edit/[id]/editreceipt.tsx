@@ -93,7 +93,6 @@ const UpdateRecipt = (props: UpdateReciptProps) => {
       const accountinfo = await GetAccount({ id: props.id });
 
       if (accountinfo.status) {
-        console.log(accountinfo.data);
         setTimeout(() => {
           nameRef.current!.value = accountinfo.data?.customername ?? "0";
           contactRef.current!.value = accountinfo.data?.customercontact ?? "0";

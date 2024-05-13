@@ -51,6 +51,12 @@ const UpdateAccount = async (
       data_to_update.transaction_date = payload.transaction_date;
     if (payload.amount) data_to_update.amount = payload.amount;
     if (payload.createdById) data_to_update.createdById = payload.createdById;
+    if (payload.bankname) data_to_update.bankname = payload.bankname;
+    if (payload.remarks) data_to_update.remarks = payload.remarks;
+    if (payload.transactionid)
+      data_to_update.transactionid = payload.transactionid;
+    if (payload.customercontact)
+      data_to_update.customercontact = payload.customercontact;
 
     const account_receipt = await prisma.account_receipt.update({
       where: {
@@ -65,14 +71,6 @@ const UpdateAccount = async (
         ...(payload.accountCategoryIdThree && {
           accountCategoryThreeId: payload.accountCategoryIdThree,
           amount_three: payload.amountThree?.toString(),
-          ...(payload.remarks && { remarks: payload.remarks }),
-          ...(payload.transactionid && {
-            transactionid: payload.transactionid,
-          }),
-          ...(payload.bankname && { bankname: payload.bankname }),
-          ...(payload.customercontact && {
-            customercontact: payload.customercontact,
-          }),
         }),
       },
     });

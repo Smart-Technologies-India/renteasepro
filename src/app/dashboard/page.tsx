@@ -21,7 +21,6 @@ import { getCookie } from "cookies-next";
 import GetUser from "@/action/user/getuser";
 import { user } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import { is } from "valibot";
 
 // ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale);
 ChartJS.register(...registerables);
