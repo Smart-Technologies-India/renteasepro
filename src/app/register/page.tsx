@@ -13,6 +13,7 @@ import createUser from "@/action/user/createuser";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { RegisterUserSchema } from "@/schema/registeruser";
+import Link from "next/link";
 export default function Home() {
   const username = useRef<HTMLInputElement>(null);
   const password = useRef<HTMLInputElement>(null);
@@ -65,7 +66,30 @@ export default function Home() {
             className="w-full object-cover object-center h-screen"
           />
         </div>
-        <div className="flex-1 grid place-items-center">
+        <div className="flex-1 grid place-items-center relative">
+          <div className="absolute bottom-0 left-0 w-full flex justify-between gap-4 px-8 py-2 text-xs">
+            <Link href="/tandc" className="text-gray-400 hover:text-gray-700">
+              Terms and Conditions
+            </Link>
+            <Link
+              href="/contact_about"
+              className="text-gray-400 hover:text-gray-700"
+            >
+              Contact us
+            </Link>
+            <Link
+              href="/refund_policy"
+              className="text-gray-400 hover:text-gray-700"
+            >
+              Refund Policy
+            </Link>
+            <Link
+              href="/privacy_policy"
+              className="text-gray-400 hover:text-gray-700"
+            >
+              Privacy Policy
+            </Link>
+          </div>
           <div>
             <h1 className="text-2xl font-semibold mt-6 mb-2 border-b border-gray-300 pb-2 ">
               Register

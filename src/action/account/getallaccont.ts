@@ -21,6 +21,9 @@ const AllAccount = async (
         account_category_three: true,
         account_category_two: true,
       },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
 
     if (!account_receipts)

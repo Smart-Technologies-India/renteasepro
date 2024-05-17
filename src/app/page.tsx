@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { encrypt } from "@/utils/paymentmethods";
+import Link from "next/link";
 
 export default function Home() {
   const router = useRouter();
@@ -129,7 +130,30 @@ export default function Home() {
           </div> */}
           <div></div>
         </div>
-        <div className="flex-1 grid place-items-center bg-white rounded-r-md">
+        <div className="flex-1 grid place-items-center bg-white rounded-r-md relative">
+          <div className="absolute bottom-0 left-0 w-full flex justify-between gap-4 px-8 py-2 text-xs">
+            <Link href="/tandc" className="text-gray-400 hover:text-gray-700">
+              Terms and Conditions
+            </Link>
+            <Link
+              href="/contact_about"
+              className="text-gray-400 hover:text-gray-700"
+            >
+              Contact Us
+            </Link>
+            <Link
+              href="/refund_policy"
+              className="text-gray-400 hover:text-gray-700"
+            >
+              Refund Policy
+            </Link>
+            <Link
+              href="/privacy_policy"
+              className="text-gray-400 hover:text-gray-700"
+            >
+              Privacy Policy
+            </Link>
+          </div>
           <div>
             <h1 className="text-lg font-semibold mt-6 text-center">
               Welcome to PDA,DNH

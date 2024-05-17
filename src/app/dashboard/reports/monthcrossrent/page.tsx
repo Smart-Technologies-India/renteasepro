@@ -1,7 +1,6 @@
 "use client";
 
 import monthCrossRent from "@/action/report/monthcrossrent";
-import getRentEnding from "@/action/report/rentending";
 import BackButton from "@/components/backbutton";
 import {
   Table,
@@ -45,7 +44,7 @@ const ShopBidHistoryView = () => {
       <div className="p-6">
         <div className="flex gap-4 items-center">
           <BackButton />
-          <p className="text-xl text-gray-600">Month Corss Rent</p>
+          <p className="text-xl text-gray-600">Month Cross Rent</p>
           <div className="grow"></div>
         </div>
 
