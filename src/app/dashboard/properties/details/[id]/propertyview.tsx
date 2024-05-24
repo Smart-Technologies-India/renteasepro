@@ -6,7 +6,6 @@ import BackButton from "@/components/backbutton";
 import { LucideArrowBigLeft, LucideArrowBigRight } from "@/components/icons";
 import { capitalcase, removeDuplicates } from "@/utils/methods";
 import { ShopStatus, property, shop } from "@prisma/client";
-import { set } from "date-fns";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -53,6 +52,46 @@ const PropertiesView = (props: PropertiesViewProps) => {
       });
 
       if (shopresponse.status) {
+        // short the shop by name
+
+        //  example of sorting I-43,I-54,O-34,O-23 to I-43,I-54,O-23,O-34
+
+        const customSort = (a: any, b: any) => {
+          let numA: number;
+          let numB: number;
+
+          // Extract numeric part from shop IDs
+          if (a.shopNumber.includes("-")) {
+            numA = parseInt(a.shopNumber.split("-")[1]);
+          } else {
+            numA = parseInt(a.shopNumber);
+          }
+
+          if (b.shopNumber.includes("-")) {
+            numB = parseInt(b.shopNumber.split("-")[1]);
+          } else {
+            numB = parseInt(b.shopNumber);
+          }
+
+          // Compare numeric parts
+          return numA - numB;
+        };
+
+        const sortshop = shopresponse.data?.sort(customSort);
+        console.log(sortshop);
+
+        // shopresponse.data?.sort((a: any, b: any) => {
+        //   if (a.shopNumber < b.shopNumber) {
+        //     return -1;
+        //   }
+        //   if (a.shopNumber > b.shopNumber) {
+        //     return 1;
+        //   }
+        //   return 0;
+        // });
+
+        // console.log(shopresponse.data);
+
         setShops(shopresponse.data ?? []);
         setFilterShop(shopresponse.data ?? []);
       }
