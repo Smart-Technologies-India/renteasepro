@@ -106,7 +106,7 @@ const UserRentHistoryView = (props: UserRentHistoryViewProps) => {
                       }}
                       className="cursor-pointer"
                     >
-                      View Rent Recept
+                      View Rent Receipt
                     </Button>
                   ) : (
                     "-"

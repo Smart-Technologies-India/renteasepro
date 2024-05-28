@@ -176,7 +176,7 @@ const CardDetails = (props: CardDetailsProps) => {
   return (
     <Link
       href={`/dashboard/rents/property/${props.id}`}
-      className="rounded-md my-4 bg-white w-full p-4 flex gap-4 items-center hover:shadow-lg hover:scale-105 transition-all duration-300 cursor-pointer"
+      className="rounded-md my-4 bg-white w-full p-4 flex gap-4 items-center hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-pointer"
     >
       {props.icon}
       <div>
