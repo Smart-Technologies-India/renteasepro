@@ -103,10 +103,10 @@ const postRes = (request, response) => {
       response.write(htmlcode);
       response.end();
     } else if (result.order_status == "Success") {
-      const bidid = result.merchant_param1.toString().split("zzz")[0];
-      const userid = result.merchant_param1.toString().split("zzz")[1];
-      const shopid = result.merchant_param1.toString().split("zzz")[2];
-      const type = result.merchant_param1.toString().split("zzz")[3];
+      const bidid = result.merchant_param1.toString().split("_")[0];
+      const userid = result.merchant_param1.toString().split("_")[1];
+      const shopid = result.merchant_param1.toString().split("_")[2];
+      const type = result.merchant_param1.toString().split("_")[3];
 
       if (type == "bid") {
         const update_response = await prisma.bid_payment.updateMany({
@@ -471,7 +471,7 @@ app.prepare().then(() => {
   server.get("/payamount", async function (request, response) {
     response.writeHeader(200, { "Content-Type": "text/html" });
     response.write(
-      `<html><head><style>@import url(https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap);body{font-family:Roboto,sans-serif}</style></head><body><div style="width:100%;height:100vh;background-color:#eee;display:grid;place-items:center"><h1>LOADING...</h1></div><form method="POST" name="customerData" action="/ccavRequestHandler"><table width="40%" height="100" align="center"><input type="hidden" name="merchant_id" id="merchant_id" value="${3428043}"> <input type="hidden" name="billing_country" value="India"> <input type="hidden" name="billing_state" value="DN"> <input type="hidden" name="cancel_url" value="https://pdadnhrent.com/ccavResponseHandler"> <input type="hidden" name="redirect_url" value="https://pdadnhrent.com/ccavResponseHandler"> <input type="hidden" name="language" id="language" value="EN"> <input type="hidden" name="billing_zip" value="396220"> <input type="hidden" name="order_id" value="" id="order_id"> <input type="hidden" name="currency" value="INR"> <input type="hidden" name="amount" value="" id="amount"> <input type="hidden" name="merchant_param1" value="" id="purpose"><tr style="visibility:hidden"><td></td><td><input type="submit" value="Checkout" id="submit"></td></tr></table></form><script>const init = async () => { var url_string = window.location.href; var url = new URL(url_string); var amount = url.searchParams.get("xlmnx"); var id = url.searchParams.get("ynboy"); var purpose = url.searchParams.get("zgvfz"); document.getElementById("order_id").value = id; document.getElementById("amount").value = amount; document.getElementById("purpose").value = purpose; setTimeout(function () { document.getElementById("submit").click();}, 500); };window.addEventListener("load", init);</script></body></html>`
+      `<html><head><style>@import url(https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap);body{font-family:Roboto,sans-serif}</style></head><body><div style="width:100%;height:100vh;background-color:#eee;display:grid;place-items:center"><h1>LOADING...</h1></div><form method="POST" name="customerData" action="/ccavRequestHandler"><table width="40%" height="100" align="center"><input type="hidden" name="merchant_id" id="merchant_id" value="${3428042}"> <input type="hidden" name="billing_country" value="India"> <input type="hidden" name="billing_state" value="DN"> <input type="hidden" name="cancel_url" value="https://pdadnhrent.com/ccavResponseHandler"> <input type="hidden" name="redirect_url" value="https://pdadnhrent.com/ccavResponseHandler"> <input type="hidden" name="language" id="language" value="EN"> <input type="hidden" name="billing_zip" value="396220"> <input type="hidden" name="order_id" value="" id="order_id"> <input type="hidden" name="currency" value="INR"> <input type="hidden" name="amount" value="" id="amount"> <input type="hidden" name="merchant_param1" value="" id="purpose"><tr style="visibility:hidden"><td></td><td><input type="submit" value="Checkout" id="submit"></td></tr></table></form><script>const init = async () => { var url_string = window.location.href; var url = new URL(url_string); var amount = url.searchParams.get("xlmnx"); var id = url.searchParams.get("ynboy"); var purpose = url.searchParams.get("zgvfz"); document.getElementById("order_id").value = id; document.getElementById("amount").value = amount; document.getElementById("purpose").value = purpose; setTimeout(function () { document.getElementById("submit").click();}, 500); };window.addEventListener("load", init);</script></body></html>`
     );
     response.end();
   });
