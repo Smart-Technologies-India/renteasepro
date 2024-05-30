@@ -234,7 +234,6 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
     });
     if (!createbid.status) return toast.error(createbid.message);
 
-
     if (!issecond) {
       // const formData = new FormData();
       // formData.append("file", fileUploader!);
@@ -275,7 +274,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
       router.push(
         `/payamount?xlmnx=${amounttopaid}&ynboy=${uniqueid}&zgvfz=${parseInt(
           props.bidid.toString()
-        )}_${parseInt(userid.toString())}_${bid?.shopId ?? 0}_bid`
+        )}|${parseInt(userid.toString())}|${bid?.shopId ?? 0}|bid`
       );
     }
     router.back();

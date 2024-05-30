@@ -101,10 +101,10 @@ const postRes = (request, response) => {
       response.write(htmlcode);
       response.end();
     } else if (result.order_status == "Success") {
-      const bidid = result.merchant_param1.toString().split("_")[0];
-      const userid = result.merchant_param1.toString().split("_")[1];
-      const shopid = result.merchant_param1.toString().split("_")[2];
-      const type = result.merchant_param1.toString().split("_")[3];
+      const bidid = result.merchant_param1.toString().split("|")[0];
+      const userid = result.merchant_param1.toString().split("|")[1];
+      const shopid = result.merchant_param1.toString().split("|")[2];
+      const type = result.merchant_param1.toString().split("|")[3];
 
       if (type == "bid") {
         const update_response = await prisma.bid_payment.updateMany({
