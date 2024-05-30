@@ -51,7 +51,8 @@ const postRes = (request, response) => {
 
   var ccavEncResponse = "",
     ccavResponse = "",
-    workingKey = "E01FEB879F6B09AA29F8B6AAFD28B930", //Put in the 32-Bit key shared by CCAvenues.
+    // workingKey = "E01FEB879F6B09AA29F8B6AAFD28B930", //Put in the 32-Bit key shared by CCAvenues.
+    workingKey = "370F518A36775EFEA425EB27C8DC0CC6", //Put in the 32-Bit key shared by CCAvenues.
     ccavPOST = "";
 
   //Generate Md5 hash for the key and then convert in base64 string
@@ -377,8 +378,10 @@ const postRes = (request, response) => {
 
 const postReq = (request, response) => {
   var body = "",
-    workingKey = "E01FEB879F6B09AA29F8B6AAFD28B930", //Put in the 32-Bit key shared by CCAvenues.
-    accessCode = "AVCG05LD66BH75GCHB", //Put in the Access Code shared by CCAvenues.
+    // workingKey = "E01FEB879F6B09AA29F8B6AAFD28B930", //Put in the 32-Bit key shared by CCAvenues.
+    workingKey = "370F518A36775EFEA425EB27C8DC0CC6", //Put in the 32-Bit key shared by CCAvenues.
+    // accessCode = "AVCG05LD66BH75GCHB", //Put in the Access Code shared by CCAvenues.
+    accessCode = "AVHK88LE92BW69KHWB", //Put in the Access Code shared by CCAvenues.
     encRequest = "",
     formbody = "";
 
@@ -396,7 +399,7 @@ const postReq = (request, response) => {
     body += data;
     encRequest = encrypt(body, keyBase64, ivBase64);
     formbody =
-      '<form id="nonseamless" method="post" name="redirect" action="https://test.ccavenue.com/transaction/transaction.do?command=initiateTransaction"/> <input type="hidden" id="encRequest" name="encRequest" value="' +
+      '<form id="nonseamless" method="post" name="redirect" action="https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction"/> <input type="hidden" id="encRequest" name="encRequest" value="' +
       encRequest +
       '"><input type="hidden" name="access_code" id="access_code" value="' +
       accessCode +
