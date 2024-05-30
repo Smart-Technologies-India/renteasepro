@@ -95,7 +95,7 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
     const ids: string = field.join(",");
 
     router.push(
-      `/payamount?xlmnx=${amount}&ynboy=${uniqueid}&zgvfz=${ids}|0|0|rent`
+      `/payamount?xlmnx=${amount}&ynboy=${uniqueid}&zgvfz=${ids}zzz0zzz0zzzrent`
     );
 
     // const rentresponse = await GetRentTran({ id: field[0] });

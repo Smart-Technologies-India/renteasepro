@@ -36,6 +36,8 @@ const encrypt = (plainText, keyBase64, ivBase64) => {
   return encrypted;
 };
 
+
+
 const decrypt = (messagebase64, keyBase64, ivBase64) => {
   const key = Buffer.from(keyBase64, "base64");
   const iv = Buffer.from(ivBase64, "base64");
@@ -101,10 +103,10 @@ const postRes = (request, response) => {
       response.write(htmlcode);
       response.end();
     } else if (result.order_status == "Success") {
-      const bidid = result.merchant_param1.toString().split("|")[0];
-      const userid = result.merchant_param1.toString().split("|")[1];
-      const shopid = result.merchant_param1.toString().split("|")[2];
-      const type = result.merchant_param1.toString().split("|")[3];
+      const bidid = result.merchant_param1.toString().split("zzz")[0];
+      const userid = result.merchant_param1.toString().split("zzz")[1];
+      const shopid = result.merchant_param1.toString().split("zzz")[2];
+      const type = result.merchant_param1.toString().split("zzz")[3];
 
       if (type == "bid") {
         const update_response = await prisma.bid_payment.updateMany({

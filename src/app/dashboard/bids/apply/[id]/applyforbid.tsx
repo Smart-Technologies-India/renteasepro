@@ -274,7 +274,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
       router.push(
         `/payamount?xlmnx=${amounttopaid}&ynboy=${uniqueid}&zgvfz=${parseInt(
           props.bidid.toString()
-        )}|${parseInt(userid.toString())}|${bid?.shopId ?? 0}|bid`
+        )}zzz${parseInt(userid.toString())}zzz${bid?.shopId ?? 0}zzzbid`
       );
     }
     router.back();
