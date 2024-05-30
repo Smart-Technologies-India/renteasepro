@@ -129,7 +129,7 @@ const postRes = (request, response) => {
         console.log("id_value", id_value);
 
         for (let i = 0; i < id_value.length; i++) {
-          updatedata = await prisma.rent_transact.updateMany({
+          updatedata = await prisma.rent_transact.update({
             where: {
               id: id_value[i],
             },
