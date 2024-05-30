@@ -37,7 +37,6 @@ const ViewPdf = (props: ViewPdfProps) => {
       }
 
       const bidderresponse = await GetFromBidId({ id: props.id });
-      console.log("bidderresponse", bidderresponse);
       if (bidderresponse.status) {
         setBidderList(bidderresponse.data);
       }

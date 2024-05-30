@@ -50,7 +50,6 @@ const ViewPdf = (props: ViewPdfProps) => {
         userid: props.userid,
       });
 
-      console.log(bidpaymentresponse);
       if (bidpaymentresponse.status) {
         setPayment(bidpaymentresponse.data!);
       }

@@ -78,7 +78,6 @@ const PropertiesView = (props: PropertiesViewProps) => {
         };
 
         const sortshop = shopresponse.data?.sort(customSort);
-        console.log(sortshop);
 
         // shopresponse.data?.sort((a: any, b: any) => {
         //   if (a.shopNumber < b.shopNumber) {

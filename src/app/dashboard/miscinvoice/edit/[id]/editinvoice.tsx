@@ -108,7 +108,6 @@ const EditInvoice = (props: EditInvoiceProps) => {
       const invoice = await GetInvoice({ id: props.id });
 
       if (invoice.status) {
-        console.log(invoice.data);
 
         setTimeout(() => {
           nameRef.current!.value = invoice.data?.customername ?? "";

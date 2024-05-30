@@ -35,7 +35,6 @@ const ViewPdf = (props: ViewPdfProps) => {
       if (accoutnresponse.status) {
         setAccount(accoutnresponse.data);
       }
-      console.log(accoutnresponse);
     };
 
     init();

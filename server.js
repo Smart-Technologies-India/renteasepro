@@ -126,7 +126,6 @@ const postRes = (request, response) => {
 
         const id_value = bidid.split(",").map((id) => parseInt(id));
 
-        console.log("id_value", id_value);
 
         for (let i = 0; i < id_value.length; i++) {
           updatedata = await prisma.rent_transact.update({
@@ -153,7 +152,6 @@ const postRes = (request, response) => {
           });
         }
 
-        console.log("updatedata", updatedata);
 
         // const update_response = await prisma.rent_transact.updateMany({
         //   where: {
