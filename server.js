@@ -36,8 +36,6 @@ const encrypt = (plainText, keyBase64, ivBase64) => {
   return encrypted;
 };
 
-
-
 const decrypt = (messagebase64, keyBase64, ivBase64) => {
   const key = Buffer.from(keyBase64, "base64");
   const iv = Buffer.from(ivBase64, "base64");
@@ -124,32 +122,65 @@ const postRes = (request, response) => {
           },
         });
       } else if (type == "rent") {
-        const update_response = await prisma.rent_transact.updateMany({
-          where: {
-            id: {
-              in: bidid.split(",").map((id) => parseInt(id)),
+        let updatedata;
+
+        const id_value = bidid.split(",").map((id) => parseInt(id));
+
+        console.log("id_value", id_value);
+
+        for (let i = 0; i < id_value.length; i++) {
+          updatedata = await prisma.rent_transact.updateMany({
+            where: {
+              id: id_value[i],
             },
-          },
-          data: {
-            transactionid: result.bank_ref_no,
-            trackid: result.tracking_id,
-            status: "PAID",
-            transaction_date: new Date().toISOString(),
-            paymentmode: result.payment_mode.toString().toUpperCase(),
-            remarks: result.order_status,
-          },
-          include: {
-            user: true,
-            shop: {
-              include: {
-                property: true,
-                shop_category: true,
+            data: {
+              transactionid: result.bank_ref_no,
+              trackid: result.tracking_id,
+              status: "PAID",
+              transaction_date: new Date().toISOString(),
+              paymentmode: result.payment_mode.toString().toUpperCase(),
+              remarks: result.order_status,
+            },
+            include: {
+              user: true,
+              shop: {
+                include: {
+                  property: true,
+                  shop_category: true,
+                },
               },
             },
-          },
-        });
+          });
+        }
 
-        const RentIsPaid = `https://api.arihantsms.com/api/v2/SendSMS?SenderId=DNHPDA&Is_Unicode=false&Is_Flash=false&Message=Confirmation%3A%20Your%20rent%20for%20${update_response.shop.shop_category.name}%20at%20${update_response.shop.property.name}%20has%20been%20paid.%20We%20appreciate%20your%20timely%20payment%20-DNH%20PDA.&MobileNumbers=91${update_response.user.contactone}&ApiKey=rL56LBkGeOa1MKFm5SrSKtz%2Bq55zMVdxk5PNvQkg2nY%3D&ClientId=ebff4d6c-072b-4342-b71f-dcca677713f8`;
+        console.log("updatedata", updatedata);
+
+        // const update_response = await prisma.rent_transact.updateMany({
+        //   where: {
+        //     id: {
+        //       in: bidid.split(",").map((id) => parseInt(id)),
+        //     },
+        //   },
+        //   data: {
+        //     transactionid: result.bank_ref_no,
+        //     trackid: result.tracking_id,
+        //     status: "PAID",
+        //     transaction_date: new Date().toISOString(),
+        //     paymentmode: result.payment_mode.toString().toUpperCase(),
+        //     remarks: result.order_status,
+        //   },
+        //   include: {
+        //     user: true,
+        //     shop: {
+        //       include: {
+        //         property: true,
+        //         shop_category: true,
+        //       },
+        //     },
+        //   },
+        // });
+
+        const RentIsPaid = `https://api.arihantsms.com/api/v2/SendSMS?SenderId=DNHPDA&Is_Unicode=false&Is_Flash=false&Message=Confirmation%3A%20Your%20rent%20for%20${updatedata.shop.shop_category.name}%20at%20${updatedata.shop.property.name}%20has%20been%20paid.%20We%20appreciate%20your%20timely%20payment%20-DNH%20PDA.&MobileNumbers=91${updatedata.user.contactone}&ApiKey=rL56LBkGeOa1MKFm5SrSKtz%2Bq55zMVdxk5PNvQkg2nY%3D&ClientId=ebff4d6c-072b-4342-b71f-dcca677713f8`;
 
         const message_response = await fetch(RentIsPaid, {
           method: "GET",
