@@ -213,7 +213,7 @@ const ShopView = (props: ShowShopProps) => {
             <BackButton />
             <p className="text-xl  font-semibold">Shop Details</p>
             <div className="grow"></div>
-            {user?.role === "ADMIN" && (
+            {["ADMIN", "MANAGER"].includes(user?.role!) && (
               <>
                 {bid ? (
                   <>
@@ -371,7 +371,7 @@ const ShopView = (props: ShowShopProps) => {
               <></>
             )}
 
-            {user?.role === "ADMIN" && (
+            {["ADMIN", "MANAGER"].includes(user?.role!) && (
               <>
                 <Link
                   href={`/dashboard/bids/userbidinfo/${bid?.id}`}
@@ -507,7 +507,7 @@ const ShopView = (props: ShowShopProps) => {
             <div className="border-b border-gray-300 flex items-center pr-2">
               <p className="text-xl p-2  font-semibold">Rent Details</p>
               <div className="grow"></div>
-              {user?.role! === "ADMIN" && (
+              {["ADMIN", "MANAGER"].includes(user?.role!) && (
                 <Link
                   href={`/dashboard/userrent/history/${rentdata?.id}`}
                   className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"

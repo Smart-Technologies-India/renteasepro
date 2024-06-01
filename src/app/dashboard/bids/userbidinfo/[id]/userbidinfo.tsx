@@ -166,7 +166,7 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
             </>
           )}
 
-          {user?.role === "ADMIN" && (
+          {["ADMIN", "MANAGER"].includes(user?.role!) && (
             <>
               {bid.bidenddate < new Date() ? (
                 <>
@@ -559,7 +559,7 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
                   </button>
                 </div>
               </div>
-              {user?.role === "ADMIN" ? (
+              {["ADMIN", "MANAGER"].includes(user?.role!) ? (
                 <></>
               ) : (
                 <>

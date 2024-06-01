@@ -10,10 +10,10 @@ import {
 import { useEffect, useState } from "react";
 
 import { formateDate } from "@/utils/methods";
-import GetFromRent from "@/action/rent_transact/getfromrent";
 import BackButton from "@/components/backbutton";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import GetAllPaidRent from "@/action/rent_transact/getallpaid";
 
 interface UserRentHistoryViewProps {
   id: number;
@@ -28,13 +28,13 @@ const UserRentHistoryView = (props: UserRentHistoryViewProps) => {
   useEffect(() => {
     const init = async () => {
       setIsLoading(true);
-      const rentresponse = await GetFromRent({
-        rentid: props.id,
-      });
+      const rentresponse = await GetAllPaidRent({});
 
       if (rentresponse.status) {
         setRentTransact(rentresponse.data ?? []);
       }
+
+      console.log(rentresponse);
 
       setIsLoading(false);
     };
@@ -52,9 +52,8 @@ const UserRentHistoryView = (props: UserRentHistoryViewProps) => {
   return (
     <div className="p-6">
       <div className="flex gap-2 items-center">
-        <BackButton />
         <h1 className="text-[#162f57] text-2xl font-semibold">
-          Your Rent History
+          Rent payment History
         </h1>
       </div>
 
@@ -66,20 +65,25 @@ const UserRentHistoryView = (props: UserRentHistoryViewProps) => {
         <Table className="mt-4">
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px]">Id</TableHead>
+              <TableHead className="w-[180px]">User</TableHead>
+              <TableHead>Property</TableHead>
+              <TableHead>Shop</TableHead>
               <TableHead>Month</TableHead>
               <TableHead>Paid Amount</TableHead>
               <TableHead>Payment Date</TableHead>
-              <TableHead>Transaction Id</TableHead>
-              <TableHead>Status</TableHead>
               <TableHead>View</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {rentTransact.map((rent_data: any, index: number) => (
               <TableRow key={index}>
-                <TableCell className="font-medium">{rent_data.id}</TableCell>
+                <TableCell className="font-medium">
+                  {rent_data.user.firstName} - {rent_data.user.lastName} [
+                  {rent_data.user.contactone}]
+                </TableCell>
 
+                <TableCell>{rent_data.shop.property.name}</TableCell>
+                <TableCell>{rent_data.shop.shopNumber}</TableCell>
                 <TableCell>
                   {new Date(rent_data.formonth).toLocaleString("default", {
                     month: "long",
@@ -91,10 +95,7 @@ const UserRentHistoryView = (props: UserRentHistoryViewProps) => {
                     ? formateDate(new Date(rent_data.transaction_date))
                     : "-"}
                 </TableCell>
-                <TableCell>
-                  {rent_data.status == "PAID" ? rent_data.transactionid : "-"}
-                </TableCell>
-                <TableCell>{rent_data.status}</TableCell>
+
                 <TableCell>
                   {rent_data.status == "PAID" ? (
                     <Button

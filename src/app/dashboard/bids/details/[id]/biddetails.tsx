@@ -92,7 +92,7 @@ const BidDetailsView = (props: BidDetailsViewProps) => {
           <BackButton />
           <h1 className="text-[#162f57] text-2xl font-semibold">View Bid</h1>
           <div className="grow"></div>
-          {user?.role === "ADMIN" && (
+          {["ADMIN", "MANAGER"].includes(user?.role!) && (
             <>
               <Button
                 className="bg-black h-auto"

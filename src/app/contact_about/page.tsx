@@ -12,7 +12,7 @@ const TermAndConditionPage = () => {
           onClick={() => router.back()}
         />
         <h4 className="text-2xl font-bold text-center grow">
-          Contact And About
+          Contact Us
         </h4>
       </div>
 

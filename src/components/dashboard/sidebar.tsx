@@ -1,5 +1,6 @@
 import { usePathname, useRouter } from "next/navigation";
 import {
+  AntDesignHistoryOutlined,
   Fa6RegularFileLines,
   FluentMdl2Home,
   FluentMdl2ViewDashboard,
@@ -126,6 +127,12 @@ const Sidebar = (props: SidebarProps) => {
             name="Category"
             path={path}
             pathcheck={"/dashboard/category"}
+          />
+          <MenuTab
+            icco={<AntDesignHistoryOutlined className="text-gray-300  w-6" />}
+            name="Rent History"
+            path={path}
+            pathcheck={"/dashboard/allrenthistory"}
           />
         </>
       )}

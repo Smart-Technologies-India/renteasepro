@@ -5,31 +5,15 @@ import { ApiResponseType } from "@/models/response";
 import prisma from "../../../prisma/database";
 import { rent_transact } from "@prisma/client";
 
-interface GetFromRentPayload {
-  rentid: number;
-}
+interface GetAllPaidRentPayload {}
 
-const GetFromRent = async (
-  payload: GetFromRentPayload
+const GetAllPaidRent = async (
+  payload: GetAllPaidRentPayload
 ): Promise<ApiResponseType<rent_transact[] | null>> => {
   try {
     const rent_transact_response = await prisma.rent_transact.findMany({
       where: {
-        OR: [
-          {
-            status: "DUE",
-          },
-          {
-            status: "MONTHCROSS",
-          },
-          {
-            status: "LATE",
-          },
-          {
-            status: "PAID",
-          },
-        ],
-        rentId: parseInt(payload.rentid.toString() ?? "0"),
+        status: "PAID",
         deletedAt: null,
         deletedBy: null,
       },
@@ -48,24 +32,24 @@ const GetFromRent = async (
         status: false,
         data: null,
         message: "No Rent Transact Data Found for This User. Please try again.",
-        functionname: "GetFromRent",
+        functionname: "GetAllPaidRent",
       };
 
     return {
       status: true,
       data: rent_transact_response,
       message: "Rent Transact data get successfully",
-      functionname: "GetFromRent",
+      functionname: "GetAllPaidRent",
     };
   } catch (e) {
     const response: ApiResponseType<null> = {
       status: false,
       data: null,
       message: errorToString(e),
-      functionname: "GetFromRent",
+      functionname: "GetAllPaidRent",
     };
     return response;
   }
 };
 
-export default GetFromRent;
+export default GetAllPaidRent;

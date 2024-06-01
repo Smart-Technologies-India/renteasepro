@@ -1,7 +1,6 @@
 "use client";
 
 import GetProperty from "@/action/property/getproperty";
-import getShopsByStatus from "@/action/shop/getshopbystatus";
 import { capitalcase, removeDuplicates } from "@/utils/methods";
 import { ShopStatus, property, shop, user } from "@prisma/client";
 import Link from "next/link";
@@ -93,7 +92,7 @@ const BidPropertiesView = (props: BidPropertiesViewProps) => {
 
   return (
     <div className="p-6">
-      {user?.role === "ADMIN" && (
+      {["ADMIN", "MANAGER"].includes(user?.role!) && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
           <div className="bg-white rounded-sm shadow-sm">
             <div className="flex gap-1 border-b border-gray-300 px-2">
