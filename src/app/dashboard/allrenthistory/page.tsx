@@ -15,11 +15,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import GetAllPaidRent from "@/action/rent_transact/getallpaid";
 
-interface UserRentHistoryViewProps {
-  id: number;
-}
-
-const UserRentHistoryView = (props: UserRentHistoryViewProps) => {
+const UserRentHistoryView = () => {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
@@ -40,7 +36,7 @@ const UserRentHistoryView = (props: UserRentHistoryViewProps) => {
     };
 
     init();
-  }, [props.id]);
+  }, []);
 
   if (isLoading)
     return (
