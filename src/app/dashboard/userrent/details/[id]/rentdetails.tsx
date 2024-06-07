@@ -1,24 +1,16 @@
 "use client";
 import GetRent from "@/action/rent/getrent";
 import GetUserRent from "@/action/rent_transact/getuserrent";
-import PayRent from "@/action/rent_transact/payrent";
 import BackButton from "@/components/backbutton";
-import { AntDesignCheckOutlined } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
-import { formateDate, longtext } from "@/utils/methods";
+import { formateDate } from "@/utils/methods";
 import { rent_transact } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { SetStateAction, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { getCookie } from "cookies-next";
-import { Label } from "@/components/ui/label";
-import Link from "next/link";
-import { Input } from "@/components/ui/input";
-import axios from "axios";
-import UploadFile from "@/action/file_upload/uploadfile";
-import GetRentTran from "@/action/rent_transact/getrenttransact";
 import { customAlphabet } from "nanoid";
 
 interface UserRentDetailsViewProps {

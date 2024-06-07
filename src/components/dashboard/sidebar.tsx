@@ -6,6 +6,7 @@ import {
   FluentMdl2ViewDashboard,
   GgAlbum,
   IcBaselineAccountCircle,
+  IcBaselinePaypal,
   IcOutlineReceiptLong,
   LucideNewspaper,
   MaterialSymbolsCloseSmall,
@@ -74,6 +75,12 @@ const Sidebar = (props: SidebarProps) => {
             name="Rent"
             path={path}
             pathcheck={"/dashboard/userrent"}
+          />
+          <MenuTab
+            icco={<IcBaselinePaypal className="text-gray-300  w-6" />}
+            name="Quick Pay"
+            path={path}
+            pathcheck={"/dashboard/quickpay"}
           />
         </>
       )}

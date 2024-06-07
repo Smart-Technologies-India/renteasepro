@@ -1,8 +1,6 @@
 import { ApiResponseType } from "@/models/response";
 import axios from "axios";
-import { toast } from "react-toastify";
 import { errorToString } from "./methods";
-import { Agent } from "http";
 
 export enum SMSType {
   NewBidSubmitted,

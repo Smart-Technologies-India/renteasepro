@@ -74,30 +74,30 @@ const UpdateRentTrasact = async (
           },
         });
 
-        // if (get_rent_sms && get_rent_sms.due != "SENT") {
-        //   const response = await sent_due_rent_sms({
-        //     contact: rent.user.contactone!,
-        //     propertyName: rent.shop.property.name,
-        //     shopCategory: rent.shop.shop_category.name,
-        //   });
-        //   if (!response.status) {
-        //     return {
-        //       status: false,
-        //       data: null,
-        //       message: response.message,
-        //       functionname: "UpdateRentTrasact",
-        //     };
-        //   }
+        if (get_rent_sms && get_rent_sms.due != "SENT") {
+          const response = await sent_due_rent_sms({
+            contact: rent.user.contactone!,
+            propertyName: rent.shop.property.name,
+            shopCategory: rent.shop.shop_category.name,
+          });
+          if (!response.status) {
+            return {
+              status: false,
+              data: null,
+              message: response.message,
+              functionname: "UpdateRentTrasact",
+            };
+          }
 
-        //   const update_rent_sms = await prisma.rent_sms.update({
-        //     where: {
-        //       id: get_rent_sms.id,
-        //     },
-        //     data: {
-        //       due: "SENT",
-        //     },
-        //   });
-        // }
+          const update_rent_sms = await prisma.rent_sms.update({
+            where: {
+              id: get_rent_sms.id,
+            },
+            data: {
+              due: "SENT",
+            },
+          });
+        }
       });
     }
 
@@ -146,30 +146,30 @@ const UpdateRentTrasact = async (
           },
         });
 
-        // if (get_rent_sms && get_rent_sms.late != "SENT") {
-        //   const response = await send_late_rent_sms({
-        //     contact: rent.user.contactone!,
-        //     propertyName: rent.shop.property.name,
-        //     shopCategory: rent.shop.shop_category.name,
-        //   });
-        //   if (!response.status) {
-        //     return {
-        //       status: false,
-        //       data: null,
-        //       message: response.message,
-        //       functionname: "UpdateRentTrasact",
-        //     };
-        //   }
+        if (get_rent_sms && get_rent_sms.late != "SENT") {
+          const response = await send_late_rent_sms({
+            contact: rent.user.contactone!,
+            propertyName: rent.shop.property.name,
+            shopCategory: rent.shop.shop_category.name,
+          });
+          if (!response.status) {
+            return {
+              status: false,
+              data: null,
+              message: response.message,
+              functionname: "UpdateRentTrasact",
+            };
+          }
 
-        //   const update_rent_sms = await prisma.rent_sms.update({
-        //     where: {
-        //       id: get_rent_sms.id,
-        //     },
-        //     data: {
-        //       late: "SENT",
-        //     },
-        //   });
-        // }
+          const update_rent_sms = await prisma.rent_sms.update({
+            where: {
+              id: get_rent_sms.id,
+            },
+            data: {
+              late: "SENT",
+            },
+          });
+        }
       });
     }
 
@@ -219,30 +219,30 @@ const UpdateRentTrasact = async (
           },
         });
 
-        // if (get_rent_sms && get_rent_sms.monthcross != "SENT") {
-        //   const response = await send_monthcross_rent_sms({
-        //     contact: rent.user.contactone!,
-        //     propertyName: rent.shop.property.name,
-        //     shopCategory: rent.shop.shop_category.name,
-        //   });
-        //   if (!response.status) {
-        //     return {
-        //       status: false,
-        //       data: null,
-        //       message: response.message,
-        //       functionname: "UpdateRentTrasact",
-        //     };
-        //   }
+        if (get_rent_sms && get_rent_sms.monthcross != "SENT") {
+          const response = await send_monthcross_rent_sms({
+            contact: rent.user.contactone!,
+            propertyName: rent.shop.property.name,
+            shopCategory: rent.shop.shop_category.name,
+          });
+          if (!response.status) {
+            return {
+              status: false,
+              data: null,
+              message: response.message,
+              functionname: "UpdateRentTrasact",
+            };
+          }
 
-        //   const update_rent_sms = await prisma.rent_sms.update({
-        //     where: {
-        //       id: get_rent_sms.id,
-        //     },
-        //     data: {
-        //       monthcross: "SENT",
-        //     },
-        //   });
-        // }
+          const update_rent_sms = await prisma.rent_sms.update({
+            where: {
+              id: get_rent_sms.id,
+            },
+            data: {
+              monthcross: "SENT",
+            },
+          });
+        }
       });
     }
 

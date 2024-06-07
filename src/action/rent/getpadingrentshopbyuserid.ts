@@ -4,17 +4,30 @@ import { errorToString } from "@/utils/methods";
 import { ApiResponseType } from "@/models/response";
 import prisma from "../../../prisma/database";
 
-interface GetUserRendedShopPayload {
+interface GetPandingRentShopByUserIdPayload {
   userid: number;
 }
 
-const GetUserRendedShop = async (
-  payload: GetUserRendedShopPayload
+const GetPandingRentShopByUserId = async (
+  payload: GetPandingRentShopByUserIdPayload
 ): Promise<ApiResponseType<any | null>> => {
   try {
     const rent_transaction = await prisma.rent_transact.findMany({
       where: {
         userId: payload.userid,
+        deletedAt: null,
+        deletedBy: null,
+        OR: [
+          {
+            status: "DUE",
+          },
+          {
+            status: "LATE",
+          },
+          {
+            status: "MONTHCROSS",
+          },
+        ],
       },
       include: {
         shop: {
@@ -31,29 +44,31 @@ const GetUserRendedShop = async (
       distinct: ["shopId", "rentId"],
     });
 
+    console.log(rent_transaction);
+
     if (!rent_transaction)
       return {
         status: false,
         data: null,
-        message: "No Bid transaction exist for this user id. Please try again.",
-        functionname: "GetUserRendedShop",
+        message: "No Rent Data Found for This User. Please try again.",
+        functionname: "GetPandingRentShopByUserId",
       };
 
     return {
       status: true,
       data: rent_transaction,
-      message: "Bid transaction get successfully",
-      functionname: "GetUserRendedShop",
+      message: "Rent data get successfully",
+      functionname: "GetPandingRentShopByUserId",
     };
   } catch (e) {
     const response: ApiResponseType<null> = {
       status: false,
       data: null,
       message: errorToString(e),
-      functionname: "GetUserRendedShop",
+      functionname: "GetPandingRentShopByUserId",
     };
     return response;
   }
 };
 
-export default GetUserRendedShop;
+export default GetPandingRentShopByUserId;

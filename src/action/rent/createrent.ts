@@ -110,21 +110,21 @@ const CreateRent = async (
           };
         }
 
-        // const messageresponse = await sendSMS({
-        //   type: SMSType.RentIsStarted,
-        //   contact: rent.user.contactone!,
-        //   propertyName: rent.shop.property.name,
-        //   shopCategory: rent.shop.shop_category.name,
-        // });
+        const messageresponse = await sendSMS({
+          type: SMSType.RentIsStarted,
+          contact: rent.user.contactone!,
+          propertyName: rent.shop.property.name,
+          shopCategory: rent.shop.shop_category.name,
+        });
 
-        // if (!messageresponse.status) {
-        //   return {
-        //     status: false,
-        //     data: null,
-        //     message: messageresponse.message,
-        //     functionname: "CreateRent",
-        //   };
-        // }
+        if (!messageresponse.status) {
+          return {
+            status: false,
+            data: null,
+            message: messageresponse.message,
+            functionname: "CreateRent",
+          };
+        }
 
         return {
           status: true,
@@ -191,22 +191,22 @@ const CreateRent = async (
           functionname: "CreateRent",
         };
 
-      // const messageresponse = await sendSMS({
-      //   type: SMSType.RentIsStarted,
-      //   contact: rent.user.contactone!,
-      //   propertyName: rent.shop.property.name,
-      //   shopCategory: rent.shop.shop_category.name,
-      // });
+      const messageresponse = await sendSMS({
+        type: SMSType.RentIsStarted,
+        contact: rent.user.contactone!,
+        propertyName: rent.shop.property.name,
+        shopCategory: rent.shop.shop_category.name,
+      });
 
-      // if (!messageresponse.status) {
-      //   return {
-      //     status: false,
-      //     data: null,
-      //     message: messageresponse.message,
-      //     functionname: "CreateRent",
-      //   };
-      // }
-      
+      if (!messageresponse.status) {
+        return {
+          status: false,
+          data: null,
+          message: messageresponse.message,
+          functionname: "CreateRent",
+        };
+      }
+
       return {
         status: true,
         data: rent,
