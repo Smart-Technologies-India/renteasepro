@@ -44,8 +44,6 @@ const GetPandingRentShopByUserId = async (
       distinct: ["shopId", "rentId"],
     });
 
-    console.log(rent_transaction);
-
     if (!rent_transaction)
       return {
         status: false,

@@ -7,13 +7,40 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 
-import { formateDate } from "@/utils/methods";
-import BackButton from "@/components/backbutton";
+import { formatDateTime, formateDate, longtext } from "@/utils/methods";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import GetAllPaidRent from "@/action/rent_transact/getallpaid";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Separator } from "@/components/ui/separator";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Fa6SolidXmark,
+  FluentMdl2Search,
+  IcBaselineCalendarMonth,
+} from "@/components/icons";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { toast } from "react-toastify";
+import UpdateRentRecoDate from "@/action/rent_transact/updaterentrecodate";
+import { usePagination } from "@/hooks/usepagination";
+import Pagination from "@/components/pagination";
 
 const UserRentHistoryView = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -21,6 +48,19 @@ const UserRentHistoryView = () => {
 
   const [rentTransact, setRentTransact] = useState<any[]>([]);
 
+  // pagination start here
+  const [filterAccount, setFilterAccount] = useState<any[]>([]);
+
+  const searchRef = useRef<HTMLInputElement>(null);
+  const [isSearch, setIsSearch] = useState<boolean>(false);
+
+  const [searchresult, setSearchresult] = useState<any[]>([]);
+
+  const pagination = usePagination(filterAccount);
+
+  const paginationsearch = usePagination(searchresult);
+
+  // pagination end here
   useEffect(() => {
     const init = async () => {
       setIsLoading(true);
@@ -28,15 +68,105 @@ const UserRentHistoryView = () => {
 
       if (rentresponse.status) {
         setRentTransact(rentresponse.data ?? []);
-      }
+        setFilterAccount(rentresponse.data ?? []);
 
-      console.log(rentresponse);
+        console.log(rentresponse.data);
+      }
 
       setIsLoading(false);
     };
 
     init();
   }, []);
+
+  const [startDate, setStartDate] = useState<Date>();
+  const [startDPop, setStartDPop] = useState<boolean>(false);
+
+  const updateRecoDate = async (id: number) => {
+    if (startDate == null) {
+      return toast.error("Please select the reconcilation date");
+    }
+
+    const response = await UpdateRentRecoDate({
+      id: id,
+      reco_date: startDate,
+    });
+
+    if (response.status) {
+      toast.success("Reconcilation Date Added Successfully");
+      const rentresponse = await GetAllPaidRent({});
+
+      if (rentresponse.status) {
+        setRentTransact(rentresponse.data ?? []);
+        setFilterAccount(rentresponse.data ?? []);
+      }
+    } else {
+      toast.error("Reconcilation Date Not Added Successfully");
+    }
+  };
+
+  const searchchange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (searchRef.current) {
+      if (searchRef.current.value.length > 0) {
+        setIsSearch(true);
+
+        setSearchresult(
+          filterAccount.filter(
+            (account: any) =>
+              (account.user.firstName !== null ? account.user.firstName : "")
+                .toString()
+                .toLowerCase()
+                .includes(
+                  searchRef.current?.value.toString().toLowerCase() ?? ""
+                ) ||
+              (account.user.lastName !== null ? account.user.lastName : "")
+                .toString()
+                .toLowerCase()
+                .includes(
+                  searchRef.current?.value.toString().toLowerCase() ?? ""
+                ) ||
+              (account.user.firstName + " " + account.user.lastName !== null
+                ? account.user.firstName + " " + account.user.lastName
+                : ""
+              )
+                .toString()
+                .toLowerCase()
+                .includes(
+                  searchRef.current?.value.toString().toLowerCase() ?? ""
+                ) ||
+              (account.shop.property.name !== null
+                ? account.shop.property.name
+                : ""
+              )
+                .toString()
+                .toLowerCase()
+                .includes(
+                  searchRef.current?.value.toString().toLowerCase() ?? ""
+                ) ||
+              (account.shop.shopNumber !== null ? account.shop.shopNumber : "")
+                .toString()
+                .toLowerCase()
+                .includes(
+                  searchRef.current?.value.toString().toLowerCase() ?? ""
+                ) ||
+              (account.amount !== null ? account.amount : "")
+                .toString()
+                .toLowerCase()
+                .includes(
+                  searchRef.current?.value.toString().toLowerCase() ?? ""
+                )
+          )
+        );
+      } else {
+        setIsSearch(false);
+      }
+    }
+  };
+
+  const clearsearch = async () => {
+    setIsSearch((val) => false);
+    searchRef.current!.value = "";
+  };
 
   if (isLoading)
     return (
@@ -51,9 +181,29 @@ const UserRentHistoryView = () => {
         <h1 className="text-[#162f57] text-2xl font-semibold">
           Rent payment History
         </h1>
+        <div className="grow"></div>
+
+        <div className="flex items-center bg-white rounded-md pl-2">
+          <FluentMdl2Search />
+          <input
+            ref={searchRef}
+            type="text"
+            onChange={searchchange}
+            className="bg-transparent outline-none focus:outline-none py-1 px-4"
+            placeholder="Enter Search Text.."
+          />
+          {isSearch && (
+            <button
+              onClick={clearsearch}
+              className=" p-2 text-black bg-white rounded-r"
+            >
+              <Fa6SolidXmark></Fa6SolidXmark>
+            </button>
+          )}
+        </div>
       </div>
 
-      {rentTransact.length === 0 ? (
+      {filterAccount.length <= 0 ? (
         <>
           <p className="mt-4 text-lg">No Rent Found</p>
         </>
@@ -68,10 +218,14 @@ const UserRentHistoryView = () => {
               <TableHead>Paid Amount</TableHead>
               <TableHead>Payment Date</TableHead>
               <TableHead>View</TableHead>
+              <TableHead>Reco Date</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {rentTransact.map((rent_data: any, index: number) => (
+            {(isSearch
+              ? paginationsearch.paginatedItems
+              : pagination.paginatedItems
+            ).map((rent_data: any, index: number) => (
               <TableRow key={index}>
                 <TableCell className="font-medium">
                   {rent_data.user.firstName} - {rent_data.user.lastName} [
@@ -100,7 +254,7 @@ const UserRentHistoryView = () => {
                           `/dashboard/rentrecept/${rent_data.user.id}/${rent_data.rentId}/${rent_data.transactionid}`
                         );
                       }}
-                      className="cursor-pointer"
+                      className="cursor-pointer text-sm font-normal px-3 py-1 h-8"
                     >
                       View Rent Receipt
                     </Button>
@@ -108,11 +262,114 @@ const UserRentHistoryView = () => {
                     "-"
                   )}
                 </TableCell>
+                <TableCell>
+                  {rent_data.reconcilation == null ? (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button className="cursor-pointer text-sm font-normal px-3 py-1 h-8">
+                          Add Date
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Select the Reconcilation Date?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Enter Accept Reason Below
+                          </AlertDialogDescription>
+                          <Popover open={startDPop} onOpenChange={setStartDPop}>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant={"outline"}
+                                className={`w-full justify-start text-left font-normal ${
+                                  !startDate ?? "text-muted-foreground"
+                                }`}
+                              >
+                                <IcBaselineCalendarMonth className="mr-2 h-4 w-4" />
+                                {startDate ? (
+                                  format(startDate, "PPP")
+                                ) : (
+                                  <span>Select start date</span>
+                                )}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent
+                              className="w-auto p-0"
+                              align="start"
+                            >
+                              <Calendar
+                                mode="single"
+                                selected={startDate}
+                                onSelect={(e) => {
+                                  setStartDate(e);
+                                  setStartDPop(false);
+                                }}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          {/* <AlertDialogAction onClick={acceptBid}> */}
+                          <AlertDialogAction
+                            onClick={() => updateRecoDate(rent_data.id)}
+                          >
+                            Continue
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  ) : (
+                    formateDate(new Date(rent_data.reconcilation))
+                  )}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       )}
+
+      {isSearch
+        ? paginationsearch.paginatedItems.length > 0 && (
+            <div className="p-4">
+              <Pagination
+                ChangePerPage={paginationsearch.ChangePerPage}
+                activePage={paginationsearch.activePage}
+                changeActivePage={paginationsearch.changeActivePage}
+                firstPage={paginationsearch.firstPage}
+                getMaxPage={paginationsearch.getMaxPage}
+                getTotalItemsLength={paginationsearch.getTotalItemsLength}
+                goToPage={paginationsearch.goToPage}
+                itemPerPage={paginationsearch.itemPerPage}
+                lastPage={paginationsearch.lastPage}
+                nextPage={paginationsearch.nextPage}
+                paginatedItems={paginationsearch.paginatedItems}
+                prevPage={paginationsearch.prevPage}
+                totalPages={paginationsearch.totalPages}
+              ></Pagination>
+            </div>
+          )
+        : pagination.paginatedItems.length > 0 && (
+            <div className="p-4">
+              <Pagination
+                ChangePerPage={pagination.ChangePerPage}
+                activePage={pagination.activePage}
+                changeActivePage={pagination.changeActivePage}
+                firstPage={pagination.firstPage}
+                getMaxPage={pagination.getMaxPage}
+                getTotalItemsLength={pagination.getTotalItemsLength}
+                goToPage={pagination.goToPage}
+                itemPerPage={pagination.itemPerPage}
+                lastPage={pagination.lastPage}
+                nextPage={pagination.nextPage}
+                paginatedItems={pagination.paginatedItems}
+                prevPage={pagination.prevPage}
+                totalPages={pagination.totalPages}
+              ></Pagination>
+            </div>
+          )}
     </div>
   );
 };

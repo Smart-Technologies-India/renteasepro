@@ -29,10 +29,7 @@ import AllAccountCategorys from "@/action/account/getallaccountcategory";
 import { capitalcase, removeDuplicates } from "@/utils/methods";
 
 const CreateAccountPage = () => {
-  const initdata = async () => {};
-
   const router = useRouter();
-  const windowwidth = useWindowSize();
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const [allaccount, setAllAccount] = useState<account_receipt[]>([]);
@@ -88,7 +85,6 @@ const CreateAccountPage = () => {
       });
 
       setCategory(["All", ...removeDuplicates(temp)]);
-
 
       setIsLoading(false);
     };

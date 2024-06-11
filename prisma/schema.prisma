@@ -571,6 +571,7 @@ model rent_transact {
   transactionid    String?
   bankname         String?
   trackid          String?
+  reconcilation    DateTime?
   remarks          String?            @db.MediumText
   status           RentTransactStatus @default(INACTIVE)
   createdAt        DateTime           @default(now())
