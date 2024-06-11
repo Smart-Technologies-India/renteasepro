@@ -34,8 +34,7 @@ const TermAndConditionPage = () => {
             Users must be at least 18 years old and legally capable of entering
             into binding contracts to access and use our services. Government
             agencies and authorized personnel are eligible to list and rent
-            government-owned properties through our platform. non cumque? Ut
-            modi repellat sint! Saepe illo minima aliquid!
+            government-owned properties through our platform.
           </p>
         </section>
         <section className="mb-8">
@@ -125,7 +124,9 @@ const TermAndConditionPage = () => {
             any changes.
           </p>
           <p className="text-lg my-4">
-          By accessing and using PDA DNH RENT, you agree to comply with these Terms and Conditions. If you do not agree with any part of these terms, please refrain from using our services.
+            By accessing and using PDA DNH RENT, you agree to comply with these
+            Terms and Conditions. If you do not agree with any part of these
+            terms, please refrain from using our services.
           </p>
         </section>
       </div>
