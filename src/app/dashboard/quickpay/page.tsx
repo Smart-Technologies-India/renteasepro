@@ -60,8 +60,6 @@ const BidPropertiesView = () => {
         userid: userid,
       });
 
-      console.log(rent_transaction);
-
       if (!rent_transaction.status)
         return toast.error(rent_transaction.message);
 
@@ -247,7 +245,7 @@ const PropertiesDeatils = (props: PropertiesDeatilsProps) => {
   };
   return (
     <div
-      className={`border rounded-md grid place-items-center p-2 min-w-24 `}
+      className={`border rounded-md grid place-items-center p-2 min-w-24 cursor-pointer`}
       onClick={async () => {
         // const rentTransactresponse = await GetUserRent({ rentid: props.id });
         // if (rentTransactresponse.status) {
