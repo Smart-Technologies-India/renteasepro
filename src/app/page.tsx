@@ -1,5 +1,4 @@
 "use client";
-import * as crypto from "crypto";
 
 import LoginOtp from "@/action/user/loginotp";
 import SendOtp from "@/action/user/sendotp";
@@ -10,9 +9,8 @@ import { handleNumberChange } from "@/utils/methods";
 import { user } from "@prisma/client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { encrypt } from "@/utils/paymentmethods";
 import Link from "next/link";
 
 export default function Home() {

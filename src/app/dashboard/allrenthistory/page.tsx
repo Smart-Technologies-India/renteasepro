@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/table";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 
-import { formatDateTime, formateDate, longtext } from "@/utils/methods";
+import { formateDate } from "@/utils/methods";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import GetAllPaidRent from "@/action/rent_transact/getallpaid";
@@ -24,7 +24,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Separator } from "@/components/ui/separator";
 import {
   Popover,
   PopoverContent,

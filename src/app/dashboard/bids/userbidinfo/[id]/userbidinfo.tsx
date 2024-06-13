@@ -362,14 +362,14 @@ const UserBidInfoView = (props: UserBidInfoViewProps) => {
               <p className="text-gray-500 text-center">Document Required</p>
               <Separator />
 
-              <div className="grid grid-cols-5 gap-4 items-center justify-around w-full mt-4">
+              <div className="grid grid-cols-5 gap-4 items-start justify-around w-full mt-4">
                 <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1 col-span-2">
                   <h1 className="text-center">Document Title</h1>
                   <p className="text-center">{bid.docone ?? "-"}</p>
                 </div>
                 <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1 col-span-3">
                   <h1 className="text-center">Document Description</h1>
-                  <p className="text-center">{bid.Description ?? "-"}</p>
+                  <p className="text-center">{bid.doconedescription ?? "-"}</p>
                 </div>
                 <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1  col-span-2">
                   <h1 className="text-center">File Number</h1>
