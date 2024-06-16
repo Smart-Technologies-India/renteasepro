@@ -99,6 +99,11 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
       const bidresponse = await GetBid({
         id: parseInt(props.bidid.toString()),
       });
+
+      // console.log(bidresponse);
+      // console.log(bidresponse.data.biduser.contactone);
+
+      // console.log(bid.biduser.contactone);
       if (bidresponse.status) {
         setBid(bidresponse.data ?? ({} as bid));
       }
@@ -262,7 +267,9 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
       router.push(
         `/payamount?xlmnx=${amounttopaid}&ynboy=${uniqueid}&zgvfz=${parseInt(
           props.bidid.toString()
-        )}_${parseInt(userid.toString())}_${bid?.shopId ?? 0}_bid`
+        )}_${parseInt(userid.toString())}_${bid?.shopId ?? 0}_bid_${
+          bid.biduser.contactone
+        }`
       );
     } else {
       router.back();

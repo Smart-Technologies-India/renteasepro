@@ -39,6 +39,16 @@ const ShopBidHistoryView = (props: ShopBidHistoryViewProps) => {
     init();
   }, [props.id]);
 
+  const getBidAmount = (bid: any[]): string => {
+    let min_bid_amount = 0;
+    bid.forEach((element) => {
+      if (element.amount > min_bid_amount) {
+        min_bid_amount = element.amount;
+      }
+    });
+    return min_bid_amount.toString();
+  };
+
   if (isLoading)
     return (
       <div className="h-screen w-full grid place-items-center text-3xl text-gray-600 bg-gray-200">
@@ -76,7 +86,7 @@ const ShopBidHistoryView = (props: ShopBidHistoryViewProps) => {
                 <TableRow key={index}>
                   <TableCell>{bid.shop.shopNumber}</TableCell>
                   <TableCell>{bid.bidderscount}</TableCell>
-                  <TableCell>&#8377;{bid.min_bid_amount}</TableCell>
+                  <TableCell>&#8377;{getBidAmount(bid.bid_transact)}</TableCell>
                   <TableCell>
                     {new Date(bid.bidstartdate).getDate()}-
                     {new Date(bid.bidstartdate).getMonth() + 1}-

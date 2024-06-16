@@ -107,19 +107,19 @@ const ApplyBid = async (
       }
     }
 
-    const messageresponse = await sendSMS({
-      type: SMSType.NewBidSubmitted,
-      contact: bid_transactresponse.user.contactone!,
-    });
+    // const messageresponse = await sendSMS({
+    //   type: SMSType.NewBidSubmitted,
+    //   contact: bid_transactresponse.user.contactone!,
+    // });
 
-    if (!messageresponse.status) {
-      return {
-        status: false,
-        data: null,
-        message: messageresponse.message,
-        functionname: "ApplyBid",
-      };
-    }
+    // if (!messageresponse.status) {
+    //   return {
+    //     status: false,
+    //     data: null,
+    //     message: messageresponse.message,
+    //     functionname: "ApplyBid",
+    //   };
+    // }
 
     // if higher bid then send sms to all lower bid user
 

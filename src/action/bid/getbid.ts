@@ -40,6 +40,9 @@ const GetBid = async (
         deletedAt: null,
         deletedBy: null,
       },
+      include: {
+        user: true,
+      },
       orderBy: {
         amount: "desc",
       },
@@ -47,6 +50,7 @@ const GetBid = async (
 
     if (max_bid_amount) {
       bid.max_bid_amount = max_bid_amount.amount;
+      bid.biduser = max_bid_amount.user;
     } else {
       bid.max_bid_amount = bid.min_bid_amount;
     }
