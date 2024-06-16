@@ -122,6 +122,19 @@ const postRes = (request, response) => {
             transaction_date: new Date().toISOString(),
             paymentmode: result.payment_mode.toString().toUpperCase(),
             remarks: result.order_status,
+            status: "ACTIVE",
+          },
+        });
+
+        const update_payment = await prisma.bid_transact.updateMany({
+          where: {
+            status: "INACTIVE",
+            userId: userid ? parseInt(userid) : 0,
+            shopId: shopid ? parseInt(shopid) : 0,
+            bidId: bidid ? parseInt(bidid) : 0,
+          },
+          data: {
+            status: "ACTIVE",
           },
         });
 

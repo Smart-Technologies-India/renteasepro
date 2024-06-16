@@ -30,6 +30,7 @@ const ApplyBid = async (
         bidId: payload.bidId,
         amount: payload.amount,
         createdById: payload.userId,
+        status: "INACTIVE",
       },
       include: {
         bid: true,
@@ -67,6 +68,7 @@ const ApplyBid = async (
           transactionid: payload.transactionid,
           bankname: payload.bankname,
           createdById: payload.userId,
+          status: "INACTIVE",
         },
       });
 
@@ -84,6 +86,7 @@ const ApplyBid = async (
             transactionid: payload.transactionid,
             bankname: payload.bankname,
             createdById: payload.userId,
+            status: "INACTIVE",
           },
         });
       }
@@ -102,6 +105,7 @@ const ApplyBid = async (
             transactionid: payload.transactionid,
             bankname: payload.bankname,
             createdById: payload.userId,
+            status: "INACTIVE",
           },
         });
       }
