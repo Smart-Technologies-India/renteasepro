@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation";
 import { SetStateAction, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { customAlphabet } from "nanoid";
+import GetUser from "@/action/user/getuser";
 
 const getExemptfor = (value: ExemptFor): string => {
   switch (value) {
@@ -59,6 +60,8 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
 
   const [isAplicable, setIsApplicable] = useState<boolean>(false);
 
+  const [user, setUser] = useState<any>();
+
   // const [user, setUser] = useState<user>();
 
   // const banknameRef = useRef<HTMLInputElement>(null);
@@ -89,23 +92,20 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
     const init = async () => {
       setLoading(true);
 
-      // const userresponse = await GetUser({
-      //   id: userid,
-      // });
-      // if (userresponse.status) {
-      //   setUser(userresponse.data!);
-      // }
+      const userresponse = await GetUser({
+        id: userid,
+      });
+
+      if (userresponse.status) {
+        setUser(userresponse.data!);
+      }
 
       const bidresponse = await GetBid({
         id: parseInt(props.bidid.toString()),
       });
 
-      // console.log(bidresponse);
-      // console.log(bidresponse.data.biduser.contactone);
-
-      // console.log(bid.biduser.contactone);
       if (bidresponse.status) {
-        setBid(bidresponse.data ?? ({} as bid));
+        setBid(bidresponse.data ?? null);
       }
 
       const isaaplied = await getFromUser({
@@ -267,9 +267,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
       router.push(
         `/payamount?xlmnx=${amounttopaid}&ynboy=${uniqueid}&zgvfz=${parseInt(
           props.bidid.toString()
-        )}_${parseInt(userid.toString())}_${bid?.shopId ?? 0}_bid_${
-          bid.biduser.contactone
-        }`
+        )}_${parseInt(userid.toString())}_${bid?.shopId ?? 0}_bid_${user}`
       );
     } else {
       router.back();
