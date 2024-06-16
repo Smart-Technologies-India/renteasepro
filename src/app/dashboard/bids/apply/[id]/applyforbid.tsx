@@ -210,18 +210,6 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
       return;
     }
 
-    // if (!issecond && fileUploader == null) {
-    //   return toast.error("Please upload receipt file");
-    // }
-
-    // if (!issecond && banknameRef.current?.value == "") {
-    //   return toast.error("Please enter bank name");
-    // }
-
-    // if (!issecond && transactionRef.current?.value == "") {
-    //   return toast.error("Please enter transaction id");
-    // }
-
     const createbid = await ApplyBid({
       amount: parseInt(amount.current?.value ?? "0"),
       bidId: parseInt(props.bidid.toString()),
@@ -276,9 +264,10 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
           props.bidid.toString()
         )}_${parseInt(userid.toString())}_${bid?.shopId ?? 0}_bid`
       );
+    } else {
+      router.back();
+      toast.success(createbid.message);
     }
-    router.back();
-    toast.success(createbid.message);
   };
 
   const [page, setPage] = useState<number>(0);
