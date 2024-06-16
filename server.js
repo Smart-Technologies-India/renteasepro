@@ -8,8 +8,8 @@ const http = require("http");
 const fs = require("fs");
 const qs = require("querystring");
 const { PrismaClient } = require("@prisma/client");
-const axios = require("axios");
 
+const  axios = require("axios");
 // variable declaration
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
@@ -122,23 +122,8 @@ const postRes = (request, response) => {
             transaction_date: new Date().toISOString(),
             paymentmode: result.payment_mode.toString().toUpperCase(),
             remarks: result.order_status,
-            status: "ACTIVE",
           },
         });
-
-        const update_payment = await prisma.bid_transact.updateMany({
-          where: {
-            status: "INACTIVE",
-            userId: userid ? parseInt(userid) : 0,
-            shopId: shopid ? parseInt(shopid) : 0,
-            bidId: bidid ? parseInt(bidid) : 0,
-          },
-          data: {
-            status: "ACTIVE",
-          },
-        });
-
-        console.log("update_payment", update_payment);
 
         const NewBidSubmitted = `https://api.arihantsms.com/api/v2/SendSMS?SenderId=DNHPDA&Is_Unicode=false&Is_Flash=false&Message=Thank%20you%20for%20submitting%20your%20bid.%20We%20have%20received%20it%20successfully.%20You%20will%20be%20notified%20of%20any%20updates%20or%20further%20actions.%20-%20PDA%2C%20DNH.&MobileNumbers=91${mobile_number}&ApiKey=rL56LBkGeOa1MKFm5SrSKtz%2Bq55zMVdxk5PNvQkg2nY%3D&ClientId=ebff4d6c-072b-4342-b71f-dcca677713f8`;
 
