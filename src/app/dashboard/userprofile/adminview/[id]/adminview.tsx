@@ -1,4 +1,5 @@
 "use client";
+import getOtherUploadFilesUser from "@/action/user/getotheruploadedfiles";
 import getUploadFileUser from "@/action/user/getuploadedfile";
 import GetUser from "@/action/user/getuser";
 import { IcBaselineAccountCircle } from "@/components/icons";
@@ -16,6 +17,13 @@ const UserAdminView = (props: UserAdminViewProps) => {
   const [isLoading, setLoading] = useState<boolean>(true);
 
   const [user, setUser] = useState<user>();
+
+  interface AdditionalFile {
+    name: string;
+    path: string;
+  }
+
+  const [additionalFile, setAdditionalFile] = useState<AdditionalFile[]>([]);
 
   interface FileGetResponse {
     status: boolean;
@@ -201,6 +209,20 @@ const UserAdminView = (props: UserAdminViewProps) => {
           path: tribalresponse.data?.path!,
         });
       }
+
+      const additionalfileresponse = await getOtherUploadFilesUser({
+        userId: userid,
+      });
+
+      if (additionalfileresponse.status) {
+        setAdditionalFile(
+          additionalfileresponse.data?.map((file) => ({
+            name: file.name,
+            path: file.path,
+          })) ?? []
+        );
+      }
+
       setLoading(false);
     };
 
@@ -472,6 +494,22 @@ const UserAdminView = (props: UserAdminViewProps) => {
           ) : (
             <></>
           )}
+
+          {additionalFile.map((file, index) => (
+            <div
+              key={index}
+              className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between"
+            >
+              <p>{file.name}</p>
+              <Link
+                target="_blank"
+                href={file.path}
+                className="bg-gray-200 text-black py-1 px-4 rounded-md text-sm h-8 grid place-items-center"
+              >
+                View File
+              </Link>
+            </div>
+          ))}
         </div>
       </div>
     </div>

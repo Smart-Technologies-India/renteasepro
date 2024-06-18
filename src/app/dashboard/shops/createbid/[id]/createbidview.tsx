@@ -168,6 +168,8 @@ const CreateBidPage = (props: CreateBidPageProps) => {
   const [field, setField] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
+  const [additionalDocument, setAdditionalDocument] = useState<boolean>(false);
+
   const exemptitems = [
     {
       id: "forwomen",
@@ -373,6 +375,7 @@ const CreateBidPage = (props: CreateBidPageProps) => {
         is_sc_st: field.includes("scst"),
         is_tribal: field.includes("tribal"),
         is_open: isOpen,
+        additionalDocument: additionalDocument,
         exemptfield: exemptfield,
         exemptsectionsvalue: exemptsectionsvalue,
         ...extrafields,
@@ -1389,40 +1392,63 @@ const CreateBidPage = (props: CreateBidPageProps) => {
               ref={filesubject}
             />
           </div>
-
-          <div className="flex gap-4 mt-4 items-center">
-            <Label htmlFor="termfile">
-              Terms & Conditions File <span className="text-rose-500">*</span>
-            </Label>
-            <Button
-              onClick={() => cFileUploader.current?.click()}
-              variant={"secondary"}
-            >
-              {fileUploader == null ? "Upload File" : "Change File"}
-            </Button>
-
-            {fileUploader != null && (
-              <Link
-                target="_blank"
-                href={URL.createObjectURL(fileUploader!)}
-                className="bg-gray-100 text-black py-1 px-4 rounded-md text-sm h-10 grid place-items-center"
+          <div className="flex gap-2 items-center mt-4">
+            <div className="flex gap-4  items-center">
+              <Label htmlFor="termfile">
+                Terms & Conditions File <span className="text-rose-500">*</span>
+              </Label>
+              <Button
+                onClick={() => cFileUploader.current?.click()}
+                variant={"secondary"}
               >
-                View File
-              </Link>
-            )}
-            <p className="text-sm">
-              {fileUploader != null
-                ? longtext(fileUploader.name, 20)
-                : "No File Selected"}
-            </p>
+                {fileUploader == null ? "Upload File" : "Change File"}
+              </Button>
 
-            <div className="hidden">
-              <Input
-                type="file"
-                ref={cFileUploader}
-                accept="*/*"
-                onChange={(val) => handleFileChange(val, setFileUploader)}
-              />
+              {fileUploader != null && (
+                <Link
+                  target="_blank"
+                  href={URL.createObjectURL(fileUploader!)}
+                  className="bg-gray-100 text-black py-1 px-4 rounded-md text-sm h-10 grid place-items-center"
+                >
+                  View File
+                </Link>
+              )}
+              <p className="text-sm">
+                {fileUploader != null
+                  ? longtext(fileUploader.name, 20)
+                  : "No File Selected"}
+              </p>
+
+              <div className="hidden">
+                <Input
+                  type="file"
+                  ref={cFileUploader}
+                  accept="*/*"
+                  onChange={(val) => handleFileChange(val, setFileUploader)}
+                />
+              </div>
+            </div>
+            <div className="grow"></div>
+            <div>
+              <div className="flex gap-2 mt-1 items-center ">
+                <Checkbox
+                  id={"requiredadditionaldocument"}
+                  checked={additionalDocument}
+                  onCheckedChange={(value) => {
+                    if (value) {
+                      setAdditionalDocument(true);
+
+                      setField([]);
+                    } else {
+                      setAdditionalDocument(false);
+                    }
+                  }}
+                />
+                <Label htmlFor="termfile">
+                  Require Additional Document
+                  <span className="text-rose-500">*</span>
+                </Label>
+              </div>
             </div>
           </div>
 

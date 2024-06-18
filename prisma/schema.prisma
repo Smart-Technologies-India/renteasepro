@@ -417,6 +417,7 @@ model bid {
   is_sc_st             Boolean        @default(false)
   remarks              String?        @db.MediumText
   status               Status         @default(ACTIVE)
+  additional_doc       Boolean        @default(false)
   bid_status           BidStatus      @default(DRAFT)
   createdAt            DateTime       @default(now())
   createdBy            user           @relation("bid_createdBy_userId", fields: [createdById], references: [id])

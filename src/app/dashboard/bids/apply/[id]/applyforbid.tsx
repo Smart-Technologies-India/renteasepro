@@ -267,7 +267,9 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
       router.push(
         `/payamount?xlmnx=${amounttopaid}&ynboy=${uniqueid}&zgvfz=${parseInt(
           props.bidid.toString()
-        )}_${parseInt(userid.toString())}_${bid?.shopId ?? 0}_bid_${user.contactone}`
+        )}_${parseInt(userid.toString())}_${bid?.shopId ?? 0}_bid_${
+          user.contactone
+        }`
       );
     } else {
       router.back();
@@ -622,6 +624,13 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                   </>
                 )}
                 <Separator />
+                {bid.additional_doc == true && (
+                  <p>
+                    Note: This bid has additional bid document requirement.
+                    Kindly read the document description and upload relevant
+                    document in my profile section.
+                  </p>
+                )}
                 <div className="flex justify-between w-full mt-2">
                   <Button
                     className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"

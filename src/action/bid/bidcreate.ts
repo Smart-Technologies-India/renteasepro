@@ -59,6 +59,7 @@ interface CreateBidPayload {
   exempt_bg_for?: ExemptFor;
   exempt_bg?: PercentageType;
   exempt_bg_amount?: number;
+  additionalDocument: boolean;
 }
 
 const CreateBid = async (
@@ -108,6 +109,7 @@ const CreateBid = async (
       createdById: payload.createdById,
       is_auction: payload.is_auction,
       is_open: payload.is_open,
+      additional_doc: payload.additionalDocument,
     };
 
     if (payload.description) {

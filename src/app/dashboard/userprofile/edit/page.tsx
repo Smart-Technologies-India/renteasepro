@@ -22,15 +22,22 @@ import axios from "axios";
 import { getCookie } from "cookies-next";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { safeParse } from "valibot";
+
+interface AdditionalFile {
+  id: number;
+  file: File | null;
+  name: string;
+}
 
 async function uploadfile(
   file: File,
   uploadurl: string,
   userid: number,
-  doc_type: UserDocType
+  doc_type: UserDocType,
+  filename?: string
 ) {
   const formData = new FormData();
   formData.append("file", file!);
@@ -48,7 +55,7 @@ async function uploadfile(
   const uploadfileResponse = await UploadFileUser({
     userId: userid,
     doc_type: doc_type,
-    name: file.name,
+    name: filename ? filename : file.name,
     path: uploadfile.data.filePath,
     createdById: userid,
   });
@@ -121,6 +128,8 @@ const UserBidsRunning = () => {
 
   const [photo, setPhoto] = useState<File | null>(null);
   const cPhoto = useRef<HTMLInputElement>(null);
+
+  const [additionalFile, setAdditionalFile] = useState<AdditionalFile[]>([]);
 
   interface FileGetResponse {
     status: boolean;
@@ -545,6 +554,18 @@ const UserBidsRunning = () => {
           );
         }
 
+        for (let i = 0; i < additionalFile.length; i++) {
+          if (additionalFile[i].file != null) {
+            await uploadfile(
+              additionalFile[i].file!,
+              process.env.UPLOAD_LINK ?? "",
+              userid,
+              UserDocType.OTHER,
+              additionalFile[i].name
+            );
+          }
+        }
+
         toast.success(updateuserresponse.message);
         router.back();
       } else {
@@ -578,6 +599,19 @@ const UserBidsRunning = () => {
       default:
         return false;
     }
+  };
+
+  const refs = useRef([]);
+
+  const adddocumet = () => {
+    setAdditionalFile([
+      ...additionalFile!,
+      {
+        id: additionalFile!.length + 1,
+        file: null,
+        name: "",
+      },
+    ]);
   };
 
   if (isLoading)
@@ -665,7 +699,7 @@ const UserBidsRunning = () => {
           </div>
           <div className="grid items-center gap-1.5 w-full mt-4">
             <Label htmlFor="contacttwo">
-               Alternate Contact Number
+              Alternate Contact Number
               <span className="text-[0.50rem] font-normal">(Optional)</span>
             </Label>
             <Input
@@ -1038,21 +1072,51 @@ const UserBidsRunning = () => {
           />
         )}
 
-        {isCreating ? (
+        {/* id: number;
+  file: File | null;
+  cFile: RefObject<HTMLInputElement>;
+  name: string; */}
+
+        {additionalFile?.map((addDoc: AdditionalFile, index: number) => {
+          return (
+            <OtherDocUploader
+              key={index}
+              index={index}
+              setData={setAdditionalFile}
+              getData={additionalFile}
+            />
+          );
+        })}
+        {/* <OtherDocUploader
+          index={1}
+          file={tribal}
+          setFile={setTribal}
+          cFile={cTribal}
+        /> */}
+
+        <div className="flex gap-2">
           <Button
-            disabled
-            className="w-full mt-4 bg-[#172e57] hover:bg-[#21427d]"
+            className="flex-1 w-full mt-4 bg-[#172e57] hover:bg-[#21427d]"
+            onClick={adddocumet}
           >
-            Submit
+            Add Additional Document
           </Button>
-        ) : (
-          <Button
-            className="w-full mt-4 bg-[#172e57] hover:bg-[#21427d]"
-            onClick={update}
-          >
-            Submit
-          </Button>
-        )}
+          {isCreating ? (
+            <Button
+              disabled
+              className="w-full mt-4 bg-[#172e57] hover:bg-[#21427d] flex-1"
+            >
+              Submit
+            </Button>
+          ) : (
+            <Button
+              className="w-full mt-4 bg-[#172e57] hover:bg-[#21427d] flex-1"
+              onClick={update}
+            >
+              Submit
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -1069,7 +1133,6 @@ interface DocUploaderProps {
 const DocUploader = (props: DocUploaderProps) => {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
-
     if (selectedFile) {
       const fileSize = selectedFile.size / (1024 * 1024);
 
@@ -1095,9 +1158,7 @@ const DocUploader = (props: DocUploaderProps) => {
       <Label htmlFor="termfile">{props.title}</Label>
       <div className="grow"></div>
       <p className="text-sm">
-        {props.file != null
-          ? longtext(props.file.name, 6)
-          : "No File Selected"}
+        {props.file != null ? longtext(props.file.name, 6) : "No File Selected"}
       </p>
       <Button
         onClick={() => props.cFile.current?.click()}
@@ -1120,6 +1181,124 @@ const DocUploader = (props: DocUploaderProps) => {
         <Input
           type="file"
           ref={props.cFile}
+          accept="*/*"
+          onChange={handleFileChange}
+        />
+      </div>
+    </div>
+  );
+};
+
+interface OtherDocUploaderProps {
+  index: number;
+  setData: React.Dispatch<React.SetStateAction<AdditionalFile[]>>;
+  getData: AdditionalFile[];
+}
+
+const OtherDocUploader = (props: OtherDocUploaderProps) => {
+  const cFile = useRef<HTMLInputElement>(null);
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+    console.log(selectedFile);
+
+    if (selectedFile) {
+      const fileSize = selectedFile.size / (1024 * 1024);
+
+      if (fileSize < 5) {
+        if (
+          selectedFile.type.startsWith("image/") ||
+          selectedFile.type.startsWith("application/pdf")
+        ) {
+          const updatedData = [...props.getData];
+          updatedData[props.index] = {
+            id: props.index,
+            file: selectedFile,
+            name: updatedData[props.index]?.name || "",
+          };
+          props.setData(updatedData);
+        } else {
+          toast.error("Please select an image or pdf file.", {
+            theme: "light",
+          });
+        }
+      } else {
+        toast.error("File size must be less than 5 MB.", { theme: "light" });
+      }
+    }
+  };
+
+  return (
+    <div className="flex gap-4 mt-2 items-center bg-gray-100 px-2 py-2 rounded-sm">
+      <Input
+        type="text"
+        className="w-80 bg-white outline-none"
+        placeholder="name of the document"
+        disabled={props.getData[props.index].file != null}
+        value={props.getData[props.index]?.name || ""}
+        onChange={(e) => {
+          const updatedData = [...props.getData];
+          updatedData[props.index] = {
+            ...updatedData[props.index],
+            name: e.target.value,
+          };
+          props.setData(updatedData);
+        }}
+      />
+      <div className="grow"></div>
+      <p className="text-sm">
+        {props.getData[props.index].file != null
+          ? longtext(props.getData[props.index].file?.name!, 6)
+          : "No File Selected"}
+      </p>
+      <Button
+        onClick={() => {
+          if (
+            props.getData[props.index].name == "" ||
+            props.getData[props.index].name == null ||
+            props.getData[props.index].name == undefined
+          ) {
+            return toast.error("Please enter the name of the document", {
+              theme: "light",
+            });
+          }
+          cFile.current?.click();
+        }}
+        variant={"secondary"}
+        className="bg-gray-200 hover:bg-gray-300 h-8"
+      >
+        {props.getData[props.index].file == null
+          ? "Upload File"
+          : "Change File"}
+      </Button>
+      {props.getData[props.index].file != null && (
+        <Link
+          target="_blank"
+          href={URL.createObjectURL(props.getData[props.index].file!)}
+          className="bg-gray-200 text-black py-1 px-4 rounded-md text-sm h-8 grid place-items-center"
+        >
+          View File
+        </Link>
+      )}
+
+      {props.getData[props.index].file != null && (
+        <Button
+          onClick={() => {
+            // remove only this component
+            let updatedData = [...props.getData];
+            updatedData.splice(props.index, 1);
+
+            props.setData(updatedData);
+          }}
+          className="bg-red-400 hover:bg-red-600 h-8"
+        >
+          Remove
+        </Button>
+      )}
+
+      <div className="hidden">
+        <Input
+          type="file"
+          ref={cFile}
           accept="*/*"
           onChange={handleFileChange}
         />

@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/tooltip";
 import { longtext } from "@/utils/methods";
 import Image from "next/image";
+import getOtherUploadFilesUser from "@/action/user/getotheruploadedfiles";
 
 interface UserProfileProps {
   userid: number;
@@ -41,6 +42,13 @@ interface UserProfileProps {
 
 const UserProfile = (props: UserProfileProps) => {
   const [pdffile, setPdffile] = useState<string | null>(null);
+
+  interface AdditionalFile {
+    name: string;
+    path: string;
+  }
+
+  const [additionalFile, setAdditionalFile] = useState<AdditionalFile[]>([]);
 
   const template: { [key: string]: string }[] = [
     {
@@ -259,6 +267,19 @@ const UserProfile = (props: UserProfileProps) => {
           status: true,
           path: tribalresponse.data?.path!,
         });
+      }
+
+      const additionalfileresponse = await getOtherUploadFilesUser({
+        userId: props.userid,
+      });
+
+      if (additionalfileresponse.status) {
+        setAdditionalFile(
+          additionalfileresponse.data?.map((file) => ({
+            name: file.name,
+            path: file.path,
+          })) ?? []
+        );
       }
 
       setLoading(false);
@@ -639,6 +660,29 @@ const UserProfile = (props: UserProfileProps) => {
           ) : (
             <></>
           )}
+
+          {additionalFile.map((file, index) => (
+            <div
+              key={index}
+              className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between"
+            >
+              <p>{file.name}</p>
+              <button
+                onClick={() => {
+                  setPdffile(file.path);
+                  setTimeout(() => {
+                    window.scrollTo({
+                      top: document.documentElement.scrollHeight,
+                      behavior: "smooth",
+                    });
+                  }, 500);
+                }}
+                className="bg-gray-200 text-black py-1 px-4 rounded-md text-sm h-8 grid place-items-center"
+              >
+                View File
+              </button>
+            </div>
+          ))}
         </div>
 
         {bidTransact?.status == "USERNOTINTERESTED" && (
@@ -785,7 +829,6 @@ const UserProfile = (props: UserProfileProps) => {
           </div>
         )}
       </div>
-     
 
       {pdffile !== null && (
         <>

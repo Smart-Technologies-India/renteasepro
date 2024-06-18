@@ -1,4 +1,5 @@
 "use client";
+import getOtherUploadFilesUser from "@/action/user/getotheruploadedfiles";
 import getUploadFileUser from "@/action/user/getuploadedfile";
 import GetUser from "@/action/user/getuser";
 import { IcBaselineAccountCircle } from "@/components/icons";
@@ -73,6 +74,13 @@ const UserBidsRunning = () => {
     status: false,
     path: "",
   });
+
+  interface AdditionalFile {
+    name: string;
+    path: string;
+  }
+
+  const [additionalFile, setAdditionalFile] = useState<AdditionalFile[]>([]);
 
   useEffect(() => {
     const init = async () => {
@@ -203,6 +211,19 @@ const UserBidsRunning = () => {
           path: tribalresponse.data?.path!,
         });
       }
+      const additionalfileresponse = await getOtherUploadFilesUser({
+        userId: userid,
+      });
+
+      if (additionalfileresponse.status) {
+        setAdditionalFile(
+          additionalfileresponse.data?.map((file) => ({
+            name: file.name,
+            path: file.path,
+          })) ?? []
+        );
+      }
+
       setLoading(false);
     };
 
@@ -550,8 +571,32 @@ const UserBidsRunning = () => {
           ) : (
             <></>
           )}
+
+          {additionalFile.map((file, index) => (
+            <div
+              key={index}
+              className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between"
+            >
+              <p>{file.name}</p>
+              <button
+                onClick={() => {
+                  setPdffile(file.path);
+                  setTimeout(() => {
+                    window.scrollTo({
+                      top: document.documentElement.scrollHeight,
+                      behavior: "smooth",
+                    });
+                  }, 500);
+                }}
+                className="bg-gray-200 text-black py-1 px-4 rounded-md text-sm h-8 grid place-items-center"
+              >
+                View File
+              </button>
+            </div>
+          ))}
         </div>
       </div>
+
       {pdffile !== null && (
         <>
           <div className="w-full my-4">
