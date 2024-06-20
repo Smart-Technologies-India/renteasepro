@@ -40,15 +40,20 @@ import { toast } from "react-toastify";
 import UpdateRentRecoDate from "@/action/rent_transact/updaterentrecodate";
 import { usePagination } from "@/hooks/usepagination";
 import Pagination from "@/components/pagination";
+import { DateRange } from "react-day-picker";
 
 const UserRentHistoryView = () => {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  const [rentTransact, setRentTransact] = useState<any[]>([]);
+  // const [rentTransact, setRentTransact] = useState<any[]>([]);
 
   // pagination start here
   const [filterAccount, setFilterAccount] = useState<any[]>([]);
+
+  // const [startDate, setStartDate] = useState<Date>();
+  const [filterDate, setFilterDate] = useState<DateRange>();
+  const [filterDPop, setFilterDPop] = useState<boolean>(false);
 
   const searchRef = useRef<HTMLInputElement>(null);
   const [isSearch, setIsSearch] = useState<boolean>(false);
@@ -66,10 +71,7 @@ const UserRentHistoryView = () => {
       const rentresponse = await GetAllPaidRent({});
 
       if (rentresponse.status) {
-        setRentTransact(rentresponse.data ?? []);
         setFilterAccount(rentresponse.data ?? []);
-
-        console.log(rentresponse.data);
       }
 
       setIsLoading(false);
@@ -77,6 +79,17 @@ const UserRentHistoryView = () => {
 
     init();
   }, []);
+
+  const refresh = async () => {
+    setIsLoading(true);
+    const rentresponse = await GetAllPaidRent({});
+
+    if (rentresponse.status) {
+      setFilterAccount(rentresponse.data ?? []);
+    }
+
+    setIsLoading(false);
+  };
 
   const [startDate, setStartDate] = useState<Date>();
   const [startDPop, setStartDPop] = useState<boolean>(false);
@@ -96,7 +109,6 @@ const UserRentHistoryView = () => {
       const rentresponse = await GetAllPaidRent({});
 
       if (rentresponse.status) {
-        setRentTransact(rentresponse.data ?? []);
         setFilterAccount(rentresponse.data ?? []);
       }
     } else {
@@ -181,6 +193,67 @@ const UserRentHistoryView = () => {
           Rent payment History
         </h1>
         <div className="grow"></div>
+        <div className="grid items-center gap-1.5">
+          <Popover open={filterDPop} onOpenChange={setFilterDPop}>
+            <PopoverTrigger asChild>
+              <Button
+                id="date"
+                variant={"outline"}
+                className={`w-full justify-start text-left font-normal ${
+                  !filterDate ?? "text-muted-foreground"
+                }`}
+              >
+                <IcBaselineCalendarMonth className="mr-2 h-4 w-4" />
+                {filterDate?.from ? (
+                  filterDate.to ? (
+                    <>
+                      {format(filterDate.from, "LLL dd, y")} -{" "}
+                      {format(filterDate.to, "LLL dd, y")}
+                    </>
+                  ) : (
+                    format(filterDate.from, "LLL dd, y")
+                  )
+                ) : (
+                  <span>Pick a date</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                initialFocus
+                mode="range"
+                defaultMonth={filterDate?.from}
+                selected={filterDate}
+                onSelect={async (e) => {
+                  if (e == undefined || e == null) return;
+                  setFilterDate(e);
+
+                  if (e.from == undefined || e.to == undefined) return;
+                  setFilterDPop(false);
+
+                  await refresh();
+
+                  if (e.from && e.to) {
+                    const temp = filterAccount.filter((item: any) => {
+                      const itemDate = new Date(item.updatedAt);
+                      const fromDate = new Date(e.from!);
+                      const toDate = new Date(e.to!);
+
+                      // Set the time component to midnight for comparison
+                      itemDate.setHours(0, 0, 0, 0);
+                      fromDate.setHours(0, 0, 0, 0);
+                      toDate.setHours(0, 0, 0, 0);
+
+                      return itemDate >= fromDate && itemDate <= toDate;
+                    });
+                    setFilterAccount(temp);
+                  }
+                }}
+                numberOfMonths={2}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
 
         <div className="flex items-center bg-white rounded-md pl-2">
           <FluentMdl2Search />

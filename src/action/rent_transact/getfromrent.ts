@@ -39,7 +39,7 @@ const GetFromRent = async (
         user: true,
       },
       orderBy: {
-        createdAt: "desc",
+        updatedAt: "desc",
       },
     });
 

@@ -22,7 +22,7 @@ const AllInvoice = async (
         account_category_two: true,
       },
       orderBy: {
-        createdAt: "desc",
+        updatedAt: "desc",
       },
     });
 

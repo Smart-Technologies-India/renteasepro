@@ -2,6 +2,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   AntDesignHistoryOutlined,
   Fa6RegularFileLines,
+  Fa6RegularRectangleList,
   FluentMdl2Home,
   FluentMdl2ViewDashboard,
   GgAlbum,
@@ -140,6 +141,12 @@ const Sidebar = (props: SidebarProps) => {
             name="Rent History"
             path={path}
             pathcheck={"/dashboard/allrenthistory"}
+          />
+          <MenuTab
+            icco={<Fa6RegularRectangleList className="text-gray-300  w-6" />}
+            name="GST Table"
+            path={path}
+            pathcheck={"/dashboard/gsttable"}
           />
         </>
       )}

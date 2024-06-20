@@ -21,7 +21,7 @@ const GetBidByShop = async (
         deletedBy: null,
       },
       orderBy: {
-        createdAt: "desc",
+        updatedAt: "desc",
       },
     });
 

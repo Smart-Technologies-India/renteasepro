@@ -9,8 +9,8 @@ import {
   AntDesignPlusCircleOutlined,
   Fa6SolidXmark,
   FluentMdl2Search,
+  IcBaselineCalendarMonth,
 } from "@/components/icons";
-import { useWindowSize } from "@uidotdev/usehooks";
 import {
   Table,
   TableBody,
@@ -27,6 +27,14 @@ import Link from "next/link";
 import AllAccount from "@/action/account/getallaccont";
 import AllAccountCategorys from "@/action/account/getallaccountcategory";
 import { capitalcase, removeDuplicates } from "@/utils/methods";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import { DateRange } from "react-day-picker";
 
 const CreateAccountPage = () => {
   const router = useRouter();
@@ -49,6 +57,11 @@ const CreateAccountPage = () => {
   const pagination = usePagination(filterAccount);
 
   const paginationsearch = usePagination(searchresult);
+
+  // const [startDate, setStartDate] = useState<Date>();
+  const [filterDate, setFilterDate] = useState<DateRange>();
+
+  const [startDPop, setStartDPop] = useState<boolean>(false);
 
   const filtershopbycategory = (category: string) => {
     if (category === "All") {
@@ -91,6 +104,21 @@ const CreateAccountPage = () => {
 
     init();
   }, []);
+
+  const refresh = async () => {
+    setIsLoading(true);
+
+    const accountinfo = await AllAccount({});
+
+    if (accountinfo.status) {
+      setAllAccount(accountinfo.data!);
+      setFilterAccount(accountinfo.data ?? []);
+    } else {
+      toast.error(accountinfo.message);
+    }
+
+    setIsLoading(false);
+  };
 
   const searchchange = (e: ChangeEvent<HTMLInputElement>) => {
     if (searchRef.current) {
@@ -158,6 +186,67 @@ const CreateAccountPage = () => {
       <div className="flex gap-2 items-center">
         <h1 className="text-[#162f57] text-2xl font-semibold">Receipts</h1>
         <div className="grow"></div>
+        <div className="grid items-center gap-1.5">
+          <Popover open={startDPop} onOpenChange={setStartDPop}>
+            <PopoverTrigger asChild>
+              <Button
+                id="date"
+                variant={"outline"}
+                className={`w-full justify-start text-left font-normal ${
+                  !filterDate ?? "text-muted-foreground"
+                }`}
+              >
+                <IcBaselineCalendarMonth className="mr-2 h-4 w-4" />
+                {filterDate?.from ? (
+                  filterDate.to ? (
+                    <>
+                      {format(filterDate.from, "LLL dd, y")} -{" "}
+                      {format(filterDate.to, "LLL dd, y")}
+                    </>
+                  ) : (
+                    format(filterDate.from, "LLL dd, y")
+                  )
+                ) : (
+                  <span>Pick a date</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                initialFocus
+                mode="range"
+                defaultMonth={filterDate?.from}
+                selected={filterDate}
+                onSelect={async (e) => {
+                  if (e == undefined || e == null) return;
+                  setFilterDate(e);
+
+                  if (e.from == undefined || e.to == undefined) return;
+                  setStartDPop(false);
+
+                  await refresh();
+
+                  if (e.from && e.to) {
+                    const temp = allaccount.filter((item: any) => {
+                      const itemDate = new Date(item.updatedAt);
+                      const fromDate = new Date(e.from!);
+                      const toDate = new Date(e.to!);
+
+                      // Set the time component to midnight for comparison
+                      itemDate.setHours(0, 0, 0, 0);
+                      fromDate.setHours(0, 0, 0, 0);
+                      toDate.setHours(0, 0, 0, 0);
+
+                      return itemDate >= fromDate && itemDate <= toDate;
+                    });
+                    setFilterAccount(temp);
+                  }
+                }}
+                numberOfMonths={2}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
         <Link
           href={"/dashboard/miscreceipt/add"}
           className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm flex items-center gap-2  font-medium py-2"
@@ -191,7 +280,7 @@ const CreateAccountPage = () => {
           <></>
         ) : (
           <>
-            <div className="flex flex-wrap gap-2 border-b bg-gray-50 p-2 pb-2 rounded-md">
+            <div className="flex overflow-x-scroll gap-2 border-b bg-gray-50 p-2 pb-2 rounded-md">
               {category.map((item: string, index: number) => (
                 <p
                   key={index}
