@@ -52,8 +52,36 @@ const CreateInvoice = async (
       igst: payload.igst,
       cgst_percent: payload.cgst_percent,
     };
+
+    const gstnumber = await prisma.gstinvoice.findFirst({
+      orderBy: { id: "desc" },
+    });
+    if (!gstnumber)
+      return {
+        status: false,
+        data: null,
+        message: "GST number not found",
+        functionname: "CreateInvoice",
+      };
+
+    const createresponse = await prisma.gstinvoice.create({
+      data: {
+        number: gstnumber?.number + 1,
+      },
+    });
+
+    if (!createresponse) {
+      return {
+        status: false,
+        data: null,
+        message: "GST number not created",
+        functionname: "CreateInvoice",
+      };
+    }
+
     const misc_invoice = await prisma.misc_invoice.create({
       data: {
+        gstinvoice: gstnumber.number,
         ...data_to_update,
         ...(payload.accountCategoryIdTwo && {
           accountCategoryTwoId: payload.accountCategoryIdTwo,

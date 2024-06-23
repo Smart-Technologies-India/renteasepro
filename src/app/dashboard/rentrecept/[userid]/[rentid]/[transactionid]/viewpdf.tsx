@@ -20,6 +20,8 @@ import {
   Image,
 } from "@react-pdf/renderer";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 interface ViewPdfProps {
   userid: number;
@@ -29,6 +31,8 @@ interface ViewPdfProps {
 
 const ViewPdf = (props: ViewPdfProps) => {
   const toWords = new ToWords();
+
+  const router = useRouter();
 
   const [rent, setRent] = useState<any>();
   const [user, setUser] = useState<user>();
@@ -55,6 +59,8 @@ const ViewPdf = (props: ViewPdfProps) => {
 
       if (historyresponse.status) {
         setHistory(historyresponse.data);
+
+        console.log(historyresponse.data);
       }
     };
 
@@ -365,7 +371,7 @@ const ViewPdf = (props: ViewPdfProps) => {
               borderRight: "1px solid #6b7280",
             }}
           >
-            {formateDate(new Date(rent?.createdAt))}
+            {formateDate(new Date(history[0]?.transaction_date))}
           </Text>
         </View>
 
@@ -374,7 +380,7 @@ const ViewPdf = (props: ViewPdfProps) => {
           <Text style={styles.mbottom}>{rent?.shop.shopNumber}</Text>
           <Text style={styles.rbottom}>Invoice No.</Text>
           <Text style={styles.mbottom2}>
-            PDA /{rent?.id ?? "-"}/
+            PDA /{history[0].gstinvoice ?? "-"}/
             {new Date(rent?.createdAt).getFullYear().toString().slice(2)}-
             {(new Date(rent?.createdAt).getFullYear() + 1).toString().slice(2)}
           </Text>
@@ -1041,6 +1047,13 @@ const ViewPdf = (props: ViewPdfProps) => {
 
   return (
     <>
+      <div className="h-10 flex items-center px-4">
+        <p>Tax Invoice - Cum - Receipt</p>
+        <div className="grow"></div>
+        <Button onClick={() => router.back()} className="h-6 text-sm">
+          Close
+        </Button>
+      </div>
       {/* {isClient ? (
         <PDFDownloadLink document={<Quixote />} fileName="download.pdf">
           {({ blob, url, loading, error }) =>

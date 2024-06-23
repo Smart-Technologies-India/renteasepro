@@ -150,6 +150,13 @@ enum AccountPaymentMode {
   OTHER
 }
 
+enum GstInvoice {
+  RENT
+  RECEIPT
+  INVOICE
+  BID
+}
+
 model user {
   id                Int       @id @default(autoincrement())
   username          String?
@@ -559,6 +566,7 @@ model exempt {
 
 model rent_transact {
   id               Int                @id @default(autoincrement())
+  gstinvoice       Int?               @db.MediumInt
   rent             rent               @relation(fields: [rentId], references: [id])
   rentId           Int
   user             user               @relation(fields: [userId], references: [id])
@@ -761,6 +769,7 @@ model account_category {
 
 model account_receipt {
   id                     Int                @id @default(autoincrement())
+  gstinvoice             Int?               @db.MediumInt
   customername           String
   customercontact        String?
   account_category_one   account_category   @relation("account_category_one", fields: [accountCategoryOneId], references: [id])
@@ -791,6 +800,7 @@ model account_receipt {
 
 model misc_invoice {
   id                     Int                @id @default(autoincrement())
+  gstinvoice             Int?               @db.MediumInt
   customername           String
   customercontact        String?
   customeraddress        String?
@@ -828,4 +838,11 @@ model misc_invoice {
   deletedAt              DateTime?
   deletedBy              user?              @relation("misc_invoice_deletedBy_userId", fields: [deletedById], references: [id])
   deletedById            Int?
+}
+
+model gstinvoice {
+  id        Int      @id @default(autoincrement())
+  number    Int      @db.MediumInt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

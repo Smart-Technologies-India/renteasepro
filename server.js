@@ -164,11 +164,22 @@ const postRes = (request, response) => {
         const id_value = bidid.split(",").map((id) => parseInt(id));
 
         for (let i = 0; i < id_value.length; i++) {
+          const gstnumber = await prisma.gstinvoice.findFirst({
+            orderBy: { id: "desc" },
+          });
+
+          await prisma.gstinvoice.create({
+            data: {
+              number: gstnumber?.number + 1,
+            },
+          });
+
           updatedata = await prisma.rent_transact.update({
             where: {
               id: id_value[i],
             },
             data: {
+              gstinvoice: gstnumber.number,
               transactionid: result.bank_ref_no,
               trackid: result.tracking_id,
               status: "PAID",

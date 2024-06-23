@@ -34,8 +34,35 @@ const CreateAccount = async (
       amount: payload.amount.toString(),
       createdById: payload.createdById,
     };
+
+    const gstnumber = await prisma.gstinvoice.findFirst({
+      orderBy: { id: "desc" },
+    });
+    if (!gstnumber)
+      return {
+        status: false,
+        data: null,
+        message: "GST number not found",
+        functionname: "CreateInvoice",
+      };
+
+    const createresponse = await prisma.gstinvoice.create({
+      data: {
+        number: gstnumber?.number + 1,
+      },
+    });
+
+    if (!createresponse) {
+      return {
+        status: false,
+        data: null,
+        message: "GST number not created",
+        functionname: "CreateInvoice",
+      };
+    }
     const account_receipt = await prisma.account_receipt.create({
       data: {
+        gstinvoice: gstnumber.number,
         ...data_to_update,
         ...(payload.accountCategoryIdTwo && {
           accountCategoryTwoId: payload.accountCategoryIdTwo,

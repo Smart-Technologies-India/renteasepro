@@ -19,6 +19,8 @@ import numberWithIndianFormat, {
   formateDate,
 } from "@/utils/methods";
 import GetInvoice from "@/action/invoice/getinvoice";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 interface ViewPdfProps {
   id: number;
@@ -27,6 +29,8 @@ interface ViewPdfProps {
 const ViewPdf = (props: ViewPdfProps) => {
   const toWords = new ToWords();
   const [account, setAccount] = useState<any>();
+
+  const router = useRouter();
 
   useEffect(() => {
     const init = async () => {
@@ -356,7 +360,9 @@ const ViewPdf = (props: ViewPdfProps) => {
           <Text style={styles.mbottom2}>
             PDADNH/INV/
             {new Date(account?.createdAt).getFullYear().toString()}/
-            {(parseInt(account?.id ?? "0") + 25).toString().padStart(4, "0")}
+            {parseInt(account?.gstinvoice ?? "0")
+              .toString()
+              .padStart(4, "0")}
           </Text>
         </View>
 
@@ -1086,6 +1092,13 @@ const ViewPdf = (props: ViewPdfProps) => {
 
   return (
     <>
+      <div className="h-10 flex items-center px-4">
+        <p>Tax Invoice - Cum - Receipt</p>
+        <div className="grow"></div>
+        <Button onClick={() => router.back()} className="h-6 text-sm">
+          Close
+        </Button>
+      </div>
       {isClient ? (
         <div className="w-full h-full">
           <PDFViewer style={{ width: "100%", height: "100%" }}>
