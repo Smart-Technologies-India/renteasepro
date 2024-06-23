@@ -38,6 +38,8 @@ const ViewPdf = (props: ViewPdfProps) => {
   const [user, setUser] = useState<user>();
   const [history, setHistory] = useState<any>([]);
 
+  const [invoicenumber, setInvoiceNumber] = useState<string>("0");
+
   useEffect(() => {
     const init = async () => {
       const rentresponse = await GetRent({ id: props.rentid });
@@ -60,7 +62,9 @@ const ViewPdf = (props: ViewPdfProps) => {
       if (historyresponse.status) {
         setHistory(historyresponse.data);
 
-        console.log(historyresponse.data);
+        if (historyresponse.data![0].gstinvoice) {
+          setInvoiceNumber(historyresponse.data![0].gstinvoice!.toString());
+        }
       }
     };
 
@@ -380,7 +384,7 @@ const ViewPdf = (props: ViewPdfProps) => {
           <Text style={styles.mbottom}>{rent?.shop.shopNumber}</Text>
           <Text style={styles.rbottom}>Invoice No.</Text>
           <Text style={styles.mbottom2}>
-            PDA /{history[0].gstinvoice ?? "-"}/
+            PDA /{(invoicenumber ?? "0").toString().padStart(4, "0")}/
             {new Date(rent?.createdAt).getFullYear().toString().slice(2)}-
             {(new Date(rent?.createdAt).getFullYear() + 1).toString().slice(2)}
           </Text>
