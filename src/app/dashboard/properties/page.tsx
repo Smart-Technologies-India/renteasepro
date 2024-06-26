@@ -42,21 +42,21 @@ const Properties = () => {
 
   return (
     <div className="p-6">
-      <div className="flex gap-4 items-center">
-        <FluentMdl2Home className="text-xl" />
-        <p className="text-xl text-gray-600">Your Properties</p>
+      <div className="flex gap-2 lg:gap-4 items-center">
+        <FluentMdl2Home className="text-xl hidden lg:block" />
+        <p className="lg:text-xl text-gray-600 text-lg">Your Properties</p>
         <div className="grow"></div>
         <Button
           onClick={() => {
             setSeachBox(!searchbox);
           }}
-          className="bg-blue-500 text-white rounded-md py-2 px-3 hover:bg-blue-600"
+          className="bg-blue-500 text-white rounded-md  px-2 py-0 h-9 hover:bg-blue-600"
         >
-          <FluentMdl2Search />
+          <FluentMdl2Search className="text-xs" />
         </Button>
         <Link
           href={"/dashboard/properties/add"}
-          className="bg-blue-500 text-white rounded-md py-2 px-4"
+          className="bg-blue-500 text-white  rounded-md py-2 px-2 lg:px-4 lg:text-lg inline-block text-sm"
         >
           Add New Property
         </Link>
@@ -173,7 +173,7 @@ const CardDetails = (props: CardDetailsProps) => {
   return (
     <Link
       href={`/dashboard/properties/details/${props.id}`}
-      className="rounded-md my-4 bg-white w-full p-4 flex gap-4 items-center hover:shadow-md hover:-translate-y-1 transition-all duration-500 cursor-pointer"
+      className="rounded-md my-4 bg-white w-full p-2 py-3 lg:p-4  flex gap-2 lg:gap-4 items-center hover:shadow-md hover:-translate-y-1 transition-all duration-500 cursor-pointer"
     >
       {props.icon}
       <div>
@@ -182,10 +182,9 @@ const CardDetails = (props: CardDetailsProps) => {
       </div>
       <div className="grow"></div>
       <div>
-        <p className="text-sm font-semibold">Total Shop</p>
+        <p className="text-sm font-semibold w-20">Total Shop</p>
         <p className="text-lg text-gray-500 text-center">{props.totalShop}</p>
       </div>
-      <p></p>
     </Link>
   );
 };

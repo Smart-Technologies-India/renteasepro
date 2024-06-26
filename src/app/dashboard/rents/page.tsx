@@ -176,31 +176,33 @@ const CardDetails = (props: CardDetailsProps) => {
   return (
     <Link
       href={`/dashboard/rents/property/${props.id}`}
-      className="rounded-md my-4 bg-white w-full p-4 flex gap-4 items-center hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+      className="rounded-md my-4 bg-white w-full p-4 flex flex-col lg:flex-row gap-2 lg:gap-4 items-start lg:items-center  hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-pointer"
     >
-      {props.icon}
-      <div>
+      <div className="hidden lg:block">{props.icon}</div>
+      <div className="grow">
         <p className="text-lg font-semibold">{props.name}</p>
         <p className="text-sm text-gray-500">{props.address}</p>
       </div>
-      <div className="grow"></div>
-      <div>
-        <p className="text-sm font-semibold">Occupied</p>
-        <p className="text-lg text-gray-500 text-center">{props.liverent}</p>
+      <div className="lg:grow"></div>
+      <div className="flex gap-4 w-full lg:w-auto justify-between">
+        <div>
+          <p className="text-sm font-semibold">Occupied</p>
+          <p className="text-lg text-gray-500 text-center">{props.liverent}</p>
+        </div>
+        <div className="bg-gray-300 h-10 w-[1px]" />
+        <div>
+          <p className="text-sm font-semibold">Unoccupied</p>
+          <p className="text-lg text-gray-500 text-center">
+            {props.totalShop - props.liverent}
+          </p>
+        </div>
+        <div className="bg-gray-300 h-10 w-[1px]" />
+        <div>
+          <p className="text-sm font-semibold">Total Shop</p>
+          <p className="text-lg text-gray-500 text-center">{props.totalShop}</p>
+        </div>
+        <p></p>
       </div>
-      <div className="bg-gray-300 h-10 w-[1px]" />
-      <div>
-        <p className="text-sm font-semibold">Unoccupied</p>
-        <p className="text-lg text-gray-500 text-center">
-          {props.totalShop - props.liverent}
-        </p>
-      </div>
-      <div className="bg-gray-300 h-10 w-[1px]" />
-      <div>
-        <p className="text-sm font-semibold">Total Shop</p>
-        <p className="text-lg text-gray-500 text-center">{props.totalShop}</p>
-      </div>
-      <p></p>
     </Link>
   );
 };

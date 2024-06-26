@@ -253,7 +253,7 @@ const UserBidsRunning = () => {
       <div className="bg-white p-4 rounded-md shadow-md mt-6">
         <p className="text-gray-500 text-center">User Basic Information</p>
         <Separator />
-        <div className="mt-2 flex gap-2">
+        <div className="mt-2 flex flex-col lg:flex-row gap-2 ">
           <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
             <h1 className="text-sm text-black">Username</h1>
             <p className="text-sm font-semibold">{user?.username ?? "-"}</p>
@@ -265,7 +265,7 @@ const UserBidsRunning = () => {
           </div>
         </div>
 
-        <div className="mt-2 flex gap-2">
+        <div className="mt-2 flex flex-col lg:flex-row gap-2 ">
           <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
             <h1 className="text-sm text-black">First Name</h1>
             <p className="text-sm font-semibold">{user?.firstName ?? "-"}</p>
@@ -277,7 +277,7 @@ const UserBidsRunning = () => {
           </div>
         </div>
 
-        <div className="mt-2 flex gap-2">
+        <div className="mt-2 flex flex-col lg:flex-row gap-2 ">
           <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
             <h1 className="text-sm text-black">Mobile Number</h1>
             <p className="text-sm font-semibold">{user?.contactone ?? "-"}</p>
@@ -289,7 +289,7 @@ const UserBidsRunning = () => {
           </div>
         </div>
 
-        <div className="mt-2 flex gap-2">
+        <div className="mt-2 flex flex-col lg:flex-row gap-2 ">
           <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
             <h1 className="text-sm text-black">Aadhar</h1>
             <p className="text-sm font-semibold">{user?.aadhar ?? "-"}</p>
@@ -301,7 +301,7 @@ const UserBidsRunning = () => {
           </div>
         </div>
 
-        <div className="mt-2 flex gap-2">
+        <div className="mt-2 flex flex-col lg:flex-row gap-2 ">
           <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
             <h1 className="text-sm text-black">Address</h1>
             <p className="text-sm font-semibold">{user?.address ?? "-"}</p>
@@ -313,7 +313,7 @@ const UserBidsRunning = () => {
           </div>
         </div>
 
-        <div className="mt-2 flex gap-2">
+        <div className="mt-2 flex flex-col lg:flex-row gap-2 ">
           <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
             <h1 className="text-sm text-black">Bank Name</h1>
             <p className="text-sm font-semibold">{user?.bankName ?? "-"}</p>

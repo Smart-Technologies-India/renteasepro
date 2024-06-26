@@ -28,7 +28,7 @@ const UserBidsRunning = () => {
 
       const isprofilecompleted = await IsProfileCompleted({
         id: userid,
-      }); 
+      });
 
       if (!isprofilecompleted.status) {
         return router.push("/dashboard/userprofile/edit");
@@ -103,24 +103,23 @@ const CardDetails = (props: CardDetailsProps) => {
   return (
     <Link
       href={`/dashboard/userbids/property/${props.id}`}
-      className="rounded-md my-4 bg-white w-full p-4 flex gap-4 items-center hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+      className="rounded-md my-4 bg-white w-full p-4 flex gap-1 lg:gap-4 items-center hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-pointer"
     >
-      {props.icon}
+      <div className="hidden lg:block">{props.icon}</div>
       <div>
         <p className="text-lg font-semibold">{props.name}</p>
         <p className="text-sm text-gray-500">{props.address}</p>
       </div>
-      <div className="grow"></div>
+      <div className="lg:grow"></div>
       <div>
-        <p className="text-sm font-semibold">Live Bids</p>
+        <p className="text-sm font-semibold text-center w-16">Live Bids</p>
         <p className="text-lg text-gray-500 text-center">{props.livebid}</p>
       </div>
       <div className="bg-gray-300 h-10 w-[1px]" />
       <div>
-        <p className="text-sm font-semibold">Total Shop</p>
+        <p className="text-sm font-semibold text-center w-20">Total Shop</p>
         <p className="text-lg text-gray-500 text-center">{props.totalShop}</p>
       </div>
-      <p></p>
     </Link>
   );
 };

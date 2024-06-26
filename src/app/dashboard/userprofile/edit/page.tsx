@@ -645,7 +645,7 @@ const UserBidsRunning = () => {
       <div className="bg-white p-4 rounded-md shadow-md mt-4">
         <p className="text-gray-500 text-center">Edit Profile</p>
         <Separator />
-        <div className="flex gap-4">
+        <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 ">
           <div className="grid items-center gap-1.5 w-full mt-4">
             <Label htmlFor="username">
               Username <span className="text-rose-500">*</span>
@@ -658,7 +658,7 @@ const UserBidsRunning = () => {
             />
           </div>
         </div>
-        <div className="flex gap-4">
+        <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 ">
           <div className="grid items-center gap-1.5 w-full mt-4">
             <Label htmlFor="firstname">
               First Name <span className="text-rose-500">*</span>
@@ -682,7 +682,7 @@ const UserBidsRunning = () => {
             />
           </div>
         </div>
-        <div className="flex gap-4">
+        <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 ">
           <div className="grid items-center gap-1.5 w-full mt-4">
             <Label htmlFor="contactone">
               Mobile Number <span className="text-rose-500">*</span>
@@ -712,7 +712,7 @@ const UserBidsRunning = () => {
             />
           </div>
         </div>
-        <div className="flex gap-4">
+        <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 ">
           <div className="grid items-center gap-1.5 w-full mt-4">
             <Label htmlFor="email">
               Email <span className="text-rose-500">*</span>
@@ -736,7 +736,7 @@ const UserBidsRunning = () => {
             ref={addressRef}
           ></Textarea>
         </div>
-        <div className="flex gap-4">
+        <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 ">
           <div className="grid items-center gap-1.5 w-full mt-4">
             <Label htmlFor="aadhar">
               Aadhar <span className="text-rose-500">*</span>
@@ -763,7 +763,7 @@ const UserBidsRunning = () => {
             />
           </div>
         </div>
-        <div className="flex gap-4">
+        <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 ">
           <div className="grid items-center gap-1.5 w-full mt-4">
             <Label htmlFor="bankname">
               Bank Name <span className="text-rose-500">*</span>

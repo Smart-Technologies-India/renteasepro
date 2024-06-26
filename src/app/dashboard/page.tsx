@@ -262,10 +262,10 @@ const DashboardPage = () => {
               </DashboardCard>
             </div>
             <div className="grid grid-cols-6 gap-2 mt-2">
-              <div className="bg-white h-80 shadow-sm rounded-md p-4 col-span-4">
+              <div className="bg-white h-80 shadow-sm rounded-md p-4 col-span-6 lg:col-span-4">
                 <Bar options={options} data={dataset} />
               </div>
-              <div className="bg-white h-80 shadow-sm rounded-md p-4 col-span-2 flex flex-col">
+              <div className="bg-white h-80 shadow-sm rounded-md p-4 col-span-6 lg:col-span-2 flex flex-col">
                 <h1>Current Month Rent Information</h1>
                 <Separator className="shrink-0" />
                 <div className="grow"></div>

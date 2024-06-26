@@ -310,7 +310,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
           <div className="bg-white rounded-sm shadow-sm p-4 my-2">
             <p className="text-gray-500 text-center">General Information</p>
             <Separator />
-            <div className="flex gap-4">
+            <div className="flex gap-2 lg:gap-4 flex-col lg:flex-row">
               <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                 <h1>Property Name:</h1>
                 <p>{bid.shop.property.name ?? "-"}</p>
@@ -320,7 +320,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                 <p>{bid.shop.shopNumber ?? "="}</p>
               </div>
             </div>
-            <div className="flex gap-4">
+            <div className="flex gap-2 lg:gap-4 flex-col lg:flex-row">
               <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                 <h1>Bid Title:</h1>
                 <p>{bid.title ?? "-"}</p>
@@ -354,7 +354,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
               <p className="text-gray-500 text-center">Fees Structure</p>
               <Separator />
 
-              <div className="flex gap-4 items-center justify-around w-full mt-4">
+              <div className="flex ggap-2 lg:gap-4 flex-col lg:flex-row lg:items-center justify-around w-full mt-4">
                 <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                   <h1 className="text-center">Bid Start Date Time:</h1>
                   <p className="text-center">
@@ -377,7 +377,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                 </div>
               </div>
 
-              <div className="flex gap-4 items-center justify-around w-full mt-2">
+              <div className="flex gap-2 lg:gap-4 flex-col lg:flex-row lg:items-center justify-around w-full mt-2">
                 <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                   <h1 className="text-center">Fees Amount:</h1>
                   <p className="text-center">&#8377;{bid.fees_amount}</p>
@@ -394,7 +394,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                 </div>
               </div>
 
-              <div className="flex gap-4 items-center justify-around w-full mt-2">
+              <div className="flex gap-2 lg:gap-4 flex-col lg:flex-row lg:items-center justify-around w-full mt-2">
                 <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                   <h1 className="text-center">Minimum Bid:</h1>
                   <p className="text-center">&#8377;{bid.min_bid_amount}</p>
@@ -438,21 +438,21 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
               <Separator />
 
               <div className="grid grid-cols-5 gap-4 items-start justify-around w-full mt-4">
-                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1 col-span-2">
+                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1 col-span-5 lg:col-span-2">
                   <h1 className="text-center">Document Title</h1>
                   <p className="text-center">{bid.docone ?? "-"}</p>
                 </div>
-                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1 col-span-3">
+                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1 col-span-5 lg:col-span-3">
                   <h1 className="text-center">Document Description</h1>
                   <p className="text-center">{bid.doconedescription ?? "-"}</p>
                 </div>
-                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1  col-span-2">
+                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1  col-span-5 lg:col-span-2 break-all">
                   <h1 className="text-center">File Number</h1>
                   <p className="text-center">
                     {bid.t_and_c_file_number ?? "-"}
                   </p>
                 </div>
-                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1 col-span-3">
+                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1 col-span-5 lg:col-span-3 break-all">
                   <h1 className="text-center">File Subject</h1>
                   <p className="text-center">
                     {bid.t_and_c_description ?? "-"}
@@ -491,7 +491,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
 
         {page == 3 && (
           <>
-            <div className="flex gap-4">
+            <div className="flex flex-col lg:flex-row gap-2 lg:gap-4">
               <div className="bg-white rounded-sm shadow-sm p-4 my-2 flex-1">
                 <p className="text-gray-500 text-center">
                   User Bid Information

@@ -14,6 +14,8 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Fa6RegularEye, Fa6RegularEyeSlash } from "@/components/icons";
 import Link from "next/link";
+import { handleNumberChange } from "@/utils/methods";
+import { Input } from "@/components/ui/input";
 
 export default function LoginPage() {
   const mobile = useRef<HTMLInputElement>(null);
@@ -58,10 +60,10 @@ export default function LoginPage() {
 
   return (
     <>
-      <div className="p-10 rounded-md min-h-screen w-full bg-[#f5f6f8] flex">
+      <div className="p-4 lg:p-10 rounded-md min-h-screen w-full bg-[#f5f6f8] flex flex-col lg:flex-row">
         <div className="flex-1 relative bg-gradient-to-tr from-[#2350f0] to-blue-400  grid place-items-center  rounded-l-md">
           <div></div>
-          <div className="w-[28rem] h-64 relative bg-white rounded-md mt-10">
+          <div className="w-48 lg:w-[28rem] h-28  lg:h-64 relative bg-white rounded-md mt-10">
             <Image
               fill={true}
               src="/loginbg.png"
@@ -69,7 +71,7 @@ export default function LoginPage() {
               className=" object-cover object-center rounded-sm drop-shadow-2xl"
             />
           </div>
-          <p className="text-white text-3xl text-center leading-relaxed font-bold">
+          <p className="text-white text-lg lg:text-3xl text-center leading-relaxed font-bold">
             Planning and Development
             <br />
             Authority, DNH
@@ -77,7 +79,7 @@ export default function LoginPage() {
           <div></div>
         </div>
         <div className="flex-1 grid place-items-center bg-white  rounded-r-md relative">
-          <div className="absolute bottom-0 left-0 w-full flex justify-between gap-4 px-8 py-2 text-xs">
+          <div className="absolute bottom-0 left-0 w-full flex justify-between gap-2 lg:gap-4 px-4 lg:px-8  py-2 text-xs">
             <Link href="/tandc" className="text-gray-400 hover:text-gray-700">
               Terms and Conditions
             </Link>
@@ -111,6 +113,7 @@ export default function LoginPage() {
               <Label htmlFor="mobile" className="text-xs">
                 Mobile{" "}
               </Label>
+
               <input
                 id="mobile"
                 type="text"

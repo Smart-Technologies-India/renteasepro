@@ -636,7 +636,7 @@ const PropertiesDeatils = (props: PropertiesDeatilsProps) => {
         );
       case RentTransactStatus.LATE:
         return (
-          <div className="bg-orange-200 px-3 grid place-items-center border border-orange-400 mt-1 rounded-full">
+          <div className="bg-orange-200 grid place-items-center border border-orange-400 rounded-full w-8 h-8">
             <Fa6RegularHourglassHalf className="text-orange-500 text-lg" />
           </div>
         );

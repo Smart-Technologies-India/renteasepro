@@ -101,9 +101,7 @@ const BidPropertiesView = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-[#162f57] text-2xl font-semibold">
-        Property Details
-      </h1>
+      <h1 className="text-[#162f57] text-2xl font-semibold">Quick Pay</h1>
 
       {filtershop.length >= 1 ? (
         <>
