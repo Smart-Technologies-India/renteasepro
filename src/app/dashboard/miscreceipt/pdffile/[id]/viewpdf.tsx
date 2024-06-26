@@ -14,6 +14,8 @@ import {
   renderToFile,
   pdf,
   Image,
+  BlobProvider,
+  usePDF,
 } from "@react-pdf/renderer";
 import { useEffect, useState } from "react";
 import numberWithIndianFormat, {
@@ -191,7 +193,7 @@ const ViewPdf = (props: ViewPdfProps) => {
     },
   });
 
-  const Quixote = () => (
+  const Quixote = (
     <Document>
       <Page style={styles.body} size={"A4"}>
         <View style={styles.imagebox}>
@@ -236,7 +238,7 @@ const ViewPdf = (props: ViewPdfProps) => {
               >
                 Receipt No. PDADNH/online/
                 {new Date(account?.createdAt).getFullYear().toString()}/
-                {(account?.gstinvoice ?? "0").toString().padStart(4, "0")}
+                {(props?.id ?? "0").toString().padStart(4, "0")}
               </Text>
             </View>
 
@@ -514,23 +516,32 @@ const ViewPdf = (props: ViewPdfProps) => {
 
   const [isClient, setIsClient] = useState(false);
 
+  // useEffect(() => {
+  //   setIsClient(true);
+
+  //   // const init = async () => {
+  //   //   const file = await pdf(<Quixote />).toBlob();
+  //   //   const mypdffile: File = new File([file], "data");
+  //   // };
+  //   // init();
+  // }, []);
+
   useEffect(() => {
-    setIsClient(true);
+    setTimeout(() => {
+      setIsClient(true);
+      updateInstance(Quixote);
+    }, 3000);
+  }, [Quixote]);
 
-    const init = async () => {
-      const file = await pdf(<Quixote />).toBlob();
-      const mypdffile: File = new File([file], "data");
-    };
-    init();
-  }, []);
+  // const getfile = async () => {
+  //   const file: NodeJS.ReadableStream = await renderToFile(
+  //     <Quixote />,
+  //     "test",
+  //     (output, filePath) => {}
+  //   );
+  // };
 
-  const getfile = async () => {
-    const file: NodeJS.ReadableStream = await renderToFile(
-      <Quixote />,
-      "test",
-      (output, filePath) => {}
-    );
-  };
+  const [instance, updateInstance] = usePDF({ document: Quixote });
 
   return (
     <>
@@ -543,9 +554,17 @@ const ViewPdf = (props: ViewPdfProps) => {
       </div>
       {isClient ? (
         <div className="w-full h-full">
-          <PDFViewer style={{ width: "100%", height: "100%" }}>
+          {/* <a href={instance.url!} download>
+            Download
+          </a> */}
+          {/* <PDFViewer style={{ width: "100%", height: "100%" }}>
             <Quixote />
-          </PDFViewer>
+          </PDFViewer> */}
+          <embed
+            src={instance.url!}
+            className="w-full h-full"
+            type="application/pdf"
+          />
         </div>
       ) : null}
     </>

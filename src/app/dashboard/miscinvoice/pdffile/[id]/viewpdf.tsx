@@ -12,6 +12,7 @@ import {
   renderToFile,
   pdf,
   Image,
+  usePDF,
 } from "@react-pdf/renderer";
 import { useEffect, useState } from "react";
 import numberWithIndianFormat, {
@@ -245,7 +246,7 @@ const ViewPdf = (props: ViewPdfProps) => {
     },
   });
 
-  const Quixote = () => (
+  const Quixote = (
     <Document>
       <Page style={styles.body} size={"A4"} wrap>
         <View style={styles.imagebox}>
@@ -1073,22 +1074,13 @@ const ViewPdf = (props: ViewPdfProps) => {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
+    setTimeout(() => {
+      setIsClient(true);
+      updateInstance(Quixote);
+    }, 3000);
+  }, [Quixote]);
 
-    const init = async () => {
-      const file = await pdf(<Quixote />).toBlob();
-      const mypdffile: File = new File([file], "data");
-    };
-    init();
-  }, []);
-
-  const getfile = async () => {
-    const file: NodeJS.ReadableStream = await renderToFile(
-      <Quixote />,
-      "test",
-      (output, filePath) => {}
-    );
-  };
+  const [instance, updateInstance] = usePDF({ document: Quixote });
 
   return (
     <>
@@ -1101,9 +1093,14 @@ const ViewPdf = (props: ViewPdfProps) => {
       </div>
       {isClient ? (
         <div className="w-full h-full">
-          <PDFViewer style={{ width: "100%", height: "100%" }}>
+          {/* <PDFViewer style={{ width: "100%", height: "100%" }}>
             <Quixote />
-          </PDFViewer>
+          </PDFViewer> */}
+          <embed
+            src={instance.url!}
+            className="w-full h-full"
+            type="application/pdf"
+          />
         </div>
       ) : null}
     </>

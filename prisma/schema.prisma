@@ -769,7 +769,6 @@ model account_category {
 
 model account_receipt {
   id                     Int                @id @default(autoincrement())
-  gstinvoice             Int?               @db.MediumInt
   customername           String
   customercontact        String?
   account_category_one   account_category   @relation("account_category_one", fields: [accountCategoryOneId], references: [id])
