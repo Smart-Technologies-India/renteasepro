@@ -504,7 +504,7 @@ const ViewPdf = (props: ViewPdfProps) => {
               borderBottom: "1px solid #6b7280",
             }}
           >
-            IGST
+            UTGST
           </Text>
           <Text style={styles.rbottom2}></Text>
           <Text style={styles.rbottom}>

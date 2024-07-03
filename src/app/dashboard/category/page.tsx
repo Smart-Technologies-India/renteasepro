@@ -554,7 +554,7 @@ const AccountCategory = (props: AccountCategoryProps) => {
         createdById: userid,
       });
       if (shopcategory.status) {
-        toast.success(shopcategory.message);
+        // toast.success(shopcategory.message);
       } else {
         toast.error(shopcategory.message);
       }

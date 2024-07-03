@@ -142,8 +142,24 @@ const formateDate = (date: Date): string => {
     return `${day}-${month}-${year}`;
   }
 };
-
 export { formateDate };
+
+const formateDatePDF = (date: Date): string => {
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear().toString().slice(-2);
+
+  if (month < 10 && day < 10) {
+    return `0${day}-0${month}-${year}`;
+  } else if (month < 10) {
+    return `${day}-0${month}-${year}`;
+  } else if (day < 10) {
+    return `0${day}-${month}-${year}`;
+  } else {
+    return `${day}-${month}-${year}`;
+  }
+};
+export { formateDatePDF };
 
 const removeDuplicates = (arr: any[]): any[] => {
   return Array.from(new Set(arr));

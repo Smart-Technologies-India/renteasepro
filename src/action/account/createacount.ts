@@ -61,14 +61,14 @@ const CreateAccount = async (
       return {
         status: false,
         data: null,
-        message: "Account Category not created",
+        message: "Account Receipt not created",
         functionname: "CreateAccount",
       };
 
     return {
       status: true,
       data: account_receipt,
-      message: "Account Category created successfully",
+      message: "Account Receipt created successfully",
       functionname: "CreateAccount",
     };
   } catch (e) {

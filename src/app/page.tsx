@@ -103,9 +103,9 @@ export default function Home() {
   return (
     <>
       <div className="p-4 lg:p-10 rounded-md min-h-screen w-full bg-[#f5f6f8] flex flex-col lg:flex-row">
-        <div className="flex-1 relative bg-gradient-to-tr from-[#2350f0] to-blue-400  grid place-items-center  rounded-l-md">
+        <div className="lg:flex-1 pb-4 lg:pb-0 relative bg-gradient-to-tr from-[#2350f0] to-blue-400  grid place-items-center  rounded-l-md">
           <div></div>
-          <div className="w-48 lg:w-[28rem] h-28  lg:h-64 relative bg-white rounded-md mt-10">
+          <div className="w-48 lg:w-[28rem] h-24  lg:h-64 relative bg-white rounded-md mt-10">
             <Image
               fill={true}
               src="/loginbg.png"
@@ -128,7 +128,7 @@ export default function Home() {
           </div> */}
           <div></div>
         </div>
-        <div className="flex-1 grid place-items-center bg-white rounded-r-md relative">
+        <div className="grow lg:flex-1 grid place-items-center bg-white rounded-r-md relative">
           <div className="absolute bottom-0 left-0 w-full flex justify-between gap-2 lg:gap-4 px-4 lg:px-8 py-2 text-xs">
             <Link href="/tandc" className="text-gray-400 hover:text-gray-700">
               Terms and Conditions
@@ -153,7 +153,7 @@ export default function Home() {
             </Link>
           </div>
           <div>
-            <h1 className="text-lg font-semibold mt-6 text-center">
+            <h1 className="text-lg font-semibold lg:mt-6 text-center">
               Welcome to PDA,DNH
             </h1>
             <h1 className="text-sm font-normal pb-2 text-center">
