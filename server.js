@@ -154,11 +154,8 @@ const postRes = (request, response) => {
           },
         });
 
-        console.log(bidpaymentresponse);
-
         const time = new Date(bidpaymentresponse[0].createdAt);
         const interval = 2000;
-        console.log(time);
 
         const idlistdata = bidpaymentresponse.filter((data) => {
           const createdAtTime = new Date(data.createdAt);
@@ -166,7 +163,6 @@ const postRes = (request, response) => {
           return timeDifference <= interval;
         });
 
-        console.log(idlistdata);
         const idsToUpdate = idlistdata.map((data) => data.id);
         console.log(idsToUpdate);
 
@@ -206,7 +202,7 @@ const postRes = (request, response) => {
         });
         console.log(tranId);
 
-        await prisma.bid_transact.updateMany({
+        const bid_tranresponse = await prisma.bid_transact.updateMany({
           where: {
             id: tranId.id,
           },
@@ -214,6 +210,7 @@ const postRes = (request, response) => {
             deletedAt: null,
           },
         });
+        console.log(bid_tranresponse);
 
         // await prisma.bid_transact.updateMany({
         //   where: {
