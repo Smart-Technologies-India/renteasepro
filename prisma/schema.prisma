@@ -811,9 +811,9 @@ model misc_invoice {
   accountCategoryTwoId   Int?
   account_category_three account_category?  @relation("misc_invoice_three", fields: [accountCategoryThreeId], references: [id])
   accountCategoryThreeId Int?
-  remark_cat_one         String?
-  remark_cat_two         String?
-  remark_cat_three       String?
+  remark_cat_one         String?            @db.MediumText
+  remark_cat_two         String?            @db.MediumText
+  remark_cat_three       String?            @db.MediumText
   hsn                    String?
   cgst                   String?
   ugst                   String?
