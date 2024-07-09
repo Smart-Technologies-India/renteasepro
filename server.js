@@ -10,6 +10,7 @@ const qs = require("querystring");
 const { PrismaClient } = require("@prisma/client");
 
 const axios = require("axios");
+const { interval } = require("date-fns");
 // variable declaration
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
@@ -140,11 +141,31 @@ const postRes = (request, response) => {
       const mobile_number = result.merchant_param1.toString().split("_")[4];
 
       if (type == "bid") {
-        const update_response = await prisma.bid_payment.updateMany({
+        const bidpaymentresponse = await prisma.bid_payment.findMany({
           where: {
             userId: userid ? parseInt(userid) : 0,
             shopId: shopid ? parseInt(shopid) : 0,
             bidId: bidid ? parseInt(bidid) : 0,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        });
+
+        const time = new Date(bidpaymentresponse[0].createdAt);
+        const interval = 2000;
+
+        const idlistdata = bidpaymentresponse.filter((data) => {
+          const createdAtTime = new Date(data.createdAt);
+          const timeDifference = Math.abs(time - createdAtTime);
+          return timeDifference <= interval;
+        });
+
+        const idsToUpdate = idlistdata.map((data) => data.id);
+
+        const update_response = await prisma.bid_payment.updateMany({
+          id: {
+            in: idsToUpdate,
           },
           data: {
             transactionid: result.bank_ref_no,
@@ -152,8 +173,40 @@ const postRes = (request, response) => {
             transaction_date: new Date().toISOString(),
             paymentmode: result.payment_mode.toString().toUpperCase(),
             remarks: result.order_status,
+            deletedAt: null,
           },
         });
+
+        const tranId = await prisma.bid_transact.findFirst({
+          where: {
+            userId: userid ? parseInt(userid) : 0,
+            shopId: shopid ? parseInt(shopid) : 0,
+            bidId: bidid ? parseInt(bidid) : 0,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        });
+
+        await prisma.bid_transact.updateMany({
+          where: {
+            id: tranId.id,
+          },
+          data: {
+            deletedAt: null,
+          },
+        });
+
+        // await prisma.bid_transact.updateMany({
+        //   where: {
+        //     userId: userid ? parseInt(userid) : 0,
+        //     shopId: shopid ? parseInt(shopid) : 0,
+        //     bidId: bidid ? parseInt(bidid) : 0,
+        //   },
+        //   data: {
+        //     deletedAt: null,
+        //   },
+        // });
 
         const NewBidSubmitted = `https://api.arihantsms.com/api/v2/SendSMS?SenderId=DNHPDA&Is_Unicode=false&Is_Flash=false&Message=Thank%20you%20for%20submitting%20your%20bid.%20We%20have%20received%20it%20successfully.%20You%20will%20be%20notified%20of%20any%20updates%20or%20further%20actions.%20-%20PDA%2C%20DNH.&MobileNumbers=91${mobile_number}&ApiKey=rL56LBkGeOa1MKFm5SrSKtz%2Bq55zMVdxk5PNvQkg2nY%3D&ClientId=ebff4d6c-072b-4342-b71f-dcca677713f8`;
 

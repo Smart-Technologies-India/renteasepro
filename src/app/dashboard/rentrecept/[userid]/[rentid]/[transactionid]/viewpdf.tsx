@@ -1024,6 +1024,28 @@ const ViewPdf = (props: ViewPdfProps) => {
             </Text>
           </View>
         </View>
+        <View
+          fixed
+          style={{
+            position: "absolute",
+            bottom: "2px",
+            left: "0px",
+            width: "100%",
+            margin: "0px 20px",
+          }}
+        >
+          <Text
+            style={{
+              textAlign: "center",
+              fontSize: "8px",
+              position: "absolute",
+              width: "100%",
+              bottom: "16px",
+            }}
+          >
+            This is a computer generated statement
+          </Text>
+        </View>
       </Page>
     </Document>
   );
