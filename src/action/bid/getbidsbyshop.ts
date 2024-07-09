@@ -20,7 +20,12 @@ const GetBidsByShop = async (
         deletedBy: null,
       },
       include: {
-        bid_transact: true,
+        bid_transact: {
+          where: {
+            deletedAt: null,
+            deletedBy: null,
+          },
+        },
         shop: true,
       },
     });
