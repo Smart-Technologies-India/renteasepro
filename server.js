@@ -176,8 +176,10 @@ const postRes = (request, response) => {
             deletedAt: null,
           });
           const update_response = await prisma.bid_payment.updateMany({
-            id: {
-              in: idsToUpdate,
+            where: {
+              id: {
+                in: idsToUpdate,
+              },
             },
             data: {
               transactionid: result.bank_ref_no,
