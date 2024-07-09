@@ -170,6 +170,14 @@ const postRes = (request, response) => {
         const idsToUpdate = idlistdata.map((data) => data.id);
         console.log(idsToUpdate);
 
+        console.log({
+          transactionid: result.bank_ref_no,
+          trackid: result.tracking_id,
+          transaction_date: new Date().toISOString(),
+          paymentmode: result.payment_mode.toString().toUpperCase(),
+          remarks: result.order_status,
+          deletedAt: null,
+        });
         const update_response = await prisma.bid_payment.updateMany({
           id: {
             in: idsToUpdate,
@@ -184,6 +192,8 @@ const postRes = (request, response) => {
           },
         });
 
+        console.log(update_response);
+
         const tranId = await prisma.bid_transact.findFirst({
           where: {
             userId: userid ? parseInt(userid) : 0,
@@ -194,6 +204,7 @@ const postRes = (request, response) => {
             createdAt: "desc",
           },
         });
+        console.log(tranId);
 
         await prisma.bid_transact.updateMany({
           where: {
