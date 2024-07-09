@@ -16,6 +16,8 @@ const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
 const port = 9999;
 
+console.log("start");
+
 // utils function start from here
 
 function getAlgorithm(keyBase64) {
@@ -152,8 +154,11 @@ const postRes = (request, response) => {
           },
         });
 
+        console.log(bidpaymentresponse);
+
         const time = new Date(bidpaymentresponse[0].createdAt);
         const interval = 2000;
+        console.log(time);
 
         const idlistdata = bidpaymentresponse.filter((data) => {
           const createdAtTime = new Date(data.createdAt);
@@ -161,7 +166,9 @@ const postRes = (request, response) => {
           return timeDifference <= interval;
         });
 
+        console.log(idlistdata);
         const idsToUpdate = idlistdata.map((data) => data.id);
+        console.log(idsToUpdate);
 
         const update_response = await prisma.bid_payment.updateMany({
           id: {
