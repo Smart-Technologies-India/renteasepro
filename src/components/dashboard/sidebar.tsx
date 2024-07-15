@@ -1,6 +1,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import {
   AntDesignHistoryOutlined,
+  ClarityBlocksGroupLine,
   Fa6RegularFileLines,
   Fa6RegularRectangleList,
   FluentMdl2Home,
@@ -137,16 +138,10 @@ const Sidebar = (props: SidebarProps) => {
             pathcheck={"/dashboard/category"}
           />
           <MenuTab
-            icco={<AntDesignHistoryOutlined className="text-gray-300  w-6" />}
-            name="Rent History"
+            icco={<ClarityBlocksGroupLine className="text-gray-300  w-6" />}
+            name="Bid History"
             path={path}
-            pathcheck={"/dashboard/allrenthistory"}
-          />
-          <MenuTab
-            icco={<Fa6RegularRectangleList className="text-gray-300  w-6" />}
-            name="GST Table"
-            path={path}
-            pathcheck={"/dashboard/gsttable"}
+            pathcheck={"/dashboard/allbidhistory"}
           />
         </>
       )}
@@ -164,6 +159,18 @@ const Sidebar = (props: SidebarProps) => {
             name="Misc Invoice"
             path={path}
             pathcheck={"/dashboard/miscinvoice"}
+          />
+          <MenuTab
+            icco={<AntDesignHistoryOutlined className="text-gray-300  w-6" />}
+            name="Rent History"
+            path={path}
+            pathcheck={"/dashboard/allrenthistory"}
+          />
+          <MenuTab
+            icco={<Fa6RegularRectangleList className="text-gray-300  w-6" />}
+            name="GST Table"
+            path={path}
+            pathcheck={"/dashboard/gsttable"}
           />
         </>
       )}

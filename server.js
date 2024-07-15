@@ -165,16 +165,7 @@ const postRes = (request, response) => {
           });
 
           const idsToUpdate = idlistdata.map((data) => data.id);
-          console.log(idsToUpdate);
 
-          console.log({
-            transactionid: result.bank_ref_no,
-            trackid: result.tracking_id,
-            transaction_date: new Date().toISOString(),
-            paymentmode: result.payment_mode.toString().toUpperCase(),
-            remarks: result.order_status,
-            deletedAt: null,
-          });
           const update_response = await prisma.bid_payment.updateMany({
             where: {
               id: {
