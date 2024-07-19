@@ -8,6 +8,7 @@ const http = require("http");
 const fs = require("fs");
 const qs = require("querystring");
 const { PrismaClient } = require("@prisma/client");
+const cron = require("node-cron");
 
 const axios = require("axios");
 const { interval } = require("date-fns");
@@ -16,7 +17,7 @@ const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
 const port = 9999;
 
-console.log("start");
+const prisma = new PrismaClient();
 
 // utils function start from here
 
@@ -52,8 +53,6 @@ const decrypt = (messagebase64, keyBase64, ivBase64) => {
 };
 
 const postRes = (request, response) => {
-  const prisma = new PrismaClient();
-
   var ccavEncResponse = "",
     ccavResponse = "",
     // workingKey = "E01FEB879F6B09AA29F8B6AAFD28B930", //Put in the 32-Bit key shared by CCAvenues.
@@ -626,6 +625,69 @@ app.prepare().then(() => {
     }
   });
 
+  server.get("/orderresponse", async function (request, response) {
+    const data =
+      "73c25b2a8fa83876555895654a198220dcbaef02bfe1512e2d5761b3c60363893fa03cfc47de149bf96a305bb1ded437c84bc9e6b64814608fc66cbc781b03ebe51117ce935cb3dbfc0a492b59ac8b3b";
+
+    var ccavEncResponse = "",
+      ccavResponse = "",
+      // workingKey = "E01FEB879F6B09AA29F8B6AAFD28B930", //Put in the 32-Bit key shared by CCAvenues.
+      workingKey = "370F518A36775EFEA425EB27C8DC0CC6", //Put in the 32-Bit key shared by CCAvenues.
+      ccavPOST = "";
+
+    //Generate Md5 hash for the key and then convert in base64 string
+    var md5 = crypto.createHash("md5").update(workingKey).digest();
+    var keyBase64 = Buffer.from(md5).toString("base64");
+
+    //Initializing Vector and then convert in base64 string
+    var ivBase64 = Buffer.from([
+      0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b,
+      0x0c, 0x0d, 0x0e, 0x0f,
+    ]).toString("base64");
+    ccavResponse = decrypt(data, keyBase64, ivBase64);
+
+    console.log(ccavResponse);
+    response.end();
+  });
+
+  server.get("/orderstatus", async function (request, response) {
+    var body = "",
+      workingKey = "370F518A36775EFEA425EB27C8DC0CC6", //Put in the 32-Bit key shared by CCAvenues.
+      accessCode = "AVHK88LE92BW69KHWB", //Put in the Access Code shared by CCAvenues.
+      encRequest = "",
+      formbody = "";
+
+    //Generate Md5 hash for the key and then convert in base64 string
+    var md5 = crypto.createHash("md5").update(workingKey).digest();
+    var keyBase64 = Buffer.from(md5).toString("base64");
+
+    //Initializing Vector and then convert in base64 string
+    var ivBase64 = Buffer.from([
+      0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b,
+      0x0c, 0x0d, 0x0e, 0x0f,
+    ]).toString("base64");
+
+    // const datatosend = {
+    //   reference_no: "419311038953",
+    // };
+
+    encRequest = encrypt("{reference_no:'113370736263'}", keyBase64, ivBase64);
+
+    const result = await axios.post(
+      `https://api.ccavenue.com/apis/servlet/DoWebTrans?access_code=${accessCode}&command=orderStatusTracker&request_type=JSON&response_type=JSON&version=1.2&enc_request=${encRequest}`
+    );
+
+    let enc_code = result.data.toString().split("=").pop();
+
+    console.log(result.data);
+    console.log(enc_code);
+
+    let ccavResponse = decrypt(enc_code, keyBase64, ivBase64);
+    console.log(ccavResponse);
+
+    response.end();
+  });
+
   server.get("/payamount", async function (request, response) {
     response.writeHeader(200, { "Content-Type": "text/html" });
     response.write(
@@ -658,4 +720,38 @@ app.prepare().then(() => {
     if (err) throw err;
     console.log(`------------> Ready on http://localhost:${port}`);
   });
+});
+
+const checkpaymentstatus = async () => {
+  const pending_rent = await prisma.rent_transact.findMany({
+    where: {
+      deletedAt: null,
+      deletedBy: null,
+      orderid: {
+        not: null,
+      },
+      trackid: null,
+    },
+  });
+
+  if (pending_rent.length > 0) {
+    for (let i = 0; i < pending_rent.length; i++) {}
+  }
+};
+
+// cron.schedule("*/2 * * * * *", async () => {
+cron.schedule("0 18 * * *", async () => {
+  // console.log(process.env.YOUR_BASE_URL);
+
+  try {
+    // await checkpaymentstatus();
+    const response = await axios.post(
+      `${process.env.YOUR_BASE_URL}/api/services`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  } catch (error) {}
 });

@@ -12,6 +12,7 @@ import { SetStateAction, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { getCookie } from "cookies-next";
 import { customAlphabet } from "nanoid";
+import AddOrderId from "@/action/rent_transact/addorderid";
 
 interface UserRentDetailsViewProps {
   id: number;
@@ -85,6 +86,11 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
 
     const uniqueid = nanoid();
     const ids: string = field.join(",");
+
+    await AddOrderId({
+      rentid: field,
+      orderid: uniqueid,
+    });
 
     router.push(
       `/payamount?xlmnx=${amount}&ynboy=${uniqueid}&zgvfz=${ids}_0_0_rent`

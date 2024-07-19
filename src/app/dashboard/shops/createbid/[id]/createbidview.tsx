@@ -101,11 +101,11 @@ const CreateBidPage = (props: CreateBidPageProps) => {
     RefundType.REFUNDABLE
   );
 
-  const bgamount = useRef<HTMLInputElement>(null);
-  const [bg, setBg] = useState<PercentageType>(PercentageType.AMOUNT);
-  const [bgrefundable, setBgrefundable] = useState<RefundType>(
-    RefundType.REFUNDABLE
-  );
+  // const bgamount = useRef<HTMLInputElement>(null);
+  // const [bg, setBg] = useState<PercentageType>(PercentageType.AMOUNT);
+  // const [bgrefundable, setBgrefundable] = useState<RefundType>(
+  //   RefundType.REFUNDABLE
+  // );
 
   enum Exempt {
     YES = "YES",
@@ -242,9 +242,12 @@ const CreateBidPage = (props: CreateBidPageProps) => {
       emd_amount: parseInt(emdamount.current?.value ?? "0"),
       emd: emd as PercentageType,
       emd_refundable: emdrefundable as RefundType,
-      bg_amount: parseInt(bgamount.current?.value ?? "0"),
-      bg: bg as PercentageType,
-      bg_refundable: bgrefundable as RefundType,
+      // bg_amount: parseInt(bgamount.current?.value ?? "0"),
+      bg_amount: 0,
+      // bg: bg as PercentageType,
+      bg: PercentageType.AMOUNT,
+      // bg_refundable: bgrefundable as RefundType,
+      bg_refundable: RefundType.REFUNDABLE,
       startTime: startTime,
       endTime: endTime,
       bidstartdate: setTime(startDate!, startTime),
@@ -279,13 +282,13 @@ const CreateBidPage = (props: CreateBidPageProps) => {
         return;
       }
 
-      if (
-        parseInt(minbid.current?.value!) < parseInt(bgamount.current?.value!)
-      ) {
-        toast.error("BG amount should be less than minimum bid amount");
-        setIsCreating(false);
-        return;
-      }
+      // if (
+      //   parseInt(minbid.current?.value!) < parseInt(bgamount.current?.value!)
+      // ) {
+      //   toast.error("BG amount should be less than minimum bid amount");
+      //   setIsCreating(false);
+      //   return;
+      // }
 
       if (exempt === Exempt.YES && exemptfield.length == 0) {
         toast.error("Please select at least one exempt category");
@@ -1247,7 +1250,7 @@ const CreateBidPage = (props: CreateBidPageProps) => {
             </div>
           </div>
 
-          <div className="flex gap-4">
+          {/* <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">
               <Label htmlFor="bgamount">
                 BG Amount <span className="text-rose-500">*</span>
@@ -1282,8 +1285,8 @@ const CreateBidPage = (props: CreateBidPageProps) => {
                   >
                     By Amount
                   </Label>
-                </div>
-                {/* <div className="flex items-center space-x-2">
+                </div> */}
+          {/* <div className="flex items-center space-x-2">
                   <RadioGroupItem
                     value="PERCENTAGE"
                     id="bgfr1"
@@ -1297,7 +1300,7 @@ const CreateBidPage = (props: CreateBidPageProps) => {
                     By Percentage
                   </Label>
                 </div> */}
-              </RadioGroup>
+          {/* </RadioGroup>
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
               <Label htmlFor="bgpercentage">
@@ -1339,7 +1342,7 @@ const CreateBidPage = (props: CreateBidPageProps) => {
                 </div>
               </RadioGroup>
             </div>
-          </div>
+          </div> */}
 
           <p className="text-gray-500 mt-4 text-center">Document Required</p>
           <Separator />

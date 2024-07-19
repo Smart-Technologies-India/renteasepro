@@ -4,7 +4,161 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+<<<<<<< HEAD
 importers:
+=======
+dependencies:
+  '@gsap/react':
+    specifier: ^2.1.0
+    version: 2.1.0
+  '@prisma/client':
+    specifier: ^5.11.0
+    version: 5.11.0(prisma@5.11.0)
+  '@radix-ui/react-alert-dialog':
+    specifier: ^1.0.5
+    version: 1.0.5(@types/react-dom@18.2.21)(@types/react@18.2.65)(react-dom@18.2.0)(react@18.2.0)
+  '@radix-ui/react-checkbox':
+    specifier: ^1.0.4
+    version: 1.0.4(@types/react-dom@18.2.21)(@types/react@18.2.65)(react-dom@18.2.0)(react@18.2.0)
+  '@radix-ui/react-dialog':
+    specifier: ^1.0.5
+    version: 1.0.5(@types/react-dom@18.2.21)(@types/react@18.2.65)(react-dom@18.2.0)(react@18.2.0)
+  '@radix-ui/react-dropdown-menu':
+    specifier: ^2.0.6
+    version: 2.0.6(@types/react-dom@18.2.21)(@types/react@18.2.65)(react-dom@18.2.0)(react@18.2.0)
+  '@radix-ui/react-label':
+    specifier: ^2.0.2
+    version: 2.0.2(@types/react-dom@18.2.21)(@types/react@18.2.65)(react-dom@18.2.0)(react@18.2.0)
+  '@radix-ui/react-popover':
+    specifier: ^1.0.7
+    version: 1.0.7(@types/react-dom@18.2.21)(@types/react@18.2.65)(react-dom@18.2.0)(react@18.2.0)
+  '@radix-ui/react-radio-group':
+    specifier: ^1.1.3
+    version: 1.1.3(@types/react-dom@18.2.21)(@types/react@18.2.65)(react-dom@18.2.0)(react@18.2.0)
+  '@radix-ui/react-select':
+    specifier: ^2.0.0
+    version: 2.0.0(@types/react-dom@18.2.21)(@types/react@18.2.65)(react-dom@18.2.0)(react@18.2.0)
+  '@radix-ui/react-separator':
+    specifier: ^1.0.3
+    version: 1.0.3(@types/react-dom@18.2.21)(@types/react@18.2.65)(react-dom@18.2.0)(react@18.2.0)
+  '@radix-ui/react-slot':
+    specifier: ^1.0.2
+    version: 1.0.2(@types/react@18.2.65)(react@18.2.0)
+  '@radix-ui/react-switch':
+    specifier: ^1.0.3
+    version: 1.0.3(@types/react-dom@18.2.21)(@types/react@18.2.65)(react-dom@18.2.0)(react@18.2.0)
+  '@radix-ui/react-tabs':
+    specifier: ^1.0.4
+    version: 1.0.4(@types/react-dom@18.2.21)(@types/react@18.2.65)(react-dom@18.2.0)(react@18.2.0)
+  '@radix-ui/react-tooltip':
+    specifier: ^1.0.7
+    version: 1.0.7(@types/react-dom@18.2.21)(@types/react@18.2.65)(react-dom@18.2.0)(react@18.2.0)
+  '@ramonak/react-progress-bar':
+    specifier: ^5.2.0
+    version: 5.2.0(react-dom@18.2.0)(react@18.2.0)
+  '@react-pdf/renderer':
+    specifier: ^3.4.2
+    version: 3.4.2(react@18.2.0)
+  '@uidotdev/usehooks':
+    specifier: ^2.4.1
+    version: 2.4.1(react-dom@18.2.0)(react@18.2.0)
+  antd:
+    specifier: ^5.15.2
+    version: 5.15.2(date-fns@3.4.0)(react-dom@18.2.0)(react@18.2.0)
+  axios:
+    specifier: ^1.6.7
+    version: 1.6.7
+  bcrypt:
+    specifier: ^5.1.1
+    version: 5.1.1
+  chart.js:
+    specifier: ^4.4.2
+    version: 4.4.2
+  class-variance-authority:
+    specifier: ^0.7.0
+    version: 0.7.0
+  clsx:
+    specifier: ^2.1.0
+    version: 2.1.0
+  cookies-next:
+    specifier: ^4.1.1
+    version: 4.1.1
+  crypto:
+    specifier: ^1.0.1
+    version: 1.0.1
+  date-fns:
+    specifier: ^3.4.0
+    version: 3.4.0
+  dayjs:
+    specifier: ^1.11.10
+    version: 1.11.10
+  embla-carousel-react:
+    specifier: 8.0.0
+    version: 8.0.0(react@18.2.0)
+  express:
+    specifier: ^4.18.3
+    version: 4.18.3
+  gsap:
+    specifier: ^3.12.5
+    version: 3.12.5
+  lucide-react:
+    specifier: ^0.356.0
+    version: 0.356.0(react@18.2.0)
+  multer:
+    specifier: 1.4.5-lts.1
+    version: 1.4.5-lts.1
+  nanoid:
+    specifier: ^5.0.7
+    version: 5.0.7
+  next:
+    specifier: 14.1.3
+    version: 14.1.3(react-dom@18.2.0)(react@18.2.0)
+  node-cron:
+    specifier: ^3.0.3
+    version: 3.0.3
+  querystring:
+    specifier: ^0.2.1
+    version: 0.2.1
+  react:
+    specifier: ^18.2.0
+    version: 18.2.0
+  react-chartjs-2:
+    specifier: ^5.2.0
+    version: 5.2.0(chart.js@4.4.2)(react@18.2.0)
+  react-day-picker:
+    specifier: ^8.10.0
+    version: 8.10.0(date-fns@3.4.0)(react@18.2.0)
+  react-dom:
+    specifier: ^18.2.0
+    version: 18.2.0(react@18.2.0)
+  react-pdf:
+    specifier: ^7.7.1
+    version: 7.7.1(@types/react@18.2.65)(react-dom@18.2.0)(react@18.2.0)
+  react-select:
+    specifier: ^5.8.0
+    version: 5.8.0(@types/react@18.2.65)(react-dom@18.2.0)(react@18.2.0)
+  react-toastify:
+    specifier: ^10.0.4
+    version: 10.0.4(react-dom@18.2.0)(react@18.2.0)
+  sharp:
+    specifier: ^0.33.3
+    version: 0.33.3
+  tailwind-merge:
+    specifier: ^2.2.1
+    version: 2.2.1
+  tailwindcss-animate:
+    specifier: ^1.0.7
+    version: 1.0.7(tailwindcss@3.4.1)
+  to-words:
+    specifier: ^4.0.1
+    version: 4.0.1
+  valibot:
+    specifier: ^0.30.0
+    version: 0.30.0
+  vaul:
+    specifier: ^0.9.0
+    version: 0.9.0(@types/react-dom@18.2.21)(@types/react@18.2.65)(react-dom@18.2.0)(react@18.2.0)
+>>>>>>> refs/remotes/origin/master
 
   .:
     dependencies:
@@ -6297,7 +6451,25 @@ snapshots:
 
   node-addon-api@5.1.0: {}
 
+<<<<<<< HEAD
   node-fetch@2.7.0:
+=======
+  /node-cron@3.0.3:
+    resolution: {integrity: sha512-dOal67//nohNgYWb+nWmg5dkFdIwDm8EpeGYMekPMrngV3637lqnX0lbUcCtgibHTz6SEz7DAIjKvKDFYCnO1A==}
+    engines: {node: '>=6.0.0'}
+    dependencies:
+      uuid: 8.3.2
+    dev: false
+
+  /node-fetch@2.7.0:
+    resolution: {integrity: sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==}
+    engines: {node: 4.x || >=6.0.0}
+    peerDependencies:
+      encoding: ^0.1.0
+    peerDependenciesMeta:
+      encoding:
+        optional: true
+>>>>>>> refs/remotes/origin/master
     dependencies:
       whatwg-url: 5.0.0
 
@@ -7494,7 +7666,17 @@ snapshots:
 
   utils-merge@1.0.1: {}
 
+<<<<<<< HEAD
   v8-compile-cache-lib@3.0.1: {}
+=======
+  /uuid@8.3.2:
+    resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
+    hasBin: true
+    dev: false
+
+  /v8-compile-cache-lib@3.0.1:
+    resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
+>>>>>>> refs/remotes/origin/master
 
   valibot@0.30.0: {}
 

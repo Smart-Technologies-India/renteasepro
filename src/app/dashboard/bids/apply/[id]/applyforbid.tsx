@@ -215,6 +215,10 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
       return;
     }
 
+    const nanoid = customAlphabet("1234567890abcdef", 10);
+
+    const uniqueid: string = nanoid();
+
     const createbid = await ApplyBid({
       amount: parseInt(amount.current?.value ?? "0"),
       bidId: parseInt(props.bidid.toString()),
@@ -224,6 +228,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
       fees: bid.fees_amount,
       emd: bid.emd_amount,
       bg: bid.bg_amount,
+      orderid: uniqueid,
     });
     if (!createbid.status) return toast.error(createbid.message);
 
@@ -250,10 +255,6 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
 
       // return router.push(`/dashboard/bidrecept/${userid}/${props.bidid}`);
       // return router.push(`/dashboard/bidrecept/${userid}/${props.bidid}`);
-
-      const nanoid = customAlphabet("1234567890abcdef", 10);
-
-      const uniqueid = nanoid();
 
       const amounttopaid: number =
         bid?.is_exemption == true
@@ -388,17 +389,17 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                   <p className="text-center">&#8377;{bid.emd_amount}</p>
                 </div>
 
-                <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
+                {/* <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                   <h1 className="text-center">BG Amount:</h1>
                   <p className="text-center">&#8377;{bid.bg_amount}</p>
-                </div>
-              </div>
-
-              <div className="flex gap-2 lg:gap-4 flex-col lg:flex-row lg:items-center justify-around w-full mt-2">
+                </div> */}
                 <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                   <h1 className="text-center">Minimum Bid:</h1>
                   <p className="text-center">&#8377;{bid.min_bid_amount}</p>
                 </div>
+              </div>
+
+              <div className="flex gap-2 lg:gap-4 flex-col lg:flex-row lg:items-center justify-around w-full mt-2">
                 {bid.is_auction == true && (
                   <div className="p-2 px-4 bg-gray-100 mt-2 rounded-md flex-1">
                     <h1 className="text-center">Current Bid:</h1>

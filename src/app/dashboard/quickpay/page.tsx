@@ -12,6 +12,7 @@ import { LucideArrowBigLeft, LucideArrowBigRight } from "@/components/icons";
 import { customAlphabet } from "nanoid";
 import GetUserRent from "@/action/rent_transact/getuserrent";
 import GetPandingRentShopByUserId from "@/action/rent/getpadingrentshopbyuserid";
+import AddOrderId from "@/action/rent_transact/addorderid";
 
 const BidPropertiesView = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -252,6 +253,11 @@ const PropertiesDeatils = (props: PropertiesDeatilsProps) => {
         const nanoid = customAlphabet("1234567890abcdef", 10);
         const uniqueid = nanoid();
         const ids: string = props.field.join(",");
+
+        await AddOrderId({
+          rentid: props.field.map((value: string) => parseInt(value)),
+          orderid: uniqueid,
+        });
         router.push(
           `/payamount?xlmnx=${props.amount}&ynboy=${uniqueid}&zgvfz=${ids}_0_0_rent`
         );

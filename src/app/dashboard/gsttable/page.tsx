@@ -301,8 +301,8 @@ const GstTable = () => {
                 </Text>
                 <Text style={styles.bottomright}>
                   {(
-                    (parseInt(value?.amount) * 18) / 118 / 2 +
-                    (parseInt(value?.amount) * 18) / 118 / 2
+                    parseFloat(value?.amount) +
+                    ((parseInt(value?.amount) * 18) / 118 / 2) * 2
                   ).toFixed(2)}
                 </Text>
               </View>
