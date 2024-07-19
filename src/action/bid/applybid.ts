@@ -17,6 +17,7 @@ interface ApplyBidPayload {
   bg?: number;
   bankname?: string;
   transactionid?: string;
+  orderid?: string;
 }
 
 const ApplyBid = async (
@@ -69,6 +70,7 @@ const ApplyBid = async (
           bankname: payload.bankname,
           createdById: payload.userId,
           deletedAt: new Date(),
+          orderid: payload.orderid,
         },
       });
 
@@ -87,6 +89,7 @@ const ApplyBid = async (
             bankname: payload.bankname,
             createdById: payload.userId,
             deletedAt: new Date(),
+            orderid: payload.orderid,
           },
         });
       }
@@ -106,6 +109,7 @@ const ApplyBid = async (
             bankname: payload.bankname,
             createdById: payload.userId,
             deletedAt: new Date(),
+            orderid: payload.orderid,
           },
         });
       }
