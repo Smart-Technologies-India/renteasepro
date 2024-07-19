@@ -388,7 +388,7 @@ model bid {
   shopId               Int
   title                String
   description          String?
-  instruction          String?
+  instruction          String?        @db.MediumText
   min_bid_amount       Int            @db.MediumInt
   bidincrementamount   PercentageType @default(PERCENTAGE)
   min_bid_increment    Int            @db.MediumInt
