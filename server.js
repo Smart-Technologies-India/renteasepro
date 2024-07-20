@@ -683,11 +683,14 @@ app.prepare().then(() => {
     console.log(enc_code);
 
     let ccavResponse = decrypt(enc_code, keyBase64, ivBase64);
-    console.log(ccavResponse);
-    console.log(typeof ccavResponse);
-    console.log(ccavResponse["status"]);
 
-    if (ccavResponse.status == 0) {
+    console.log(ccavResponse);
+    let obj = JSON.parse(ccavResponse);
+    console.log(obj);
+
+    console.log(obj["status"]);
+
+    if (obj["status"] == 0) {
       console.log("working");
     } else {
       console.log("not working");
