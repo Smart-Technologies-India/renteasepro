@@ -181,8 +181,6 @@ const postRes = (request, response) => {
             },
           });
 
-          console.log(update_response);
-
           const tranId = await prisma.bid_transact.findFirst({
             where: {
               userId: userid ? parseInt(userid) : 0,
@@ -752,8 +750,6 @@ const checkpaymentstatus = async () => {
   //   reference_no: "419311038953",
   // };
 
-  console.log(ccavResponse);
-
   const pending_rent = await prisma.rent_transact.findMany({
     where: {
       deletedAt: null,
@@ -781,12 +777,94 @@ const checkpaymentstatus = async () => {
 
       let ccavResponse = decrypt(enc_code, keyBase64, ivBase64);
 
-      let status = JOSN.parse(ccavResponse)["status"];
+      let obj = JSON.parse(ccavResponse);
 
-      if (status == 0) {
-        console.log("working");
-      } else {
-        console.log("not working");
+      if (obj["status"] == 0) {
+        const gstnumber = await prisma.gstinvoice.findFirst({
+          orderBy: { id: "desc" },
+        });
+
+        await prisma.gstinvoice.create({
+          data: {
+            number: gstnumber?.number + 1,
+          },
+        });
+
+        await prisma.rent_transact.update({
+          where: {
+            id: pending_rent[i].id,
+          },
+          data: {
+            gstinvoice: gstnumber.number,
+            transactionid: obj["order_bank_ref_no"],
+            trackid: obj["reference_no"],
+            status: "PAID",
+            transaction_date: new Date().toISOString(),
+            paymentmode: obj["order_card_name:"].toString().toUpperCase(),
+            remarks: "Success",
+          },
+          include: {
+            user: true,
+            shop: {
+              include: {
+                property: true,
+                shop_category: true,
+              },
+            },
+          },
+        });
+
+        // end
+      }
+    }
+  }
+
+  const pending_payment = await prisma.bid_payment.findMany({
+    where: {
+      deletedAt: null,
+      deletedBy: null,
+      orderid: {
+        not: null,
+      },
+      trackid: null,
+    },
+  });
+
+  if (pending_payment.length > 0) {
+    for (let i = 0; i < pending_payment.length; i++) {
+      encRequest = encrypt(
+        `{order_no:'${pending_payment[i].orderid}'}`,
+        keyBase64,
+        ivBase64
+      );
+
+      const result = await axios.post(
+        `https://api.ccavenue.com/apis/servlet/DoWebTrans?access_code=${accessCode}&command=orderStatusTracker&request_type=JSON&response_type=JSON&version=1.2&enc_request=${encRequest}`
+      );
+
+      let enc_code = result.data.toString().split("=").pop();
+
+      let ccavResponse = decrypt(enc_code, keyBase64, ivBase64);
+
+      let obj = JSON.parse(ccavResponse);
+
+      if (obj["status"] == 0) {
+        updatedata = await prisma.bid_payment.update({
+          where: {
+            id: pending_payment[i].id,
+          },
+          data: {
+            deletedAt: null,
+            transactionid: obj["order_bank_ref_no"],
+            trackid: obj["reference_no"],
+            status: "PAID",
+            transaction_date: new Date().toISOString(),
+            paymentmode: obj["order_card_name:"].toString().toUpperCase(),
+            remarks: "Success",
+          },
+        });
+
+        // end
       }
     }
   }
@@ -797,7 +875,7 @@ cron.schedule("0 18 * * *", async () => {
   // console.log(process.env.YOUR_BASE_URL);
 
   try {
-    // await checkpaymentstatus();
+    await checkpaymentstatus();
     const response = await axios.post(
       `${process.env.YOUR_BASE_URL}/api/services`,
       {
