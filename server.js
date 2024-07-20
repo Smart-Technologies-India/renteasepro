@@ -684,7 +684,7 @@ app.prepare().then(() => {
 
     let ccavResponse = decrypt(enc_code, keyBase64, ivBase64);
     console.log(ccavResponse);
-    console.log(ccavResponse.status);
+    console.log(ccavResponse["status"]);
 
     if (ccavResponse.status == 0) {
       console.log("working");
