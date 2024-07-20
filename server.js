@@ -685,11 +685,7 @@ app.prepare().then(() => {
     let ccavResponse = decrypt(enc_code, keyBase64, ivBase64);
     console.log(ccavResponse);
 
-    console.log(JOSN.parse(ccavResponse));
-
-    let status = JOSN.parse(ccavResponse)["status"];
-
-    if (status == 0) {
+    if (ccavResponse.status == 0) {
       console.log("working");
     } else {
       console.log("not working");
