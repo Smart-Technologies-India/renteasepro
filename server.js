@@ -685,6 +685,14 @@ app.prepare().then(() => {
     let ccavResponse = decrypt(enc_code, keyBase64, ivBase64);
     console.log(ccavResponse);
 
+    let status = JOSN.parse(ccavResponse)["status"];
+
+    if (status == 0) {
+      console.log("working");
+    } else {
+      console.log("not working");
+    }
+
     response.end();
   });
 
@@ -723,6 +731,26 @@ app.prepare().then(() => {
 });
 
 const checkpaymentstatus = async () => {
+  var workingKey = "370F518A36775EFEA425EB27C8DC0CC6", //Put in the 32-Bit key shared by CCAvenues.
+    accessCode = "AVHK88LE92BW69KHWB", //Put in the Access Code shared by CCAvenues.
+    encRequest = "";
+
+  //Generate Md5 hash for the key and then convert in base64 string
+  var md5 = crypto.createHash("md5").update(workingKey).digest();
+  var keyBase64 = Buffer.from(md5).toString("base64");
+
+  //Initializing Vector and then convert in base64 string
+  var ivBase64 = Buffer.from([
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b,
+    0x0c, 0x0d, 0x0e, 0x0f,
+  ]).toString("base64");
+
+  // const datatosend = {
+  //   reference_no: "419311038953",
+  // };
+
+  console.log(ccavResponse);
+
   const pending_rent = await prisma.rent_transact.findMany({
     where: {
       deletedAt: null,
@@ -735,7 +763,29 @@ const checkpaymentstatus = async () => {
   });
 
   if (pending_rent.length > 0) {
-    for (let i = 0; i < pending_rent.length; i++) {}
+    for (let i = 0; i < pending_rent.length; i++) {
+      encRequest = encrypt(
+        `{order_no:'${pending_rent[i].orderid}'}`,
+        keyBase64,
+        ivBase64
+      );
+
+      const result = await axios.post(
+        `https://api.ccavenue.com/apis/servlet/DoWebTrans?access_code=${accessCode}&command=orderStatusTracker&request_type=JSON&response_type=JSON&version=1.2&enc_request=${encRequest}`
+      );
+
+      let enc_code = result.data.toString().split("=").pop();
+
+      let ccavResponse = decrypt(enc_code, keyBase64, ivBase64);
+
+      let status = JOSN.parse(ccavResponse)["status"];
+
+      if (status == 0) {
+        console.log("working");
+      } else {
+        console.log("not working");
+      }
+    }
   }
 };
 
