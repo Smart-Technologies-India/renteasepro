@@ -212,42 +212,46 @@ const postRes = (request, response) => {
       } else if (type == "rent") {
         let updatedata;
 
+        let gstnumber;
+
         const id_value = bidid.split(",").map((id) => parseInt(id));
 
-        const gstnumber = await prisma.gstinvoice.findFirst({
-          orderBy: { id: "desc" },
-        });
+        if (id_value.length > 0) {
+          gstnumber = await prisma.gstinvoice.findFirst({
+            orderBy: { id: "desc" },
+          });
 
-        await prisma.gstinvoice.create({
-          data: {
-            number: gstnumber?.number + 1,
-          },
-        });
-
-        for (let i = 0; i < id_value.length; i++) {
-          updatedata = await prisma.rent_transact.update({
-            where: {
-              id: id_value[i],
-            },
+          await prisma.gstinvoice.create({
             data: {
-              gstinvoice: gstnumber.number,
-              transactionid: result.bank_ref_no,
-              trackid: result.tracking_id,
-              status: "PAID",
-              transaction_date: new Date().toISOString(),
-              paymentmode: result.payment_mode.toString().toUpperCase(),
-              remarks: result.order_status,
-            },
-            include: {
-              user: true,
-              shop: {
-                include: {
-                  property: true,
-                  shop_category: true,
-                },
-              },
+              number: gstnumber?.number + 1,
             },
           });
+
+          for (let i = 0; i < id_value.length; i++) {
+            updatedata = await prisma.rent_transact.update({
+              where: {
+                id: id_value[i],
+              },
+              data: {
+                gstinvoice: gstnumber.number,
+                transactionid: result.bank_ref_no,
+                trackid: result.tracking_id,
+                status: "PAID",
+                transaction_date: new Date().toISOString(),
+                paymentmode: result.payment_mode.toString().toUpperCase(),
+                remarks: result.order_status,
+              },
+              include: {
+                user: true,
+                shop: {
+                  include: {
+                    property: true,
+                    shop_category: true,
+                  },
+                },
+              },
+            });
+          }
         }
 
         // const update_response = await prisma.rent_transact.updateMany({
@@ -802,15 +806,6 @@ const checkpaymentstatus = async () => {
             transaction_date: new Date().toISOString(),
             paymentmode: obj["order_card_name:"].toString().toUpperCase(),
             remarks: "Success",
-          },
-          include: {
-            user: true,
-            shop: {
-              include: {
-                property: true,
-                shop_category: true,
-              },
-            },
           },
         });
 
