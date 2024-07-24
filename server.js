@@ -627,31 +627,6 @@ app.prepare().then(() => {
     }
   });
 
-  server.get("/orderresponse", async function (request, response) {
-    const data =
-      "73c25b2a8fa83876555895654a198220dcbaef02bfe1512e2d5761b3c60363893fa03cfc47de149bf96a305bb1ded437c84bc9e6b64814608fc66cbc781b03ebe51117ce935cb3dbfc0a492b59ac8b3b";
-
-    var ccavEncResponse = "",
-      ccavResponse = "",
-      // workingKey = "E01FEB879F6B09AA29F8B6AAFD28B930", //Put in the 32-Bit key shared by CCAvenues.
-      workingKey = "370F518A36775EFEA425EB27C8DC0CC6", //Put in the 32-Bit key shared by CCAvenues.
-      ccavPOST = "";
-
-    //Generate Md5 hash for the key and then convert in base64 string
-    var md5 = crypto.createHash("md5").update(workingKey).digest();
-    var keyBase64 = Buffer.from(md5).toString("base64");
-
-    //Initializing Vector and then convert in base64 string
-    var ivBase64 = Buffer.from([
-      0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b,
-      0x0c, 0x0d, 0x0e, 0x0f,
-    ]).toString("base64");
-    ccavResponse = decrypt(data, keyBase64, ivBase64);
-
-    console.log(ccavResponse);
-    response.end();
-  });
-
   server.get("/orderstatus", async function (request, response) {
     var body = "",
       workingKey = "370F518A36775EFEA425EB27C8DC0CC6", //Put in the 32-Bit key shared by CCAvenues.
@@ -673,7 +648,7 @@ app.prepare().then(() => {
     //   reference_no: "419311038953",
     // };
 
-    encRequest = encrypt("{reference_no:'113370736263'}", keyBase64, ivBase64);
+    encRequest = encrypt("{order_no:'eb8003cf65'}", keyBase64, ivBase64);
 
     const result = await axios.post(
       `https://api.ccavenue.com/apis/servlet/DoWebTrans?access_code=${accessCode}&command=orderStatusTracker&request_type=JSON&response_type=JSON&version=1.2&enc_request=${encRequest}`
