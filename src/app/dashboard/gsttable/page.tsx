@@ -289,7 +289,10 @@ const GstTable = () => {
                 </Text>
                 <Text style={styles.bottommid2}>unregistered</Text>
                 <Text style={styles.bottomright}>
-                  {(value?.gstinvoice ?? "0").toString().padStart(4, "0")}
+                  {(
+                    parseFloat(value?.amount) -
+                    ((parseInt(value?.amount) * 18) / 118 / 2) * 2
+                  ).toFixed(2)}
                 </Text>
                 <Text style={styles.bottomright}>{value?.amount}</Text>
                 <Text style={styles.bottomright}>0</Text>
@@ -300,10 +303,7 @@ const GstTable = () => {
                   {((parseInt(value?.amount) * 18) / 118 / 2).toFixed(2)}
                 </Text>
                 <Text style={styles.bottomright}>
-                  {(
-                    parseFloat(value?.amount) +
-                    ((parseInt(value?.amount) * 18) / 118 / 2) * 2
-                  ).toFixed(2)}
+                  {(value?.gstinvoice ?? "0").toString().padStart(4, "0")}
                 </Text>
               </View>
             );

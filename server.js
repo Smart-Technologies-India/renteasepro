@@ -782,8 +782,10 @@ const checkpaymentstatus = async () => {
       let enc_code = result.data.toString().split("=").pop();
 
       let ccavResponse = decrypt(enc_code, keyBase64, ivBase64);
+      console.log(ccavResponse);
 
       let obj = JSON.parse(ccavResponse);
+      console.log(obj);
 
       if (obj["status"] == 0) {
         const gstnumber = await prisma.gstinvoice.findFirst({
