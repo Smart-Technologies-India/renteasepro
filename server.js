@@ -764,6 +764,8 @@ const checkpaymentstatus = async () => {
       trackid: null,
     },
   });
+  console.log(pending_rent.length);
+  console.log(pending_rent);
 
   if (pending_rent.length > 0) {
     for (let i = 0; i < pending_rent.length; i++) {
@@ -792,6 +794,16 @@ const checkpaymentstatus = async () => {
           data: {
             number: gstnumber?.number + 1,
           },
+        });
+
+        console.log({
+          gstinvoice: gstnumber.number,
+          transactionid: obj["order_bank_ref_no"],
+          trackid: obj["reference_no"],
+          status: "PAID",
+          transaction_date: new Date().toISOString(),
+          paymentmode: obj["order_card_name:"].toString().toUpperCase(),
+          remarks: "Success",
         });
 
         await prisma.rent_transact.update({
@@ -881,3 +893,13 @@ cron.schedule("0 18 * * *", async () => {
     );
   } catch (error) {}
 });
+
+const init = async () => {
+  try {
+    await checkpaymentstatus();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+init();
