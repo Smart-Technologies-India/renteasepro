@@ -871,12 +871,12 @@ cron.schedule("0 18 * * *", async () => {
   } catch (error) {}
 });
 
-const init = async () => {
-  try {
-    await checkpaymentstatus();
-  } catch (error) {
-    console.log(error);
-  }
-};
+// const init = async () => {
+//   try {
+//     await checkpaymentstatus();
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 
-init();
+// init();
