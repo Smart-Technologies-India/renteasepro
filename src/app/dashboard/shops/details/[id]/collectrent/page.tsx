@@ -1,25 +1,46 @@
 "use client";
+
 import GetRent from "@/action/rent/getrent";
-import GetUserRent from "@/action/rent_transact/getuserrent";
 import BackButton from "@/components/backbutton";
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { formateDate } from "@/utils/methods";
 import { rent_transact } from "@prisma/client";
-import { useRouter } from "next/navigation";
-import { SetStateAction, useEffect, useRef, useState } from "react";
-import { toast } from "react-toastify";
-import { getCookie } from "cookies-next";
+import { useParams, usePathname, useRouter } from "next/navigation";
+import { useEffect, useReducer, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import GetUserRent from "@/action/rent_transact/getuserrent";
 import { customAlphabet } from "nanoid";
 import AddOrderId from "@/action/rent_transact/addorderid";
+import { toast } from "react-toastify";
+import PayRent from "@/action/rent_transact/payrent";
+import { format, setDate } from "date-fns";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
-interface UserRentDetailsViewProps {
-  id: number;
-}
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { IcBaselineCalendarMonth } from "@/components/icons";
+import { Calendar } from "@/components/ui/calendar";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
-const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
-  const userid: number = parseInt(getCookie("id") ?? "0");
+const CollectRent = () => {
+  const params = useParams<{ id: string }>();
+  const shopid: number = parseInt(params.id);
+  console.log(shopid);
 
   const [field, setField] = useState<number[]>([]);
   const router = useRouter();
@@ -32,47 +53,29 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
   const [rent, setRent] = useState<any>();
   const [rentTransact, setRentTransact] = useState<rent_transact[]>([]);
 
-  // const banknameRef = useRef<HTMLInputElement>(null);
-  // const transactionRef = useRef<HTMLInputElement>(null);
+  const banknameRef = useRef<HTMLInputElement>(null);
+  const transactionRef = useRef<HTMLInputElement>(null);
 
-  // const [fileUploader, setFileUploader] = useState<File | null>(null);
-  // const cFileUploader = useRef<HTMLInputElement>(null);
-
-  const handleFileChange = (
-    value: React.ChangeEvent<HTMLInputElement>,
-    setFun: (value: SetStateAction<File | null>) => void
-  ) => {
-    let file_size = parseInt(
-      (value!.target.files![0].size / 1024 / 1024).toString()
-    );
-    if (file_size < 5) {
-      if (value!.target.files![0].type.startsWith("image/")) {
-        setFun((val) => value!.target.files![0]);
-      } else {
-        toast.error("Please select a file.", { theme: "light" });
-      }
-    } else {
-      toast.error("File size must be less then 5 mb", { theme: "light" });
-    }
-  };
+  const [startDate, setStartDate] = useState<Date>();
+  const [startDPop, setStartDPop] = useState<boolean>(false);
 
   useEffect(() => {
     const init = async () => {
       setLoading(true);
 
-      const rentresponse = await GetRent({ id: parseInt(props.id.toString()) });
+      const rentresponse = await GetRent({ id: parseInt(shopid.toString()) });
       if (rentresponse.status) {
         setRent(rentresponse.data);
       }
 
-      const rentTransactresponse = await GetUserRent({ rentid: props.id });
+      const rentTransactresponse = await GetUserRent({ rentid: shopid });
       if (rentTransactresponse.status) {
         setRentTransact(rentTransactresponse.data as rent_transact[]);
       }
       setLoading(false);
     };
     init();
-  }, [props.id]);
+  }, [shopid]);
 
   const payfees = async () => {
     if (field.length == 0) {
@@ -92,9 +95,9 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
       orderid: uniqueid,
     });
 
-    router.push(
-      `/payamount?xlmnx=${amount}&ynboy=${uniqueid}&zgvfz=${ids}_0_0_rent`
-    );
+    // router.push(
+    //   `/payamount?xlmnx=${amount}&ynboy=${uniqueid}&zgvfz=${ids}_0_0_rent`
+    // );
 
     // const rentresponse = await GetRentTran({ id: field[0] });
     // if (rentresponse.status) {
@@ -102,38 +105,53 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
     //     `/payamount?xlmnx=${amount}&ynboy=${uniqueid}&zgvfz=${rentresponse.data?.rentId}_${rentresponse.data?.userId}_${rentresponse.data?.shopId}_rent`
     //   );
     // }
-    // setLoading(true);
-    // setPaying(true);
-    // if (field.length == 0) {
-    //   toast.error("Please select atleast one month to pay rent");
-    //   setLoading(false);
-    //   setPaying(false);
-    //   return;
-    // }
 
-    // if (!banknameRef.current?.value) {
-    //   toast.error("Please enter bank name");
-    //   setLoading(false);
-    //   setPaying(false);
-    //   return;
-    // }
+    setLoading(true);
+    setPaying(true);
+    if (field.length == 0) {
+      toast.error("Please select atleast one month to pay rent");
+      setLoading(false);
+      setPaying(false);
+      return;
+    }
 
-    // if (!transactionRef.current?.value) {
-    //   toast.error("Please enter transaction id");
-    //   setLoading(false);
-    //   setPaying(false);
-    //   return;
-    // }
+    if (!banknameRef.current?.value) {
+      toast.error("Please enter bank name");
+      setLoading(false);
+      setPaying(false);
+      return;
+    }
 
-    // const payrent_response = await PayRent({
-    //   rentid: field,
-    //   transactionid: transactionRef.current?.value ?? "",
-    //   bankname: banknameRef.current?.value ?? "",
-    // });
+    if (!transactionRef.current?.value) {
+      toast.error("Please enter transaction id");
+      setLoading(false);
+      setPaying(false);
+      return;
+    }
 
-    // if (payrent_response.status) {
-    //   toast.success(payrent_response.message);
-    // }
+    if (!startDate) {
+      toast.error("Please select transaction date");
+      setLoading(false);
+      setPaying(false);
+      return;
+    }
+
+    const payrent_response = await PayRent({
+      rentid: field,
+      transactionid: transactionRef.current?.value ?? "",
+      bankname: banknameRef.current?.value ?? "",
+      orderid: uniqueid,
+      startdate: startDate,
+    });
+
+    if (payrent_response.status) {
+      toast.success(payrent_response.message);
+    } else {
+      setLoading(false);
+      setPaying(false);
+      toast.error(payrent_response.message);
+      return;
+    }
 
     // const formData = new FormData();
     // formData.append("file", fileUploader!);
@@ -167,10 +185,11 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
     //   setRentTransact(rentTransactresponse.data as rent_transact[]);
     // }
 
-    // setField([]);
-    // setAmount(0);
-    // setLoading(false);
-    // setPaying(false);
+    setField([]);
+    setAmount(0);
+    setLoading(false);
+    setPaying(false);
+    router.back();
     // return router.push(`/dashboard/rentrecept/${userid}/${props.id}/${field[0]}`);
   };
 
@@ -199,16 +218,16 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
               <p className="text-xs leading-3">
                 Shop Number <br />
                 <span className="text-sm text-gray-500 font-medium">
-                  {rent.shop.shopNumber}
                   {/* {rent.shop.shopNumber < new Date() ? "Ended" : "Running"} */}
+                  {rent.shop.shopNumber}
                 </span>
               </p>
 
               <p className="text-xs leading-3">
                 Shop Size <br />
                 <span className="text-sm text-gray-500 font-medium">
-                  {/* {rent.shop.shopSize < new Date() ? "Ended" : "Running"} */}
                   {rent.shop.shopSize}
+                  {/* {rent.shop.shopSize < new Date() ? "Ended" : "Running"} */}
                 </span>
               </p>
 
@@ -350,15 +369,6 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
                   />
                 </div>
 
-                <div className="grid items-center gap-1.5 w-full mt-4">
-                  <Label htmlFor="transactionid">Enter Transaction Id</Label>
-                  <Input
-                    id="transactionid"
-                    type="text"
-                    className="w-full"
-                    ref={transactionRef}
-                  />
-                </div>
 
                 <div className="flex gap-4 mt-4 items-center">
                   <Label htmlFor="termfile">Upload receipt</Label>
@@ -393,6 +403,56 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
                   </div>
                 </div> */}
 
+                <div className="grid items-center gap-1.5 w-full mt-2">
+                  <Label htmlFor="bankname">Enter Bank Name</Label>
+                  <Input
+                    id="bankname"
+                    type="text"
+                    className="w-full"
+                    ref={banknameRef}
+                  />
+                </div>
+
+                <div className="grid items-center gap-1.5 w-full mt-2">
+                  <Label htmlFor="transactionid">Enter Transaction Id</Label>
+                  <Input
+                    id="transactionid"
+                    type="text"
+                    className="w-full"
+                    ref={transactionRef}
+                  />
+                </div>
+                <div className="mt-2">
+                  <Popover open={startDPop} onOpenChange={setStartDPop}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant={"outline"}
+                        className={`w-full justify-start text-left font-normal ${
+                          !startDate ?? "text-muted-foreground"
+                        }`}
+                      >
+                        <IcBaselineCalendarMonth className="mr-2 h-4 w-4" />
+                        {startDate ? (
+                          format(startDate, "PPP")
+                        ) : (
+                          <span>Transaction date</span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={startDate}
+                        onSelect={(e) => {
+                          setStartDate(e);
+                          setStartDPop(false);
+                        }}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
                 {isPaying ? (
                   <Button
                     disabled
@@ -405,7 +465,7 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
                     onClick={payfees}
                     className="w-full mt-4 bg-[#172e57] hover:bg-[#224688]"
                   >
-                    Pay Rent
+                    Collect Rent
                   </Button>
                 )}
               </>
@@ -416,5 +476,4 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
     </>
   );
 };
-
-export default UserRentDetailsView;
+export default CollectRent;
