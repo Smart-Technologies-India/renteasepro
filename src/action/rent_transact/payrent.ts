@@ -10,12 +10,34 @@ interface PayRentPayload {
   rentid: number[];
   transactionid: string;
   bankname: string;
+  startdate: Date;
+  orderid: string;
 }
 
 const PayRent = async (
   payload: PayRentPayload
 ): Promise<ApiResponseType<rent_transact[] | null>> => {
   try {
+    let gstnumber = await prisma.gstinvoice.findFirst({
+      orderBy: { id: "desc" },
+    });
+
+    if (!gstnumber) {
+      return {
+        status: false,
+        data: null,
+        message:
+          "Something Want wrong unable to get gst number. Please try again.",
+        functionname: "AddOrderId",
+      };
+    }
+
+    await prisma.gstinvoice.create({
+      data: {
+        number: gstnumber?.number + 1,
+      },
+    });
+
     const update_response = await prisma.rent_transact.updateMany({
       where: {
         id: {
@@ -23,11 +45,16 @@ const PayRent = async (
         },
       },
       data: {
+        gstinvoice: gstnumber.number,
         bankname: payload.bankname,
         transactionid: payload.transactionid,
         status: "PAID",
-        transaction_date: new Date(),
-        paymentmode: "CASH",
+        paymentmode: "ONLINE",
+        orderid: payload.orderid,
+        transaction_date: payload.startdate.toISOString(),
+        trackid: `500${gstnumber.number}`,
+        deletedAt: null,
+        remarks: "Success",
       },
     });
 

@@ -34,6 +34,19 @@ import {
   MaterialSymbolsDoNotDisturbOnOutline,
 } from "@/components/icons";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import CloseShop from "@/action/shop/closeshop";
+import { toast } from "react-toastify";
+
 interface ShowShopProps {
   id: number;
 }
@@ -198,6 +211,37 @@ const ShopView = (props: ShowShopProps) => {
     init();
   }, [props.id, userid]);
 
+  const [pendingRentBox, setPendingRentBox] = useState<boolean>(false);
+  const [deleteBox, setDeleteBox] = useState<boolean>(false);
+
+  const closeRent = () => {
+    const newrentdata = rentTransact.filter(
+      (val: rent_transact) => val.status != "DUE"
+    );
+
+    if (newrentdata.length != 0) {
+      setPendingRentBox(true);
+      return;
+    }
+
+    setDeleteBox(true);
+  };
+
+  const deleteRent = async () => {
+    const response = await CloseShop({
+      rentid: rentdata?.id,
+      id: props.id,
+      userid: rentdata!.user.id,
+      currentuser: userid,
+    });
+    if (response.status) {
+      toast.success(response.message);
+      router.back();
+    } else {
+      toast.error(response.message);
+    }
+  };
+
   if (isLoading)
     return (
       <div className="h-screen w-full grid place-items-center text-3xl text-gray-600 bg-gray-200">
@@ -219,12 +263,25 @@ const ShopView = (props: ShowShopProps) => {
                   <>
                     {bid.bid_status == BidStatus.EXPIRED ? (
                       <>
-                        <Link
-                          href={`/dashboard/shops/createbid/${props.id}`}
+                        <button
+                          onClick={() => {
+                            const newrentdata = rentTransact.filter(
+                              (val: rent_transact) => val.status != "DUE"
+                            );
+
+                            if (newrentdata.length != 0) {
+                              setPendingRentBox(true);
+                              return;
+                            }
+
+                            router.push(
+                              `/dashboard/shops/createbid/${props.id}`
+                            );
+                          }}
                           className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                         >
                           Create Bid
-                        </Link>
+                        </button>
                       </>
                     ) : (
                       <>
@@ -251,34 +308,80 @@ const ShopView = (props: ShowShopProps) => {
                         {bid ? (
                           <></>
                         ) : (
-                          <Link
-                            href={`/dashboard/shops/createbid/${props.id}`}
+                          <button
+                            onClick={() => {
+                              const newrentdata = rentTransact.filter(
+                                (val: rent_transact) => val.status != "DUE"
+                              );
+
+                              if (newrentdata.length != 0) {
+                                setPendingRentBox(true);
+                                return;
+                              }
+
+                              router.push(
+                                `/dashboard/shops/createbid/${props.id}`
+                              );
+                            }}
                             className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                           >
                             Create Bid
-                          </Link>
+                          </button>
                         )}
                       </>
                     )}
                   </>
                 ) : (
                   <>
-                    <Link
-                      href={`/dashboard/shops/createbid/${props.id}`}
+                    <button
+                      onClick={() => {
+                        const newrentdata = rentTransact.filter(
+                          (val: rent_transact) => val.status != "DUE"
+                        );
+
+                        if (newrentdata.length != 0) {
+                          setPendingRentBox(true);
+                          return;
+                        }
+
+                        router.push(`/dashboard/shops/createbid/${props.id}`);
+                      }}
                       className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                     >
                       Create Bid
-                    </Link>
+                    </button>
                   </>
                 )}
 
-                {!isrented && (
-                  <Link
-                    href={`/dashboard/shops/createrent/${props.id}`}
+                {!isrented ? (
+                  <button
+                    onClick={() => {
+                      const newrentdata = rentTransact.filter(
+                        (val: rent_transact) => val.status != "DUE"
+                      );
+
+                      if (newrentdata.length != 0) {
+                        setPendingRentBox(true);
+                        return;
+                      }
+
+                      router.push(`/dashboard/shops/createrent/${props.id}`);
+                    }}
                     className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                   >
                     Add Rent
-                  </Link>
+                  </button>
+                ) : new Date(rentdata?.rent_end_date ?? "") < new Date() ? (
+                  <>
+                    <Link
+                      href={`/dashboard/shops/createrent/${props.id}`}
+                      className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                    >
+                      Add Rent
+                    </Link>
+                  </>
+                ) : (
+                  <></>
                 )}
               </>
             )}
@@ -484,9 +587,24 @@ const ShopView = (props: ShowShopProps) => {
       {isrented && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 ">
           <div className="bg-white rounded-sm shadow-sm pb-4">
-            <p className="text-xl p-2 border-b border-gray-300 font-semibold">
-              Tenant Details
-            </p>
+            <div className="flex gap-2 p-2 border-b border-gray-300">
+              <p className="text-xl  font-semibold">Tenant Details</p>
+              <div className="grow"></div>
+              {["ADMIN", "MANAGER", "ACCOUNTANT"].includes(user?.role!) && (
+                <>
+                  {new Date(rentdata?.rent_end_date ?? "") < new Date() ? (
+                    <></>
+                  ) : (
+                    <button
+                      onClick={closeRent}
+                      className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                    >
+                      Close Rent
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
 
             <div className="px-4 py-2 grid grid-cols-2 gap-4 mt-2">
               <p className="text-xs leading-3">
@@ -502,18 +620,37 @@ const ShopView = (props: ShowShopProps) => {
                 </span>
               </p>
             </div>
+            <div className="px-4 py-2 grid grid-cols-2 gap-4">
+              <p className="text-xs leading-3">
+                Rent Status
+                <br />
+                <span className="text-sm text-gray-500 font-medium">
+                  {new Date(rentdata?.rent_end_date ?? "") < new Date()
+                    ? "Ended"
+                    : "Running"}
+                </span>
+              </p>
+            </div>
           </div>
           <div className="bg-white rounded-sm shadow-sm pb-4">
-            <div className="border-b border-gray-300 flex items-center pr-2">
+            <div className="border-b border-gray-300 flex items-center pr-2 gap-2">
               <p className="text-xl p-2  font-semibold">Rent Details</p>
               <div className="grow"></div>
               {["ADMIN", "MANAGER", "ACCOUNTANT"].includes(user?.role!) && (
-                <Link
-                  href={`/dashboard/userrent/history/${rentdata?.id}`}
-                  className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
-                >
-                  Rent History
-                </Link>
+                <>
+                  <Link
+                    href={`/dashboard/userrent/history/${rentdata?.id}`}
+                    className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                  >
+                    Rent History
+                  </Link>
+                  <Link
+                    href={`/dashboard/shops/details/${rentdata?.id}/collectrent`}
+                    className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                  >
+                    Collect Rent
+                  </Link>
+                </>
               )}
               {user?.role! === "USER" && (
                 <Link
@@ -578,6 +715,36 @@ const ShopView = (props: ShowShopProps) => {
             </div>
           </div>
         ))}
+
+      <AlertDialog onOpenChange={setPendingRentBox} open={pendingRentBox}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Pending Rent!</AlertDialogTitle>
+            <AlertDialogDescription>
+              This shop has pending rent. Kindly clear the same to proceed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Close</AlertDialogCancel>
+            {/* <AlertDialogAction>Continue</AlertDialogAction> */}
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog onOpenChange={setDeleteBox} open={deleteBox}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Close Rent!</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure that you want to end the current rent for this shop?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Close</AlertDialogCancel>
+            <AlertDialogAction onClick={deleteRent}>Continue</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
