@@ -763,40 +763,59 @@ const checkpaymentstatus = async () => {
       console.log(obj);
 
       if (obj["status"] == 0) {
-        const gstnumber = await prisma.gstinvoice.findFirst({
-          orderBy: { id: "desc" },
-        });
+        if (
+          obj["order_status"] == "Success" ||
+          obj["order_status"] == "Shipped"
+        ) {
+          const gstnumber = await prisma.gstinvoice.findFirst({
+            orderBy: { id: "desc" },
+          });
 
-        await prisma.gstinvoice.create({
-          data: {
-            number: gstnumber?.number + 1,
-          },
-        });
+          await prisma.gstinvoice.create({
+            data: {
+              number: gstnumber?.number + 1,
+            },
+          });
 
-        console.log({
-          gstinvoice: gstnumber.number,
-          transactionid: obj["order_bank_ref_no"],
-          trackid: obj["reference_no"],
-          status: "PAID",
-          transaction_date: new Date().toISOString(),
-          paymentmode: obj["order_card_name:"].toString().toUpperCase(),
-          remarks: "Success",
-        });
-
-        await prisma.rent_transact.update({
-          where: {
-            id: pending_rent[i].id,
-          },
-          data: {
+          console.log({
             gstinvoice: gstnumber.number,
             transactionid: obj["order_bank_ref_no"],
             trackid: obj["reference_no"],
             status: "PAID",
             transaction_date: new Date().toISOString(),
-            paymentmode: obj["order_card_name:"].toString().toUpperCase(),
+            paymentmode: obj["order_card_name"].toString().toUpperCase(),
             remarks: "Success",
-          },
-        });
+          });
+
+          await prisma.rent_transact.update({
+            where: {
+              id: pending_rent[i].id,
+            },
+            data: {
+              gstinvoice: gstnumber.number,
+              transactionid: obj["order_bank_ref_no"],
+              trackid: obj["reference_no"],
+              status: "PAID",
+              transaction_date: new Date().toISOString(),
+              paymentmode: obj["order_card_name"].toString().toUpperCase(),
+              remarks: "Success",
+            },
+          });
+        } else if (
+          obj["order_status"] == "Awaited" ||
+          obj["order_status"] == "Initiated "
+        ) {
+        } else {
+          await prisma.rent_transact.update({
+            where: {
+              id: pending_rent[i].id,
+            },
+            data: {
+              orderid: null,
+              transaction_date: new Date().toISOString(),
+            },
+          });
+        }
 
         // end
       }
@@ -833,20 +852,39 @@ const checkpaymentstatus = async () => {
       let obj = JSON.parse(ccavResponse);
 
       if (obj["status"] == 0) {
-        updatedata = await prisma.bid_payment.update({
-          where: {
-            id: pending_payment[i].id,
-          },
-          data: {
-            deletedAt: null,
-            transactionid: obj["order_bank_ref_no"],
-            trackid: obj["reference_no"],
-            status: "PAID",
-            transaction_date: new Date().toISOString(),
-            paymentmode: obj["order_card_name:"].toString().toUpperCase(),
-            remarks: "Success",
-          },
-        });
+        if (
+          obj["order_status"] == "Success" ||
+          obj["order_status"] == "Shipped"
+        ) {
+          updatedata = await prisma.bid_payment.update({
+            where: {
+              id: pending_payment[i].id,
+            },
+            data: {
+              deletedAt: null,
+              transactionid: obj["order_bank_ref_no"],
+              trackid: obj["reference_no"],
+              status: "PAID",
+              transaction_date: new Date().toISOString(),
+              paymentmode: obj["order_card_name"].toString().toUpperCase(),
+              remarks: "Success",
+            },
+          });
+        } else if (
+          obj["order_status"] == "Awaited" ||
+          obj["order_status"] == "Initiated "
+        ) {
+        } else {
+          updatedata = await prisma.bid_payment.update({
+            where: {
+              id: pending_payment[i].id,
+            },
+            data: {
+              orderid: null,
+              transaction_date: new Date().toISOString(),
+            },
+          });
+        }
 
         // end
       }
@@ -855,8 +893,7 @@ const checkpaymentstatus = async () => {
 };
 
 // cron.schedule("*/2 * * * * *", async () => {
-  // console.log(process.env.YOUR_BASE_URL);
-
+// console.log(process.env.YOUR_BASE_URL);
 
 // cron.schedule("0 18 * * *", async () => {
 
