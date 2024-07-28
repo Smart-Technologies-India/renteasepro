@@ -895,27 +895,27 @@ const checkpaymentstatus = async () => {
 // cron.schedule("*/2 * * * * *", async () => {
 // console.log(process.env.YOUR_BASE_URL);
 
-// cron.schedule("0 18 * * *", async () => {
+cron.schedule("0 12 * * *", async () => {
 
-//   try {
-//     await checkpaymentstatus();
-//     const response = await axios.post(
-//       `${process.env.YOUR_BASE_URL}/api/services`,
-//       {
-//         headers: {
-//           "Content-Type": "application/json",
-//         },
-//       }
-//     );
-//   } catch (error) {}
-// });
-
-const init = async () => {
   try {
     await checkpaymentstatus();
-  } catch (error) {
-    console.log(error);
-  }
-};
+    const response = await axios.post(
+      `${process.env.YOUR_BASE_URL}/api/services`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  } catch (error) {}
+});
 
-init();
+// const init = async () => {
+//   try {
+//     await checkpaymentstatus();
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+
+// init();
