@@ -855,28 +855,30 @@ const checkpaymentstatus = async () => {
 };
 
 // cron.schedule("*/2 * * * * *", async () => {
-cron.schedule("0 18 * * *", async () => {
   // console.log(process.env.YOUR_BASE_URL);
 
-  try {
-    await checkpaymentstatus();
-    const response = await axios.post(
-      `${process.env.YOUR_BASE_URL}/api/services`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-  } catch (error) {}
-});
 
-// const init = async () => {
+// cron.schedule("0 18 * * *", async () => {
+
 //   try {
 //     await checkpaymentstatus();
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
+//     const response = await axios.post(
+//       `${process.env.YOUR_BASE_URL}/api/services`,
+//       {
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//       }
+//     );
+//   } catch (error) {}
+// });
 
-// init();
+const init = async () => {
+  try {
+    await checkpaymentstatus();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+init();
