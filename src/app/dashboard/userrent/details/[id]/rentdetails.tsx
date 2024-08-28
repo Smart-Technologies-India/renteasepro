@@ -19,8 +19,6 @@ interface UserRentDetailsViewProps {
 }
 
 const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
-  const userid: number = parseInt(getCookie("id") ?? "0");
-
   const [field, setField] = useState<number[]>([]);
   const router = useRouter();
 
@@ -91,87 +89,11 @@ const UserRentDetailsView = (props: UserRentDetailsViewProps) => {
       rentid: field,
       orderid: uniqueid,
     });
+    const name: string = `${rent.user.firstName} ${rent.user.lastName}`;
 
     router.push(
-      `/payamount?xlmnx=${amount}&ynboy=${uniqueid}&zgvfz=${ids}_0_0_rent`
+      `/payamount?xlmnx=${amount}&ynboy=${uniqueid}&zgvfz=${ids}_0_0_rent&name=${name}&email=${rent.user.email}&mobile=${rent.user.contactone}`
     );
-
-    // const rentresponse = await GetRentTran({ id: field[0] });
-    // if (rentresponse.status) {
-    //   router.push(
-    //     `/payamount?xlmnx=${amount}&ynboy=${uniqueid}&zgvfz=${rentresponse.data?.rentId}_${rentresponse.data?.userId}_${rentresponse.data?.shopId}_rent`
-    //   );
-    // }
-    // setLoading(true);
-    // setPaying(true);
-    // if (field.length == 0) {
-    //   toast.error("Please select atleast one month to pay rent");
-    //   setLoading(false);
-    //   setPaying(false);
-    //   return;
-    // }
-
-    // if (!banknameRef.current?.value) {
-    //   toast.error("Please enter bank name");
-    //   setLoading(false);
-    //   setPaying(false);
-    //   return;
-    // }
-
-    // if (!transactionRef.current?.value) {
-    //   toast.error("Please enter transaction id");
-    //   setLoading(false);
-    //   setPaying(false);
-    //   return;
-    // }
-
-    // const payrent_response = await PayRent({
-    //   rentid: field,
-    //   transactionid: transactionRef.current?.value ?? "",
-    //   bankname: banknameRef.current?.value ?? "",
-    // });
-
-    // if (payrent_response.status) {
-    //   toast.success(payrent_response.message);
-    // }
-
-    // const formData = new FormData();
-    // formData.append("file", fileUploader!);
-
-    // const uploadfile = await axios.post(process.env.UPLOAD_LINK!, formData, {
-    //   headers: {
-    //     "Content-Type": "multipart/form-data",
-    //   },
-    // });
-
-    // if (uploadfile.status != 200) {
-    //   toast.error("File upload failed");
-    //   setLoading(false);
-    //   setPaying(false);
-    //   return;
-    // }
-
-    // await UploadFile({
-    //   name: "receipt",
-    //   path: uploadfile.data.filePath,
-    //   createdById: userid,
-    //   rentId: field[0],
-    // });
-
-    // const rentresponse = await GetRent({ id: parseInt(props.id.toString()) });
-    // if (rentresponse.status) {
-    //   setRent(rentresponse.data);
-    // }
-    // const rentTransactresponse = await GetUserRent({ rentid: props.id });
-    // if (rentTransactresponse.status) {
-    //   setRentTransact(rentTransactresponse.data as rent_transact[]);
-    // }
-
-    // setField([]);
-    // setAmount(0);
-    // setLoading(false);
-    // setPaying(false);
-    // return router.push(`/dashboard/rentrecept/${userid}/${props.id}/${field[0]}`);
   };
 
   if (isLoading)

@@ -277,6 +277,12 @@ model user {
   misc_invoice_create misc_invoice[] @relation("misc_invoice_createdBy_userId")
   misc_invoice_update misc_invoice[] @relation("misc_invoice_updatedBy_userId")
   misc_invoice_delete misc_invoice[] @relation("misc_invoice_deletedBy_userId")
+
+  // misc invoice
+  rentclose_create rentclose[] @relation("rentclose_createdBy_userId")
+  rentclose_update rentclose[] @relation("rentclose_updatedBy_userId")
+  rentclose_delete rentclose[] @relation("rentclose_deletedBy_userId")
+  rentclose        rentclose[]
 }
 
 model shop_category {
@@ -378,6 +384,7 @@ model shop {
   rent_transact  rent_transact[]
   bid_payment    bid_payment[]
   demand_node    demand_node[]
+  rentclose      rentclose[]
 
   @@unique([propertyId, shopNumber])
 }
@@ -471,6 +478,7 @@ model rent {
   file_upload         file_upload[]
   corrigendum         corrigendum[]
   rent_sms            rent_sms[]
+  rentclose           rentclose[]
 }
 
 model organization {
@@ -846,4 +854,32 @@ model gstinvoice {
   number    Int      @db.MediumInt
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model rentclose {
+  id               Int                @id @default(autoincrement())
+  fd_amount        Int
+  letoff_amount    Int
+  offline_amount   Int
+  rent             rent               @relation(fields: [rentId], references: [id])
+  rentId           Int
+  user             user               @relation(fields: [userId], references: [id])
+  userId           Int
+  shop             shop               @relation(fields: [shopId], references: [id])
+  shopId           Int
+  transaction_date DateTime           @default(now())
+  paymentmode      String?
+  transactionid    String?
+  bankname         String?
+  remarks          String?            @db.MediumText
+  status           RentTransactStatus @default(INACTIVE)
+  createdAt        DateTime           @default(now())
+  createdBy        user               @relation("rentclose_createdBy_userId", fields: [createdById], references: [id])
+  createdById      Int
+  updatedAt        DateTime           @updatedAt
+  updatedBy        user?              @relation("rentclose_updatedBy_userId", fields: [updatedById], references: [id])
+  updatedById      Int?
+  deletedAt        DateTime?
+  deletedBy        user?              @relation("rentclose_deletedBy_userId", fields: [deletedById], references: [id])
+  deletedById      Int?
 }

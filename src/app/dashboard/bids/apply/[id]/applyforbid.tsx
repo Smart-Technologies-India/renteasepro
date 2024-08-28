@@ -233,28 +233,7 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
     if (!createbid.status) return toast.error(createbid.message);
 
     if (!issecond) {
-      // const formData = new FormData();
-      // formData.append("file", fileUploader!);
-
-      // const uploadfile = await axios.post(process.env.UPLOAD_LINK!, formData, {
-      //   headers: {
-      //     "Content-Type": "multipart/form-data",
-      //   },
-      // });
-
-      // if (uploadfile.status != 200) {
-      //   return toast.error("File upload failed");
-      // }
-
-      // await UploadFile({
-      //   name: "receipt",
-      //   path: uploadfile.data.filePath,
-      //   createdById: userid,
-      //   bidId: createbid.data?.id,
-      // });
-
-      // return router.push(`/dashboard/bidrecept/${userid}/${props.bidid}`);
-      // return router.push(`/dashboard/bidrecept/${userid}/${props.bidid}`);
+    
 
       const amounttopaid: number =
         bid?.is_exemption == true
@@ -265,12 +244,14 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
           : parseInt(bid.fees_amount.toString() ?? "0") +
             parseInt(bid.emd_amount.toString() ?? "0");
 
+      const name: string = `${user.firstName} ${user.lastName}`;
+
       router.push(
         `/payamount?xlmnx=${amounttopaid}&ynboy=${uniqueid}&zgvfz=${parseInt(
           props.bidid.toString()
         )}_${parseInt(userid.toString())}_${bid?.shopId ?? 0}_bid_${
           user.contactone
-        }`
+        }&name=${name}&email=${user.email}&mobile=${user.contactone}`
       );
     } else {
       router.back();
