@@ -298,7 +298,7 @@ const PropertiesDeatils = (props: PropertiesDeatilsProps) => {
     }
   };
   return (
-    <Link href={`/dashboard/shops/details/${props.id}`}>
+    <Link href={`/dashboard/shops/details/${props.id}`} target="_blank">
       <div
         className={`border rounded-md grid place-items-center p-2 min-w-24 `}
       >
