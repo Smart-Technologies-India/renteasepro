@@ -688,7 +688,7 @@ const ViewPdf = (props: ViewPdfProps) => {
                 bottom: "16px",
               }}
             >
-              This is a computer generated receipt and does not required a signature.
+              This is a computer generated receipt and does not require a signature.
             </Text>
           </View>
         </Page>
