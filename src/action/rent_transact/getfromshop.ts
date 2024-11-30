@@ -36,6 +36,9 @@ const GetFromShop = async (
         deletedAt: null,
         deletedBy: null,
       },
+      orderBy: {
+        createdAt: "desc",
+      },
       include: {
         shop: { include: { property: true } },
         rent: true,

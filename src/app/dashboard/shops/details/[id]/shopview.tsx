@@ -184,7 +184,7 @@ const ShopView = (props: ShowShopProps) => {
             setRentData(getrentresponse.data!);
           }
         }
-
+        
         const rentTransactresponse = await GetUserRent({
           rentid: rentresponse.data![0].rentId,
         });
@@ -729,7 +729,10 @@ const ShopView = (props: ShowShopProps) => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Close</AlertDialogCancel>
-            <Link className="bg-black py-2  text-white rounded-lg px-4" href={`/dashboard/shops/details/${rentdata?.id}/settlerent`}>
+            <Link
+              className="bg-black py-2  text-white rounded-lg px-4"
+              href={`/dashboard/shops/details/${rentdata?.id}/settlerent`}
+            >
               Settle Rent
             </Link>
           </AlertDialogFooter>

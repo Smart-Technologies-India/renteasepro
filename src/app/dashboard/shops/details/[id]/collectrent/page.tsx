@@ -6,26 +6,15 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { formateDate } from "@/utils/methods";
 import { rent_transact } from "@prisma/client";
-import { useParams, usePathname, useRouter } from "next/navigation";
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import GetUserRent from "@/action/rent_transact/getuserrent";
 import { customAlphabet } from "nanoid";
 import AddOrderId from "@/action/rent_transact/addorderid";
 import { toast } from "react-toastify";
 import PayRent from "@/action/rent_transact/payrent";
-import { format, setDate } from "date-fns";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { format } from "date-fns";
 
 import {
   Popover,
