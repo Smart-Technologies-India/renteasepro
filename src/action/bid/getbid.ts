@@ -39,6 +39,9 @@ const GetBid = async (
         bidId: parseInt(payload.id.toString() ?? "0"),
         deletedAt: null,
         deletedBy: null,
+        NOT: {
+          status: "REJECTED",
+        },
       },
       include: {
         user: true,
