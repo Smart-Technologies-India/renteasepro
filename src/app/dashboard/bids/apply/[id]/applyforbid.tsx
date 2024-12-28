@@ -233,8 +233,6 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
     if (!createbid.status) return toast.error(createbid.message);
 
     if (!issecond) {
-    
-
       const amounttopaid: number =
         bid?.is_exemption == true
           ? parseInt(bid.fees_amount.toString() ?? "0") -
@@ -800,65 +798,6 @@ const ApplyForBidView = (props: ApplyForBidViewProps) => {
                                     parseInt(bid.emd_amount.toString() ?? "0")}
                               </p>
                             </div>
-
-                            {/* <div className="grid items-center gap-1.5 w-full mt-4">
-                              <Label htmlFor="bankname">Enter Bank Name</Label>
-                              <Input
-                                id="bankname"
-                                type="text"
-                                className="w-full"
-                                ref={banknameRef}
-                              />
-                            </div>
-
-                            <div className="grid items-center gap-1.5 w-full mt-4">
-                              <Label htmlFor="transactionid">
-                                Enter Transaction Id
-                              </Label>
-                              <Input
-                                id="transactionid"
-                                type="text"
-                                className="w-full"
-                                ref={transactionRef}
-                              />
-                            </div>
-
-                            <div className="flex gap-4 mt-4 items-center">
-                              <Label htmlFor="termfile">Upload receipt</Label>
-                              <Button
-                                onClick={() => cFileUploader.current?.click()}
-                                variant={"secondary"}
-                              >
-                                {fileUploader == null
-                                  ? "Upload File"
-                                  : "Change File"}
-                              </Button>
-
-                              {fileUploader != null && (
-                                <Link
-                                  target="_blank"
-                                  href={URL.createObjectURL(fileUploader!)}
-                                  className="bg-gray-100 text-black py-1 px-4 rounded-md text-sm h-10 grid place-items-center"
-                                >
-                                  View File
-                                </Link>
-                              )}
-                              <p className="text-sm">
-                                {fileUploader != null
-                                  ? longtext(fileUploader.name, 20)
-                                  : "No File Selected"}
-                              </p>
-
-                              <div className="hidden">
-                                <Input
-                                  type="file"
-                                  ref={cFileUploader}
-                                  onChange={(val) =>
-                                    handleFileChange(val, setFileUploader)
-                                  }
-                                />
-                              </div>
-                            </div> */}
 
                             {isPaying ? (
                               <Button className="w-full mt-4 bg-[#172e57] hover:bg-[#224688]">
