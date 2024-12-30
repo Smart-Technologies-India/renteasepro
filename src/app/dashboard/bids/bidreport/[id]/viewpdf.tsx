@@ -416,7 +416,7 @@ const ViewPdf = (props: ViewPdfProps) => {
           <Text style={styles.rbottom}>Bid End Date</Text>
           <Text style={styles.mbottom2}>
             {" "}
-            {formateDate(new Date(bid?.bidenddate))}
+            {formatDateTime(new Date(bid?.bidenddate))}
           </Text>
         </View>
         <View style={styles.myflex}>
