@@ -42,7 +42,8 @@ const CreateRentPage = (props: CreateRentProps) => {
   const [startDate, setStartDate] = useState<Date>();
   const [endDate, setEndDate] = useState<Date>();
 
-  const amount = useRef<HTMLInputElement>(null);
+  // const amount = useRef<HTMLInputElement>(null);
+  const [amount, setAmount] = useState<string | null>(null);
   const chargeone = useRef<HTMLInputElement>(null);
   const chargetwo = useRef<HTMLInputElement>(null);
   const chargeThree = useRef<HTMLInputElement>(null);
@@ -78,7 +79,7 @@ const CreateRentPage = (props: CreateRentProps) => {
   const create = async () => {
     setIsCreating(true);
     const result = safeParse(CreateRentSchema, {
-      rent_amount: parseInt(amount.current?.value ?? "0"),
+      rent_amount: parseInt(amount ?? "0"),
       rent_start_date: startDate,
       rent_end_date: endDate,
       due_date: duedate,
@@ -90,7 +91,7 @@ const CreateRentPage = (props: CreateRentProps) => {
         shopId: props.shopid,
         userId: userid,
         createdById: createuserid,
-        rent_amount: parseInt(amount.current?.value ?? "0"),
+        rent_amount: parseInt(amount ?? "0"),
         rent_start_date: startDate!.toLocaleString(),
         rent_end_date: endDate!.toLocaleString(),
         due_date: duedate,
@@ -103,6 +104,7 @@ const CreateRentPage = (props: CreateRentProps) => {
         chargethree: chargeThree.current?.value
           ? parseInt(chargeThree.current?.value)
           : undefined,
+        monthamount: monthAmount,
       });
 
       if (!createrent.status) return toast.error(createrent.message);
@@ -118,6 +120,84 @@ const CreateRentPage = (props: CreateRentProps) => {
       toast.error(errorMessage);
     }
     setIsCreating(false);
+  };
+
+  interface MonthType {
+    isDisable: boolean;
+    amount: string;
+    month: string;
+  }
+
+  const [monthAmount, setMonthAmount] = useState<Array<MonthType>>([]);
+
+  function getMonthsInRange(
+    startYear: number,
+    startMonth: number,
+    endYear: number,
+    endMonth: number
+  ): number[] {
+    const months: number[] = [];
+
+    // Calculate the total number of months between start and end
+    const totalMonths = (endYear - startYear) * 12 + (endMonth - startMonth);
+
+    for (let i = 0; i <= totalMonths; i++) {
+      const currentMonth = (startMonth + i) % 12; // Keep months in the 0-11 range
+      months.push(currentMonth);
+    }
+
+    return months;
+  }
+
+  useEffect(() => {
+    const monthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    if (amount && amount != "0" && amount != "" && startDate && endDate) {
+      const startYear = startDate.getFullYear();
+      const startMonth = startDate.getMonth();
+      const endYear = endDate.getFullYear();
+      const endMonth = endDate.getMonth();
+
+      setMonthAmount(
+        monthNames.map((month, index) => {
+          const RangeValue = getMonthsInRange(
+            startYear,
+            startMonth,
+            endYear,
+            endMonth
+          );
+
+          return {
+            month: month,
+            amount: RangeValue.includes(index) ? amount : "0",
+            isDisable: !RangeValue.includes(index),
+          };
+        })
+      );
+    }
+  }, [amount, startDate, endDate]);
+
+  const handleAmountChange = (index: number, value: string) => {
+    const onlyNumbersRegex = /^[0-9]*$/;
+    if (onlyNumbersRegex.test(value)) {
+      setMonthAmount((prev) =>
+        prev.map((item, idx) =>
+          idx === index ? { ...item, amount: value } : item
+        )
+      );
+    }
   };
 
   if (isLoading)
@@ -167,7 +247,7 @@ const CreateRentPage = (props: CreateRentProps) => {
                   <Button
                     variant={"outline"}
                     className={`w-full justify-start text-left font-normal ${
-                      !startDate ?? "text-muted-foreground"
+                      startDate ?? "text-muted-foreground"
                     }`}
                   >
                     <IcBaselineCalendarMonth className="mr-2 h-4 w-4" />
@@ -200,7 +280,7 @@ const CreateRentPage = (props: CreateRentProps) => {
                   <Button
                     variant={"outline"}
                     className={`w-full justify-start text-left font-normal ${
-                      !endDate ?? "text-muted-foreground"
+                      endDate ?? "text-muted-foreground"
                     }`}
                   >
                     <IcBaselineCalendarMonth className="mr-2 h-4 w-4" />
@@ -235,8 +315,16 @@ const CreateRentPage = (props: CreateRentProps) => {
                 id="amount"
                 type="text"
                 className="w-full bg-gray-100"
-                onChange={handleNumberChange}
-                ref={amount}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  const onlyNumbersRegex = /^[0-9]*$/;
+
+                  const { value } = event.target;
+                  if (onlyNumbersRegex.test(value)) {
+                    // setAmount(event.target.value.slice(0, -1));
+                    setAmount(value);
+                  }
+                }}
+                value={amount ?? ""}
               />
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
@@ -319,6 +407,30 @@ const CreateRentPage = (props: CreateRentProps) => {
               />
             </div>
           </div>
+          {monthAmount.length == 0 ? (
+            <></>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 mt-4 gird ">
+              {monthAmount.map((val: MonthType, index: number) => (
+                <div
+                  key={index}
+                  className="bg-gray-100 rounded-md p-2 flex gap-1 items-center border"
+                >
+                  <p className="w-28">{val.month}</p>
+                  <Input
+                    type="text"
+                    className="w-full bg-gray-white h-8"
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                      handleAmountChange(index, event.target.value)
+                    }
+                    value={val.amount}
+                    disabled={val.isDisable}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
           {isCreating ? (
             <Button
               disabled
@@ -335,6 +447,22 @@ const CreateRentPage = (props: CreateRentProps) => {
             </Button>
           )}
         </div>
+
+        {/* <div className="bg-white rounded-sm shadow-sm p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 mt-4 gird ">
+          {monthNames.map((month: string, index: number) => (
+            <div
+              key={index}
+              className="bg-gray-100 rounded-md p-2 flex gap-1 items-center border"
+            >
+              <p className="w-28">{month}</p>
+              <Input
+                type="text"
+                className="w-full bg-gray-white h-8"
+                onChange={handleNumberChange}
+              />
+            </div>
+          ))}
+        </div> */}
       </div>
     </>
   );

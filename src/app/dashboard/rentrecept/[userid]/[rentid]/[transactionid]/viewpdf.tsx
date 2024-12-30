@@ -1043,7 +1043,7 @@ const ViewPdf = (props: ViewPdfProps) => {
               bottom: "16px",
             }}
           >
-            This is a computer generated statement
+            This is a computer generated invoice and does not require a signature.
           </Text>
         </View>
       </Page>

@@ -25,7 +25,7 @@ interface ViewPdfProps {
 
 const ViewPdf = (props: ViewPdfProps) => {
   const [bid, setBid] = useState<any>();
-  const [bidderList, setBidderList] = useState<any>([]);
+  const [bidderList, setBidderList] = useState<any[] | null>([]);
 
   const [winnder, setWinnder] = useState<any>();
 
@@ -416,7 +416,7 @@ const ViewPdf = (props: ViewPdfProps) => {
           <Text style={styles.rbottom}>Bid End Date</Text>
           <Text style={styles.mbottom2}>
             {" "}
-            {formateDate(new Date(bid?.bidenddate))}
+            {formatDateTime(new Date(bid?.bidenddate))}
           </Text>
         </View>
         <View style={styles.myflex}>
@@ -442,7 +442,7 @@ const ViewPdf = (props: ViewPdfProps) => {
             {bid?.is_sc_st ? "For SC/ST, " : ""}
           </Text>
           <Text style={styles.rbottom}>Bidders Count</Text>
-          <Text style={styles.mbottom2}>{bid?.bidderscount ?? "-"}</Text>
+          <Text style={styles.mbottom2}>{bidderList?.length}</Text>
         </View>
 
         {winnder && (
@@ -485,7 +485,7 @@ const ViewPdf = (props: ViewPdfProps) => {
           <Text style={styles.mtop2}>Remark</Text>
         </View>
 
-        {bidderList.map((bidder: any, index: number) => (
+        {(bidderList ?? []).map((bidder: any, index: number) => (
           <View key={index} style={styles.myflex}>
             <Text
               style={{
@@ -500,7 +500,7 @@ const ViewPdf = (props: ViewPdfProps) => {
                 borderLeft: "1px solid #6b7280",
               }}
             >
-              1
+              {index + 1}
             </Text>
             <Text style={styles.mbottom2}>
               {bidder.user.firstName} {bidder.user.lastName} [
@@ -511,7 +511,11 @@ const ViewPdf = (props: ViewPdfProps) => {
             </Text>
             <Text style={styles.mbottom3}>{bidder.amount ?? "-"}</Text>
             <Text style={styles.mbottom3}>{bidder.status ?? "-"}</Text>
-            <Text style={styles.mbottom2}>{bidder.biddocreason ?? "-"}</Text>
+            <Text style={styles.mbottom2}>
+              {bidder.rejectedreason
+                ? bidder.rejectedreason
+                : bidder.biddocreason ?? "-"}
+            </Text>
           </View>
         ))}
 

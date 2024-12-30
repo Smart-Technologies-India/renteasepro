@@ -5,6 +5,7 @@ import { ApiResponseType } from "@/models/response";
 import prisma from "../../../prisma/database";
 import { rent_transact } from "@prisma/client";
 import { SMSType, sendSMS } from "@/utils/smsmessage";
+import { customAlphabet } from "nanoid";
 
 interface PayRentPayload {
   rentid: number[];
@@ -18,6 +19,9 @@ const PayRent = async (
   payload: PayRentPayload
 ): Promise<ApiResponseType<rent_transact[] | null>> => {
   try {
+    const nanoid = customAlphabet("123456789", 6);
+
+    const uniqueid = nanoid();
     let gstnumber = await prisma.gstinvoice.findFirst({
       orderBy: { id: "desc" },
     });
@@ -47,14 +51,14 @@ const PayRent = async (
       data: {
         gstinvoice: gstnumber.number,
         bankname: payload.bankname,
-        transactionid: payload.transactionid,
+        transactionid: `${uniqueid}111${gstnumber.number}`,
         status: "PAID",
         paymentmode: "ONLINE",
         orderid: payload.orderid,
         transaction_date: payload.startdate.toISOString(),
         trackid: `500${gstnumber.number}`,
         deletedAt: null,
-        remarks: "Success",
+        remarks: payload.transactionid,
       },
     });
 

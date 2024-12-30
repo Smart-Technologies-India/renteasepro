@@ -38,6 +38,9 @@ const GetBidByShop = async (
         bidId: bid.id,
         deletedAt: null,
         deletedBy: null,
+        NOT: {
+          status: "REJECTED",
+        },
       },
       orderBy: {
         amount: "desc",

@@ -13,13 +13,14 @@ import { customAlphabet } from "nanoid";
 import GetUserRent from "@/action/rent_transact/getuserrent";
 import GetPandingRentShopByUserId from "@/action/rent/getpadingrentshopbyuserid";
 import AddOrderId from "@/action/rent_transact/addorderid";
+import GetUser from "@/action/user/getuser";
 
 const BidPropertiesView = () => {
   const [isLoading, setIsLoading] = useState(true);
   const userid: number = parseInt(getCookie("id") ?? "0");
   const router = useRouter();
 
-  // const [user, setUser] = useState<user>();
+  const [user, setUser] = useState<user>();
 
   const [shops, setShops] = useState<shop[]>([]);
 
@@ -52,10 +53,10 @@ const BidPropertiesView = () => {
       if (!isprofilecompleted.status) {
         return router.push("/dashboard/userprofile/edit");
       }
-      // const userresponse = await GetUser({ id: userid });
-      // if (userresponse.status) {
-      //   setUser(userresponse.data!);
-      // }
+      const userresponse = await GetUser({ id: userid });
+      if (userresponse.status) {
+        setUser(userresponse.data!);
+      }
 
       const rent_transaction = await GetPandingRentShopByUserId({
         userid: userid,
@@ -128,6 +129,9 @@ const BidPropertiesView = () => {
               <ShowShops
                 shops={filtershop}
                 name={capitalcase(selectedCategory) + " Shops"}
+                username={`${user?.firstName!} ${user?.lastName!}`}
+                email={user?.email!}
+                mobile={user?.contactone!}
               />
             </div>
           </div>
@@ -141,7 +145,13 @@ const BidPropertiesView = () => {
 
 export default BidPropertiesView;
 
-const ShowShops = (props: { shops: shop[]; name: string }) => {
+const ShowShops = (props: {
+  shops: shop[];
+  name: string;
+  username: string;
+  mobile: string;
+  email: string;
+}) => {
   const count = 20;
   const [skip, setSkip] = useState(0);
   const [shop, setShop] = useState<shop[]>(props.shops.slice(0, count));
@@ -207,6 +217,9 @@ const ShowShops = (props: { shops: shop[]; name: string }) => {
               count={item.shopNumber}
               field={ids}
               amount={amount}
+              username={props.username}
+              email={props.email}
+              mobile={props.mobile}
             />
           );
         })}
@@ -221,6 +234,9 @@ interface PropertiesDeatilsProps {
   id: string;
   amount: number;
   field: string[];
+  email: string;
+  username: string;
+  mobile: string;
 }
 
 const PropertiesDeatils = (props: PropertiesDeatilsProps) => {
@@ -259,7 +275,7 @@ const PropertiesDeatils = (props: PropertiesDeatilsProps) => {
           orderid: uniqueid,
         });
         router.push(
-          `/payamount?xlmnx=${props.amount}&ynboy=${uniqueid}&zgvfz=${ids}_0_0_rent`
+          `/payamount?xlmnx=${props.amount}&ynboy=${uniqueid}&zgvfz=${ids}_0_0_rent&name=${props.username}&email=${props.email}&mobile=${props.mobile}`
         );
       }}
     >

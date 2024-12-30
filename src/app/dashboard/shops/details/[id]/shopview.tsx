@@ -184,7 +184,7 @@ const ShopView = (props: ShowShopProps) => {
             setRentData(getrentresponse.data!);
           }
         }
-
+        
         const rentTransactresponse = await GetUserRent({
           rentid: rentresponse.data![0].rentId,
         });
@@ -590,6 +590,9 @@ const ShopView = (props: ShowShopProps) => {
             <div className="flex gap-2 p-2 border-b border-gray-300">
               <p className="text-xl  font-semibold">Tenant Details</p>
               <div className="grow"></div>
+
+              {/* <p>{new Date(rentdata?.rent_end_date ?? "").toLocaleString()}</p>
+              <p>{new Date().toLocaleString()}</p> */}
               {["ADMIN", "MANAGER", "ACCOUNTANT"].includes(user?.role!) && (
                 <>
                   {new Date(rentdata?.rent_end_date ?? "") < new Date() ? (
@@ -726,7 +729,12 @@ const ShopView = (props: ShowShopProps) => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Close</AlertDialogCancel>
-            {/* <AlertDialogAction>Continue</AlertDialogAction> */}
+            <Link
+              className="bg-black py-2  text-white rounded-lg px-4"
+              href={`/dashboard/shops/details/${rentdata?.id}/settlerent`}
+            >
+              Settle Rent
+            </Link>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

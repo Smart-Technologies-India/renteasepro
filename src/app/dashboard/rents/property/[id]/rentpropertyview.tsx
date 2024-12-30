@@ -1,7 +1,6 @@
 "use client";
 
 import GetProperty from "@/action/property/getproperty";
-import getShopsByStatus from "@/action/shop/getshopbystatus";
 import GetShopsByProperty from "@/action/shop/getshopfromproperty";
 import { LucideArrowBigLeft, LucideArrowBigRight } from "@/components/icons";
 import { capitalcase, removeDuplicates } from "@/utils/methods";
@@ -219,7 +218,7 @@ const PropertiesDeatils = (props: PropertiesDeatilsProps) => {
     }
   };
   return (
-    <Link href={`/dashboard/shops/details/${props.id}`}>
+    <Link href={`/dashboard/shops/details/${props.id}`} target="_blank">
       <div
         className={`border rounded-md grid place-items-center p-2 min-w-24 `}
       >

@@ -5,6 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 importers:
 =======
 dependencies:
@@ -159,6 +160,9 @@ dependencies:
     specifier: ^0.9.0
     version: 0.9.0(@types/react-dom@18.2.21)(@types/react@18.2.65)(react-dom@18.2.0)(react@18.2.0)
 >>>>>>> refs/remotes/origin/master
+=======
+importers:
+>>>>>>> d2459a4bfa15c5e1ee2dda8afeea9540a91e1ed1
 
   .:
     dependencies:
@@ -267,6 +271,12 @@ dependencies:
       next:
         specifier: 14.1.3
         version: 14.1.3(react-dom@18.2.0)(react@18.2.0)
+<<<<<<< HEAD
+=======
+      node-cron:
+        specifier: ^3.0.3
+        version: 3.0.3
+>>>>>>> d2459a4bfa15c5e1ee2dda8afeea9540a91e1ed1
       querystring:
         specifier: ^0.2.1
         version: 0.2.1
@@ -2686,6 +2696,13 @@ packages:
   node-addon-api@5.1.0:
     resolution: {integrity: sha512-eh0GgfEkpnoWDq+VY8OyvYhFEzBk6jIYbRKdIlyTiAXIVJ8PyBaKb0rp7oDtoddbdoHWhq8wwr+XZ81F1rpNdA==}
 
+<<<<<<< HEAD
+=======
+  node-cron@3.0.3:
+    resolution: {integrity: sha512-dOal67//nohNgYWb+nWmg5dkFdIwDm8EpeGYMekPMrngV3637lqnX0lbUcCtgibHTz6SEz7DAIjKvKDFYCnO1A==}
+    engines: {node: '>=6.0.0'}
+
+>>>>>>> d2459a4bfa15c5e1ee2dda8afeea9540a91e1ed1
   node-fetch@2.7.0:
     resolution: {integrity: sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==}
     engines: {node: 4.x || >=6.0.0}
@@ -3708,6 +3725,13 @@ packages:
     resolution: {integrity: sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==}
     engines: {node: '>= 0.4.0'}
 
+<<<<<<< HEAD
+=======
+  uuid@8.3.2:
+    resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
+    hasBin: true
+
+>>>>>>> d2459a4bfa15c5e1ee2dda8afeea9540a91e1ed1
   v8-compile-cache-lib@3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
 
@@ -6452,15 +6476,19 @@ snapshots:
   node-addon-api@5.1.0: {}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   node-fetch@2.7.0:
 =======
   /node-cron@3.0.3:
     resolution: {integrity: sha512-dOal67//nohNgYWb+nWmg5dkFdIwDm8EpeGYMekPMrngV3637lqnX0lbUcCtgibHTz6SEz7DAIjKvKDFYCnO1A==}
     engines: {node: '>=6.0.0'}
+=======
+  node-cron@3.0.3:
+>>>>>>> d2459a4bfa15c5e1ee2dda8afeea9540a91e1ed1
     dependencies:
       uuid: 8.3.2
-    dev: false
 
+<<<<<<< HEAD
   /node-fetch@2.7.0:
     resolution: {integrity: sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==}
     engines: {node: 4.x || >=6.0.0}
@@ -6470,6 +6498,9 @@ snapshots:
       encoding:
         optional: true
 >>>>>>> refs/remotes/origin/master
+=======
+  node-fetch@2.7.0:
+>>>>>>> d2459a4bfa15c5e1ee2dda8afeea9540a91e1ed1
     dependencies:
       whatwg-url: 5.0.0
 
@@ -7667,6 +7698,7 @@ snapshots:
   utils-merge@1.0.1: {}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   v8-compile-cache-lib@3.0.1: {}
 =======
   /uuid@8.3.2:
@@ -7677,6 +7709,11 @@ snapshots:
   /v8-compile-cache-lib@3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
 >>>>>>> refs/remotes/origin/master
+=======
+  uuid@8.3.2: {}
+
+  v8-compile-cache-lib@3.0.1: {}
+>>>>>>> d2459a4bfa15c5e1ee2dda8afeea9540a91e1ed1
 
   valibot@0.30.0: {}
 

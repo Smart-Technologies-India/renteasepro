@@ -48,6 +48,25 @@ const ApplyBid = async (
         functionname: "ApplyBid",
       };
 
+    if (payload.issecond) {
+      const bid_transactresponse_update_res = await prisma.bid_transact.update({
+        where: {
+          id: bid_transactresponse.id,
+        },
+        data: {
+          deletedAt: null,
+        },
+      });
+
+      if (!bid_transactresponse_update_res)
+        return {
+          status: false,
+          data: null,
+          message: "User bid transaction failed. Please try again later.",
+          functionname: "ApplyBid",
+        };
+    }
+
     if (!payload.issecond) {
       const year = new Date().getFullYear();
       const name = bid_transactresponse.bid.is_auction ? "AUCTION" : "TENDER";
@@ -114,22 +133,6 @@ const ApplyBid = async (
         });
       }
     }
-
-    // const messageresponse = await sendSMS({
-    //   type: SMSType.NewBidSubmitted,
-    //   contact: bid_transactresponse.user.contactone!,
-    // });
-
-    // if (!messageresponse.status) {
-    //   return {
-    //     status: false,
-    //     data: null,
-    //     message: messageresponse.message,
-    //     functionname: "ApplyBid",
-    //   };
-    // }
-
-    // if higher bid then send sms to all lower bid user
 
     if (bid_transactresponse.bid.is_auction) {
       const lowerbidusers = await prisma.bid_transact.findMany({

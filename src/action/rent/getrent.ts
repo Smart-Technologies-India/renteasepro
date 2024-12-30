@@ -2,7 +2,7 @@
 
 import { errorToString } from "@/utils/methods";
 import { ApiResponseType } from "@/models/response";
-import { rent } from "@prisma/client";
+import { rent, rent_transact, shop, user } from "@prisma/client";
 import prisma from "../../../prisma/database";
 
 interface GetRentPayload {
@@ -11,7 +11,11 @@ interface GetRentPayload {
 
 const GetRent = async (
   payload: GetRentPayload
-): Promise<ApiResponseType<rent | null>> => {
+): Promise<
+  ApiResponseType<
+    (rent & { shop: shop; user: user; rent_transact: rent_transact[] }) | null
+  >
+> => {
   try {
     const rent_respone = await prisma.rent.findFirst({
       where: {

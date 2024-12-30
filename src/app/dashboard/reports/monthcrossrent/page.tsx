@@ -80,6 +80,7 @@ const ShopBidHistoryView = () => {
                   <TableCell>{bid.status}</TableCell>
                   <TableCell className="text-right">
                     <Link
+                      target="_blank"
                       href={`/dashboard/shops/details/${bid.shop.id}`}
                       className="bg-green-500 hover:bg-green-500 py-1 px-4 rounded-md text-white"
                     >

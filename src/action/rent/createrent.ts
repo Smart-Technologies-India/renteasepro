@@ -6,6 +6,12 @@ import prisma from "../../../prisma/database";
 import { SMSStatus, rent } from "@prisma/client";
 import { SMSType, sendSMS } from "@/utils/smsmessage";
 
+interface MonthType {
+  isDisable: boolean;
+  amount: string;
+  month: string;
+}
+
 interface CreateRentPayload {
   shopId: number;
   userId: number;
@@ -18,6 +24,7 @@ interface CreateRentPayload {
   chargeone?: number;
   chargetwo?: number;
   chargethree?: number;
+  monthamount: Array<MonthType>;
 }
 
 const CreateRent = async (
@@ -95,11 +102,12 @@ const CreateRent = async (
             payload.rent_end_date.toString().split(",")[0] + "Z"
           ),
           due_date: payload.due_date,
-          rent_amount: payload.rent_amount,
+          // rent_amount: payload.rent_amount,
           rent_id: rent.id,
           userId: payload.userId,
           createdById: payload.createdById,
           shopId: payload.shopId,
+          amount_month: payload.monthamount,
         });
         if (!rentmonth) {
           return {
@@ -169,7 +177,7 @@ const CreateRent = async (
           payload.rent_end_date.toString().split(",")[0] + "Z"
         ),
         due_date: payload.due_date,
-        rent_amount: payload.rent_amount,
+        amount_month: payload.monthamount,
         rent_id: rent.id,
         userId: payload.userId,
         createdById: payload.createdById,
@@ -231,19 +239,35 @@ interface CreateRentTransactionPayload {
   start_date: Date;
   end_date: Date;
   due_date: number;
-  rent_amount: number;
+  // rent_amount: number;
   rent_id: number;
   userId: number;
   createdById: number;
   shopId: number;
+  amount_month: MonthType[];
 }
 const createRentTransaction = async (
   props: CreateRentTransactionPayload
 ): Promise<boolean> => {
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
   // create month array from start date to end date inclue due date
   let start_date = new Date(new Date(props.start_date).setDate(props.due_date));
   let end_date = new Date(new Date(props.end_date).setDate(props.due_date));
 
+  console.log(props.amount_month);
   let months = [];
 
   // i need month between start date and end date
@@ -258,14 +282,21 @@ const createRentTransaction = async (
   }
 
   for (let i = 0; i < months.length; i++) {
-    const month = months[i];
+    const month: Date = months[i];
+
+    console.log(month);
+
+    const amounts: MonthType[] = props.amount_month.filter(
+      (val: MonthType) => val.month == monthNames[month.getMonth()]
+    );
+
     const create_rent_transaction = await prisma.rent_transact.create({
       data: {
         rentId: props.rent_id,
         userId: props.userId,
         createdById: props.createdById,
         shopId: props.shopId,
-        amount: props.rent_amount,
+        amount: parseInt(amounts[0].amount),
         formonth: month,
         status: "INACTIVE",
       },
