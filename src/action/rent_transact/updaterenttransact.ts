@@ -389,217 +389,217 @@ function getAlgorithm(keyBase64: string) {
   // throw new Error("Invalid key length: " + key.length);
 }
 
-const encrypt = (plainText: string, keyBase64: string, ivBase64: string) => {
-  const key = Buffer.from(keyBase64, "base64");
-  const iv = Buffer.from(ivBase64, "base64");
+// const encrypt = (plainText: string, keyBase64: string, ivBase64: string) => {
+//   const key = Buffer.from(keyBase64, "base64");
+//   const iv = Buffer.from(ivBase64, "base64");
 
-  const cipher = crypto.createCipheriv(
-    getAlgorithm(keyBase64),
-    new Uint8Array(key),
-    new Uint8Array(iv)
-  );
-  let encrypted = cipher.update(plainText, "utf8", "hex");
-  encrypted += cipher.final("hex");
-  return encrypted;
-};
+//   const cipher = crypto.createCipheriv(
+//     getAlgorithm(keyBase64),
+//     new Uint8Array(key),
+//     new Uint8Array(iv)
+//   );
+//   let encrypted = cipher.update(plainText, "utf8", "hex");
+//   encrypted += cipher.final("hex");
+//   return encrypted;
+// };
 
-const decrypt = (
-  messagebase64: string,
-  keyBase64: string,
-  ivBase64: string
-) => {
-  const key = Buffer.from(keyBase64, "base64");
-  const iv = Buffer.from(ivBase64, "base64");
+// const decrypt = (
+//   messagebase64: string,
+//   keyBase64: string,
+//   ivBase64: string
+// ) => {
+//   const key = Buffer.from(keyBase64, "base64");
+//   const iv = Buffer.from(ivBase64, "base64");
 
-  const decipher = crypto.createDecipheriv(
-    getAlgorithm(keyBase64),
-    new Uint8Array(key),
-    new Uint8Array(iv)
-  );
+//   const decipher = crypto.createDecipheriv(
+//     getAlgorithm(keyBase64),
+//     new Uint8Array(key),
+//     new Uint8Array(iv)
+//   );
 
-  let decrypted = decipher.update(messagebase64, "hex");
-  decrypted += decipher.final();
-  return decrypted;
-};
+//   let decrypted = decipher.update(messagebase64, "hex");
+//   decrypted += decipher.final();
+//   return decrypted;
+// };
 
-const checkpaymentstatus = async () => {
-  var workingKey = "370F518A36775EFEA425EB27C8DC0CC6", //Put in the 32-Bit key shared by CCAvenues.
-    accessCode = "AVHK88LE92BW69KHWB", //Put in the Access Code shared by CCAvenues.
-    encRequest = "";
+// const checkpaymentstatus = async () => {
+//   var workingKey = "370F518A36775EFEA425EB27C8DC0CC6", //Put in the 32-Bit key shared by CCAvenues.
+//     accessCode = "AVHK88LE92BW69KHWB", //Put in the Access Code shared by CCAvenues.
+//     encRequest = "";
 
-  //Generate Md5 hash for the key and then convert in base64 string
-  var md5: Buffer = crypto.createHash("md5").update(workingKey).digest();
-  var keyBase64 = md5.toString("base64");
+//   //Generate Md5 hash for the key and then convert in base64 string
+//   var md5: Buffer = crypto.createHash("md5").update(workingKey).digest();
+//   var keyBase64 = md5.toString("base64");
 
-  //Initializing Vector and then convert in base64 string
-  var ivBase64: string = Buffer.from([
-    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b,
-    0x0c, 0x0d, 0x0e, 0x0f,
-  ]).toString("base64");
+//   //Initializing Vector and then convert in base64 string
+//   var ivBase64: string = Buffer.from([
+//     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b,
+//     0x0c, 0x0d, 0x0e, 0x0f,
+//   ]).toString("base64");
 
-  // const datatosend = {
-  //   reference_no: "419311038953",
-  // };
+//   // const datatosend = {
+//   //   reference_no: "419311038953",
+//   // };
 
-  const pending_rent = await prisma.rent_transact.findMany({
-    where: {
-      deletedAt: null,
-      deletedBy: null,
-      orderid: {
-        not: null,
-      },
-      trackid: null,
-    },
-  });
-  console.log(pending_rent.length);
-  console.log(pending_rent);
+//   const pending_rent = await prisma.rent_transact.findMany({
+//     where: {
+//       deletedAt: null,
+//       deletedBy: null,
+//       orderid: {
+//         not: null,
+//       },
+//       trackid: null,
+//     },
+//   });
+//   console.log(pending_rent.length);
+//   console.log(pending_rent);
 
-  if (pending_rent.length > 0) {
-    for (let i = 0; i < pending_rent.length; i++) {
-      encRequest = encrypt(
-        `{order_no:'${pending_rent[i].orderid}'}`,
-        keyBase64,
-        ivBase64
-      );
+//   if (pending_rent.length > 0) {
+//     for (let i = 0; i < pending_rent.length; i++) {
+//       encRequest = encrypt(
+//         `{order_no:'${pending_rent[i].orderid}'}`,
+//         keyBase64,
+//         ivBase64
+//       );
 
-      const result = await axios.post(
-        `https://api.ccavenue.com/apis/servlet/DoWebTrans?access_code=${accessCode}&command=orderStatusTracker&request_type=JSON&response_type=JSON&version=1.2&enc_request=${encRequest}`
-      );
+//       const result = await axios.post(
+//         `https://api.ccavenue.com/apis/servlet/DoWebTrans?access_code=${accessCode}&command=orderStatusTracker&request_type=JSON&response_type=JSON&version=1.2&enc_request=${encRequest}`
+//       );
 
-      let enc_code = result.data.toString().split("=").pop();
+//       let enc_code = result.data.toString().split("=").pop();
 
-      let ccavResponse = decrypt(enc_code, keyBase64, ivBase64);
-      console.log(ccavResponse);
+//       let ccavResponse = decrypt(enc_code, keyBase64, ivBase64);
+//       console.log(ccavResponse);
 
-      let obj = JSON.parse(ccavResponse);
-      console.log(obj);
+//       let obj = JSON.parse(ccavResponse);
+//       console.log(obj);
 
-      if (obj["status"] == 0) {
-        if (
-          obj["order_status"] == "Success" ||
-          obj["order_status"] == "Shipped"
-        ) {
-          const gstnumber = await prisma.gstinvoice.findFirst({
-            orderBy: { id: "desc" },
-          });
+//       if (obj["status"] == 0) {
+//         if (
+//           obj["order_status"] == "Success" ||
+//           obj["order_status"] == "Shipped"
+//         ) {
+//           const gstnumber = await prisma.gstinvoice.findFirst({
+//             orderBy: { id: "desc" },
+//           });
 
-          await prisma.gstinvoice.create({
-            data: {
-              number: gstnumber?.number + 1,
-            },
-          });
+//           await prisma.gstinvoice.create({
+//             data: {
+//               number: gstnumber?.number + 1,
+//             },
+//           });
 
-          console.log({
-            gstinvoice: gstnumber.number,
-            transactionid: obj["order_bank_ref_no"],
-            trackid: obj["reference_no"],
-            status: "PAID",
-            transaction_date: new Date().toISOString(),
-            paymentmode: obj["order_card_name"].toString().toUpperCase(),
-            remarks: "Success",
-          });
+//           console.log({
+//             gstinvoice: gstnumber.number,
+//             transactionid: obj["order_bank_ref_no"],
+//             trackid: obj["reference_no"],
+//             status: "PAID",
+//             transaction_date: new Date().toISOString(),
+//             paymentmode: obj["order_card_name"].toString().toUpperCase(),
+//             remarks: "Success",
+//           });
 
-          await prisma.rent_transact.update({
-            where: {
-              id: pending_rent[i].id,
-            },
-            data: {
-              gstinvoice: gstnumber.number,
-              transactionid: obj["order_bank_ref_no"],
-              trackid: obj["reference_no"],
-              status: "PAID",
-              transaction_date: new Date().toISOString(),
-              paymentmode: obj["order_card_name"].toString().toUpperCase(),
-              remarks: "Success",
-            },
-          });
-        } else if (
-          obj["order_status"] == "Awaited" ||
-          obj["order_status"] == "Initiated "
-        ) {
-        } else {
-          await prisma.rent_transact.update({
-            where: {
-              id: pending_rent[i].id,
-            },
-            data: {
-              orderid: null,
-              transaction_date: new Date().toISOString(),
-            },
-          });
-        }
+//           await prisma.rent_transact.update({
+//             where: {
+//               id: pending_rent[i].id,
+//             },
+//             data: {
+//               gstinvoice: gstnumber.number,
+//               transactionid: obj["order_bank_ref_no"],
+//               trackid: obj["reference_no"],
+//               status: "PAID",
+//               transaction_date: new Date().toISOString(),
+//               paymentmode: obj["order_card_name"].toString().toUpperCase(),
+//               remarks: "Success",
+//             },
+//           });
+//         } else if (
+//           obj["order_status"] == "Awaited" ||
+//           obj["order_status"] == "Initiated "
+//         ) {
+//         } else {
+//           await prisma.rent_transact.update({
+//             where: {
+//               id: pending_rent[i].id,
+//             },
+//             data: {
+//               orderid: null,
+//               transaction_date: new Date().toISOString(),
+//             },
+//           });
+//         }
 
-        // end
-      }
-    }
-  }
+//         // end
+//       }
+//     }
+//   }
 
-  const pending_payment = await prisma.bid_payment.findMany({
-    where: {
-      deletedAt: null,
-      deletedBy: null,
-      orderid: {
-        not: null,
-      },
-      trackid: null,
-    },
-  });
+//   const pending_payment = await prisma.bid_payment.findMany({
+//     where: {
+//       deletedAt: null,
+//       deletedBy: null,
+//       orderid: {
+//         not: null,
+//       },
+//       trackid: null,
+//     },
+//   });
 
-  if (pending_payment.length > 0) {
-    for (let i = 0; i < pending_payment.length; i++) {
-      encRequest = encrypt(
-        `{order_no:'${pending_payment[i].orderid}'}`,
-        keyBase64,
-        ivBase64
-      );
+//   if (pending_payment.length > 0) {
+//     for (let i = 0; i < pending_payment.length; i++) {
+//       encRequest = encrypt(
+//         `{order_no:'${pending_payment[i].orderid}'}`,
+//         keyBase64,
+//         ivBase64
+//       );
 
-      const result = await axios.post(
-        `https://api.ccavenue.com/apis/servlet/DoWebTrans?access_code=${accessCode}&command=orderStatusTracker&request_type=JSON&response_type=JSON&version=1.2&enc_request=${encRequest}`
-      );
+//       const result = await axios.post(
+//         `https://api.ccavenue.com/apis/servlet/DoWebTrans?access_code=${accessCode}&command=orderStatusTracker&request_type=JSON&response_type=JSON&version=1.2&enc_request=${encRequest}`
+//       );
 
-      let enc_code = result.data.toString().split("=").pop();
+//       let enc_code = result.data.toString().split("=").pop();
 
-      let ccavResponse = decrypt(enc_code, keyBase64, ivBase64);
+//       let ccavResponse = decrypt(enc_code, keyBase64, ivBase64);
 
-      let obj = JSON.parse(ccavResponse);
+//       let obj = JSON.parse(ccavResponse);
 
-      if (obj["status"] == 0) {
-        if (
-          obj["order_status"] == "Success" ||
-          obj["order_status"] == "Shipped"
-        ) {
-          updatedata = await prisma.bid_payment.update({
-            where: {
-              id: pending_payment[i].id,
-            },
-            data: {
-              deletedAt: null,
-              transactionid: obj["order_bank_ref_no"],
-              trackid: obj["reference_no"],
-              status: "PAID",
-              transaction_date: new Date().toISOString(),
-              paymentmode: obj["order_card_name"].toString().toUpperCase(),
-              remarks: "Success",
-            },
-          });
-        } else if (
-          obj["order_status"] == "Awaited" ||
-          obj["order_status"] == "Initiated "
-        ) {
-        } else {
-          updatedata = await prisma.bid_payment.update({
-            where: {
-              id: pending_payment[i].id,
-            },
-            data: {
-              orderid: null,
-              transaction_date: new Date().toISOString(),
-            },
-          });
-        }
+//       if (obj["status"] == 0) {
+//         if (
+//           obj["order_status"] == "Success" ||
+//           obj["order_status"] == "Shipped"
+//         ) {
+//           updatedata = await prisma.bid_payment.update({
+//             where: {
+//               id: pending_payment[i].id,
+//             },
+//             data: {
+//               deletedAt: null,
+//               transactionid: obj["order_bank_ref_no"],
+//               trackid: obj["reference_no"],
+//               status: "PAID",
+//               transaction_date: new Date().toISOString(),
+//               paymentmode: obj["order_card_name"].toString().toUpperCase(),
+//               remarks: "Success",
+//             },
+//           });
+//         } else if (
+//           obj["order_status"] == "Awaited" ||
+//           obj["order_status"] == "Initiated "
+//         ) {
+//         } else {
+//           updatedata = await prisma.bid_payment.update({
+//             where: {
+//               id: pending_payment[i].id,
+//             },
+//             data: {
+//               orderid: null,
+//               transaction_date: new Date().toISOString(),
+//             },
+//           });
+//         }
 
-        // end
-      }
-    }
-  }
-};
+//         // end
+//       }
+//     }
+//   }
+// };
