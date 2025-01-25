@@ -107,9 +107,12 @@ const CreateRentPage = (props: CreateRentProps) => {
         monthamount: monthAmount,
       });
 
-      if (!createrent.status) return toast.error(createrent.message);
+      if (!(createrent.status && createrent.data))
+        return toast.error(createrent.message);
+
       toast.success("Shop rent created successfully");
-      router.back();
+      // router.back();
+      router.push(`/dashboard/shops/collectrent/${createrent.data.id}`);
     } else {
       let errorMessage = "";
       if (result.issues[0].input) {

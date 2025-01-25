@@ -541,7 +541,7 @@ const CreateBidPage = (props: CreateBidPageProps) => {
                   <Button
                     variant={"outline"}
                     className={`w-full justify-start text-left font-normal ${
-                      !startDate ?? "text-muted-foreground"
+                      startDate ?? "text-muted-foreground"
                     }`}
                   >
                     <IcBaselineCalendarMonth className="mr-2 h-4 w-4" />
@@ -561,7 +561,10 @@ const CreateBidPage = (props: CreateBidPageProps) => {
                       setStartDPop(false);
                     }}
                     initialFocus
-                    disabled={(date) => date < new Date() || endDate! <= date}
+                    disabled={(date) =>
+                      date < new Date(new Date().setHours(0, 0, 0, 0)) ||
+                      endDate! <= date
+                    }
                   />
                 </PopoverContent>
               </Popover>
@@ -593,7 +596,7 @@ const CreateBidPage = (props: CreateBidPageProps) => {
                   <Button
                     variant={"outline"}
                     className={`w-full justify-start text-left font-normal ${
-                      !endDate ?? "text-muted-foreground"
+                      endDate ?? "text-muted-foreground"
                     }`}
                   >
                     <IcBaselineCalendarMonth className="mr-2 h-4 w-4" />

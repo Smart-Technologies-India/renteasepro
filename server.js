@@ -605,7 +605,10 @@ const storage = multer.diskStorage({
 // file storage configuration end here
 
 // Create multer instance with defined storage
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 25 * 1024 * 1024 },
+});
 
 app.prepare().then(() => {
   const server = express();
