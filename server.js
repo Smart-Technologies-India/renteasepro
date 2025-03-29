@@ -659,22 +659,19 @@ app.prepare().then(() => {
 
     let enc_code = result.data.toString().split("=").pop();
 
-    console.log(result.data);
-    console.log(enc_code);
-
     let ccavResponse = decrypt(enc_code, keyBase64, ivBase64);
 
-    console.log(ccavResponse);
+    // console.log(ccavResponse);
     let obj = JSON.parse(ccavResponse);
-    console.log(obj);
+    // console.log(obj);
 
-    console.log(obj["status"]);
+    // console.log(obj["status"]);
 
-    if (obj["status"] == 0) {
-      console.log("working");
-    } else {
-      console.log("not working");
-    }
+    // if (obj["status"] == 0) {
+    //   console.log("working");
+    // } else {
+    //   console.log("not working");
+    // }
 
     response.end();
   });
@@ -745,8 +742,6 @@ const checkpaymentstatus = async () => {
       trackid: null,
     },
   });
-  console.log(pending_rent.length);
-  console.log(pending_rent);
 
   if (pending_rent.length > 0) {
     for (let i = 0; i < pending_rent.length; i++) {

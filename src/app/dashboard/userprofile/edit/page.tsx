@@ -1200,7 +1200,6 @@ const OtherDocUploader = (props: OtherDocUploaderProps) => {
   const cFile = useRef<HTMLInputElement>(null);
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
-    console.log(selectedFile);
 
     if (selectedFile) {
       const fileSize = selectedFile.size / (1024 * 1024);

@@ -4,6 +4,7 @@ import {
   ClarityBlocksGroupLine,
   Fa6RegularFileLines,
   Fa6RegularRectangleList,
+  FluentBuildingShop20Regular,
   FluentMdl2Home,
   FluentMdl2ViewDashboard,
   GgAlbum,
@@ -59,6 +60,14 @@ const Sidebar = (props: SidebarProps) => {
             path={path}
             pathcheck={"/dashboard/userproperties"}
           />
+          <MenuTab
+            icco={
+              <FluentBuildingShop20Regular className="text-gray-300  w-6" />
+            }
+            name="Daily Booking"
+            path={path}
+            pathcheck={"/dashboard/userdailybooking"}
+          />
 
           <MenuTab
             icco={<RiAuctionLine className="text-gray-300  w-6" />}
@@ -102,6 +111,14 @@ const Sidebar = (props: SidebarProps) => {
             name="Properties"
             path={path}
             pathcheck={"/dashboard/properties"}
+          />
+          <MenuTab
+            icco={
+              <FluentBuildingShop20Regular className="text-gray-300  w-6" />
+            }
+            name="Daily Booking"
+            path={path}
+            pathcheck={"/dashboard/dailybooking"}
           />
 
           <MenuTab

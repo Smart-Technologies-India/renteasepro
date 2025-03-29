@@ -284,8 +284,6 @@ const createRentTransaction = async (
   for (let i = 0; i < months.length; i++) {
     const month: Date = months[i];
 
-    console.log(month);
-
     const amounts: MonthType[] = props.amount_month.filter(
       (val: MonthType) => val.month == monthNames[month.getMonth()]
     );

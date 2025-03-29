@@ -30,7 +30,6 @@ import GetUserFirstRent from "@/action/rent_transact/getuserfirstrent";
 const CollectRent = () => {
   const params = useParams<{ rentid: string }>();
   const rentid: number = parseInt(params.rentid);
-  console.log(rentid);
 
   //   const [field, setField] = useState<number[]>([]);
   const [check, setCheck] = useState<boolean>(false);

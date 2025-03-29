@@ -373,7 +373,6 @@ const GstTable = () => {
       if (rentresponse.status) {
         setFilterAccountTwo(rentresponse.data!);
       }
-      console.log(rentresponse.data!);
 
       setTimeout(() => {
         setRentGst(generateRentGSTPDF(rentresponse.data!));
@@ -410,7 +409,7 @@ const GstTable = () => {
                 id="date"
                 variant={"outline"}
                 className={`w-full justify-start text-left font-normal ${
-                  !filterDate ?? "text-muted-foreground"
+                  filterDate ?? "text-muted-foreground"
                 }`}
               >
                 <IcBaselineCalendarMonth className="mr-2 h-4 w-4" />
@@ -457,9 +456,6 @@ const GstTable = () => {
                       return itemDate >= fromDate && itemDate <= toDate;
                     });
 
-                    // console.log(temp);
-
-                    console.log(temp);
                     if (temp.length > 0) {
                       setFilterAccount(temp);
                       setIsLoading(true);
@@ -586,7 +582,7 @@ const GstTable = () => {
                 id="date"
                 variant={"outline"}
                 className={`w-full justify-start text-left font-normal ${
-                  !filterDateTwo ?? "text-muted-foreground"
+                  filterDateTwo ?? "text-muted-foreground"
                 }`}
               >
                 <IcBaselineCalendarMonth className="mr-2 h-4 w-4" />

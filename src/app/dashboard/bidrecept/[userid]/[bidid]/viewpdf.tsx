@@ -246,7 +246,7 @@ const ViewPdf = (props: ViewPdfProps) => {
             <Text style={styles.subtitle}>Form 2</Text>
             <Text style={styles.subtitle}>(Rule 11)</Text>
             <Text style={styles.title}>Dadra and Nagar Haveli</Text>
-            <Text style={styles.title}>Planning and development Authority</Text>
+            <Text style={styles.title}>Planning and Development Authority</Text>
             <View
               style={{
                 height: "10px",
