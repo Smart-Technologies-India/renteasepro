@@ -29,7 +29,7 @@ const AddOrderId = async (
       return {
         status: false,
         data: null,
-        message: "Something Want wrong unable to pay rent. Please try again.",
+        message: "Something Went wrong unable to pay rent. Please try again.",
         functionname: "AddOrderId",
       };
 

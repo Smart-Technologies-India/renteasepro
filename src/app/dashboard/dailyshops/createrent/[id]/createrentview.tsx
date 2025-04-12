@@ -9,20 +9,26 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useEffect, useRef, useState } from "react";
-import { addDays, format, isAfter, subDays } from "date-fns";
+import { addDays, eachDayOfInterval, format, isAfter, subDays } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { IcBaselineCalendarMonth } from "@/components/icons";
 import { useRouter } from "next/navigation";
 import { user } from "@prisma/client";
 import { default as MulSelect } from "react-select";
 import GetNormalUser from "@/action/user/getnormalusers";
-import { safeParse } from "valibot";
+import { date, safeParse } from "valibot";
 import { toast } from "react-toastify";
 import { getCookie } from "cookies-next";
 import GetDailyShop from "@/action/dailyshop/getdailyshop";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CreateDailyRentSchema } from "@/schema/createdailyrent";
 import CreateDailyRent from "@/action/dailyrent/createdailyrent";
+
+import { DatePicker, Space } from "antd";
+import GetDailyRent from "@/action/dailyrent/getdailyrent";
+import dayjs, { Dayjs } from "dayjs";
+
+const { RangePicker } = DatePicker;
 
 interface CreateRentProps {
   shopid: number;
@@ -53,8 +59,16 @@ const CreateRentPage = (props: CreateRentProps) => {
   const [users, setUsers] = useState<user[]>([]);
   const [user, setUser] = useState<user | null>(null);
 
-  const [startDPop, setStartDPop] = useState<boolean>(false);
-  const [endDPop, setEndDPop] = useState<boolean>(false);
+  const [rentdates, setRentdates] = useState<Date[]>([]);
+
+  interface DateFieldType {
+    start: Dayjs | null;
+    end: Dayjs | null;
+  }
+  const [datefield, setDatefield] = useState<DateFieldType>({
+    start: null,
+    end: null,
+  });
 
   useEffect(() => {
     const init = async () => {
@@ -69,6 +83,22 @@ const CreateRentPage = (props: CreateRentProps) => {
 
       if (normaluserresponse.status) {
         setUsers(normaluserresponse.data ?? []);
+      }
+
+      const rentresponse = await GetDailyRent({ id: props.shopid });
+
+      if (rentresponse.status) {
+        let rentdates_temp: Date[] = [];
+        rentresponse.data?.forEach((rent) => {
+          let start_date = new Date(rent.event_from_date);
+          let end_date = new Date(rent.event_to_date);
+
+          let dates = eachDayOfInterval({ start: start_date, end: end_date });
+
+          rentdates_temp.push(...dates);
+        });
+
+        setRentdates(rentdates_temp);
       }
 
       setLoading(false);
@@ -225,69 +255,68 @@ const CreateRentPage = (props: CreateRentProps) => {
           <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">
               <Label>
-                Rent Start Date <span className="text-rose-500">*</span>
+                Rent start to end date <span className="text-rose-500">*</span>
               </Label>
-              <Popover open={startDPop} onOpenChange={setStartDPop}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className={`w-full justify-start text-left font-normal ${
-                      startDate ?? "text-muted-foreground"
-                    }`}
-                  >
-                    <IcBaselineCalendarMonth className="mr-2 h-4 w-4" />
-                    {startDate ? (
-                      format(startDate, "PPP")
-                    ) : (
-                      <span>Select start date</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={startDate}
-                    onSelect={(e) => {
-                      setStartDate(e);
-                      setStartDPop(false);
-                    }}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <RangePicker
+                disabledDate={(current) => {
+                  return current && current.toDate() < subDays(new Date(), 0);
+                }}
+                onChange={(e) => {
+                  if (e && e.length != 2) return;
+
+                  if (e[0] == null || e[1] == null) return;
+
+                  // rentdates contains the dates which are already booked show error
+                  const isDateBooked = (date: Date) => {
+                    return rentdates.some(
+                      (bookedDate) =>
+                        format(bookedDate, "yyyy-MM-dd") ===
+                        format(date, "yyyy-MM-dd")
+                    );
+                  };
+
+                  if (isDateBooked(e[0].toDate())) {
+                    toast.error("Selected date is already booked");
+                    // clear date field
+                    setDatefield({ start: null, end: null });
+
+                    return;
+                  }
+
+                  setStartDate(e[0].toDate());
+                  setEndDate(e[1].toDate());
+                }}
+              />
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label>
-                Rent End Date <span className="text-rose-500">*</span>
+              <Label htmlFor="user">
+                Purpose <span className="text-rose-500">*</span>
               </Label>
-              <Popover open={endDPop} onOpenChange={setEndDPop}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className={`w-full justify-start text-left font-normal ${
-                      endDate ?? "text-muted-foreground"
-                    }`}
-                  >
-                    <IcBaselineCalendarMonth className="mr-2 h-4 w-4" />
-                    {endDate ? (
-                      format(endDate, "PPP")
-                    ) : (
-                      <span>Select end date</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={endDate}
-                    onSelect={(e) => {
-                      setEndDate(e);
-                      setEndDPop(false);
-                    }}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <MulSelect
+                isMulti={false}
+                options={[
+                  "Public gatherings",
+                  "Government gatherings",
+                  "Seminars",
+                  "Engagement / Reception /Sangeet function",
+                  "Cultural functions and events",
+                  "Official meetings of private companies / organizations",
+                  "Theatre / Play shows",
+                  "Educational Seminars",
+                  "Exhibition cum sale / Market mela",
+                  "Birthday/Baby shower functions",
+                  "Havan / Pooja / Katha functions",
+                  "Catering services (Breakfast / Lunch / High tea / Dinner)",
+                ].map((val: string) => ({
+                  value: val,
+                  label: val,
+                }))}
+                className="w-full accent-slate-900"
+                onChange={(val: any) => {
+                  if (!val) return;
+                  setPurpose(val.value.toString());
+                }}
+              />
             </div>
           </div>
 
@@ -440,7 +469,7 @@ const CreateRentPage = (props: CreateRentProps) => {
               />
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="user">
+              {/* <Label htmlFor="user">
                 Purpose <span className="text-rose-500">*</span>
               </Label>
               <MulSelect
@@ -467,7 +496,7 @@ const CreateRentPage = (props: CreateRentProps) => {
                   if (!val) return;
                   setPurpose(val.value.toString());
                 }}
-              />
+              /> */}
             </div>
           </div>
           {user && (
@@ -501,8 +530,7 @@ const CreateRentPage = (props: CreateRentProps) => {
               <p> {prepration ? shopData?.rate_prep_day : "0"}</p>
             </div>
             <div className="flex w-full">
-              <p>
-                Venue Handover Charge</p>
+              <p>Venue Handover Charge</p>
               <div className="grow"></div>
               <p>{handover ? shopData?.rate_handover_day : "0"}</p>
             </div>

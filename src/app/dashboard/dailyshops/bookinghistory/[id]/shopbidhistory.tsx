@@ -126,7 +126,7 @@ const ShopBidHistoryView = (props: ShopBidHistoryViewProps) => {
         <div className="flex gap-4 items-center">
           <BackButton />
           <FluentMdl2Home className="text-xl" />
-          <p className="text-xl text-gray-600">Shop Booking History</p>
+          <p className="text-xl text-gray-600">Unit Booking History</p>
           <div className="grow"></div>
         </div>
 
@@ -184,7 +184,21 @@ const ShopBidHistoryView = (props: ShopBidHistoryViewProps) => {
                     <TableCell className="p-2">{rentdata.status}</TableCell>
 
                     <TableCell className="text-right p-2">
-                      {rentdata.is_approved &&
+                      {rentdata.rent_transact.length > 0 ? (
+                        <button
+                          onClick={() => {
+                            router.push(
+                              `/dashboard/dailyrentrecept/${rentdata.user.id}/${rentdata.id}/${rentdata.rent_transact[0].id}`
+                            );
+                          }}
+                          className="cursor-pointer bg-blue-500 text-sm px-6 py-1 rounded-md text-white"
+                        >
+                          View Rent Receipt
+                        </button>
+                      ) : (
+                        <p className="text-sm text-gray-500">No Receipt</p>
+                      )}
+                      {/* {rentdata.is_approved &&
                       rentdata.rent_transact.length > 0 ? (
                         <>
                           <button
@@ -234,7 +248,6 @@ const ShopBidHistoryView = (props: ShopBidHistoryViewProps) => {
 
                           <Dialog open={acceptBox} onOpenChange={setAcceptBox}>
                             <DialogTrigger asChild>
-                              {/* <Button variant="outline">Edit Profile</Button> */}
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-[425px]">
                               <DialogHeader>
@@ -243,7 +256,6 @@ const ShopBidHistoryView = (props: ShopBidHistoryViewProps) => {
                                   Are you sure you want to accept this booking?
                                 </DialogDescription>
                               </DialogHeader>
-                              {/* <ProfileForm /> */}
                               <div className="flex gap-2">
                                 <button
                                   className="bg-blue-500 text-white px-4 py-1 rounded-md text-sm"
@@ -263,7 +275,6 @@ const ShopBidHistoryView = (props: ShopBidHistoryViewProps) => {
 
                           <Dialog open={rejectBox} onOpenChange={setRejectBox}>
                             <DialogTrigger asChild>
-                              {/* <Button variant="outline">Edit Profile</Button> */}
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-[425px]">
                               <DialogHeader>
@@ -272,7 +283,6 @@ const ShopBidHistoryView = (props: ShopBidHistoryViewProps) => {
                                   Are you sure you want to reject this booking?
                                 </DialogDescription>
                               </DialogHeader>
-                              {/* <ProfileForm /> */}
                               <div className="flex gap-2">
                                 <button
                                   className="bg-blue-500 text-white px-4 py-1 rounded-md text-sm"
@@ -297,7 +307,7 @@ const ShopBidHistoryView = (props: ShopBidHistoryViewProps) => {
                         >
                           Action
                         </button>
-                      )}
+                      )} */}
                     </TableCell>
                   </TableRow>
                 )

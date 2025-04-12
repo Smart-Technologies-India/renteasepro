@@ -18,9 +18,6 @@ import {
   Document,
   StyleSheet,
   Font,
-  PDFViewer,
-  renderToFile,
-  pdf,
   Image,
   usePDF,
 } from "@react-pdf/renderer";
@@ -38,8 +35,9 @@ interface ViewPdfProps {
 }
 
 const ViewPdf = (props: ViewPdfProps) => {
-  const toWords = new ToWords();
+  const [isloading, setIsloading] = useState(false);
 
+  const toWords = new ToWords();
   const router = useRouter();
 
   const [rent, setRent] = useState<
@@ -60,10 +58,9 @@ const ViewPdf = (props: ViewPdfProps) => {
   const [invoicenumber, setInvoiceNumber] = useState<string>("0");
 
   useEffect(() => {
-    console.log("data");
     const init = async () => {
+      setIsloading(true);
       const rentresponse = await GetDailyRentById({ id: props.rentid });
-      console.log(rentresponse);
       if (rentresponse.status) {
         setRent(rentresponse.data);
       }
@@ -86,6 +83,7 @@ const ViewPdf = (props: ViewPdfProps) => {
           setInvoiceNumber(historyresponse.data![0].gstinvoice!.toString());
         }
       }
+      setIsloading(false);
     };
 
     init();
@@ -292,18 +290,26 @@ const ViewPdf = (props: ViewPdfProps) => {
     },
   });
 
-  const getDate = (from_date: Date, to_date: Date): string => {
-    // if date is same then return "on {that day}"
-    // if date is not same then return "from {start_date} to {end_date}"
+  // const getDate = (from_date: Date, to_date: Date): string => {
+  //   // if date is same then return "on {that day}"
+  //   // if date is not same then return "from {start_date} to {end_date}"
 
-    console.log(from_date);
-    console.log(to_date);
-    if (from_date === to_date) {
-      return ` on ${formateDate(from_date)}`;
-    }
+  //   if (from_date === to_date) {
+  //     return ` on ${formateDate(from_date)}`;
+  //   }
 
-    return ` from ${formateDate(from_date)} to ${formateDate(to_date)}`;
-  };
+  //   return ` from ${formateDate(from_date)} to ${formateDate(to_date)}`;
+  // };
+
+  function getFinancialYear(transactionDate: string): string {
+    const [day, month, year] = transactionDate.split("-").map(Number);
+
+    // If the month is before April, it belongs to the previous financial year
+    const startYear = month < 4 ? year - 1 : year;
+    const endYear = startYear + 1;
+
+    return `${String(startYear).slice(-2)}-${String(endYear).slice(-2)}`;
+  }
 
   const Quixote = (
     <Document>
@@ -408,7 +414,7 @@ const ViewPdf = (props: ViewPdfProps) => {
               borderRight: "1px solid #6b7280",
             }}
           >
-            {formateDate(new Date(history[0]?.transaction_date))}
+            {formateDate(new Date(history[0]?.transaction_date!))}
           </Text>
         </View>
 
@@ -418,8 +424,15 @@ const ViewPdf = (props: ViewPdfProps) => {
           <Text style={styles.rbottom}>Invoice No.</Text>
           <Text style={styles.mbottom2}>
             PDA /{(invoicenumber ?? "0").toString().padStart(4, "0")}/
-            {new Date(rent?.createdAt!).getFullYear().toString().slice(2)}-
-            {(new Date(rent?.createdAt!).getFullYear() + 1).toString().slice(2)}
+            {getFinancialYear(history[0]?.transaction_date.toDateString())}
+            {/* {new Date(history[0]?.transaction_date)
+              .getFullYear()
+              .toString()
+              .slice(2)}
+            -
+            {(new Date(history[0]?.transaction_date).getFullYear() + 1)
+              .toString()
+              .slice(2)} */}
           </Text>
         </View>
 
@@ -430,7 +443,7 @@ const ViewPdf = (props: ViewPdfProps) => {
           </Text>
           <Text style={styles.rbottom}>Start Date</Text>
           <Text style={styles.mbottom2}>
-            {formateDate(new Date(rent?.event_from_date!))}
+            {/* {formateDate(new Date(rent?.event_from_date!))} */}
           </Text>
         </View>
 
@@ -439,7 +452,7 @@ const ViewPdf = (props: ViewPdfProps) => {
           <Text style={styles.mbottom}>{user?.contactone!}</Text>
           <Text style={styles.rbottom}>End Date</Text>
           <Text style={styles.mbottom2}>
-            {formateDate(new Date(rent?.event_to_date!))}
+            {/* {formateDate(new Date(rent?.event_to_date!))} */}
           </Text>
         </View>
 
@@ -468,13 +481,18 @@ const ViewPdf = (props: ViewPdfProps) => {
             >
               Booking of {rent?.daily_shop.name} at{" "}
               {rent?.daily_shop.property.name}{" "}
-              {getDate(rent?.event_from_date!, rent?.event_to_date!)} for{" "}
-              {rent?.event_reason}
+              {/* {rent?.event_from_date == rent?.event_to_date
+                ? ` on ${formateDate(rent?.event_from_date!)}`
+                : `from ${formateDate(
+                    rent?.event_from_date!
+                  )}} to ${formateDate(rent?.event_to_date!)}`}{" "} */}
+              for {rent?.event_reason}
             </Text>
           </Text>
           <Text style={styles.rbottom2}>997212</Text>
           <Text style={styles.rbottom}>
-            {(
+            {((parseInt(rent?.event_amount ?? "0") / 118) * 100).toFixed(2)}
+            {/* {(
               history
                 .flatMap((arr: any) => arr.amount)
                 .reduce((acc: any, curr: any) => acc + curr, 0) -
@@ -483,30 +501,34 @@ const ViewPdf = (props: ViewPdfProps) => {
                 .reduce((acc: any, curr: any) => acc + curr, 0) *
                 18) /
                 118
-            ).toFixed(2)}
+            ).toFixed(2)} */}
+          </Text>
+        </View>
+
+        <View style={styles.myflex}>
+          <Text style={styles.lbottom}>2</Text>
+          <Text style={styles.mbottom}>Pre-Preparation Day Charges</Text>
+          <Text style={styles.rbottom2}>997212</Text>
+          <Text style={styles.rbottom}>
+            {((parseInt(rent?.prep_day_amount ?? "0") / 118) * 100).toFixed(2)}
           </Text>
         </View>
         <View style={styles.myflex}>
-          <Text style={styles.lbottom}>1</Text>
-          <Text style={styles.mbottom}>Deposite</Text>
+          <Text style={styles.lbottom}>3</Text>
+          <Text style={styles.mbottom}>Handover Day Charges</Text>
+          <Text style={styles.rbottom2}>997212</Text>
+
+          <Text style={styles.rbottom}>
+            {((parseInt(rent?.handover_day_amount ?? "0") / 118) * 100).toFixed(
+              2
+            )}
+          </Text>
+        </View>
+        <View style={styles.myflex}>
+          <Text style={styles.lbottom}>4</Text>
+          <Text style={styles.mbottom}>Deposit Amount</Text>
           <Text style={styles.rbottom2}></Text>
           <Text style={styles.rbottom}>{rent?.deposit_amount}</Text>
-        </View>
-        <View style={styles.myflex}>
-          <Text style={styles.lbottom}>1</Text>
-          <Text style={styles.mbottom}>Prep Day</Text>
-          <Text style={styles.rbottom2}></Text>
-          <Text style={styles.rbottom}>
-            {rent?.prep_day ? rent?.prep_day_amount : "0"}
-          </Text>
-        </View>
-        <View style={styles.myflex}>
-          <Text style={styles.lbottom}>1</Text>
-          <Text style={styles.mbottom}>Handover Day</Text>
-          <Text style={styles.rbottom2}></Text>
-          <Text style={styles.rbottom}>
-            {rent?.handover_day ? rent?.handover_day_amount : "0"}
-          </Text>
         </View>
         <View style={styles.myflex}>
           <Text style={styles.lbottom}></Text>
@@ -526,12 +548,10 @@ const ViewPdf = (props: ViewPdfProps) => {
           <Text style={styles.rbottom2}></Text>
           <Text style={styles.rbottom}>
             {(
-              (history
-                .flatMap((arr: any) => arr.amount) // Extract numbers from objects
-                .reduce((acc: any, curr: any) => acc + curr, 0) *
-                18) /
-              118 /
-              2
+              ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+              0.09
             ).toFixed(2)}
           </Text>
         </View>
@@ -554,12 +574,10 @@ const ViewPdf = (props: ViewPdfProps) => {
           <Text style={styles.rbottom2}></Text>
           <Text style={styles.rbottom}>
             {(
-              (history
-                .flatMap((arr: any) => arr.amount) // Extract numbers from objects
-                .reduce((acc: any, curr: any) => acc + curr, 0) *
-                18) /
-              118 /
-              2
+              ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+              0.09
             ).toFixed(2)}
           </Text>
         </View>
@@ -593,9 +611,18 @@ const ViewPdf = (props: ViewPdfProps) => {
               fontFamily: "Oswald",
             }}
           >
-            {history
-              .flatMap((arr: any) => arr.amount)
-              .reduce((acc: any, curr: any) => acc + curr, 0)}
+            {(parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+              (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+              (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100 +
+              parseInt(rent?.deposit_amount ?? "0") +
+              ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+                0.09 +
+              ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+                0.09}
           </Text>
         </View>
         <Text
@@ -615,11 +642,18 @@ const ViewPdf = (props: ViewPdfProps) => {
           {"Indian Rupees " +
             capitalcase(
               toWords.convert(
-                parseInt(
-                  history
-                    .flatMap((arr: any) => arr.amount)
-                    .reduce((acc: any, curr: any) => acc + curr, 0)
-                )
+                (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                  (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                  (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100 +
+                  parseInt(rent?.deposit_amount ?? "0") +
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+                    0.09 +
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+                    0.09
               )
             ) +
             " Only"}
@@ -744,45 +778,36 @@ const ViewPdf = (props: ViewPdfProps) => {
           </Text>
           <Text style={styles.ltop2}>
             {(
-              history
-                .flatMap((arr: any) => arr.amount)
-                .reduce((acc: any, curr: any) => acc + curr, 0) -
-              (history
-                .flatMap((arr: any) => arr.amount)
-                .reduce((acc: any, curr: any) => acc + curr, 0) *
-                18) /
-                118
+              (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+              (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+              (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100
             ).toFixed(2)}
           </Text>
           <Text style={styles.ltop2}>9%</Text>
           <Text style={styles.ltop2}>
             {(
-              (history
-                .flatMap((arr: any) => arr.amount) // Extract numbers from objects
-                .reduce((acc: any, curr: any) => acc + curr, 0) *
-                18) /
-              118 /
-              2
+              ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+              0.09
             ).toFixed(2)}
           </Text>
           <Text style={styles.ltop2}>9%</Text>
           <Text style={styles.ltop2}>
             {(
-              (history
-                .flatMap((arr: any) => arr.amount) // Extract numbers from objects
-                .reduce((acc: any, curr: any) => acc + curr, 0) *
-                18) /
-              118 /
-              2
+              ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+              0.09
             ).toFixed(2)}
           </Text>
           <Text style={styles.ltop2}>
             {(
-              (history
-                .flatMap((arr: any) => arr.amount) // Extract numbers from objects
-                .reduce((acc: any, curr: any) => acc + curr, 0) *
-                18) /
-              118
+              ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+              0.09 *
+              2
             ).toFixed(2)}
           </Text>
         </View>
@@ -804,45 +829,36 @@ const ViewPdf = (props: ViewPdfProps) => {
           </Text>
           <Text style={styles.ltop2}>
             {(
-              history
-                .flatMap((arr: any) => arr.amount)
-                .reduce((acc: any, curr: any) => acc + curr, 0) -
-              (history
-                .flatMap((arr: any) => arr.amount)
-                .reduce((acc: any, curr: any) => acc + curr, 0) *
-                18) /
-                118
+              (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+              (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+              (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100
             ).toFixed(2)}
           </Text>
           <Text style={styles.ltop2}>9%</Text>
           <Text style={styles.ltop2}>
             {(
-              (history
-                .flatMap((arr: any) => arr.amount) // Extract numbers from objects
-                .reduce((acc: any, curr: any) => acc + curr, 0) *
-                18) /
-              118 /
-              2
+              ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+              0.09
             ).toFixed(2)}
           </Text>
           <Text style={styles.ltop2}>9%</Text>
           <Text style={styles.ltop2}>
             {(
-              (history
-                .flatMap((arr: any) => arr.amount) // Extract numbers from objects
-                .reduce((acc: any, curr: any) => acc + curr, 0) *
-                18) /
-              118 /
-              2
+              ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+              0.09
             ).toFixed(2)}
           </Text>
           <Text style={styles.ltop2}>
             {(
-              (history
-                .flatMap((arr: any) => arr.amount) // Extract numbers from objects
-                .reduce((acc: any, curr: any) => acc + curr, 0) *
-                18) /
-              118
+              ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+              0.09 *
+              2
             ).toFixed(2)}
           </Text>
         </View>
@@ -865,12 +881,13 @@ const ViewPdf = (props: ViewPdfProps) => {
               toWords.convert(
                 parseInt(
                   (
-                    (history
-                      .flatMap((arr: any) => arr.amount)
-                      .reduce((acc: any, curr: any) => acc + curr, 0) *
-                      18) /
-                    118
-                  ).toString()
+                    ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                      (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                      (parseInt(rent?.handover_day_amount ?? "0") / 118) *
+                        100) *
+                    0.09 *
+                    2
+                  ).toFixed(2)
                 )
               )
             ) +
@@ -892,18 +909,33 @@ const ViewPdf = (props: ViewPdfProps) => {
           >
             Received with thanks from {user?.firstName} {user?.lastName}{" "}
             {user?.contactone && `[${user?.contactone}]`} a sum of Rs.{" "}
-            {history
-              .flatMap((arr: any) => arr.amount)
-              .reduce((acc: any, curr: any) => acc + curr, 0)}
+            {(parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+              (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+              (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100 +
+              parseInt(rent?.deposit_amount ?? "0") +
+              ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+                0.09 +
+              ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+                0.09}
             (
             {capitalcase(
               toWords.convert(
-                parseInt(
-                  history
-                    .flatMap((arr: any) => arr.amount)
-                    .reduce((acc: any, curr: any) => acc + curr, 0)
-                    .toString()
-                )
+                (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                  (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                  (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100 +
+                  parseInt(rent?.deposit_amount ?? "0") +
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+                    0.09 +
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+                    0.09
               )
             ) + " Only"}
             )
@@ -923,10 +955,10 @@ const ViewPdf = (props: ViewPdfProps) => {
               margin: "4px 0",
             }}
           >
-            Rent for month Rent of Goverment Buildings Booking of{" "}
-            {rent?.daily_shop.name} at {rent?.daily_shop.property.name}{" "}
-            {getDate(rent?.event_from_date!, rent?.event_to_date!)} for{" "}
-            {rent?.event_reason}
+            Rent of Goverment Buildings, Booking of {rent?.daily_shop.name} at{" "}
+            {rent?.daily_shop.property.name}{" "}
+            {/* {getDate(rent?.event_from_date!, rent?.event_to_date!)} for{" "} */}
+            for {rent?.event_reason} purpose.
           </Text>
           <Text
             style={{
@@ -997,9 +1029,18 @@ const ViewPdf = (props: ViewPdfProps) => {
                   textAlign: "center",
                 }}
               >
-                {history
-                  .flatMap((arr: any) => arr.amount)
-                  .reduce((acc: any, curr: any) => acc + curr, 0)}
+                {(parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                  (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                  (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100 +
+                  parseInt(rent?.deposit_amount ?? "0") +
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+                    0.09 +
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+                    0.09}
                 /-
               </Text>
             </View>
@@ -1125,7 +1166,7 @@ const ViewPdf = (props: ViewPdfProps) => {
           }
         </PDFDownloadLink>
       ) : null} */}
-      {isClient ? (
+      {isClient && isloading == false ? (
         <div className="w-full h-full">
           {/* <PDFViewer style={{ width: "100%", height: "100%" }}>
             <Quixote />

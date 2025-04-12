@@ -305,6 +305,11 @@ model user {
   daily_rent_transact          daily_rent_transact[]
   daily_rent_approvedBy_userId daily_rent[]          @relation("daily_rent_approvedBy_userId")
   daily_rent_canceldBy_userId  daily_rent[]          @relation("daily_rent_canceldBy_userId")
+
+  refund_amount_create refund_amount[] @relation("refund_amount_createdBy_userId")
+  refund_amount_update refund_amount[] @relation("refund_amount_updatedBy_userId")
+  refund_amount_delete refund_amount[] @relation("refund_amount_deletedBy_userId")
+  refund_amount        refund_amount[]
 }
 
 model shop_category {
@@ -970,6 +975,7 @@ model daily_shop {
   // demand_node    demand_node[]
   // rentclose      rentclose[]
   daily_rent_transact daily_rent_transact[]
+  refund_amount       refund_amount[]
 }
 
 model daily_rent {
@@ -1014,6 +1020,7 @@ model daily_rent {
   deletedBy           user?                 @relation("daily_rent_deletedBy_userId", fields: [deletedById], references: [id])
   deletedById         Int?
   rent_transact       daily_rent_transact[]
+  refund_amount       refund_amount[]
 }
 
 model daily_rent_transact {
@@ -1044,4 +1051,35 @@ model daily_rent_transact {
   deletedAt        DateTime?
   deletedBy        user?              @relation("daily_rent_transact_deletedBy_userId", fields: [deletedById], references: [id])
   deletedById      Int?
+}
+
+model refund_amount {
+  id                   Int                @id @default(autoincrement())
+  gstinvoice           Int?               @db.MediumInt
+  daily_rent           daily_rent         @relation(fields: [rentId], references: [id])
+  rentId               Int
+  user                 user               @relation(fields: [userId], references: [id])
+  userId               Int
+  daily_shop           daily_shop         @relation(fields: [shopId], references: [id])
+  shopId               Int
+  actual_refund_amount String
+  refunded_amount      String
+  transaction_date     DateTime           @default(now())
+  paymentmode          String?
+  transactionid        String?
+  bankname             String?
+  trackid              String?
+  reconcilation        DateTime?
+  remarks              String?            @db.MediumText
+  orderid              String?
+  status               RentTransactStatus @default(INACTIVE)
+  createdAt            DateTime           @default(now())
+  createdBy            user               @relation("refund_amount_createdBy_userId", fields: [createdById], references: [id])
+  createdById          Int
+  updatedAt            DateTime           @updatedAt
+  updatedBy            user?              @relation("refund_amount_updatedBy_userId", fields: [updatedById], references: [id])
+  updatedById          Int?
+  deletedAt            DateTime?
+  deletedBy            user?              @relation("refund_amount_deletedBy_userId", fields: [deletedById], references: [id])
+  deletedById          Int?
 }

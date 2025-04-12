@@ -31,14 +31,24 @@ const PayRent = async (
         status: false,
         data: null,
         message:
-          "Something Want wrong unable to get gst number. Please try again.",
+          "Something Went wrong unable to get gst number. Please try again.",
         functionname: "AddOrderId",
       };
     }
 
+    const olddate = gstnumber.createdAt;
+    const new_date = new Date();
+
+    const isrestart =
+      new_date.getFullYear() > olddate.getFullYear() ||
+      (new_date.getFullYear() === olddate.getFullYear() &&
+      new_date.getMonth() >= 3 && olddate.getMonth() < 3);
+
+ 
+
     await prisma.gstinvoice.create({
       data: {
-        number: gstnumber?.number + 1,
+      number: isrestart ? 1 : gstnumber.number + 1,
       },
     });
 
@@ -49,14 +59,14 @@ const PayRent = async (
         },
       },
       data: {
-        gstinvoice: gstnumber.number,
+        gstinvoice: isrestart ? 1 : gstnumber.number,
         bankname: payload.bankname,
-        transactionid: `${uniqueid}111${gstnumber.number}`,
+        transactionid: `${uniqueid}111${isrestart ? 1 : gstnumber.number}`,
         status: "PAID",
         paymentmode: "ONLINE",
         orderid: payload.orderid,
         transaction_date: payload.startdate.toISOString(),
-        trackid: `500${gstnumber.number}`,
+        trackid: `500${isrestart ? 1 : gstnumber.number}`,
         deletedAt: null,
         remarks: payload.transactionid,
       },
@@ -66,7 +76,7 @@ const PayRent = async (
       return {
         status: false,
         data: null,
-        message: "Something Want wrong unable to pay rent. Please try again.",
+        message: "Something Went wrong unable to pay rent. Please try again.",
         functionname: "PayRent",
       };
 

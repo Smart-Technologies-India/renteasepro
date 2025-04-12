@@ -44,7 +44,7 @@ const Properties = () => {
 
   return (
     <div className="p-6">
-      <div className="flex gap-2 lg:gap-4 items-center">
+      <div className="flex gap-2 lg:gap-3 items-center">
         <FluentMdl2Home className="text-xl hidden lg:block" />
         <p className="lg:text-xl text-gray-600 text-lg">Your Properties</p>
         <div className="grow"></div>
@@ -52,15 +52,22 @@ const Properties = () => {
           onClick={() => {
             setSeachBox(!searchbox);
           }}
-          className="bg-blue-500 text-white rounded-md  px-2 py-0 h-8 w-8 hover:bg-blue-600"
+          className="bg-blue-500 text-white rounded-md  px-2 py-0 h-7 w-7 hover:bg-blue-600"
         >
           <FluentMdl2Search className="text-xs" />
         </Button>
         <Link
           href={"/dashboard/dailybooking/add"}
-          className="bg-blue-500 text-white  rounded-md py-1 px-2 lg:px-4 lg:text-sm inline-block text-sm h-8 leading-3"
+          className="cursor-pointer bg-blue-500 text-sm px-6 py-1 rounded-md text-white"
         >
           Add New Property
+        </Link>
+
+        <Link
+          href={"/dashboard/dailyshops/allbookinghistory"}
+          className="cursor-pointer bg-blue-500 text-sm px-6 py-1 rounded-md text-white"
+        >
+          View All Booking History
         </Link>
       </div>
 
@@ -140,7 +147,10 @@ const Properties = () => {
       ) : (
         <>
           {properties.length == 0 && (
-            <Alert variant="destructive" className="mt-4 bg-rose-500 bg-opacity-10">
+            <Alert
+              variant="destructive"
+              className="mt-4 bg-rose-500 bg-opacity-10"
+            >
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
               <AlertDescription>No Property created yet.</AlertDescription>

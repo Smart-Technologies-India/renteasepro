@@ -46,17 +46,7 @@ const ShopView = (props: ShowShopProps) => {
 
   const [user, setUser] = useState<user>();
 
-  const [rentdata, setRentData] = useState<daily_rent[]>([]);
-
-  interface RentDates {
-    unavailable: Date[];
-    disabled: Date[];
-  }
-
-  const [rentdates, setRentdates] = useState<RentDates>({
-    unavailable: [],
-    disabled: [],
-  });
+  const [rentdates, setRentdates] = useState<Date[]>([]);
 
   useEffect(() => {
     const init = async () => {
@@ -78,41 +68,17 @@ const ShopView = (props: ShowShopProps) => {
       const rentresponse = await GetDailyRent({ id: props.id });
 
       if (rentresponse.status) {
-        setRentData(rentresponse.data!);
-        const rentdates: RentDates = {
-          unavailable: [],
-          disabled: [],
-        };
-
+        let rentdates_temp: Date[] = [];
         rentresponse.data?.forEach((rent) => {
           let start_date = new Date(rent.event_from_date);
           let end_date = new Date(rent.event_to_date);
 
           let dates = eachDayOfInterval({ start: start_date, end: end_date });
 
-          if (rent.is_cancel) {
-          } else {
-            if (!rent.is_cancel && !rent.is_approved) {
-              rentdates.disabled.push(...dates);
-              if (rent.handover_day) {
-                rentdates.disabled.push(new Date(rent.handover_day));
-              }
-              if (rent.prep_day) {
-                rentdates.disabled.push(new Date(rent.prep_day));
-              }
-            } else if (!rent.is_cancel && rent.is_approved) {
-              rentdates.unavailable.push(...dates);
-              if (rent.handover_day) {
-                rentdates.unavailable.push(new Date(rent.handover_day));
-              }
-              if (rent.prep_day) {
-                rentdates.unavailable.push(new Date(rent.prep_day));
-              }
-            }
-          }
+          rentdates_temp.push(...dates);
         });
 
-        setRentdates(rentdates);
+        setRentdates(rentdates_temp);
       }
 
       setIsLoading(false);
@@ -218,14 +184,14 @@ const ShopView = (props: ShowShopProps) => {
                 >
                   History Booking
                 </button>
-                <button
+                {/* <button
                   onClick={() => {
                     router.push(`/dashboard/dailyshops/createrent/${props.id}`);
                   }}
                   className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                 >
                   Booking
-                </button>
+                </button> */}
               </>
             )}
           </div>
@@ -255,13 +221,8 @@ const ShopView = (props: ShowShopProps) => {
 
 export default ShopView;
 
-type AvaliableDays = {
-  unavailable: Date[];
-  disabled: Date[];
-};
-
 interface CalendarMonthsProps {
-  avaliableDays: AvaliableDays;
+  avaliableDays: Date[];
 }
 
 const CalendarMonths = (props: CalendarMonthsProps) => {
@@ -294,21 +255,15 @@ const CalendarMonths = (props: CalendarMonthsProps) => {
                 <div key={"empty-" + i}></div>
               ))}
               {days.map((day) => {
-                const isUnavailable = props.avaliableDays.unavailable.some(
-                  (d) => isSameDay(d, day)
-                );
-                const isDisabled = props.avaliableDays.disabled.some((d) =>
+                const isUnavailable = props.avaliableDays.some((d) =>
                   isSameDay(d, day)
                 );
+
                 return (
                   <div
                     key={day.toISOString()}
                     className={`py-1 rounded-full w-6 h-6 flex items-center justify-center ${
-                      isUnavailable
-                        ? "bg-rose-500 text-white"
-                        : isDisabled
-                        ? "bg-gray-200 text-gray-400"
-                        : ""
+                      isUnavailable ? "bg-rose-500 text-white" : ""
                     }`}
                   >
                     {format(day, "d")}

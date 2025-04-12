@@ -160,7 +160,7 @@ const formateDatePDF = (date: Date): string => {
   }
 };
 export { formateDatePDF };
-  
+
 const removeDuplicates = (arr: any[]): any[] => {
   return Array.from(new Set(arr));
 };

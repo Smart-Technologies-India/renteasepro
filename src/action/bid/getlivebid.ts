@@ -37,7 +37,7 @@ const GetLiveBid = async (
       return {
         status: false,
         data: null,
-        message: "Something want wrong unable to get data.",
+        message: "Something Went wrong unable to get data.",
         functionname: "GetLiveBid",
       };
 

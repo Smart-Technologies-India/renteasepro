@@ -772,14 +772,23 @@ const checkpaymentstatus = async () => {
             orderBy: { id: "desc" },
           });
 
+          const olddate = gstnumber.createdAt;
+          const new_date = new Date();
+
+          const isrestart =
+            new_date.getFullYear() > olddate.getFullYear() ||
+            (new_date.getFullYear() === olddate.getFullYear() &&
+              new_date.getMonth() >= 3 &&
+              olddate.getMonth() < 3);
+
           await prisma.gstinvoice.create({
             data: {
-              number: gstnumber?.number + 1,
+              number: isrestart ? 1 : gstnumber.number + 1,
             },
           });
 
           console.log({
-            gstinvoice: gstnumber.number,
+            gstinvoice: isrestart ? 1 : gstnumber.number,
             transactionid: obj["order_bank_ref_no"],
             trackid: obj["reference_no"],
             status: "PAID",
@@ -793,7 +802,7 @@ const checkpaymentstatus = async () => {
               id: pending_rent[i].id,
             },
             data: {
-              gstinvoice: gstnumber.number,
+              gstinvoice: isrestart ? 1 : gstnumber.number,
               transactionid: obj["order_bank_ref_no"],
               trackid: obj["reference_no"],
               status: "PAID",

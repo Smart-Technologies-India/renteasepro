@@ -64,9 +64,18 @@ const CreateInvoice = async (
         functionname: "CreateInvoice",
       };
 
+    const olddate = gstnumber.createdAt;
+    const new_date = new Date();
+
+    const isrestart =
+      new_date.getFullYear() > olddate.getFullYear() ||
+      (new_date.getFullYear() === olddate.getFullYear() &&
+        new_date.getMonth() >= 3 &&
+        olddate.getMonth() < 3);
+
     const createresponse = await prisma.gstinvoice.create({
       data: {
-        number: gstnumber?.number + 1,
+        number: isrestart ? 1 : gstnumber.number + 1,
       },
     });
 
@@ -81,7 +90,7 @@ const CreateInvoice = async (
 
     const misc_invoice = await prisma.misc_invoice.create({
       data: {
-        gstinvoice: gstnumber.number,
+        gstinvoice:  isrestart ? 1 : gstnumber.number,
         ...data_to_update,
         ...(payload.accountCategoryIdTwo && {
           accountCategoryTwoId: payload.accountCategoryIdTwo,
