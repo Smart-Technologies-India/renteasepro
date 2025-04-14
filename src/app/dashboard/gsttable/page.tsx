@@ -38,6 +38,7 @@ import {
   Font,
   usePDF,
 } from "@react-pdf/renderer";
+import GetAllDailyRent from "@/action/dailyrent/getalldailyrent";
 
 Font.register({
   family: "Oswald",
@@ -164,6 +165,12 @@ const GstTable = () => {
   const [startDPopTwo, setStartDPopTwo] = useState<boolean>(false);
 
   const [filterAccountTwo, setFilterAccountTwo] = useState<any[]>([]);
+
+
+  const [filterDateThree, setFilterDateThree] = useState<DateRange>();
+  const [startDPopThree, setStartDPopThree] = useState<boolean>(false);
+
+  const [filterAccountThree, setFilterAccountThree] = useState<any[]>([]);
 
   const generateInvoiceGSTPDF = (invoices: any[]) => {
     const InvoiceGST = (
@@ -314,6 +321,78 @@ const GstTable = () => {
 
     return RentGST;
   };
+  const generateDailyRentGSTPDF = (invoices: any[]) => {
+    const RentGST = (
+      <Document>
+        <Page style={styles.body} size={"A4"} wrap>
+          <View>
+            <Text
+              style={{
+                fontSize: "16px",
+                color: "#1f2937",
+                textAlign: "center",
+                fontWeight: "normal",
+                textDecoration: "underline",
+              }}
+            >
+              GST Report
+            </Text>
+          </View>
+
+          <View
+            style={{
+              marginTop: "10px",
+            }}
+          ></View>
+
+          <View style={styles.myflex}>
+            <Text style={styles.topleft}>Date</Text>
+            <Text style={styles.topmid}>Person Name</Text>
+            <Text style={styles.topmid2}>GSTN Number</Text>
+            <Text style={styles.topright}>Invoice Number</Text>
+            <Text style={styles.topright}>Taxable Value</Text>
+            <Text style={styles.topright}>IGST</Text>
+            <Text style={styles.topright}>CGST</Text>
+            <Text style={styles.topright}>UTGST</Text>
+            <Text style={styles.topright}>Invoice Value</Text>
+          </View>
+
+          {invoices.map((value: any, index: number) => {
+            return (
+              <View key={index} style={styles.myflex}>
+                <Text style={styles.bottomleft}>
+                  {formateDatePDF(value?.transaction_date)}
+                </Text>
+                <Text style={styles.bottommid}>
+                  {longtext(value?.user.username, 30)}
+                </Text>
+                <Text style={styles.bottommid2}>unregistered</Text>
+                <Text style={styles.bottomright}>
+                  {(value?.gstinvoice ?? "0").toString().padStart(4, "0")}
+                </Text>
+                <Text style={styles.bottomright}>
+                  {(
+                    parseFloat(value?.amount) -
+                    ((parseInt(value?.amount) * 18) / 118 / 2) * 2
+                  ).toFixed(2)}
+                </Text>
+                <Text style={styles.bottomright}>0</Text>
+                <Text style={styles.bottomright}>
+                  {((parseInt(value?.amount) * 18) / 118 / 2).toFixed(2)}
+                </Text>
+                <Text style={styles.bottomright}>
+                  {((parseInt(value?.amount) * 18) / 118 / 2).toFixed(2)}
+                </Text>
+                <Text style={styles.bottomright}>{value?.amount}</Text>
+              </View>
+            );
+          })}
+        </Page>
+      </Document>
+    );
+
+    return RentGST;
+  };
 
   // invoice gst start from here
 
@@ -323,6 +402,10 @@ const GstTable = () => {
 
   const [rentGst, setRentGst] = usePDF({
     document: generateRentGSTPDF(filterAccountTwo),
+  });
+
+  const [dailyRentGst, setDailyRentGst] = usePDF({
+    document: generateRentGSTPDF(filterAccountThree),
   });
   // invoice gst start end here
 
@@ -356,6 +439,21 @@ const GstTable = () => {
     setIsLoading(false);
   };
 
+  const refreshDailyRent = async () => {
+    setIsLoading(true);
+
+    const rentresponse = await GetAllDailyRent({});
+    if (rentresponse.status) {
+      setFilterAccountThree(rentresponse.data!);
+    }
+
+    setTimeout(() => {
+      setDailyRentGst(generateRentGSTPDF(rentresponse.data!));
+    }, 1500);
+
+    setIsLoading(false);
+  };
+
   // pagination end here
   useEffect(() => {
     const init = async () => {
@@ -376,6 +474,15 @@ const GstTable = () => {
 
       setTimeout(() => {
         setRentGst(generateRentGSTPDF(rentresponse.data!));
+      }, 1500);
+
+      const dailyrentresponse = await GetAllDailyRent({});
+      if (dailyrentresponse.status) {
+        setFilterAccountThree(rentresponse.data!);
+      }
+
+      setTimeout(() => {
+        setDailyRentGst(generateDailyRentGSTPDF(dailyrentresponse.data!));
       }, 1500);
       setIsLoading(false);
     };
@@ -408,9 +515,8 @@ const GstTable = () => {
               <Button
                 id="date"
                 variant={"outline"}
-                className={`w-full justify-start text-left font-normal ${
-                  filterDate ?? "text-muted-foreground"
-                }`}
+                className={`w-full justify-start text-left font-normal ${filterDate ?? "text-muted-foreground"
+                  }`}
               >
                 <IcBaselineCalendarMonth className="mr-2 h-4 w-4" />
                 {filterDate?.from ? (
@@ -544,16 +650,16 @@ const GstTable = () => {
                       parseFloat(accumulator) + parseFloat(currentValue.cgst)
                     );
                   }, 0) +
-                    filterAccount.reduce((accumulator, currentValue) => {
-                      return (
-                        parseFloat(accumulator) + parseFloat(currentValue.ugst)
-                      );
-                    }, 0) +
-                    filterAccount.reduce((accumulator, currentValue) => {
-                      return (
-                        parseFloat(accumulator) + parseFloat(currentValue.igst)
-                      );
-                    }, 0)
+                  filterAccount.reduce((accumulator, currentValue) => {
+                    return (
+                      parseFloat(accumulator) + parseFloat(currentValue.ugst)
+                    );
+                  }, 0) +
+                  filterAccount.reduce((accumulator, currentValue) => {
+                    return (
+                      parseFloat(accumulator) + parseFloat(currentValue.igst)
+                    );
+                  }, 0)
                 )}
               </TableCell>
             </TableRow>
@@ -581,9 +687,8 @@ const GstTable = () => {
               <Button
                 id="date"
                 variant={"outline"}
-                className={`w-full justify-start text-left font-normal ${
-                  filterDateTwo ?? "text-muted-foreground"
-                }`}
+                className={`w-full justify-start text-left font-normal ${filterDateTwo ?? "text-muted-foreground"
+                  }`}
               >
                 <IcBaselineCalendarMonth className="mr-2 h-4 w-4" />
                 {filterDateTwo?.from ? (
@@ -687,11 +792,11 @@ const GstTable = () => {
                   filterAccountTwo
                     .flatMap((arr: any) => arr.amount)
                     .reduce((acc: any, curr: any) => acc + curr, 0) -
-                    (filterAccountTwo
-                      .flatMap((arr: any) => arr.amount)
-                      .reduce((acc: any, curr: any) => acc + curr, 0) *
-                      18) /
-                      118
+                  (filterAccountTwo
+                    .flatMap((arr: any) => arr.amount)
+                    .reduce((acc: any, curr: any) => acc + curr, 0) *
+                    18) /
+                  118
                 )}
               </TableCell>
               <TableCell>
@@ -700,8 +805,8 @@ const GstTable = () => {
                     .flatMap((arr: any) => arr.amount) // Extract numbers from objects
                     .reduce((acc: any, curr: any) => acc + curr, 0) *
                     18) /
-                    118 /
-                    2
+                  118 /
+                  2
                 )}
               </TableCell>
               <TableCell>
@@ -710,8 +815,8 @@ const GstTable = () => {
                     .flatMap((arr: any) => arr.amount) // Extract numbers from objects
                     .reduce((acc: any, curr: any) => acc + curr, 0) *
                     18) /
-                    118 /
-                    2
+                  118 /
+                  2
                 )}
               </TableCell>
               <TableCell>
@@ -727,23 +832,208 @@ const GstTable = () => {
                     .flatMap((arr: any) => arr.amount) // Extract numbers from objects
                     .reduce((acc: any, curr: any) => acc + curr, 0) *
                     18) /
-                    118 /
-                    2 +
-                    (filterAccountTwo
-                      .flatMap((arr: any) => arr.amount) // Extract numbers from objects
-                      .reduce((acc: any, curr: any) => acc + curr, 0) *
-                      18) /
-                      118 /
-                      2 +
-                    filterAccountTwo.reduce((accumulator, currentValue) => {
-                      return parseFloat(accumulator) + 0;
-                    }, 0)
+                  118 /
+                  2 +
+                  (filterAccountTwo
+                    .flatMap((arr: any) => arr.amount) // Extract numbers from objects
+                    .reduce((acc: any, curr: any) => acc + curr, 0) *
+                    18) /
+                  118 /
+                  2 +
+                  filterAccountTwo.reduce((accumulator, currentValue) => {
+                    return parseFloat(accumulator) + 0;
+                  }, 0)
                 )}
               </TableCell>
             </TableRow>
           </TableBody>
         </Table>
       )}
+
+      {/* second secetion end here */}
+
+      {/* third section start from here */}
+
+      <div className="flex gap-2 items-center mt-6">
+        <h1 className="text-[#162f57] text-2xl font-semibold">Daily Rent GST</h1>
+        <div className="grow"></div>
+        <a
+          download
+          href={rentGst.url!}
+          className="bg-[#162e57] hover:bg-[#162e57] text-white text-sm px-4 py-1 h-9 rounded-md grid place-items-center"
+        >
+          Download
+        </a>
+        <div className="grid items-center gap-1.5">
+          <Popover open={startDPopThree} onOpenChange={setStartDPopThree}>
+            <PopoverTrigger asChild>
+              <Button
+                id="date"
+                variant={"outline"}
+                className={`w-full justify-start text-left font-normal ${filterDateThree ?? "text-muted-foreground"
+                  }`}
+              >
+                <IcBaselineCalendarMonth className="mr-2 h-4 w-4" />
+                {filterDateThree?.from ? (
+                  filterDateThree.to ? (
+                    <>
+                      {format(filterDateThree.from, "LLL dd, y")} -{" "}
+                      {format(filterDateThree.to, "LLL dd, y")}
+                    </>
+                  ) : (
+                    format(filterDateThree.from, "LLL dd, y")
+                  )
+                ) : (
+                  <span>Pick a date</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                initialFocus
+                mode="range"
+                defaultMonth={filterDateThree?.from}
+                selected={filterDateThree}
+                onSelect={async (e) => {
+                  if (e == undefined || e == null) return;
+                  setFilterDateThree(e);
+
+                  if (e.from == undefined || e.to == undefined) return;
+                  setStartDPopThree(false);
+                  await refreshDailyRent();
+
+                  if (e.from && e.to) {
+                    const temp = filterAccountThree.filter((item: any) => {
+                      const itemDate = new Date(item.transaction_date);
+                      const fromDate = new Date(e.from!);
+                      const toDate = new Date(e.to!);
+
+                      // Set the time component to midnight for comparison
+                      itemDate.setHours(0, 0, 0, 0);
+                      fromDate.setHours(0, 0, 0, 0);
+                      toDate.setHours(0, 0, 0, 0);
+
+                      return itemDate >= fromDate && itemDate <= toDate;
+                    });
+
+                    if (temp.length > 0) {
+                      setFilterAccountThree(temp);
+                      setIsLoading(true);
+                      setTimeout(() => {
+                        setDailyRentGst(generateRentGSTPDF(temp));
+                        setIsLoading(false);
+                      }, 1500);
+                    } else {
+                      setFilterAccountThree([]);
+                      setTimeout(() => {
+                        setDailyRentGst(generateRentGSTPDF([]));
+                        setIsLoading(false);
+                      }, 1500);
+                    }
+                  }
+                }}
+                numberOfMonths={2}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+      </div>
+
+      {filterAccountThree.length <= 0 ? (
+        <>
+          <p className="mt-4 text-lg">No Rent Found</p>
+        </>
+      ) : (
+        <Table className="mt-4">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[180px]">Count</TableHead>
+              <TableHead>Invoice Amount</TableHead>
+              <TableHead>Taxable Amount</TableHead>
+              <TableHead>CGST</TableHead>
+              <TableHead>UGST</TableHead>
+              <TableHead>IGST</TableHead>
+              <TableHead>Tax to be Paid</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow>
+              <TableCell className="font-medium">
+                {filterAccountThree.length}
+              </TableCell>
+              <TableCell>
+                {numberWithIndianFormat(
+                  filterAccountThree.reduce((accumulator, currentValue) => {
+                    return (
+                      parseFloat(accumulator) + parseFloat(currentValue.amount)
+                    );
+                  }, 0)
+                )}
+              </TableCell>
+              <TableCell>
+                {numberWithIndianFormat(
+                  filterAccountThree
+                    .flatMap((arr: any) => arr.amount)
+                    .reduce((acc: any, curr: any) => acc + curr, 0) -
+                  (filterAccountThree
+                    .flatMap((arr: any) => arr.amount)
+                    .reduce((acc: any, curr: any) => acc + curr, 0) *
+                    18) /
+                  118
+                )}
+              </TableCell>
+              <TableCell>
+                {numberWithIndianFormat(
+                  (filterAccountThree
+                    .flatMap((arr: any) => arr.amount) // Extract numbers from objects
+                    .reduce((acc: any, curr: any) => acc + curr, 0) *
+                    18) /
+                  118 /
+                  2
+                )}
+              </TableCell>
+              <TableCell>
+                {numberWithIndianFormat(
+                  (filterAccountThree
+                    .flatMap((arr: any) => arr.amount) // Extract numbers from objects
+                    .reduce((acc: any, curr: any) => acc + curr, 0) *
+                    18) /
+                  118 /
+                  2
+                )}
+              </TableCell>
+              <TableCell>
+                {numberWithIndianFormat(
+                  filterAccountThree.reduce((accumulator, currentValue) => {
+                    return parseFloat(accumulator) + 0;
+                  }, 0)
+                )}
+              </TableCell>
+              <TableCell>
+                {numberWithIndianFormat(
+                  (filterAccountThree
+                    .flatMap((arr: any) => arr.amount) // Extract numbers from objects
+                    .reduce((acc: any, curr: any) => acc + curr, 0) *
+                    18) /
+                  118 /
+                  2 +
+                  (filterAccountThree
+                    .flatMap((arr: any) => arr.amount) // Extract numbers from objects
+                    .reduce((acc: any, curr: any) => acc + curr, 0) *
+                    18) /
+                  118 /
+                  2 +
+                  filterAccountThree.reduce((accumulator, currentValue) => {
+                    return parseFloat(accumulator) + 0;
+                  }, 0)
+                )}
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      )}
+      {/* thired section end here */}
+
     </div>
   );
 };

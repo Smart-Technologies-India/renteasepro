@@ -27,6 +27,15 @@ const Login = async (
         functionname: "Login",
       };
 
+    if (!user.password)
+      return {
+        status: false,
+        data: null,
+        message: "Invalid Credentials. Please try again.",
+        functionname: "Login",
+      };
+
+
     const password = await compare(payload.password, user.password!);
     if (!password)
       return {
@@ -43,6 +52,7 @@ const Login = async (
       functionname: "Login",
     };
   } catch (e) {
+    console.log(e);
     const response: ApiResponseType<null> = {
       status: false,
       data: null,
