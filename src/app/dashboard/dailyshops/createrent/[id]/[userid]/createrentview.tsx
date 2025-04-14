@@ -1,15 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import { IcBaselineCalendarMonth } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { user } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
@@ -17,7 +10,6 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { safeParse } from "valibot";
 import { addDays, eachDayOfInterval, format, isAfter, subDays } from "date-fns";
-import { handleNumberChange } from "@/utils/methods";
 import { default as MulSelect } from "react-select";
 import GetDailyShop from "@/action/dailyshop/getdailyshop";
 import CreateDailyRent from "@/action/dailyrent/createdailyrent";
@@ -25,6 +17,8 @@ import { CreateDailyRentSchema } from "@/schema/createdailyrent";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DatePicker, Space } from "antd";
 import GetDailyRent from "@/action/dailyrent/getdailyrent";
+import { customAlphabet } from "nanoid";
+import GetUser from "@/action/user/getuser";
 
 const { RangePicker } = DatePicker;
 
@@ -61,6 +55,13 @@ const CreateRentPage = (props: CreateRentProps) => {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
+
+      const userresponse = await GetUser({ id: createuserid });
+      if (userresponse.status) {
+        setUser(userresponse.data!);
+      }
+
+
       const shopresponse = await GetDailyShop({
         id: props.unitid,
       });
@@ -145,8 +146,27 @@ const CreateRentPage = (props: CreateRentProps) => {
       }
 
       toast.success("Unit booking request created successfully");
-      router.back();
+      // router.back();
       // router.push(`/dashboard/dailyshops/collectrent/${createrent.data.id}`);
+
+      const nanoid = customAlphabet("1234567890abcdef", 10);
+
+      const uniqueid = nanoid();
+
+      const amount = parseFloat
+        (
+          (datecount() * shopData?.rate_per_day +
+            (prepration ? parseInt(shopData?.rate_prep_day) : 0) +
+            (handover ? parseInt(shopData?.rate_handover_day) : 0) +
+            datecount() * shopData?.deposit_per_day +
+            (prepration ? parseInt(shopData?.deposit_per_day) : 0) +
+            (handover ? parseInt(shopData?.deposit_per_day) : 0)
+          ).toString()
+        ).toFixed(2);
+
+      router.push(
+        `/payamount?xlmnx=${amount}&ynboy=${uniqueid}&zgvfz=${createrent.data.id}_0_0_dailyrent&name=${user?.firstName}-${user?.lastName}&email=${user?.email}&mobile=${user?.contactone}`
+      );
     } else {
       let errorMessage = "";
       if (result.issues[0].input) {
