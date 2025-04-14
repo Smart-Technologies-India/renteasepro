@@ -3,7 +3,7 @@
 import { errorToString } from "@/utils/methods";
 import { ApiResponseType } from "@/models/response";
 import prisma from "../../../prisma/database";
-import { daily_rent } from "@prisma/client";
+import { daily_rent, daily_rent_transact } from "@prisma/client";
 
 interface CreateDailyRentPayload {
   shopId: number;
@@ -31,7 +31,7 @@ function toUTCDate(dateStr: string) {
 
 const CreateDailyRent = async (
   payload: CreateDailyRentPayload
-): Promise<ApiResponseType<daily_rent | null>> => {
+): Promise<ApiResponseType<daily_rent_transact | null>> => {
   try {
     // create all date array of payload
     let new_date: Date[] = [];
@@ -144,9 +144,31 @@ const CreateDailyRent = async (
       };
     }
 
+
+    const create_rent_transaction = await prisma.daily_rent_transact.create({
+      data: {
+        rentId: rent_data.id,
+        userId: payload.userId,
+        createdById: payload.createdById,
+        shopId: payload.shopId,
+        status: "INACTIVE",
+        amount: payload.event_amount,
+      },
+    });
+
+    if (!create_rent_transaction) {
+      return {
+        status: false,
+        data: null,
+        message: "Unable to create daily rent transaction. Please try again.",
+        functionname: "CreateDailyRent",
+      };
+    }
+
+
     return {
       status: true,
-      data: rent_data,
+      data: create_rent_transaction,
       message: "Daily rent created successfully",
       functionname: "CreateDailyRent",
     };
