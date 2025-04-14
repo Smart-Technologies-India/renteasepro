@@ -851,6 +851,7 @@ const GstTable = () => {
       )}
 
       {/* second secetion end here */}
+      <div className="w-full h-[1px] bg-gray-800 mt-6"></div>
 
       {/* third section start from here */}
 
