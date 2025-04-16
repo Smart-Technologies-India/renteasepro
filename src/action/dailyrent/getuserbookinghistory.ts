@@ -9,6 +9,7 @@ import {
   daily_shop,
   property,
   rent,
+  user,
 } from "@prisma/client";
 
 interface GetUserBookingHistoryPayload {
@@ -19,7 +20,10 @@ const GetUserBookingHistory = async (
   payload: GetUserBookingHistoryPayload
 ): Promise<
   ApiResponseType<Array<
-    daily_rent & { daily_shop: daily_shop & { property: daily_property } }
+    daily_rent & {
+      daily_shop: daily_shop & { property: daily_property };
+      user: user;
+    }
   > | null>
 > => {
   try {
@@ -28,6 +32,7 @@ const GetUserBookingHistory = async (
         userId: payload.userid,
       },
       include: {
+        user: true,
         daily_shop: {
           include: {
             property: true,

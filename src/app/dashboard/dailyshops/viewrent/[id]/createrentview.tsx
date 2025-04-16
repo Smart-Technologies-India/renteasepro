@@ -1,30 +1,37 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { user } from "@prisma/client";
-import { getCookie } from "cookies-next";
-import { useRouter } from "next/navigation";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { useEffect, useRef, useState } from "react";
-import { toast } from "react-toastify";
-import { safeParse } from "valibot";
 import { addDays, eachDayOfInterval, format, isAfter, subDays } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import { IcBaselineCalendarMonth } from "@/components/icons";
+import { useRouter } from "next/navigation";
+import { user } from "@prisma/client";
 import { default as MulSelect } from "react-select";
+import GetNormalUser from "@/action/user/getnormalusers";
+import { date, safeParse } from "valibot";
+import { toast } from "react-toastify";
+import { getCookie } from "cookies-next";
 import GetDailyShop from "@/action/dailyshop/getdailyshop";
-import CreateDailyRent from "@/action/dailyrent/createdailyrent";
-import { CreateDailyRentSchema } from "@/schema/createdailyrent";
 import { Checkbox } from "@/components/ui/checkbox";
+import { CreateDailyRentSchema } from "@/schema/createdailyrent";
+import CreateDailyRent from "@/action/dailyrent/createdailyrent";
+
 import { DatePicker, Space } from "antd";
 import GetDailyRent from "@/action/dailyrent/getdailyrent";
-import { customAlphabet } from "nanoid";
-import GetUser from "@/action/user/getuser";
+import dayjs, { Dayjs } from "dayjs";
 
 const { RangePicker } = DatePicker;
 
 interface CreateRentProps {
-  unitid: number;
-  userid: number;
+  shopid: number;
 }
 
 const CreateRentPage = (props: CreateRentProps) => {
@@ -46,29 +53,39 @@ const CreateRentPage = (props: CreateRentProps) => {
   const chargetwo = useRef<HTMLInputElement>(null);
   const chargeThree = useRef<HTMLInputElement>(null);
 
+  const [userid, setUserid] = useState<number>(0);
   const [purpose, setPurpose] = useState<string>("");
 
+  const [users, setUsers] = useState<user[]>([]);
   const [user, setUser] = useState<user | null>(null);
 
   const [rentdates, setRentdates] = useState<Date[]>([]);
 
+  interface DateFieldType {
+    start: Dayjs | null;
+    end: Dayjs | null;
+  }
+  const [datefield, setDatefield] = useState<DateFieldType>({
+    start: null,
+    end: null,
+  });
+
   useEffect(() => {
     const init = async () => {
       setLoading(true);
-
-      const userresponse = await GetUser({ id: createuserid });
-      if (userresponse.status) {
-        setUser(userresponse.data!);
-      }
-
       const shopresponse = await GetDailyShop({
-        id: props.unitid,
+        id: props.shopid,
       });
       if (shopresponse.status) {
         setShopData(shopresponse.data ?? null);
       }
+      const normaluserresponse = await GetNormalUser({});
 
-      const rentresponse = await GetDailyRent({ id: props.unitid });
+      if (normaluserresponse.status) {
+        setUsers(normaluserresponse.data ?? []);
+      }
+
+      const rentresponse = await GetDailyRent({ id: props.shopid });
 
       if (rentresponse.status) {
         let rentdates_temp: Date[] = [];
@@ -87,13 +104,13 @@ const CreateRentPage = (props: CreateRentProps) => {
       setLoading(false);
     };
     init();
-  }, []);
+  }, [props.shopid]);
 
   const create = async () => {
     setIsCreating(true);
     const result = safeParse(CreateDailyRentSchema, {
-      userId: props.userid,
-      unitId: props.unitid,
+      userId: userid,
+      unitId: props.shopid,
       event_amount: (datecount() * shopData?.rate_per_day).toString(),
       prep_day_amount: prepration ? shopData?.rate_prep_day : "0",
       handover_day_amount: handover ? shopData?.rate_handover_day : "0",
@@ -119,8 +136,8 @@ const CreateRentPage = (props: CreateRentProps) => {
         return toast.error("End date should be bigger then start date");
       }
       const createrent = await CreateDailyRent({
-        shopId: props.unitid,
-        userId: props.userid,
+        shopId: props.shopid,
+        userId: userid,
         createdById: createuserid,
         event_amount: (datecount() * shopData?.rate_per_day).toString(),
         event_from_date: startDate!.toISOString(),
@@ -146,36 +163,7 @@ const CreateRentPage = (props: CreateRentProps) => {
 
       toast.success("Unit booking request created successfully");
       // router.back();
-      // router.push(`/dashboard/dailyshops/collectrent/${createrent.data.id}`);
-
-      const nanoid = customAlphabet("1234567890abcdef", 10);
-
-      const uniqueid = nanoid();
-
-      const amount_discount = parseFloat(
-        (
-          datecount() * shopData?.rate_per_day +
-          (prepration ? parseInt(shopData?.rate_prep_day) : 0) +
-          (handover ? parseInt(shopData?.rate_handover_day) : 0) +
-          datecount() * shopData?.deposit_per_day +
-          (prepration ? parseInt(shopData?.deposit_per_day) : 0) +
-          (handover ? parseInt(shopData?.deposit_per_day) : 0)
-        ).toString()
-      ).toFixed(2);
-
-      const deposit =
-        datecount() * shopData?.deposit_per_day +
-        (prepration ? parseInt(shopData?.deposit_per_day) : 0) +
-        (handover ? parseInt(shopData?.deposit_per_day) : 0);
-
-      const amount =
-        datecount() * shopData?.rate_per_day +
-        (prepration ? parseInt(shopData?.rate_prep_day) : 0) +
-        (handover ? parseInt(shopData?.rate_handover_day) : 0);
-
-      router.push(
-        `/payamount?xlmnx=${amount}&ynboy=${uniqueid}&zgvfz=${createrent.data.id}_0_0_dailyrent&name=${user?.firstName}-${user?.lastName}&email=${user?.email}&mobile=${user?.contactone}`
-      );
+      router.push(`/dashboard/dailyshops/collectrent/${createrent.data.id}`);
     } else {
       let errorMessage = "";
       if (result.issues[0].input) {
@@ -274,7 +262,7 @@ const CreateRentPage = (props: CreateRentProps) => {
                   return current && current.toDate() < subDays(new Date(), 0);
                 }}
                 onChange={(e) => {
-                  if (e.length != 2) return;
+                  if (e && e.length != 2) return;
 
                   if (e[0] == null || e[1] == null) return;
 
@@ -289,6 +277,9 @@ const CreateRentPage = (props: CreateRentProps) => {
 
                   if (isDateBooked(e[0].toDate())) {
                     toast.error("Selected date is already booked");
+                    // clear date field
+                    setDatefield({ start: null, end: null });
+
                     return;
                   }
 
@@ -453,7 +444,61 @@ const CreateRentPage = (props: CreateRentProps) => {
               </p>
             </div>
           </div>
-
+          <div className="flex gap-4">
+            <div className="grid items-center gap-1.5 w-full mt-4">
+              <Label htmlFor="user">
+                User <span className="text-rose-500">*</span>
+              </Label>
+              <MulSelect
+                isMulti={false}
+                options={users.map((u: user) => ({
+                  value: u.contactone,
+                  label: u.contactone,
+                }))}
+                className="w-full accent-slate-900"
+                onChange={(val: any) => {
+                  if (!val) return;
+                  const userdata = users.find(
+                    (u: user) => u.contactone === val.value
+                  );
+                  if (userdata) {
+                    setUserid(userdata.id);
+                    setUser(userdata);
+                  }
+                }}
+              />
+            </div>
+            <div className="grid items-center gap-1.5 w-full mt-4">
+              {/* <Label htmlFor="user">
+                Purpose <span className="text-rose-500">*</span>
+              </Label>
+              <MulSelect
+                isMulti={false}
+                options={[
+                  "Public gatherings",
+                  "Government gatherings",
+                  "Seminars",
+                  "Engagement / Reception /Sangeet function",
+                  "Cultural functions and events",
+                  "Official meetings of private companies / organizations",
+                  "Theatre / Play shows",
+                  "Educational Seminars",
+                  "Exhibition cum sale / Market mela",
+                  "Birthday/Baby shower functions",
+                  "Havan / Pooja / Katha functions",
+                  "Catering services (Breakfast / Lunch / High tea / Dinner)",
+                ].map((val: string) => ({
+                  value: val,
+                  label: val,
+                }))}
+                className="w-full accent-slate-900"
+                onChange={(val: any) => {
+                  if (!val) return;
+                  setPurpose(val.value.toString());
+                }}
+              /> */}
+            </div>
+          </div>
           {user && (
             <div className="grid items-center gap-1.5 w-full mt-4 bg-gray-100 p-2 rounded-md">
               <Label htmlFor="user">
@@ -485,7 +530,7 @@ const CreateRentPage = (props: CreateRentProps) => {
               <p> {prepration ? shopData?.rate_prep_day : "0"}</p>
             </div>
             <div className="flex w-full">
-              <p>Venue-Handover Charge</p>
+              <p>Venue Handover Charge</p>
               <div className="grow"></div>
               <p>{handover ? shopData?.rate_handover_day : "0"}</p>
             </div>
@@ -533,5 +578,4 @@ const CreateRentPage = (props: CreateRentProps) => {
     </>
   );
 };
-
 export default CreateRentPage;

@@ -42,8 +42,8 @@ const PayDailyRent = async (
     const isrestart =
       new_date.getFullYear() > olddate.getFullYear() ||
       (new_date.getFullYear() === olddate.getFullYear() &&
-      new_date.getMonth() >= 3 && olddate.getMonth() < 3);
-
+        new_date.getMonth() >= 3 &&
+        olddate.getMonth() < 3);
 
     await prisma.gstinvoice.create({
       data: {
@@ -83,32 +83,65 @@ const PayDailyRent = async (
     let amount = (
       parseInt(update_daily_rent.event_amount.toString()) +
       parseInt(update_daily_rent.prep_day_amount ?? "0") +
-      parseInt(update_daily_rent.handover_day_amount ?? "0") +
-      parseInt(update_daily_rent.deposit_amount ?? "0")
+      parseInt(update_daily_rent.handover_day_amount ?? "0")
+    ).toString();
+    const deposit_amount = parseInt(
+      update_daily_rent.deposit_amount ?? "0"
     ).toString();
 
-    const update_response = await prisma.daily_rent_transact.create({
-      data: {
-        gstinvoice: isrestart ? 1 : gstnumber.number,
-        rentId: payload.rentid,
-        shopId: update_daily_rent.shopId,
-        amount: amount,
-        transaction_date: payload.startdate.toISOString(),
-        paymentmode: "ONLINE",
-        transactionid: `${uniqueid}111${isrestart ? 1 : gstnumber.number}`,
-        bankname: payload.bankname,
-        trackid: `500${isrestart ? 1 : gstnumber.number}`,
-        reconcilation: new Date(),
-        remarks: payload.transactionid,
-        orderid: payload.orderid,
-        status: "PAID",
-        deletedAt: null,
-        createdById: payload.approvedById,
-        userId: update_daily_rent.userId,
-      },
-    });
+    const daily_rent_tran_amount_response =
+      await prisma.daily_rent_transact.create({
+        data: {
+          gstinvoice: isrestart ? 1 : gstnumber.number,
+          rentId: payload.rentid,
+          shopId: update_daily_rent.shopId,
+          amount: amount,
+          transaction_date: payload.startdate.toISOString(),
+          paymentmode: "ONLINE",
+          transactionid: `${uniqueid}111${isrestart ? 1 : gstnumber.number}`,
+          bankname: payload.bankname,
+          trackid: `500${isrestart ? 1 : gstnumber.number}`,
+          reconcilation: new Date(),
+          remarks: payload.transactionid,
+          orderid: payload.orderid,
+          status: "PAID",
+          deletedAt: null,
+          createdById: payload.approvedById,
+          userId: update_daily_rent.userId,
+        },
+      });
 
-    if (!update_response)
+    if (!daily_rent_tran_amount_response)
+      return {
+        status: false,
+        data: null,
+        message: "Something Went wrong unable to pay rent. Please try again.",
+        functionname: "PayDailyRent",
+      };
+
+    const daily_rent_tran_deposit_response =
+      await prisma.daily_rent_transact.create({
+        data: {
+          gstinvoice: isrestart ? 1 : gstnumber.number,
+          rentId: payload.rentid,
+          shopId: update_daily_rent.shopId,
+          amount: deposit_amount,
+          transaction_date: payload.startdate.toISOString(),
+          paymentmode: "ONLINE",
+          transactionid: `${uniqueid}111${isrestart ? 1 : gstnumber.number}`,
+          bankname: payload.bankname,
+          trackid: `500${isrestart ? 1 : gstnumber.number}`,
+          reconcilation: new Date(),
+          remarks: payload.transactionid,
+          orderid: payload.orderid,
+          status: "PAID",
+          deletedAt: null,
+          createdById: payload.approvedById,
+          userId: update_daily_rent.userId,
+        },
+      });
+
+    if (!daily_rent_tran_deposit_response)
       return {
         status: false,
         data: null,

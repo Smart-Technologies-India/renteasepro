@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
 import { getCookie } from "cookies-next";
-import { daily_property, daily_rent, daily_shop } from "@prisma/client";
+import { daily_property, daily_rent, daily_shop, user } from "@prisma/client";
 import { formateDate } from "@/utils/methods";
 import { useRouter } from "next/navigation";
 import IsProfileCompleted from "@/action/user/isprofilecompleted";
@@ -24,7 +24,10 @@ const UserBookingPage = () => {
 
   const [booking, setBooking] = useState<
     Array<
-      daily_rent & { daily_shop: daily_shop & { property: daily_property } }
+      daily_rent & {
+        daily_shop: daily_shop & { property: daily_property };
+        user: user;
+      }
     >
   >([]);
 
@@ -87,6 +90,7 @@ const UserBookingPage = () => {
               (
                 val: daily_rent & {
                   daily_shop: daily_shop & { property: daily_property };
+                  user: user;
                 },
                 index: number
               ) => (
@@ -122,7 +126,7 @@ const UserBookingPage = () => {
                   </TableCell>
                   <TableCell>
                     <Link
-                      href={`/dashboard/dailyshops/details/${val.daily_shop.id}`}
+                      href={`/dashboard/dailyshops/viewrent/${val.id}/${val.userId}`}
                       className="bg-blue-500 text-white rounded-md text-sm px-4 grid place-items-center h-8  hover:bg-blue-600"
                     >
                       View

@@ -76,6 +76,13 @@ const ViewPdf = (props: ViewPdfProps) => {
         transactionid: props.transactionid,
       });
 
+      console.log(historyresponse.data);
+      console.log({
+        rentid: props.rentid,
+        userid: props.userid,
+        transactionid: props.transactionid,
+      });
+
       if (historyresponse.status && historyresponse.data) {
         setHistory(historyresponse.data);
 
@@ -302,7 +309,6 @@ const ViewPdf = (props: ViewPdfProps) => {
   // };
 
   function getFinancialYear(transactionDate: string): string {
-
     const [day, month, year] = transactionDate.split("-").map(Number);
 
     // If the month is before April, it belongs to the previous financial year
@@ -619,11 +625,11 @@ const ViewPdf = (props: ViewPdfProps) => {
               ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                 (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                 (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
-              0.09 +
+                0.09 +
               ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                 (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                 (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
-              0.09}
+                0.09}
           </Text>
         </View>
         <Text
@@ -644,17 +650,17 @@ const ViewPdf = (props: ViewPdfProps) => {
             capitalcase(
               toWords.convert(
                 (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-                (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-                (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100 +
-                parseInt(rent?.deposit_amount ?? "0") +
-                ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                   (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-                  (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
-                0.09 +
-                ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-                  (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-                  (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
-                0.09
+                  (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100 +
+                  parseInt(rent?.deposit_amount ?? "0") +
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+                    0.09 +
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+                    0.09
               )
             ) +
             " Only"}
@@ -885,7 +891,7 @@ const ViewPdf = (props: ViewPdfProps) => {
                     ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                       (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                       (parseInt(rent?.handover_day_amount ?? "0") / 118) *
-                      100) *
+                        100) *
                     0.09 *
                     2
                   ).toFixed(2)
@@ -917,26 +923,26 @@ const ViewPdf = (props: ViewPdfProps) => {
               ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                 (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                 (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
-              0.09 +
+                0.09 +
               ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                 (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                 (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
-              0.09}
+                0.09}
             (
             {capitalcase(
               toWords.convert(
                 (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-                (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-                (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100 +
-                parseInt(rent?.deposit_amount ?? "0") +
-                ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                   (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-                  (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
-                0.09 +
-                ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-                  (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-                  (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
-                0.09
+                  (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100 +
+                  parseInt(rent?.deposit_amount ?? "0") +
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+                    0.09 +
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+                    0.09
               )
             ) + " Only"}
             )
@@ -1019,7 +1025,23 @@ const ViewPdf = (props: ViewPdfProps) => {
               margin: "4px 0",
             }}
           >
-            1. The applicant shall manage all the parking arrangements of their guests by their own and shall not park the vehicles at service roads / main road. The applicant must not tamper with any of the car park systems, including access control, ventilation, fire protection, surveillance and communications in the parking area.
+            1. The DNHPDA reserves the right to cancel the allotment of space at
+            Kala-Kendra, Auditorium and Banquet Hall in case of any government
+            functions without assigning any reason thereof.
+          </Text>
+
+          <Text
+            style={{
+              fontSize: 10,
+              color: "grey",
+              width: "100%",
+              margin: "4px 0",
+            }}
+          >
+            2. The applicant shall ensure that they shall maintain the floor and
+            premises of the Banquet hall clean by avoiding littering of food
+            materials over the wooden floors, by sufficient provision of waste
+            bins etc.
           </Text>
           <Text
             style={{
@@ -1029,7 +1051,13 @@ const ViewPdf = (props: ViewPdfProps) => {
               margin: "4px 0",
             }}
           >
-            2. The applicant shall ensure that they shall maintain the floor and premises of the Banquet hall clean by avoiding littering of food materials over the wooden floors, by sufficient provision of waste bins etc.
+            3. The applicant shall be responsible for maintaining cleanliness
+            and hygiene during and after completion of function at the allotted
+            space area and all used premises. If the same is not maintained and
+            cleanness is not observed by the component authority, and penalty
+            shall be levied amounting to Rs. 5000/- and the security deposit
+            submitted to the department shall be forfeited without any further
+            explanation.
           </Text>
           <Text
             style={{
@@ -1039,7 +1067,8 @@ const ViewPdf = (props: ViewPdfProps) => {
               margin: "4px 0",
             }}
           >
-            3. The applicant shall be responsible for maintaining cleanliness and hygiene during and after completion of function at the allotted space area and all used premises. If the same is not maintained and cleanness is not observed by the component authority, and penalty shall be levied amounting to Rs. 5000/- and the security deposit submitted to the department shall be forfeited without any further explanation.
+            4. The applicant shall not stick any adhesive based posters in the
+            entire premises.
           </Text>
           <Text
             style={{
@@ -1049,7 +1078,14 @@ const ViewPdf = (props: ViewPdfProps) => {
               margin: "4px 0",
             }}
           >
-            4. The applicant shall not stick any adhesive based posters in the entire premises.
+            5. The applicant shall ensure that there shall not be any damages to
+            the assets such as Auditorium and Banquet Hall/Exhibition Hall
+            space, Acoustic wall panels, lighting components, floor carpets,
+            stage platform, mic podiums, projectors, lighting Components and its
+            accessories, Audio sound system and accessories, seating chairs,
+            V.I.P chairs, recliners, electrical connections, main stage
+            accessories, viewers chairs at Pavilion area, seating steps at Open
+            air Amphitheatre area etc. of the allotted space area/ premises.
           </Text>
           <Text
             style={{
@@ -1059,7 +1095,10 @@ const ViewPdf = (props: ViewPdfProps) => {
               margin: "4px 0",
             }}
           >
-            5. The applicant shall ensure that there shall not be any damages to the assets such as Auditorium and Banquet Hall/Exhibition Hall space, Acoustic wall panels, lighting components, floor carpets, stage platform, mic podiums, projectors, lighting Components and its accessories, Audio sound system and accessories, seating chairs, V.I.P chairs, recliners, electrical connections, main stage accessories, viewers chairs at Pavilion area, seating steps at Open air Amphitheatre area etc. of the allotted space area/ premises.
+            6. The penalty of Rs. 100/- per Sq. Mt is imposed in case the
+            applicant has not taken the permission and approval from the
+            competent authority for utilizing the extra open space (Outer space)
+            occupied for function other than allotment space.
           </Text>
           <Text
             style={{
@@ -1069,7 +1108,8 @@ const ViewPdf = (props: ViewPdfProps) => {
               margin: "4px 0",
             }}
           >
-            6. The penalty of Rs. 100/- per Sq. Mt is imposed in case the applicant has not taken the permission and approval from the competent authority for utilizing the extra open space (Outer space) occupied for function other than allotment space.
+            7. Havan, Pooja, Outdoor cooking, Tandoor etc. is prohibited in the
+            Extra Open Space (Outer Space).
           </Text>
           <Text
             style={{
@@ -1079,7 +1119,8 @@ const ViewPdf = (props: ViewPdfProps) => {
               margin: "4px 0",
             }}
           >
-            7. Havan, Pooja, Outdoor cooking, Tandoor etc. is prohibited in the Extra Open Space (Outer Space).
+            8. The entire premises shall be available from 7:00 AM to 10:00 PM
+            only.
           </Text>
           <Text
             style={{
@@ -1089,7 +1130,8 @@ const ViewPdf = (props: ViewPdfProps) => {
               margin: "4px 0",
             }}
           >
-            8. The entire premises shall be available from 7:00 AM to 10:00 PM only.
+            9. The applicant shall obey the timing orders and failing to do so,
+            shall lead to forfeiture of the deposit submitted by the applicant.
           </Text>
           <Text
             style={{
@@ -1099,7 +1141,10 @@ const ViewPdf = (props: ViewPdfProps) => {
               margin: "4px 0",
             }}
           >
-            9. The applicant shall obey the timing orders and failing to do so, shall lead to forfeiture of the deposit submitted by the applicant.
+            10. Havan, Pooja, Katha, Crackers etc. shall not be allowed and is
+            strictly prohibited in Auditorium Hall, Banquet hall, Exhibition
+            Hall, Bride room and Groom Room. The same shall only be allowed in
+            Open Air Amphitheatre with all the preventive measures.
           </Text>
           <Text
             style={{
@@ -1109,7 +1154,9 @@ const ViewPdf = (props: ViewPdfProps) => {
               margin: "4px 0",
             }}
           >
-            10. Havan, Pooja, Katha, Crackers etc. shall not be allowed and is strictly prohibited in Auditorium Hall, Banquet hall, Exhibition Hall, Bride room and Groom Room. The same shall only be allowed in Open Air Amphitheatre with all the preventive measures.
+            11. Eating and drinking is strictly prohibited inside the Auditorium
+            Halls and if found, the applicant shall have to pay a penalty amount
+            of Rs. 5000/- to the concerned department.
           </Text>
           <Text
             style={{
@@ -1119,7 +1166,11 @@ const ViewPdf = (props: ViewPdfProps) => {
               margin: "4px 0",
             }}
           >
-            11. Eating and drinking is strictly prohibited inside the Auditorium Halls and if found, the applicant shall have to pay a penalty amount of Rs. 5000/- to the concerned department.
+            12. After receiving or informing the applicant about the Allotment
+            Order, the payment should be done within a week by the applicant. If
+            the applicant fails to do so, the booked date / allotted date shall
+            be considered as cancelled without any intimation and same shall be
+            allotted to the other applicant in the queue.
           </Text>
           <Text
             style={{
@@ -1129,7 +1180,8 @@ const ViewPdf = (props: ViewPdfProps) => {
               margin: "4px 0",
             }}
           >
-            12. After receiving or informing the applicant about the Allotment Order, the payment should be done within a week by the applicant. If the applicant fails to do so, the booked date / allotted date shall be considered as cancelled without any intimation and same shall be allotted to the other applicant in the queue.
+            13. If the applicant has to change their booked date / allotted
+            date, 25% shifting charges shall be applied.
           </Text>
           <Text
             style={{
@@ -1139,7 +1191,9 @@ const ViewPdf = (props: ViewPdfProps) => {
               margin: "4px 0",
             }}
           >
-            13. If the applicant has to change their booked date / allotted date, 25% shifting charges shall be applied.
+            14. If the applicant has to cancel their booked date / allotted
+            date, 50% Cancellation charges shall be applied and the remaining
+            amount shall be transferred to the applicant by the department.
           </Text>
           <Text
             style={{
@@ -1149,7 +1203,9 @@ const ViewPdf = (props: ViewPdfProps) => {
               margin: "4px 0",
             }}
           >
-            14. If the applicant has to cancel their booked date / allotted date, 50% Cancellation charges shall be applied and the remaining amount shall be transferred to the applicant by the department.
+            15. If the applicant has to cancel their booked date / allotted date
+            before 1 week, in that case 100% Cancellation charge shall be
+            applied.
           </Text>
           <Text
             style={{
@@ -1159,7 +1215,11 @@ const ViewPdf = (props: ViewPdfProps) => {
               margin: "4px 0",
             }}
           >
-            15. If the applicant has to cancel their booked date / allotted date before 1 week, in that case 100% Cancellation charge shall be applied.
+            16. Smoking, drinking of alcohol, non-vegetarian food, chewing of
+            tobacco is strictly prohibited in the entire premises and if found,
+            you shall have to pay a penalty amount of Rs. 5000/- and also the
+            security deposit submitted to the department shall be forfeited
+            without any further explanation.
           </Text>
           <Text
             style={{
@@ -1169,7 +1229,9 @@ const ViewPdf = (props: ViewPdfProps) => {
               margin: "4px 0",
             }}
           >
-            16. Smoking, drinking of alcohol, non-vegetarian food, chewing of tobacco is strictly prohibited in the entire premises and if found, you shall have to pay a penalty amount of Rs. 5000/- and also the security deposit submitted to the department shall be forfeited without any further explanation.
+            17. Violation or lapses found in any of the above conditions by the
+            applicant, the competent authority has the right to take necessary
+            action or by imposing the penalty as assigned thereof.
           </Text>
           <Text
             style={{
@@ -1179,17 +1241,11 @@ const ViewPdf = (props: ViewPdfProps) => {
               margin: "4px 0",
             }}
           >
-            17. Violation or lapses found in any of the above conditions by the applicant, the competent authority has the right to take necessary action or by imposing the penalty as assigned thereof.
-          </Text>
-          <Text
-            style={{
-              fontSize: 10,
-              color: "grey",
-              width: "100%",
-              margin: "4px 0",
-            }}
-          >
-            18. The DNHPDA reserves the right to cancel the allotment of space at Kala-Kendra, Auditorium and Banquet Hall in case of any government functions without assigning any reason thereof.
+            18. The applicant shall manage all the parking arrangements of their
+            guests by their own and shall not park the vehicles at service roads
+            / main road. The applicant must not tamper with any of the car park
+            systems, including access control, ventilation, fire protection,
+            surveillance and communications in the parking area.
           </Text>
         </View>
 
@@ -1247,11 +1303,11 @@ const ViewPdf = (props: ViewPdfProps) => {
                   ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                     (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                     (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
-                  0.09 +
+                    0.09 +
                   ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                     (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                     (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
-                  0.09}
+                    0.09}
                 /-
               </Text>
             </View>
