@@ -7,7 +7,7 @@ import GetDailyShopFromProperty from "@/action/daily_property/getshopsfromproper
 import BackButton from "@/components/backbutton";
 import { LucideArrowBigLeft, LucideArrowBigRight } from "@/components/icons";
 import { capitalcase, removeDuplicates } from "@/utils/methods";
-import { ShopStatus, daily_shop, property, shop } from "@prisma/client";
+import { ShopStatus, daily_property, daily_shop, property, shop } from "@prisma/client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -19,7 +19,7 @@ const PropertiesView = (props: PropertiesViewProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [shops, setShops] = useState<daily_shop[]>([]);
 
-  const [property, setProperty] = useState<property>();
+  const [property, setProperty] = useState<daily_property>();
 
   const [category, setCategory] = useState<string[]>(["All"]);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");

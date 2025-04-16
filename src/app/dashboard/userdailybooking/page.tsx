@@ -9,7 +9,7 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { property } from "@prisma/client";
+import { daily_property, property } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";
@@ -18,13 +18,13 @@ import { useEffect, useRef, useState } from "react";
 
 const Properties = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [properties, setProperties] = useState<property[]>([]);
+  const [properties, setProperties] = useState<daily_property[]>([]);
   const [search, setSearch] = useState<boolean>(false);
 
   const [searchbox, setSeachBox] = useState<boolean>(false);
 
   const searchtext = useRef<HTMLInputElement>(null);
-  const [searchresult, setSearchresult] = useState<property[]>([]);
+  const [searchresult, setSearchresult] = useState<daily_property[]>([]);
 
   const userid: number = parseInt(getCookie("id") ?? "0");
   const router = useRouter();

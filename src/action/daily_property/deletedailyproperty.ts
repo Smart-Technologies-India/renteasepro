@@ -2,7 +2,7 @@
 
 import { errorToString } from "@/utils/methods";
 import { ApiResponseType } from "@/models/response";
-import { property } from "@prisma/client";
+import { daily_property, property } from "@prisma/client";
 import prisma from "../../../prisma/database";
 
 interface DeleteDailyPropertyPayload {
@@ -12,7 +12,7 @@ interface DeleteDailyPropertyPayload {
 
 const DeleteDailyProperty = async (
   payload: DeleteDailyPropertyPayload
-): Promise<ApiResponseType<property | null>> => {
+): Promise<ApiResponseType<daily_property | null>> => {
   try {
     const property = await prisma.daily_property.findFirst({
       where: {

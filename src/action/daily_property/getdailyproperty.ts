@@ -2,7 +2,7 @@
 
 import { errorToString } from "@/utils/methods";
 import { ApiResponseType } from "@/models/response";
-import { Status, property } from "@prisma/client";
+import { Status, daily_property, property } from "@prisma/client";
 import prisma from "../../../prisma/database";
 
 interface GetDailyPropertyPayload {
@@ -11,7 +11,7 @@ interface GetDailyPropertyPayload {
 
 const GetDailyProperty = async (
   payload: GetDailyPropertyPayload
-): Promise<ApiResponseType<property | null>> => {
+): Promise<ApiResponseType<daily_property | null>> => {
   try {
     const property = await prisma.daily_property.findFirst({
       where: {
