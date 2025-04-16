@@ -2,14 +2,14 @@
 
 import { errorToString } from "@/utils/methods";
 import { ApiResponseType } from "@/models/response";
-import { property } from "@prisma/client";
+import { daily_property, property } from "@prisma/client";
 import prisma from "../../../prisma/database";
 
 interface AllDailyPropertysPayload {}
 
 const AllDailyPropertys = async (
   payload: AllDailyPropertysPayload
-): Promise<ApiResponseType<property[] | null>> => {
+): Promise<ApiResponseType<daily_property[] | null>> => {
   try {
     const allpropertys = await prisma.daily_property.findMany({
       where: {
