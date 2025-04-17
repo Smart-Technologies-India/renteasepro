@@ -43,7 +43,11 @@ const GetDailyRentById = async (
           include: {
             property: true,
             shop_category: true,
-            daily_rent_transact: true,
+            daily_rent_transact: {
+              where: {
+                rentId: parseInt(payload.id.toString() ?? "0"),
+              },
+            },
           },
         },
       },

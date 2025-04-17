@@ -56,21 +56,7 @@ const CreateRentPage = (props: CreateRentProps) => {
     | null
   >();
 
-  const property = useRef<HTMLInputElement>(null);
-  const shop = useRef<HTMLInputElement>(null);
-  const [startDate, setStartDate] = useState<Date>();
-  const [endDate, setEndDate] = useState<Date>();
-
-  // const [amount, setAmount] = useState<string | null>(null);
-  const chargeone = useRef<HTMLInputElement>(null);
-  const chargetwo = useRef<HTMLInputElement>(null);
-  const chargeThree = useRef<HTMLInputElement>(null);
-
-  const [purpose, setPurpose] = useState<string>("");
-
   const [user, setUser] = useState<user | null>(null);
-
-  const [rentdates, setRentdates] = useState<Date[]>([]);
 
   useEffect(() => {
     const init = async () => {
@@ -81,7 +67,6 @@ const CreateRentPage = (props: CreateRentProps) => {
       });
 
       if (dailyrentresponse.status && dailyrentresponse.data) {
-        console.log(dailyrentresponse.data);
         setRentData(dailyrentresponse.data);
 
         const userresponse = await GetUser({ id: createuserid });
@@ -95,24 +80,6 @@ const CreateRentPage = (props: CreateRentProps) => {
         if (shopresponse.status) {
           setShopData(shopresponse.data ?? null);
         }
-
-        const rentresponse = await GetDailyRent({
-          id: dailyrentresponse.data.shopId,
-        });
-
-        if (rentresponse.status) {
-          let rentdates_temp: Date[] = [];
-          rentresponse.data?.forEach((rent) => {
-            let start_date = new Date(rent.event_from_date);
-            let end_date = new Date(rent.event_to_date);
-
-            let dates = eachDayOfInterval({ start: start_date, end: end_date });
-
-            rentdates_temp.push(...dates);
-          });
-
-          setRentdates(rentdates_temp);
-        }
       }
 
       setLoading(false);
@@ -125,18 +92,6 @@ const CreateRentPage = (props: CreateRentProps) => {
     amount: string;
     month: string;
   }
-
-  const [handover, setHandover] = useState<boolean>(false);
-  const [prepration, setPrepration] = useState<boolean>(false);
-
-  // days between from date to to date include last date
-  const datecount = (): number => {
-    if (startDate && endDate) {
-      const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
-      return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-    }
-    return 0;
-  };
 
   const [open, setOpen] = useState(false);
 
@@ -155,14 +110,16 @@ const CreateRentPage = (props: CreateRentProps) => {
             <BackButton />
             <p className="text-gray-500 text-xl gap-4">View rent for Unit</p>
             <div className="grow"></div>
-            {rentData?.daily_shop.daily_rent_transact.length == 2 ? null : (
+            {rentData?.daily_shop.daily_rent_transact.filter(
+              (val: daily_rent_transact) => val.status == "PAID"
+            ).length == 1 ? (
               <button
                 onClick={() => {
                   const nanoid = customAlphabet("1234567890abcdef", 10);
                   const uniqueid = nanoid();
                   router.push(
                     `/payamount?xlmnx=${rentData?.deposit_amount!}&ynboy=${uniqueid}&zgvfz=${
-                      rentData?.id
+                      rentData?.daily_shop.daily_rent_transact[1]?.id
                     }_0_0_deposit&name=${user?.firstName}-${
                       user?.lastName
                     }&email=${user?.email}&mobile=${user?.contactone}`
@@ -172,9 +129,11 @@ const CreateRentPage = (props: CreateRentProps) => {
               >
                 Pay Deposit
               </button>
-            )}
+            ) : null}
 
-            {rentData?.daily_shop.daily_rent_transact.length != 0 && (
+            {rentData?.daily_shop.daily_rent_transact.filter(
+              (val: daily_rent_transact) => val.status == "PAID"
+            ).length != 0 && (
               <button
                 onClick={() => {
                   router.push(

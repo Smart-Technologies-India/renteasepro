@@ -19,6 +19,7 @@ import { DatePicker, Space } from "antd";
 import GetDailyRent from "@/action/dailyrent/getdailyrent";
 import { customAlphabet } from "nanoid";
 import GetUser from "@/action/user/getuser";
+import BackButton from "@/components/backbutton";
 
 const { RangePicker } = DatePicker;
 
@@ -238,7 +239,10 @@ const CreateRentPage = (props: CreateRentProps) => {
     <>
       <div className="p-6">
         <div className="bg-white rounded-sm shadow-sm p-4">
-          <p className="text-gray-500 text-xl">Add rent for Unit</p>
+          <div className="flex gap-2">
+            <BackButton />
+            <p className="text-gray-500 text-xl">Add rent for Unit</p>
+          </div>
 
           <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">
