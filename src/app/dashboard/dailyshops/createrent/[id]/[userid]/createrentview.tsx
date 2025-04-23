@@ -138,6 +138,7 @@ const CreateRentPage = (props: CreateRentProps) => {
         ...(handover && { handover_day: addDays(endDate!, 1).toISOString() }),
         // is_approved: true,
         // approvedById: createuserid,
+        status: "DEPOSITDUE",
       });
 
       if (!(createrent.status && createrent.data)) {

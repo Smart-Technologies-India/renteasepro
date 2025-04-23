@@ -6,7 +6,6 @@ import prisma from "../../../prisma/database";
 import { daily_shop, Floors, shop } from "@prisma/client";
 
 interface CreateDailyShopPayload {
-  shopCategoryId: number;
   propertyId: number;
   creadtedById: number;
   name: string;
@@ -38,7 +37,7 @@ const CreateDailyShop = async (
 
     const shop = await prisma.daily_shop.create({
       data: {
-        shopCategoryId: payload.shopCategoryId,
+        shopCategoryId: 10,
         propertyId: payload.propertyId,
         name: payload.name,
         capacity: payload.capacity,

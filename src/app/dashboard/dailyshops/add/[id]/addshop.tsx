@@ -5,16 +5,8 @@ import AllShopCategorys from "@/action/shop_category/allshopcategory";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { CreateUnitSchema } from "@/schema/createunit";
-import { Floors, shop_category } from "@prisma/client";
+import { shop_category } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -33,7 +25,7 @@ const AddShopPage = (props: AddShopPageProps) => {
   const [isLoading, setLoading] = useState<boolean>(true);
   const [isCreating, setIsCreating] = useState<boolean>(false);
   const [shop_category, setShopCategory] = useState<shop_category[]>([]);
-  const [shopcategory, setshopcategory] = useState<number>(0);
+  // const [shopcategory, setshopcategory] = useState<number>(0);
   // const [floor, setFloor] = useState<Floors>(Floors.GROUND);
 
   // const shopnumber = useRef<HTMLInputElement>(null);
@@ -64,7 +56,7 @@ const AddShopPage = (props: AddShopPageProps) => {
     setIsCreating(true);
     const result = safeParse(CreateUnitSchema, {
       id: parseInt(props.id.toString()),
-      shopCategoryId: shopcategory,
+      // shopCategoryId: shopcategory,
       name: name.current?.value!,
       capacity: parseInt(capacity.current?.value!),
       rate_per_day: rate_per_day.current?.value!,
@@ -76,7 +68,7 @@ const AddShopPage = (props: AddShopPageProps) => {
     if (result.success) {
       const createshop = await CreateDailyShop({
         propertyId: parseInt(props.id.toString()),
-        shopCategoryId: shopcategory,
+        // shopCategoryId: shopcategory,
         creadtedById: userid,
         name: name.current?.value!,
         capacity: parseInt(capacity.current?.value!),
@@ -128,8 +120,8 @@ const AddShopPage = (props: AddShopPageProps) => {
                 value={props.name}
               />
             </div>
-            <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label htmlFor="category">
+            {/* <div className="grid items-center gap-1.5 w-full mt-4"> */}
+            {/* <Label htmlFor="category">
                 Select Shop Category <span className="text-rose-500">*</span>
               </Label>
               <Select
@@ -149,8 +141,8 @@ const AddShopPage = (props: AddShopPageProps) => {
                     ))}
                   </SelectGroup>
                 </SelectContent>
-              </Select>
-            </div>
+              </Select> */}
+            {/* </div> */}
           </div>
 
           <div className="flex gap-4">

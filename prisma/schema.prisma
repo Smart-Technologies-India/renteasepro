@@ -98,6 +98,16 @@ enum RentStatus {
   COMPLETED
 }
 
+enum DailyRentStatus {
+  NONE
+  DEPOSITDUE
+  UPCOMING
+  REFUNDDUE
+  COMPLETED
+  CANCELLED
+  USERCANCELLED
+}
+
 enum RentTransactStatus {
   PAID
   DUE
@@ -1009,7 +1019,7 @@ model daily_rent {
   approvedById        Int?
   approved_date       DateTime?
   remarks             String?               @db.MediumText
-  status              RentStatus            @default(RUNNING)
+  status              DailyRentStatus       @default(DEPOSITDUE)
   createdAt           DateTime              @default(now())
   createdBy           user                  @relation("daily_rent_createdBy_userId", fields: [createdById], references: [id])
   createdById         Int

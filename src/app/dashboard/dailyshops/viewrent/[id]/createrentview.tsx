@@ -3,11 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+
 import { useEffect, useRef, useState } from "react";
 import { addDays, eachDayOfInterval, format, isAfter, subDays } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
@@ -154,6 +150,7 @@ const CreateRentPage = (props: CreateRentProps) => {
         ...(handover && { handover_day: addDays(endDate!, 1).toISOString() }),
         // is_approved: true,
         // approvedById: createuserid,
+        status: "DEPOSITDUE",
       });
 
       if (!(createrent.status && createrent.data)) {

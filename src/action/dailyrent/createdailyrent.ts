@@ -3,7 +3,11 @@
 import { errorToString } from "@/utils/methods";
 import { ApiResponseType } from "@/models/response";
 import prisma from "../../../prisma/database";
-import { daily_rent, daily_rent_transact } from "@prisma/client";
+import {
+  daily_rent,
+  daily_rent_transact,
+  DailyRentStatus,
+} from "@prisma/client";
 
 interface CreateDailyRentPayload {
   shopId: number;
@@ -20,6 +24,7 @@ interface CreateDailyRentPayload {
   handover_day?: string;
   is_approved?: boolean;
   approvedById?: number;
+  status: DailyRentStatus;
 }
 
 function toUTCDate(dateStr: string) {
@@ -55,7 +60,20 @@ const CreateDailyRent = async (
       where: {
         shopId: payload.shopId,
         is_cancel: false,
-        status: "RUNNING",
+        OR: [
+          {
+            status: "COMPLETED",
+          },
+          {
+            status: "DEPOSITDUE",
+          },
+          {
+            status: "REFUNDDUE",
+          },
+          {
+            status: "UPCOMING",
+          },
+        ],
       },
     });
 
@@ -115,7 +133,7 @@ const CreateDailyRent = async (
       userId: payload.userId,
       createdById: payload.createdById,
 
-      status: "RUNNING",
+      status: payload.status,
     };
 
     if (payload.prep_day) {
@@ -144,7 +162,6 @@ const CreateDailyRent = async (
       };
     }
 
-
     const create_rent_transaction = await prisma.daily_rent_transact.create({
       data: {
         rentId: rent_data.id,
@@ -164,7 +181,6 @@ const CreateDailyRent = async (
         functionname: "CreateDailyRent",
       };
     }
-
 
     return {
       status: true,

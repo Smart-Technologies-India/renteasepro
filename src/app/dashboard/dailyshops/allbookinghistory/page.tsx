@@ -146,9 +146,9 @@ const AllBookingHistory = () => {
                               `/dashboard/dailyrentrecept/${rentdata.user.id}/${rentdata.id}/${rentdata.rent_transact[0].id}`
                             );
                           }}
-                          className="cursor-pointer bg-blue-500 text-sm px-6 py-1 rounded-md text-white"
+                          className="cursor-pointer bg-blue-500 text-sm px-2 py-1 rounded-md text-white text-nowrap"
                         >
-                          View Rent Receipt
+                          View Receipt
                         </button>
                       ) : (
                         <p className="text-sm text-gray-500">No Receipt</p>
