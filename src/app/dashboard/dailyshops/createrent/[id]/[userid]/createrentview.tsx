@@ -15,12 +15,11 @@ import GetDailyShop from "@/action/dailyshop/getdailyshop";
 import CreateDailyRent from "@/action/dailyrent/createdailyrent";
 import { CreateDailyRentSchema } from "@/schema/createdailyrent";
 import { Checkbox } from "@/components/ui/checkbox";
-import { DatePicker, Space } from "antd";
+import { DatePicker } from "antd";
 import GetDailyRent from "@/action/dailyrent/getdailyrent";
 import { customAlphabet } from "nanoid";
 import GetUser from "@/action/user/getuser";
 import BackButton from "@/components/backbutton";
-
 const { RangePicker } = DatePicker;
 
 interface CreateRentProps {
@@ -73,14 +72,31 @@ const CreateRentPage = (props: CreateRentProps) => {
 
       if (rentresponse.status) {
         let rentdates_temp: Date[] = [];
-        rentresponse.data?.forEach((rent) => {
-          let start_date = new Date(rent.event_from_date);
-          let end_date = new Date(rent.event_to_date);
+        rentresponse.data
+          ?.filter(
+            (rent) =>
+              !(
+                rent.status == "USERCANCELLED" ||
+                rent.status == "CANCELLED" ||
+                rent.status == "NONE" ||
+                rent.status == "FAILED"
+              )
+          )
+          .forEach((rent) => {
+            let start_date = new Date(rent.event_from_date);
+            let end_date = new Date(rent.event_to_date);
 
-          let dates = eachDayOfInterval({ start: start_date, end: end_date });
+            let dates = eachDayOfInterval({ start: start_date, end: end_date });
 
-          rentdates_temp.push(...dates);
-        });
+            rentdates_temp.push(...dates);
+
+            if (rent.prep_day) {
+              rentdates_temp.push(new Date(rent.prep_day));
+            }
+            if (rent.handover_day) {
+              rentdates_temp.push(new Date(rent.handover_day));
+            }
+          });
 
         setRentdates(rentdates_temp);
       }
@@ -138,7 +154,7 @@ const CreateRentPage = (props: CreateRentProps) => {
         ...(handover && { handover_day: addDays(endDate!, 1).toISOString() }),
         // is_approved: true,
         // approvedById: createuserid,
-        status: "DEPOSITDUE",
+        status: "FAILED",
       });
 
       if (!(createrent.status && createrent.data)) {
@@ -175,7 +191,8 @@ const CreateRentPage = (props: CreateRentProps) => {
         (prepration ? parseInt(shopData?.rate_prep_day) : 0) +
         (handover ? parseInt(shopData?.rate_handover_day) : 0);
 
-      router.push(
+      router.back();
+      window.open(
         `/payamount?xlmnx=${amount}&ynboy=${uniqueid}&zgvfz=${createrent.data.id}_0_0_dailyrent&name=${user?.firstName}-${user?.lastName}&email=${user?.email}&mobile=${user?.contactone}`
       );
     } else {
@@ -242,7 +259,7 @@ const CreateRentPage = (props: CreateRentProps) => {
         <div className="bg-white rounded-sm shadow-sm p-4">
           <div className="flex gap-2">
             <BackButton />
-            <p className="text-gray-500 text-xl">Add rent for Unit</p>
+            <p className="text-gray-500 text-xl">New Booking</p>
           </div>
 
           <div className="flex gap-4">
@@ -272,7 +289,8 @@ const CreateRentPage = (props: CreateRentProps) => {
           <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">
               <Label>
-                Rent start to end date <span className="text-rose-500">*</span>
+                Booking start to end date
+                <span className="text-rose-500">*</span>
               </Label>
               <RangePicker
                 disabledDate={(current) => {
@@ -494,7 +512,7 @@ const CreateRentPage = (props: CreateRentProps) => {
               <div className="grow"></div>
               <p>{handover ? shopData?.rate_handover_day : "0"}</p>
             </div>
-            <div className="flex w-full">
+            {/* <div className="flex w-full">
               <p>Deposit</p>
               <div className="grow"></div>
               <p>
@@ -502,7 +520,7 @@ const CreateRentPage = (props: CreateRentProps) => {
                   (prepration ? parseInt(shopData?.deposit_per_day) : 0) +
                   (handover ? parseInt(shopData?.deposit_per_day) : 0)}
               </p>
-            </div>
+            </div> */}
             <div className="w-full h-[1px] bg-gray-500"></div>
             <div className="flex w-full">
               <p>Total</p>
@@ -510,10 +528,7 @@ const CreateRentPage = (props: CreateRentProps) => {
               <p>
                 {datecount() * shopData?.rate_per_day +
                   (prepration ? parseInt(shopData?.rate_prep_day) : 0) +
-                  (handover ? parseInt(shopData?.rate_handover_day) : 0) +
-                  datecount() * shopData?.deposit_per_day +
-                  (prepration ? parseInt(shopData?.deposit_per_day) : 0) +
-                  (handover ? parseInt(shopData?.deposit_per_day) : 0)}
+                  (handover ? parseInt(shopData?.rate_handover_day) : 0)}
               </p>
             </div>
           </div>

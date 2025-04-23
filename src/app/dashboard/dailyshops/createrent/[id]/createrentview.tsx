@@ -90,14 +90,31 @@ const CreateRentPage = (props: CreateRentProps) => {
 
       if (rentresponse.status) {
         let rentdates_temp: Date[] = [];
-        rentresponse.data?.forEach((rent) => {
-          let start_date = new Date(rent.event_from_date);
-          let end_date = new Date(rent.event_to_date);
+        rentresponse.data
+          ?.filter(
+            (rent) =>
+              !(
+                rent.status == "USERCANCELLED" ||
+                rent.status == "CANCELLED" ||
+                rent.status == "NONE" ||
+                rent.status == "FAILED"
+              )
+          )
+          .forEach((rent) => {
+            let start_date = new Date(rent.event_from_date);
+            let end_date = new Date(rent.event_to_date);
 
-          let dates = eachDayOfInterval({ start: start_date, end: end_date });
+            let dates = eachDayOfInterval({ start: start_date, end: end_date });
 
-          rentdates_temp.push(...dates);
-        });
+            rentdates_temp.push(...dates);
+
+            if (rent.prep_day) {
+              rentdates_temp.push(new Date(rent.prep_day));
+            }
+            if (rent.handover_day) {
+              rentdates_temp.push(new Date(rent.handover_day));
+            }
+          });
 
         setRentdates(rentdates_temp);
       }
@@ -539,7 +556,7 @@ const CreateRentPage = (props: CreateRentProps) => {
               <div className="grow"></div>
               <p>{handover ? shopData?.rate_handover_day : "0"}</p>
             </div>
-            <div className="flex w-full">
+            {/* <div className="flex w-full">
               <p>Deposit</p>
               <div className="grow"></div>
               <p>
@@ -547,7 +564,7 @@ const CreateRentPage = (props: CreateRentProps) => {
                   (prepration ? parseInt(shopData?.deposit_per_day) : 0) +
                   (handover ? parseInt(shopData?.deposit_per_day) : 0)}
               </p>
-            </div>
+            </div> */}
             <div className="w-full h-[1px] bg-gray-500"></div>
             <div className="flex w-full">
               <p>Total</p>
@@ -555,10 +572,7 @@ const CreateRentPage = (props: CreateRentProps) => {
               <p>
                 {datecount() * shopData?.rate_per_day +
                   (prepration ? parseInt(shopData?.rate_prep_day) : 0) +
-                  (handover ? parseInt(shopData?.rate_handover_day) : 0) +
-                  datecount() * shopData?.deposit_per_day +
-                  (prepration ? parseInt(shopData?.deposit_per_day) : 0) +
-                  (handover ? parseInt(shopData?.deposit_per_day) : 0)}
+                  (handover ? parseInt(shopData?.rate_handover_day) : 0)}
               </p>
             </div>
           </div>

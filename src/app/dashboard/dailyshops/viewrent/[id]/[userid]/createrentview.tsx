@@ -16,7 +16,14 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { safeParse } from "valibot";
-import { addDays, eachDayOfInterval, format, isAfter, subDays } from "date-fns";
+import {
+  addDays,
+  eachDayOfInterval,
+  format,
+  isAfter,
+  set,
+  subDays,
+} from "date-fns";
 import { default as MulSelect } from "react-select";
 import GetDailyShop from "@/action/dailyshop/getdailyshop";
 import CreateDailyRent from "@/action/dailyrent/createdailyrent";
@@ -27,8 +34,12 @@ import GetDailyRent from "@/action/dailyrent/getdailyrent";
 import { customAlphabet } from "nanoid";
 import GetUser from "@/action/user/getuser";
 import GetDailyRentById from "@/action/dailyshop/getdailyrent";
-import { formateDate } from "@/utils/methods";
+import { formateDate, longtext } from "@/utils/methods";
 import BackButton from "@/components/backbutton";
+import Link from "next/link";
+import { request } from "http";
+import axios from "axios";
+import CreateRefundRequest from "@/action/refund/createrefundrequest";
 
 const { RangePicker } = DatePicker;
 
@@ -94,6 +105,105 @@ const CreateRentPage = (props: CreateRentProps) => {
   }
 
   const [open, setOpen] = useState(false);
+  const [depositeModelBox, setDepositeModelBox] = useState(false);
+
+  // photo upload start from here
+
+  interface FileGetResponse {
+    status: boolean;
+    path: string;
+  }
+
+  // const [getPhoto, setGetPhoto] = useState<FileGetResponse>({
+  //   status: false,
+  //   path: "",
+  // });
+
+  const [photo, setPhoto] = useState<File | null>(null);
+  const cPhoto = useRef<HTMLInputElement>(null);
+  const [photo2, setPhoto2] = useState<File | null>(null);
+  const cPhoto2 = useRef<HTMLInputElement>(null);
+  const [photo3, setPhoto3] = useState<File | null>(null);
+  const cPhoto3 = useRef<HTMLInputElement>(null);
+
+  const requestRefund = async () => {
+    if (photo == null) {
+      toast.error("Please upload photo", { theme: "light" });
+      return;
+    }
+    if (photo2 == null) {
+      toast.error("Please upload photo2", { theme: "light" });
+      return;
+    }
+    if (photo3 == null) {
+      toast.error("Please upload photo3", { theme: "light" });
+      return;
+    }
+    const formData = new FormData();
+    formData.append("file", photo);
+
+    const uploadfile = await axios.post(
+      process.env.UPLOAD_LINK ?? "",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    if (uploadfile.status != 200) {
+      return toast.error("File upload failed");
+    }
+
+    const formData2 = new FormData();
+    formData2.append("file", photo2);
+
+    const uploadfile2 = await axios.post(
+      process.env.UPLOAD_LINK ?? "",
+      formData2,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    if (uploadfile2.status != 200) {
+      return toast.error("File upload failed");
+    }
+    const formData3 = new FormData();
+    formData3.append("file", photo3);
+    const uploadfile3 = await axios.post(
+      process.env.UPLOAD_LINK ?? "",
+      formData3,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    if (uploadfile3.status != 200) {
+      return toast.error("File upload failed");
+    }
+
+    const response = await CreateRefundRequest({
+      creadtedById: createuserid,
+      rentId: rentData?.id!,
+      shopId: rentData?.shopId!,
+      actual_refund_amount: parseFloat(rentData?.deposit_amount ?? "0"),
+      photo1: uploadfile.data.path,
+      photo2: uploadfile2.data.path,
+      photo3: uploadfile3.data.path,
+    });
+
+    if (response.status) {
+      toast.success("Refund request created successfully", { theme: "light" });
+    } else {
+      toast.error(response.message, { theme: "light" });
+    }
+
+    setDepositeModelBox(false);
+  };
 
   if (isLoading)
     return (
@@ -110,6 +220,25 @@ const CreateRentPage = (props: CreateRentProps) => {
             <BackButton />
             <p className="text-gray-500 text-xl gap-4">View rent for Unit</p>
             <div className="grow"></div>
+
+            <button
+              onClick={() => {
+                setDepositeModelBox(true);
+                // const nanoid = customAlphabet("1234567890abcdef", 10);
+                // const uniqueid = nanoid();
+                // router.push(
+                //   `/payamount?xlmnx=${rentData?.deposit_amount!}&ynboy=${uniqueid}&zgvfz=${
+                //     rentData?.daily_shop.daily_rent_transact[1]?.id
+                //   }_0_0_deposit&name=${user?.firstName}-${
+                //     user?.lastName
+                //   }&email=${user?.email}&mobile=${user?.contactone}`
+                // );
+              }}
+              className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+            >
+              Request Refund
+            </button>
+
             {rentData?.daily_shop.daily_rent_transact.filter(
               (val: daily_rent_transact) => val.status == "PAID"
             ).length == 1 ? (
@@ -349,8 +478,117 @@ const CreateRentPage = (props: CreateRentProps) => {
           surveillance and communications in the parking area.
         </p>
       </Modal>
+      <Modal
+        centered
+        title="Request Refund"
+        open={depositeModelBox}
+        onCancel={() => setDepositeModelBox(false)}
+        footer={null}
+        // onOk={requestRefund}
+        width={800}
+        className="my-10 h-[600px]"
+      >
+        <DocUploader
+          title="Photo"
+          file={photo}
+          setFile={setPhoto}
+          cFile={cPhoto}
+        />
+        <DocUploader
+          title="Photo2"
+          file={photo2}
+          setFile={setPhoto2}
+          cFile={cPhoto2}
+        />
+        <DocUploader
+          title="Photo3"
+          file={photo3}
+          setFile={setPhoto3}
+          cFile={cPhoto3}
+        />
+        <div className="flex gap-4 mt-2 items-center bg-gray-100 px-2 py-2 rounded-sm">
+          <Label htmlFor="termfile">Refund Amount</Label>
+          <div className="grow"></div>
+          <p className="text-sm">{rentData?.deposit_amount}</p>
+        </div>
+        <div className="flex mt-2">
+          <div className="grow"></div>
+          <Button
+            onClick={requestRefund}
+            className="bg-blue-500 hover:bg-blue-600 text-white"
+          >
+            Request Refund
+          </Button>
+        </div>
+      </Modal>
     </>
   );
 };
 
 export default CreateRentPage;
+
+interface DocUploaderProps {
+  title: string;
+  file: File | null;
+  setFile: React.Dispatch<React.SetStateAction<File | null>>;
+  cFile: React.RefObject<HTMLInputElement>;
+}
+
+const DocUploader = (props: DocUploaderProps) => {
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+    if (selectedFile) {
+      const fileSize = selectedFile.size / (1024 * 1024);
+
+      if (fileSize < 5) {
+        if (
+          selectedFile.type.startsWith("image/") ||
+          selectedFile.type.startsWith("application/pdf")
+        ) {
+          props.setFile(selectedFile);
+        } else {
+          toast.error("Please select an image or pdf file.", {
+            theme: "light",
+          });
+        }
+      } else {
+        toast.error("File size must be less than 5 MB.", { theme: "light" });
+      }
+    }
+  };
+
+  return (
+    <div className="flex gap-4 mt-2 items-center bg-gray-100 px-2 py-2 rounded-sm">
+      <Label htmlFor="termfile">{props.title}</Label>
+      <div className="grow"></div>
+      <p className="text-sm">
+        {props.file != null ? longtext(props.file.name, 6) : "No File Selected"}
+      </p>
+      <Button
+        onClick={() => props.cFile.current?.click()}
+        variant={"secondary"}
+        className="bg-gray-200 hover:bg-gray-300 h-8"
+      >
+        {props.file == null ? "Upload File" : "Change File"}
+      </Button>
+      {props.file != null && (
+        <Link
+          target="_blank"
+          href={URL.createObjectURL(props.file!)}
+          className="bg-gray-200 text-black py-1 px-4 rounded-md text-sm h-8 grid place-items-center"
+        >
+          View File
+        </Link>
+      )}
+
+      <div className="hidden">
+        <Input
+          type="file"
+          ref={props.cFile}
+          accept="*/*"
+          onChange={handleFileChange}
+        />
+      </div>
+    </div>
+  );
+};

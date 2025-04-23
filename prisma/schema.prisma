@@ -106,6 +106,7 @@ enum DailyRentStatus {
   COMPLETED
   CANCELLED
   USERCANCELLED
+  FAILED
 }
 
 enum RentTransactStatus {
@@ -1073,13 +1074,18 @@ model refund_amount {
   daily_shop           daily_shop         @relation(fields: [shopId], references: [id])
   shopId               Int
   actual_refund_amount String
-  refunded_amount      String
-  transaction_date     DateTime           @default(now())
+  refunded_amount      String?
+  transaction_date     DateTime?          @default(now())
   paymentmode          String?
   transactionid        String?
   bankname             String?
   trackid              String?
   reconcilation        DateTime?
+  photo1               String?
+  photo2               String?
+  photo3               String?
+  photo4               String?
+  photo5               String?
   remarks              String?            @db.MediumText
   orderid              String?
   status               RentTransactStatus @default(INACTIVE)

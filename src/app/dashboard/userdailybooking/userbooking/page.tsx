@@ -117,13 +117,7 @@ const UserBookingPage = () => {
                         : 0)}
                   </TableCell>
 
-                  <TableCell>
-                    {val.is_approved == true
-                      ? "Accepted"
-                      : val.is_cancel == true
-                      ? "Cancel"
-                      : "Pending"}
-                  </TableCell>
+                  <TableCell>{val.status}</TableCell>
                   <TableCell>
                     <Link
                       href={`/dashboard/dailyshops/viewrent/${val.id}/${val.userId}`}

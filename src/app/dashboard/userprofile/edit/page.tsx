@@ -42,7 +42,6 @@ async function uploadfile(
   const formData = new FormData();
   formData.append("file", file!);
 
-
   const uploadfile = await axios.post(uploadurl, formData, {
     headers: {
       "Content-Type": "multipart/form-data",

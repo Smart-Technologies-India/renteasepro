@@ -69,14 +69,31 @@ const ShopView = (props: ShowShopProps) => {
 
       if (rentresponse.status) {
         let rentdates_temp: Date[] = [];
-        rentresponse.data?.forEach((rent) => {
-          let start_date = new Date(rent.event_from_date);
-          let end_date = new Date(rent.event_to_date);
+        rentresponse.data
+          ?.filter(
+            (rent) =>
+              !(
+                rent.status == "USERCANCELLED" ||
+                rent.status == "CANCELLED" ||
+                rent.status == "NONE" ||
+                rent.status == "FAILED"
+              )
+          )
+          .forEach((rent) => {
+            let start_date = new Date(rent.event_from_date);
+            let end_date = new Date(rent.event_to_date);
 
-          let dates = eachDayOfInterval({ start: start_date, end: end_date });
+            let dates = eachDayOfInterval({ start: start_date, end: end_date });
 
-          rentdates_temp.push(...dates);
-        });
+            if (rent.prep_day) {
+              dates.push(new Date(rent.prep_day));
+            }
+            if (rent.handover_day) {
+              dates.push(new Date(rent.handover_day));
+            }
+
+            rentdates_temp.push(...dates);
+          });
 
         setRentdates(rentdates_temp);
       }
