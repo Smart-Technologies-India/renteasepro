@@ -28,6 +28,7 @@ import { DatePicker, Space } from "antd";
 import GetDailyRent from "@/action/dailyrent/getdailyrent";
 import dayjs, { Dayjs } from "dayjs";
 import BackButton from "@/components/backbutton";
+import DepartmentCreateDailyRent from "@/action/dailyrent/departmentcreatedailyrent";
 
 const { RangePicker } = DatePicker;
 
@@ -132,11 +133,7 @@ const CreateRentPage = (props: CreateRentProps) => {
       event_amount: (datecount() * shopData?.rate_per_day).toString(),
       prep_day_amount: prepration ? shopData?.rate_prep_day : "0",
       handover_day_amount: handover ? shopData?.rate_handover_day : "0",
-      deposit_amount: (
-        datecount() * shopData?.deposit_per_day +
-        (prepration ? parseInt(shopData?.deposit_per_day) : 0) +
-        (handover ? parseInt(shopData?.deposit_per_day) : 0)
-      ).toString(),
+      deposit_amount: (shopData?.deposit_per_day).toString(),
       event_from_date: startDate,
       event_to_date: endDate,
       event_reason: purpose,
@@ -153,7 +150,7 @@ const CreateRentPage = (props: CreateRentProps) => {
         setIsCreating(false);
         return toast.error("End date should be bigger then start date");
       }
-      const createrent = await CreateDailyRent({
+      const createrent = await DepartmentCreateDailyRent({
         shopId: props.shopid,
         userId: userid,
         createdById: createuserid,
@@ -162,11 +159,7 @@ const CreateRentPage = (props: CreateRentProps) => {
         event_to_date: endDate!.toISOString(),
         prep_day_amount: prepration ? shopData?.rate_prep_day : "0",
         handover_day_amount: handover ? shopData?.rate_handover_day : "0",
-        deposit_amount: (
-          datecount() * shopData?.deposit_per_day +
-          (prepration ? parseInt(shopData?.deposit_per_day) : 0) +
-          (handover ? parseInt(shopData?.deposit_per_day) : 0)
-        ).toString(),
+        deposit_amount: (shopData?.deposit_per_day).toString(),
         event_reason: purpose,
         ...(prepration && { prep_day: subDays(startDate!, 1).toISOString() }), // Day before startDate
         ...(handover && { handover_day: addDays(endDate!, 1).toISOString() }),
@@ -182,7 +175,7 @@ const CreateRentPage = (props: CreateRentProps) => {
 
       toast.success("Unit booking request created successfully");
       // router.back();
-      router.push(`/dashboard/dailyshops/collectrent/${createrent.data.id}`);
+      // router.push(`/dashboard/dailyshops/collectrent/${createrent.data.id}`);
     } else {
       let errorMessage = "";
       if (result.issues[0].input) {
@@ -560,9 +553,7 @@ const CreateRentPage = (props: CreateRentProps) => {
               <p>Deposit</p>
               <div className="grow"></div>
               <p>
-                {datecount() * shopData?.deposit_per_day +
-                  (prepration ? parseInt(shopData?.deposit_per_day) : 0) +
-                  (handover ? parseInt(shopData?.deposit_per_day) : 0)}
+                {* shopData?.deposit_per_day}
               </p>
             </div> */}
             <div className="w-full h-[1px] bg-gray-500"></div>

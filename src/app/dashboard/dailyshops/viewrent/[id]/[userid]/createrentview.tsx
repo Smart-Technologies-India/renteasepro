@@ -8,6 +8,7 @@ import {
   daily_rent,
   daily_rent_transact,
   daily_shop,
+  refund_amount,
   shop_category,
   user,
 } from "@prisma/client";
@@ -15,16 +16,6 @@ import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { safeParse } from "valibot";
-import {
-  addDays,
-  eachDayOfInterval,
-  format,
-  isAfter,
-  set,
-  subDays,
-} from "date-fns";
-import { default as MulSelect } from "react-select";
 import GetDailyShop from "@/action/dailyshop/getdailyshop";
 import CreateDailyRent from "@/action/dailyrent/createdailyrent";
 import { CreateDailyRentSchema } from "@/schema/createdailyrent";
@@ -34,12 +25,16 @@ import GetDailyRent from "@/action/dailyrent/getdailyrent";
 import { customAlphabet } from "nanoid";
 import GetUser from "@/action/user/getuser";
 import GetDailyRentById from "@/action/dailyshop/getdailyrent";
-import { formateDate, longtext } from "@/utils/methods";
+import { formateDate, handleNumberChange, longtext } from "@/utils/methods";
 import BackButton from "@/components/backbutton";
 import Link from "next/link";
-import { request } from "http";
 import axios from "axios";
 import CreateRefundRequest from "@/action/refund/createrefundrequest";
+import GetRefundRequest from "@/action/refund/getrefundrequest";
+import Image from "next/image";
+import UpdateRefundRequest from "@/action/refund/udpaterefundrequest";
+import { Textarea } from "@/components/ui/textarea";
+import GetRefundRequest2 from "@/action/refund/getrefundrequest2";
 
 const { RangePicker } = DatePicker;
 
@@ -68,6 +63,71 @@ const CreateRentPage = (props: CreateRentProps) => {
   >();
 
   const [user, setUser] = useState<user | null>(null);
+  const [refundRequest, setRefundRequest] = useState<refund_amount | null>(
+    null
+  );
+
+  const [cencalRequest, setCencalRequest] = useState<refund_amount | null>(
+    null
+  );
+
+  const [refundRequest2, setRefundRequest2] = useState<refund_amount[]>([]);
+  const init = async () => {
+    setLoading(true);
+
+    const dailyrentresponse = await GetDailyRentById({
+      id: props.rentid,
+    });
+
+    if (dailyrentresponse.status && dailyrentresponse.data) {
+      setRentData(dailyrentresponse.data);
+
+      const refund_requestresponse2 = await GetRefundRequest2({
+        userId: props.userid,
+        rentId: dailyrentresponse.data.id,
+        shopId: dailyrentresponse.data.shopId,
+      });
+
+      if (refund_requestresponse2.status && refund_requestresponse2.data) {
+        setRefundRequest2(refund_requestresponse2.data);
+      }
+
+      const refund_requestresponse = await GetRefundRequest({
+        userId: props.userid,
+        rentId: dailyrentresponse.data.id,
+        shopId: dailyrentresponse.data.shopId,
+        retund_type: "DEPOSITREFUND",
+      });
+
+      if (refund_requestresponse.status && refund_requestresponse.data) {
+        setRefundRequest(refund_requestresponse.data);
+      }
+      const cencal_requestresponse = await GetRefundRequest({
+        userId: props.userid,
+        rentId: dailyrentresponse.data.id,
+        shopId: dailyrentresponse.data.shopId,
+        retund_type: "CANCELREFUND",
+      });
+
+      if (cencal_requestresponse.status && cencal_requestresponse.data) {
+        setCencalRequest(cencal_requestresponse.data);
+      }
+
+      const userresponse = await GetUser({ id: createuserid });
+      if (userresponse.status) {
+        setUser(userresponse.data!);
+      }
+
+      const shopresponse = await GetDailyShop({
+        id: dailyrentresponse.data.shopId,
+      });
+      if (shopresponse.status) {
+        setShopData(shopresponse.data ?? null);
+      }
+    }
+
+    setLoading(false);
+  };
 
   useEffect(() => {
     const init = async () => {
@@ -79,6 +139,37 @@ const CreateRentPage = (props: CreateRentProps) => {
 
       if (dailyrentresponse.status && dailyrentresponse.data) {
         setRentData(dailyrentresponse.data);
+
+        const refund_requestresponse2 = await GetRefundRequest2({
+          userId: props.userid,
+          rentId: dailyrentresponse.data.id,
+          shopId: dailyrentresponse.data.shopId,
+        });
+
+        if (refund_requestresponse2.status && refund_requestresponse2.data) {
+          setRefundRequest2(refund_requestresponse2.data);
+        }
+
+        const refund_requestresponse = await GetRefundRequest({
+          userId: props.userid,
+          rentId: dailyrentresponse.data.id,
+          shopId: dailyrentresponse.data.shopId,
+          retund_type: "DEPOSITREFUND",
+        });
+
+        if (refund_requestresponse.status && refund_requestresponse.data) {
+          setRefundRequest(refund_requestresponse.data);
+        }
+        const cencal_requestresponse = await GetRefundRequest({
+          userId: props.userid,
+          rentId: dailyrentresponse.data.id,
+          shopId: dailyrentresponse.data.shopId,
+          retund_type: "CANCELREFUND",
+        });
+
+        if (cencal_requestresponse.status && cencal_requestresponse.data) {
+          setCencalRequest(cencal_requestresponse.data);
+        }
 
         const userresponse = await GetUser({ id: createuserid });
         if (userresponse.status) {
@@ -106,6 +197,13 @@ const CreateRentPage = (props: CreateRentProps) => {
 
   const [open, setOpen] = useState(false);
   const [depositeModelBox, setDepositeModelBox] = useState(false);
+  const [dateChangeBox, setDateChangeBox] = useState(false);
+  const [refundRequestRemarkBox, setRefundRequestRemarkBox] = useState(false);
+  const [refundRequestBox, setRefundRequestBox] = useState(false);
+  const [userCancelBookingBox, setUserCancelBookingBox] = useState(false);
+
+  const [cencelRequestRemarkBox, setCencelRequestRemarkBox] = useState(false);
+  const [cencelRequestBox, setCencelRequestBox] = useState(false);
 
   // photo upload start from here
 
@@ -190,10 +288,11 @@ const CreateRentPage = (props: CreateRentProps) => {
       creadtedById: createuserid,
       rentId: rentData?.id!,
       shopId: rentData?.shopId!,
-      actual_refund_amount: parseFloat(rentData?.deposit_amount ?? "0"),
-      photo1: uploadfile.data.path,
-      photo2: uploadfile2.data.path,
-      photo3: uploadfile3.data.path,
+      refunded_amount: parseFloat(rentData?.deposit_amount ?? "0"),
+      photo1: uploadfile.data.filePath,
+      photo2: uploadfile2.data.filePath,
+      photo3: uploadfile3.data.filePath,
+      retund_type: "DEPOSITREFUND",
     });
 
     if (response.status) {
@@ -203,7 +302,132 @@ const CreateRentPage = (props: CreateRentProps) => {
     }
 
     setDepositeModelBox(false);
+    await init();
   };
+
+  const updaterequestRefundRemark = async () => {
+    if (remark.current?.value == "" || remark.current?.value == undefined) {
+      toast.error("Please enter remark", { theme: "light" });
+      return;
+    }
+
+    const response = await UpdateRefundRequest({
+      id: refundRequest?.id!,
+      remark: remark.current?.value!,
+      creadtedById: createuserid,
+      refund_type: "DEPOSITREFUND",
+    });
+    if (response.status) {
+      toast.success("Refund request updated successfully");
+    } else {
+      toast.error(response.message);
+    }
+    setRefundRequestRemarkBox(false);
+    await init();
+  };
+  const updaterequestRefund = async () => {
+    if (bankname.current?.value == "" || bankname.current?.value == undefined) {
+      toast.error("Please enter bank name", { theme: "light" });
+      return;
+    }
+    if (
+      paymentmode.current?.value == "" ||
+      paymentmode.current?.value == undefined
+    ) {
+      toast.error("Please enter payment mode", { theme: "light" });
+      return;
+    }
+    if (
+      transactionid.current?.value == "" ||
+      transactionid.current?.value == undefined
+    ) {
+      toast.error("Please enter transaction id", { theme: "light" });
+      return;
+    }
+
+    const response = await UpdateRefundRequest({
+      id: refundRequest?.id!,
+      bankname: bankname.current?.value!,
+      paymentmode: paymentmode.current?.value!,
+      transactionid: transactionid.current?.value!,
+      creadtedById: createuserid,
+      amount: refundamount.current?.value!,
+      refund_type: "DEPOSITREFUND",
+      status: "PAID",
+    });
+    if (response.status) {
+      toast.success("Refund request updated successfully");
+    } else {
+      toast.error(response.message);
+    }
+    setRefundRequestBox(false);
+    await init();
+  };
+  const updaterequestCancelRemark = async () => {
+    if (remark.current?.value == "" || remark.current?.value == undefined) {
+      toast.error("Please enter remark", { theme: "light" });
+      return;
+    }
+
+    const response = await UpdateRefundRequest({
+      id: cencalRequest?.id!,
+      remark: remark.current?.value!,
+      creadtedById: createuserid,
+      refund_type: "CANCELREFUND",
+    });
+    if (response.status) {
+      toast.success("Cancel request updated successfully");
+    } else {
+      toast.error(response.message);
+    }
+    setCencelRequestRemarkBox(false);
+    await init();
+  };
+
+  const updaterequestCancel = async () => {
+    if (bankname.current?.value == "" || bankname.current?.value == undefined) {
+      toast.error("Please enter bank name", { theme: "light" });
+      return;
+    }
+    if (
+      paymentmode.current?.value == "" ||
+      paymentmode.current?.value == undefined
+    ) {
+      toast.error("Please enter payment mode", { theme: "light" });
+      return;
+    }
+    if (
+      transactionid.current?.value == "" ||
+      transactionid.current?.value == undefined
+    ) {
+      toast.error("Please enter transaction id", { theme: "light" });
+      return;
+    }
+
+    const response = await UpdateRefundRequest({
+      id: cencalRequest?.id!,
+      bankname: bankname.current?.value!,
+      paymentmode: paymentmode.current?.value!,
+      transactionid: transactionid.current?.value!,
+      creadtedById: createuserid,
+      amount: refundamount.current?.value!,
+      refund_type: "CANCELREFUND",
+      status: "PAID",
+    });
+    if (response.status) {
+      toast.success("Cancel request updated successfully");
+    } else {
+      toast.error(response.message);
+    }
+    setCencelRequestBox(false);
+    await init();
+  };
+
+  const remark = useRef<HTMLTextAreaElement>(null);
+  const bankname = useRef<HTMLInputElement>(null);
+  const paymentmode = useRef<HTMLInputElement>(null);
+  const transactionid = useRef<HTMLInputElement>(null);
+  const refundamount = useRef<HTMLInputElement>(null);
 
   if (isLoading)
     return (
@@ -218,48 +442,73 @@ const CreateRentPage = (props: CreateRentProps) => {
         <div className="bg-white rounded-sm shadow-sm p-4">
           <div className="flex items-center gap-2">
             <BackButton />
-            <p className="text-gray-500 text-xl gap-4">View rent for Unit</p>
+            <p className="text-gray-500 text-xl gap-4">Booking Details</p>
             <div className="grow"></div>
 
-            <button
-              onClick={() => {
-                setDepositeModelBox(true);
-                // const nanoid = customAlphabet("1234567890abcdef", 10);
-                // const uniqueid = nanoid();
-                // router.push(
-                //   `/payamount?xlmnx=${rentData?.deposit_amount!}&ynboy=${uniqueid}&zgvfz=${
-                //     rentData?.daily_shop.daily_rent_transact[1]?.id
-                //   }_0_0_deposit&name=${user?.firstName}-${
-                //     user?.lastName
-                //   }&email=${user?.email}&mobile=${user?.contactone}`
-                // );
-              }}
-              className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
-            >
-              Request Refund
-            </button>
+            {user?.role == "USER" && (
+              <>
+                {rentData?.daily_shop.daily_rent_transact.filter(
+                  (val: daily_rent_transact) => val.status == "PAID"
+                ).length == 2 && refundRequest2.length == 0 ? (
+                  <button
+                    onClick={() => {
+                      setDateChangeBox(true);
+                    }}
+                    className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                  >
+                    Date Change
+                  </button>
+                ) : null}
+                {rentData?.daily_shop.daily_rent_transact.filter(
+                  (val: daily_rent_transact) => val.status == "PAID"
+                ).length == 2 &&
+                cencalRequest == null &&
+                refundRequest2.length == 0 ? (
+                  <button
+                    onClick={() => {
+                      setUserCancelBookingBox(true);
+                    }}
+                    className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                  >
+                    Cancel Booking
+                  </button>
+                ) : null}
 
-            {rentData?.daily_shop.daily_rent_transact.filter(
-              (val: daily_rent_transact) => val.status == "PAID"
-            ).length == 1 ? (
-              <button
-                onClick={() => {
-                  const nanoid = customAlphabet("1234567890abcdef", 10);
-                  const uniqueid = nanoid();
-                  router.push(
-                    `/payamount?xlmnx=${rentData?.deposit_amount!}&ynboy=${uniqueid}&zgvfz=${
-                      rentData?.daily_shop.daily_rent_transact[1]?.id
-                    }_0_0_deposit&name=${user?.firstName}-${
-                      user?.lastName
-                    }&email=${user?.email}&mobile=${user?.contactone}`
-                  );
-                }}
-                className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
-              >
-                Pay Deposit
-              </button>
-            ) : null}
+                {rentData?.daily_shop.daily_rent_transact.filter(
+                  (val: daily_rent_transact) => val.status == "PAID"
+                ).length == 2 && refundRequest == null ? (
+                  <button
+                    onClick={() => {
+                      setDepositeModelBox(true);
+                    }}
+                    className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                  >
+                    Request Refund
+                  </button>
+                ) : null}
 
+                {rentData?.daily_shop.daily_rent_transact.filter(
+                  (val: daily_rent_transact) => val.status == "PAID"
+                ).length == 1 ? (
+                  <button
+                    onClick={() => {
+                      const nanoid = customAlphabet("1234567890abcdef", 10);
+                      const uniqueid = nanoid();
+                      router.push(
+                        `/payamount?xlmnx=${rentData?.deposit_amount!}&ynboy=${uniqueid}&zgvfz=${
+                          rentData?.daily_shop.daily_rent_transact[1]?.id
+                        }_0_0_deposit&name=${user?.firstName}-${
+                          user?.lastName
+                        }&email=${user?.email}&mobile=${user?.contactone}`
+                      );
+                    }}
+                    className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                  >
+                    Pay Deposit
+                  </button>
+                ) : null}
+              </>
+            )}
             {rentData?.daily_shop.daily_rent_transact.filter(
               (val: daily_rent_transact) => val.status == "PAID"
             ).length != 0 && (
@@ -280,6 +529,61 @@ const CreateRentPage = (props: CreateRentProps) => {
             >
               Terms & Condition
             </button>
+
+            {["MANAGER"].includes(user?.role!) &&
+              refundRequest != null &&
+              refundRequest.status != "PAID" && (
+                <button
+                  onClick={() => setRefundRequestRemarkBox(true)}
+                  className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                >
+                  View Refund Request
+                </button>
+              )}
+
+            {["ACCOUNTANT"].includes(user?.role!) &&
+              refundRequest != null &&
+              refundRequest.status != "PAID" &&
+              refundRequest.officer_remark != null && (
+                <button
+                  onClick={() => setRefundRequestBox(true)}
+                  className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                >
+                  View Refund Request
+                </button>
+              )}
+            {/* {["SYSTEM", "ADMIN", "ACCOUNTANT", "MANAGER"].includes(
+              user?.role!
+            ) &&
+              refundRequest != null &&
+              refundRequest.status != "PAID" && (
+                <button
+                  onClick={() => setRefundRequestRemarkBox(true)}
+                  className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                >
+                  View Refund Request
+                </button>
+              )} */}
+
+            {["MANAGER"].includes(user?.role!) && cencalRequest != null && (
+              <button
+                onClick={() => setCencelRequestRemarkBox(true)}
+                className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+              >
+                View Cancel Request
+              </button>
+            )}
+
+            {["ACCOUNTANT"].includes(user?.role!) &&
+              cencalRequest != null &&
+              cencalRequest.officer_remark != null && (
+                <button
+                  onClick={() => setCencelRequestBox(true)}
+                  className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                >
+                  View Cancel Request
+                </button>
+              )}
           </div>
 
           <div className="flex gap-4">
@@ -296,7 +600,8 @@ const CreateRentPage = (props: CreateRentProps) => {
           <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">
               <Label>
-                Rent start to end date <span className="text-rose-500">*</span>
+                Booking start - end date{" "}
+                <span className="text-rose-500">*</span>
               </Label>
               <p>
                 From {formateDate(new Date(rentData?.event_from_date!))} to{" "}
@@ -322,6 +627,52 @@ const CreateRentPage = (props: CreateRentProps) => {
                 </p>
                 <p>Contact: {user.contactone}</p>
                 <p>Email: {user.email}</p>
+              </div>
+            </div>
+          )}
+
+          {rentData?.gst_no && rentData?.company_name && (
+            <div className="grid items-center gap-1.5 w-full mt-4 bg-gray-100 p-2 rounded-md">
+              <Label htmlFor="user">
+                GST Details <span className="text-rose-500">*</span>
+              </Label>
+              <div className="">
+                <p>GST No: {rentData?.gst_no}</p>
+                <p>Company Name: {rentData?.company_name}</p>
+              </div>
+            </div>
+          )}
+
+          {refundRequest?.bankname && (
+            <div className="grid items-center gap-1.5 w-full mt-4 bg-gray-100 p-2 rounded-md">
+              <Label htmlFor="user">
+                Refund Data <span className="text-rose-500">*</span>
+              </Label>
+              <div className="">
+                <p>Bank Name: {refundRequest?.bankname}</p>
+                <p>Payment Mode: {refundRequest?.paymentmode}</p>
+                <p>Transaction Id: {refundRequest?.transactionid}</p>
+                <p>Refund Amount: {refundRequest?.actual_refund_amount}</p>
+                <p>
+                  Refund Date: {formateDate(refundRequest?.transaction_date!)}
+                </p>
+              </div>
+            </div>
+          )}
+          {cencalRequest?.bankname && (
+            <div className="grid items-center gap-1.5 w-full mt-4 bg-gray-100 p-2 rounded-md">
+              <Label htmlFor="user">
+                Cancel Booking <span className="text-rose-500">*</span>
+              </Label>
+              <div className="">
+                <p>Bank Name: {cencalRequest?.bankname}</p>
+                <p>Payment Mode: {cencalRequest?.paymentmode}</p>
+                <p>Transaction Id: {cencalRequest?.transactionid}</p>
+                <p>Refund Amount: {cencalRequest?.actual_refund_amount}</p>
+                <p>
+                  Cancel Booking Date:{" "}
+                  {formateDate(cencalRequest?.transaction_date!)}
+                </p>
               </div>
             </div>
           )}
@@ -478,6 +829,8 @@ const CreateRentPage = (props: CreateRentProps) => {
           surveillance and communications in the parking area.
         </p>
       </Modal>
+
+      {/* user refund request start here*/}
       <Modal
         centered
         title="Request Refund"
@@ -521,6 +874,538 @@ const CreateRentPage = (props: CreateRentProps) => {
           </Button>
         </div>
       </Modal>
+      {/* user refund request  end here*/}
+      {/* department view refund request  start here*/}
+      <Modal
+        centered
+        title="Request Refund"
+        open={refundRequestRemarkBox}
+        onCancel={() => setRefundRequestRemarkBox(false)}
+        footer={null}
+        // onOk={requestRefund}
+        width={800}
+        className="my-10 h-[600px]"
+      >
+        <div className="flex gap-2 justify-center sm:justify-between flex-wrap">
+          <Link
+            href={`${process.env.YOUR_BASE_URL}/${refundRequest?.photo1!}`}
+            target="_blank"
+          >
+            <div className="relative h-52 w-52 rounded-md overflow-hidden">
+              <Image
+                src={`${process.env.YOUR_BASE_URL}/${refundRequest?.photo1!}`}
+                alt=""
+                fill={true}
+                className="object-contain rounded-md"
+              />
+            </div>
+          </Link>
+          <Link
+            href={`${process.env.YOUR_BASE_URL}/${refundRequest?.photo1!}`}
+            target="_blank"
+          >
+            <div className="relative h-52 w-52 rounded-md overflow-hidden">
+              <Image
+                src={`${process.env.YOUR_BASE_URL}/${refundRequest?.photo2!}`}
+                alt=""
+                fill={true}
+                className="object-contain rounded-md"
+              />
+            </div>
+          </Link>
+          <Link
+            href={`${process.env.YOUR_BASE_URL}/${refundRequest?.photo1!}`}
+            target="_blank"
+          >
+            <div className="relative h-52 w-52 rounded-md overflow-hidden">
+              <Image
+                src={`${process.env.YOUR_BASE_URL}/${refundRequest?.photo3!}`}
+                alt=""
+                fill={true}
+                className="object-contain rounded-md"
+              />
+            </div>
+          </Link>
+        </div>
+        <div className="flex gap-4 mt-2 items-center bg-gray-100 px-2 py-2 rounded-sm">
+          <Label htmlFor="termfile">Refund Amount</Label>
+          <div className="grow"></div>
+          <p className="text-sm">{rentData?.deposit_amount}</p>
+        </div>
+        {refundRequest?.officer_remark == null ? (
+          <div className="flex gap-4">
+            <div className="grid items-center gap-1.5 w-full mt-2">
+              <Label htmlFor="remark">Officer Remark</Label>
+              <Textarea id="remark" className="w-full bg-white" ref={remark} />
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="mt-2 bg-gray-100 px-2 py-2 rounded-sm">
+              <Label>Officer Remark</Label>
+              <p className="text-sm">{refundRequest?.officer_remark}</p>
+            </div>
+          </>
+        )}
+
+        {refundRequest?.officer_remark == null && (
+          <div className="flex mt-2">
+            <div className="grow"></div>
+            <Button
+              onClick={updaterequestRefundRemark}
+              className="bg-blue-500 hover:bg-blue-600 text-white"
+            >
+              Submit
+            </Button>
+          </div>
+        )}
+      </Modal>
+      <Modal
+        centered
+        title="Request Refund"
+        open={refundRequestBox}
+        onCancel={() => setRefundRequestBox(false)}
+        footer={null}
+        // onOk={requestRefund}
+        width={800}
+        className="my-10 h-[600px]"
+      >
+        <div className="flex gap-2 justify-center sm:justify-between flex-wrap">
+          <Link
+            href={`${process.env.YOUR_BASE_URL}/${refundRequest?.photo1!}`}
+            target="_blank"
+          >
+            <div className="relative h-52 w-52 rounded-md overflow-hidden">
+              <Image
+                src={`${process.env.YOUR_BASE_URL}/${refundRequest?.photo1!}`}
+                alt=""
+                fill={true}
+                className="object-contain rounded-md"
+              />
+            </div>
+          </Link>
+          <Link
+            href={`${process.env.YOUR_BASE_URL}/${refundRequest?.photo1!}`}
+            target="_blank"
+          >
+            <div className="relative h-52 w-52 rounded-md overflow-hidden">
+              <Image
+                src={`${process.env.YOUR_BASE_URL}/${refundRequest?.photo2!}`}
+                alt=""
+                fill={true}
+                className="object-contain rounded-md"
+              />
+            </div>
+          </Link>
+          <Link
+            href={`${process.env.YOUR_BASE_URL}/${refundRequest?.photo1!}`}
+            target="_blank"
+          >
+            <div className="relative h-52 w-52 rounded-md overflow-hidden">
+              <Image
+                src={`${process.env.YOUR_BASE_URL}/${refundRequest?.photo3!}`}
+                alt=""
+                fill={true}
+                className="object-contain rounded-md"
+              />
+            </div>
+          </Link>
+        </div>
+        <div className="flex gap-4 mt-2 items-center bg-gray-100 px-2 py-2 rounded-sm">
+          <Label htmlFor="termfile">Refund Amount</Label>
+          <div className="grow"></div>
+          <p className="text-sm">{rentData?.deposit_amount}</p>
+        </div>
+
+        {refundRequest?.bankname == null ? (
+          <>
+            {" "}
+            <div className="flex gap-4 flex-wrap md:flex-nowrap mt-2">
+              <div className="grid items-center gap-1.5 w-full">
+                <Label htmlFor="bank_name">Bank Name</Label>
+                <Input
+                  id="bank_name"
+                  type="text"
+                  className="w-full bg-white"
+                  ref={bankname}
+                  // value={shopData?.name}
+                />
+              </div>
+              <div className="grid items-center gap-1.5 w-full">
+                <Label htmlFor="payment_mode">Payment Mode</Label>
+                <Input
+                  id="payment_mode"
+                  type="text"
+                  className="w-full bg-white"
+                  ref={paymentmode}
+                />
+              </div>
+            </div>
+            <div className="flex gap-4 flex-wrap md:flex-nowrap mt-2">
+              <div className="grid items-center gap-1.5 w-full">
+                <Label htmlFor="amount">Refund Amount</Label>
+                <Input
+                  id="amount"
+                  type="text"
+                  className="w-full bg-white"
+                  ref={refundamount}
+                  onChange={handleNumberChange}
+                />
+              </div>
+              <div className="grid items-center gap-1.5 w-full">
+                <Label htmlFor="transactionid">Transaction Id </Label>
+                <Input
+                  id="transactionid"
+                  type="text"
+                  className="w-full bg-white"
+                  ref={transactionid}
+                />
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="flex gap-4 flex-wrap md:flex-nowrap mt-2">
+              <div className="grid items-center gap-1.5 w-full">
+                <Label htmlFor="bank_name">Bank Name</Label>
+                <p>{refundRequest?.bankname}</p>
+              </div>
+              <div className="grid items-center gap-1.5 w-full">
+                <Label htmlFor="payment_mode">Payment Mode</Label>
+                <p>{refundRequest?.paymentmode}</p>
+              </div>
+            </div>
+            <div className="flex gap-4 flex-wrap md:flex-nowrap mt-2">
+              <div className="grid items-center gap-1.5 w-full">
+                <Label htmlFor="amount">Actual Refund Amount</Label>
+                <p>{refundRequest?.actual_refund_amount}</p>
+              </div>
+              <div className="grid items-center gap-1.5 w-full">
+                <Label htmlFor="transactionid">Transaction Id </Label>
+                <p>{refundRequest?.transactionid}</p>
+              </div>
+            </div>
+          </>
+        )}
+
+        <div className="mt-2 bg-gray-100 px-2 py-2 rounded-sm">
+          <Label>Officer Remark</Label>
+          <p className="text-sm">{refundRequest?.officer_remark}</p>
+        </div>
+        {refundRequest?.bankname == null && (
+          <div className="flex mt-2">
+            <div className="grow"></div>
+            <Button
+              onClick={updaterequestRefund}
+              className="bg-blue-500 hover:bg-blue-600 text-white"
+            >
+              Submit
+            </Button>
+          </div>
+        )}
+      </Modal>
+      {/* department view refund request end here*/}
+      {/* department view cancel request  start here*/}
+      <Modal
+        centered
+        title="Request Cancel"
+        open={cencelRequestRemarkBox}
+        onCancel={() => setCencelRequestRemarkBox(false)}
+        footer={null}
+        width={800}
+        className="my-10 h-[600px]"
+      >
+        <div className="flex gap-4 mt-2 items-center bg-gray-100 px-2 py-2 rounded-sm">
+          <Label htmlFor="termfile">Cancel Amount</Label>
+          <div className="grow"></div>
+          <p className="text-sm">{cencalRequest?.refunded_amount}</p>
+        </div>
+        {cencalRequest?.officer_remark == null ? (
+          <div className="flex gap-4">
+            <div className="grid items-center gap-1.5 w-full mt-2">
+              <Label htmlFor="remark">Officer Remark</Label>
+              <Textarea id="remark" className="w-full bg-white" ref={remark} />
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="mt-2 bg-gray-100 px-2 py-2 rounded-sm">
+              <Label>Officer Remark</Label>
+              <p className="text-sm">{cencalRequest?.officer_remark}</p>
+            </div>
+          </>
+        )}
+
+        {cencalRequest?.officer_remark == null && (
+          <div className="flex mt-2">
+            <div className="grow"></div>
+            <Button
+              onClick={updaterequestCancelRemark}
+              className="bg-blue-500 hover:bg-blue-600 text-white"
+            >
+              Submit
+            </Button>
+          </div>
+        )}
+      </Modal>
+      <Modal
+        centered
+        title="Request cancel"
+        open={cencelRequestBox}
+        onCancel={() => setCencelRequestBox(false)}
+        footer={null}
+        // onOk={requestRefund}
+        width={800}
+        className="my-10 h-[600px]"
+      >
+        <div className="flex gap-4 mt-2 items-center bg-gray-100 px-2 py-2 rounded-sm">
+          <Label htmlFor="termfile">Cancel Amount</Label>
+          <div className="grow"></div>
+          <p className="text-sm">{cencalRequest?.refunded_amount}</p>
+        </div>
+
+        {cencalRequest?.bankname == null ? (
+          <>
+            {" "}
+            <div className="flex gap-4 flex-wrap md:flex-nowrap mt-2">
+              <div className="grid items-center gap-1.5 w-full">
+                <Label htmlFor="bank_name">Bank Name</Label>
+                <Input
+                  id="bank_name"
+                  type="text"
+                  className="w-full bg-white"
+                  ref={bankname}
+                  // value={shopData?.name}
+                />
+              </div>
+              <div className="grid items-center gap-1.5 w-full">
+                <Label htmlFor="payment_mode">Payment Mode</Label>
+                <Input
+                  id="payment_mode"
+                  type="text"
+                  className="w-full bg-white"
+                  ref={paymentmode}
+                />
+              </div>
+            </div>
+            <div className="flex gap-4 flex-wrap md:flex-nowrap mt-2">
+              <div className="grid items-center gap-1.5 w-full">
+                <Label htmlFor="amount">Refund Amount</Label>
+                <Input
+                  id="amount"
+                  type="text"
+                  className="w-full bg-white"
+                  ref={refundamount}
+                  onChange={handleNumberChange}
+                />
+              </div>
+              <div className="grid items-center gap-1.5 w-full">
+                <Label htmlFor="transactionid">Transaction Id </Label>
+                <Input
+                  id="transactionid"
+                  type="text"
+                  className="w-full bg-white"
+                  ref={transactionid}
+                />
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="flex gap-4 flex-wrap md:flex-nowrap mt-2">
+              <div className="grid items-center gap-1.5 w-full">
+                <Label htmlFor="bank_name">Bank Name</Label>
+                <p>{cencalRequest?.bankname}</p>
+              </div>
+              <div className="grid items-center gap-1.5 w-full">
+                <Label htmlFor="payment_mode">Payment Mode</Label>
+                <p>{cencalRequest?.paymentmode}</p>
+              </div>
+            </div>
+            <div className="flex gap-4 flex-wrap md:flex-nowrap mt-2">
+              <div className="grid items-center gap-1.5 w-full">
+                <Label htmlFor="amount">Actual Refund Amount</Label>
+                <p>{cencalRequest?.actual_refund_amount}</p>
+              </div>
+              <div className="grid items-center gap-1.5 w-full">
+                <Label htmlFor="transactionid">Transaction Id </Label>
+                <p>{cencalRequest?.transactionid}</p>
+              </div>
+            </div>
+          </>
+        )}
+
+        <div className="mt-2 bg-gray-100 px-2 py-2 rounded-sm">
+          <Label>Officer Remark</Label>
+          <p className="text-sm">{cencalRequest?.officer_remark}</p>
+        </div>
+        {cencalRequest?.bankname == null && (
+          <div className="flex mt-2">
+            <div className="grow"></div>
+            <Button
+              onClick={updaterequestCancel}
+              className="bg-blue-500 hover:bg-blue-600 text-white"
+            >
+              Submit
+            </Button>
+          </div>
+        )}
+      </Modal>
+      {/* department view cancel request end here*/}
+
+      {/* user date change start here*/}
+      <Modal
+        centered
+        title="Date Change Request"
+        open={dateChangeBox}
+        onCancel={() => setDateChangeBox(false)}
+        footer={null}
+        // onOk={requestRefund}
+        width={800}
+        className="my-10 h-[600px]"
+      >
+        <p className="text-sm  font-normal my-2 text-rose-500">
+          1. The DNHPDA reserves the right to cancel the allotment of space at
+          Kala-Kendra, Auditorium and Banquet Hall in case of any government
+          functions without assigning any reason thereof.
+        </p>
+
+        <p className="text-sm text-gray-800 font-normal my-2">
+          2. The applicant shall ensure that they shall maintain the floor and
+          premises of the Banquet hall clean by avoiding littering of food
+          materials over the wooden floors, by sufficient provision of waste
+          bins etc.
+        </p>
+        <p className="text-sm text-gray-800 font-normal my-2">
+          3. The applicant shall be responsible for maintaining cleanliness and
+          hygiene during and after completion of function at the allotted space
+          area and all used premises. If the same is not maintained and
+          cleanness is not observed by the component authority, and penalty
+          shall be levied amounting to Rs. 5000/- and the security deposit
+          submitted to the department shall be forfeited without any further
+          explanation.
+        </p>
+        <div className="flex gap-4 mt-2 items-center bg-gray-100 px-2 py-2 rounded-sm">
+          <Label htmlFor="termfile">Date Change Charge</Label>
+          <div className="grow"></div>
+          <p className="text-sm">
+            {(
+              (parseFloat(rentData?.event_amount!) +
+                parseFloat(
+                  rentData?.handover_day ? rentData.handover_day_amount! : "0"
+                ) +
+                parseFloat(
+                  rentData?.prep_day ? rentData.prep_day_amount! : "0"
+                )) *
+              0.25
+            ).toFixed(2)}
+          </p>
+        </div>
+        <div className="flex mt-2">
+          <div className="grow"></div>
+          <Button
+            onClick={() => {
+              router.push(
+                `/dashboard/dailyshops/dailyrentdatechange/${rentData?.shopId}/${props.rentid}`
+              );
+            }}
+            className="bg-blue-500 hover:bg-blue-600 text-white"
+          >
+            Date Change
+          </Button>
+        </div>
+      </Modal>
+      {/* user date change end here*/}
+      {/* user cancel start here*/}
+      <Modal
+        centered
+        title="Cancellation Request"
+        open={userCancelBookingBox}
+        onCancel={() => setUserCancelBookingBox(false)}
+        footer={null}
+        // onOk={requestRefund}
+        width={800}
+        className="my-10 h-[600px]"
+      >
+        <p className="text-sm  font-normal my-2 text-rose-500">
+          1. The DNHPDA reserves the right to cancel the allotment of space at
+          Kala-Kendra, Auditorium and Banquet Hall in case of any government
+          functions without assigning any reason thereof.
+        </p>
+
+        <p className="text-sm text-gray-800 font-normal my-2">
+          2. The applicant shall ensure that they shall maintain the floor and
+          premises of the Banquet hall clean by avoiding littering of food
+          materials over the wooden floors, by sufficient provision of waste
+          bins etc.
+        </p>
+        <p className="text-sm text-gray-800 font-normal my-2">
+          3. The applicant shall be responsible for maintaining cleanliness and
+          hygiene during and after completion of function at the allotted space
+          area and all used premises. If the same is not maintained and
+          cleanness is not observed by the component authority, and penalty
+          shall be levied amounting to Rs. 5000/- and the security deposit
+          submitted to the department shall be forfeited without any further
+          explanation.
+        </p>
+        <div className="flex gap-4 mt-2 items-center bg-gray-100 px-2 py-2 rounded-sm">
+          <Label htmlFor="termfile">Cancellation Charge</Label>
+          <div className="grow"></div>
+          <p className="text-sm">
+            {(
+              (parseFloat(rentData?.event_amount!) +
+                parseFloat(
+                  rentData?.handover_day ? rentData.handover_day_amount! : "0"
+                ) +
+                parseFloat(
+                  rentData?.prep_day ? rentData.prep_day_amount! : "0"
+                )) *
+              0.5
+            ).toFixed(2)}
+          </p>
+        </div>
+        <div className="flex mt-2">
+          <div className="grow"></div>
+          <Button
+            onClick={async () => {
+              const response = await CreateRefundRequest({
+                creadtedById: createuserid,
+                rentId: rentData?.id!,
+                shopId: rentData?.shopId!,
+                refunded_amount: parseFloat(
+                  (
+                    (parseFloat(rentData?.event_amount!) +
+                      parseFloat(
+                        rentData?.handover_day
+                          ? rentData.handover_day_amount!
+                          : "0"
+                      ) +
+                      parseFloat(
+                        rentData?.prep_day ? rentData.prep_day_amount! : "0"
+                      )) *
+                    0.5
+                  ).toFixed(2)
+                ),
+                retund_type: "CANCELREFUND",
+              });
+
+              if (response.status) {
+                toast.success("Refund request created successfully", {
+                  theme: "light",
+                });
+              } else {
+                toast.error(response.message, { theme: "light" });
+              }
+
+              setUserCancelBookingBox(false);
+            }}
+            className="bg-blue-500 hover:bg-blue-600 text-white"
+          >
+            Submit
+          </Button>
+        </div>
+      </Modal>
+      {/* user cancel change end here*/}
     </>
   );
 };

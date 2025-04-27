@@ -91,7 +91,6 @@ const PropertiesView = (props: PropertiesViewProps) => {
         //   return 0;
         // });
 
-        // console.log(shopresponse.data);
 
         setShops(shopresponse.data ?? []);
         setFilterShop(shopresponse.data ?? []);

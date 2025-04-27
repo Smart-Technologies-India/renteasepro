@@ -45,7 +45,6 @@ const AddPropertyPage = () => {
     });
 
     if (result.success) {
-      console.log(result.output);
       const createProperty = await CreateDailyProperty({
         name: result.output.name,
         address: result.output.address,

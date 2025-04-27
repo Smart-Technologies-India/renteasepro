@@ -262,10 +262,6 @@ const PropertiesDeatils = (props: PropertiesDeatilsProps) => {
     <div
       className={`border rounded-md grid place-items-center p-2 min-w-24 cursor-pointer`}
       onClick={async () => {
-        // const rentTransactresponse = await GetUserRent({ rentid: props.id });
-        // if (rentTransactresponse.status) {
-        //   console.log(rentTransactresponse.data);
-        // }
         const nanoid = customAlphabet("1234567890abcdef", 10);
         const uniqueid = nanoid();
         const ids: string = props.field.join(",");

@@ -9,7 +9,7 @@ import {
   DailyRentStatus,
 } from "@prisma/client";
 
-interface CreateDailyRentPayload {
+interface DepartmentCreateDailyRentPayload {
   shopId: number;
   userId: number;
   createdById: number;
@@ -25,8 +25,6 @@ interface CreateDailyRentPayload {
   is_approved?: boolean;
   approvedById?: number;
   status: DailyRentStatus;
-  company_name?: string;
-  gst_no?: string;
 }
 
 function toUTCDate(dateStr: string) {
@@ -36,9 +34,9 @@ function toUTCDate(dateStr: string) {
   );
 }
 
-const CreateDailyRent = async (
-  payload: CreateDailyRentPayload
-): Promise<ApiResponseType<daily_rent_transact | null>> => {
+const DepartmentCreateDailyRent = async (
+  payload: DepartmentCreateDailyRentPayload
+): Promise<ApiResponseType<daily_rent | null>> => {
   try {
     // create all date array of payload
     let new_date: Date[] = [];
@@ -151,14 +149,6 @@ const CreateDailyRent = async (
       data_to_update["approvedById"] = payload.approvedById;
     }
 
-    if (payload.company_name) {
-      data_to_update["company_name"] = payload.company_name;
-    }
-
-    if (payload.gst_no) {
-      data_to_update["gst_no"] = payload.gst_no;
-    }
-
     const rent_data = await prisma.daily_rent.create({
       data: data_to_update,
     });
@@ -168,45 +158,25 @@ const CreateDailyRent = async (
         status: false,
         data: null,
         message: "Unable to create daily rent. Please try again.",
-        functionname: "CreateDailyRent",
-      };
-    }
-
-    const create_rent_transaction = await prisma.daily_rent_transact.create({
-      data: {
-        rentId: rent_data.id,
-        userId: payload.userId,
-        createdById: payload.createdById,
-        shopId: payload.shopId,
-        status: "INACTIVE",
-        amount: payload.event_amount,
-      },
-    });
-
-    if (!create_rent_transaction) {
-      return {
-        status: false,
-        data: null,
-        message: "Unable to create daily rent transaction. Please try again.",
-        functionname: "CreateDailyRent",
+        functionname: "DepartmentCreateDailyRent",
       };
     }
 
     return {
       status: true,
-      data: create_rent_transaction,
+      data: rent_data,
       message: "Daily rent created successfully",
-      functionname: "CreateDailyRent",
+      functionname: "DepartmentCreateDailyRent",
     };
   } catch (e) {
     const response: ApiResponseType<null> = {
       status: false,
       data: null,
       message: errorToString(e),
-      functionname: "CreateDailyRent",
+      functionname: "DepartmentCreateDailyRent",
     };
     return response;
   }
 };
 
-export default CreateDailyRent;
+export default DepartmentCreateDailyRent;

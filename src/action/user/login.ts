@@ -52,7 +52,6 @@ const Login = async (
       functionname: "Login",
     };
   } catch (e) {
-    console.log(e);
     const response: ApiResponseType<null> = {
       status: false,
       data: null,

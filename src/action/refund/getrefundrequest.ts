@@ -5,33 +5,22 @@ import { ApiResponseType } from "@/models/response";
 import { property, refund_amount, RefundAmountType } from "@prisma/client";
 import prisma from "../../../prisma/database";
 
-interface CreateRefundRequestPayload {
-  photo1?: string;
-  photo2?: string;
-  photo3?: string;
-  creadtedById: number;
+interface GetRefundRequestPayload {
+  userId: number;
   rentId: number;
   shopId: number;
-  refunded_amount: number;
   retund_type: RefundAmountType;
 }
 
-const CreateRefundRequest = async (
-  payload: CreateRefundRequestPayload
+const GetRefundRequest = async (
+  payload: GetRefundRequestPayload
 ): Promise<ApiResponseType<refund_amount | null>> => {
   try {
-    const refund_amount = await prisma.refund_amount.create({
-      data: {
-        ...(payload.photo1 && { photo1: payload.photo1 }),
-        ...(payload.photo2 && { photo2: payload.photo2 }),
-        ...(payload.photo3 && { photo3: payload.photo3 }),
-        createdById: payload.creadtedById,
-        shopId: payload.shopId,
-        actual_refund_amount: "0",
-        refunded_amount: payload.refunded_amount.toString(),
+    const refund_amount = await prisma.refund_amount.findFirst({
+      where: {
+        userId: payload.userId,
         rentId: payload.rentId,
-        userId: payload.creadtedById,
-        status: "DUE",
+        shopId: payload.shopId,
         refund_type: payload.retund_type,
       },
     });
@@ -41,24 +30,24 @@ const CreateRefundRequest = async (
         status: false,
         data: null,
         message: "Unable to create refund request. Please try again.",
-        functionname: "CreateRefundRequest",
+        functionname: "GetRefundRequest",
       };
 
     return {
       status: true,
       data: refund_amount,
       message: "Refund request created successfully",
-      functionname: "CreateRefundRequest",
+      functionname: "GetRefundRequest",
     };
   } catch (e) {
     const response: ApiResponseType<null> = {
       status: false,
       data: null,
       message: errorToString(e),
-      functionname: "CreateRefundRequest",
+      functionname: "GetRefundRequest",
     };
     return response;
   }
 };
 
-export default CreateRefundRequest;
+export default GetRefundRequest;

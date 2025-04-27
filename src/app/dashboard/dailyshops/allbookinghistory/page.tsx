@@ -139,20 +139,19 @@ const AllBookingHistory = () => {
                     <TableCell className="p-2">{rentdata.status}</TableCell>
 
                     <TableCell className="text-right p-2">
-                      {rentdata.rent_transact.length > 0 ? (
-                        <button
-                          onClick={() => {
-                            router.push(
-                              `/dashboard/dailyrentrecept/${rentdata.user.id}/${rentdata.id}/${rentdata.rent_transact[0].id}`
-                            );
-                          }}
-                          className="cursor-pointer bg-blue-500 text-sm px-2 py-1 rounded-md text-white text-nowrap"
-                        >
-                          View Receipt
-                        </button>
-                      ) : (
-                        <p className="text-sm text-gray-500">No Receipt</p>
-                      )}
+                      <button
+                        onClick={() => {
+                          router.push(
+                            `/dashboard/dailyshops/viewrent/${rentdata.id}/${rentdata.user.id}`
+                          );
+                          // router.push(
+                          //   `/dashboard/dailyrentrecept/${rentdata.user.id}/${rentdata.id}/${rentdata.rent_transact[0].id}`
+                          // );
+                        }}
+                        className="cursor-pointer bg-blue-500 text-sm px-2 py-1 rounded-md text-white text-nowrap"
+                      >
+                        View
+                      </button>
                     </TableCell>
                   </TableRow>
                 )

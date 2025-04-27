@@ -75,7 +75,6 @@ const ShopBidHistoryView = (props: ShopBidHistoryViewProps) => {
 
       if (dailyrent_response.status) {
         setDailyRent(dailyrent_response.data ?? []);
-        console.log(dailyrent_response);
       }
 
       setLoading(false);

@@ -267,7 +267,6 @@ const createRentTransaction = async (
   let start_date = new Date(new Date(props.start_date).setDate(props.due_date));
   let end_date = new Date(new Date(props.end_date).setDate(props.due_date));
 
-  console.log(props.amount_month);
   let months = [];
 
   // i need month between start date and end date

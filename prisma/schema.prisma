@@ -1019,6 +1019,8 @@ model daily_rent {
   approved_by         user?                 @relation("daily_rent_approvedBy_userId", fields: [approvedById], references: [id])
   approvedById        Int?
   approved_date       DateTime?
+  gst_no              String?
+  company_name        String?
   remarks             String?               @db.MediumText
   status              DailyRentStatus       @default(DEPOSITDUE)
   createdAt           DateTime              @default(now())
@@ -1064,6 +1066,12 @@ model daily_rent_transact {
   deletedById      Int?
 }
 
+enum RefundAmountType {
+  DEPOSITREFUND
+  CANCELREFUND
+  DEPTREFUND
+}
+
 model refund_amount {
   id                   Int                @id @default(autoincrement())
   gstinvoice           Int?               @db.MediumInt
@@ -1073,6 +1081,7 @@ model refund_amount {
   userId               Int
   daily_shop           daily_shop         @relation(fields: [shopId], references: [id])
   shopId               Int
+  refund_type          RefundAmountType   @default(DEPOSITREFUND)
   actual_refund_amount String
   refunded_amount      String?
   transaction_date     DateTime?          @default(now())
@@ -1088,6 +1097,7 @@ model refund_amount {
   photo5               String?
   remarks              String?            @db.MediumText
   orderid              String?
+  officer_remark       String?
   status               RentTransactStatus @default(INACTIVE)
   createdAt            DateTime           @default(now())
   createdBy            user               @relation("refund_amount_createdBy_userId", fields: [createdById], references: [id])

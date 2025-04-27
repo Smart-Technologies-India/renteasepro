@@ -29,6 +29,9 @@ const GetAllDailyRent = async (
       where: {
         deletedAt: null,
         deletedBy: null,
+        status: {
+          not: "NONE",
+        },
       },
       include: {
         rent_transact: true,

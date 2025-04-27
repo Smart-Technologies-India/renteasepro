@@ -52,6 +52,9 @@ const CreateRentPage = (props: CreateRentProps) => {
 
   const [rentdates, setRentdates] = useState<Date[]>([]);
 
+  const gst_no = useRef<HTMLInputElement>(null);
+  const company_name = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     const init = async () => {
       setLoading(true);
@@ -114,11 +117,7 @@ const CreateRentPage = (props: CreateRentProps) => {
       event_amount: (datecount() * shopData?.rate_per_day).toString(),
       prep_day_amount: prepration ? shopData?.rate_prep_day : "0",
       handover_day_amount: handover ? shopData?.rate_handover_day : "0",
-      deposit_amount: (
-        datecount() * shopData?.deposit_per_day +
-        (prepration ? parseInt(shopData?.deposit_per_day) : 0) +
-        (handover ? parseInt(shopData?.deposit_per_day) : 0)
-      ).toString(),
+      deposit_amount: (shopData?.deposit_per_day).toString(),
       event_from_date: startDate,
       event_to_date: endDate,
       event_reason: purpose,
@@ -144,17 +143,15 @@ const CreateRentPage = (props: CreateRentProps) => {
         event_to_date: endDate!.toISOString(),
         prep_day_amount: prepration ? shopData?.rate_prep_day : "0",
         handover_day_amount: handover ? shopData?.rate_handover_day : "0",
-        deposit_amount: (
-          datecount() * shopData?.deposit_per_day +
-          (prepration ? parseInt(shopData?.deposit_per_day) : 0) +
-          (handover ? parseInt(shopData?.deposit_per_day) : 0)
-        ).toString(),
+        deposit_amount: (shopData?.deposit_per_day).toString(),
         event_reason: purpose,
         ...(prepration && { prep_day: subDays(startDate!, 1).toISOString() }), // Day before startDate
         ...(handover && { handover_day: addDays(endDate!, 1).toISOString() }),
         // is_approved: true,
         // approvedById: createuserid,
         status: "FAILED",
+        company_name: company_name.current?.value,
+        gst_no: gst_no.current?.value,
       });
 
       if (!(createrent.status && createrent.data)) {
@@ -175,16 +172,11 @@ const CreateRentPage = (props: CreateRentProps) => {
           datecount() * shopData?.rate_per_day +
           (prepration ? parseInt(shopData?.rate_prep_day) : 0) +
           (handover ? parseInt(shopData?.rate_handover_day) : 0) +
-          datecount() * shopData?.deposit_per_day +
-          (prepration ? parseInt(shopData?.deposit_per_day) : 0) +
-          (handover ? parseInt(shopData?.deposit_per_day) : 0)
+          shopData?.deposit_per_day
         ).toString()
       ).toFixed(2);
 
-      const deposit =
-        datecount() * shopData?.deposit_per_day +
-        (prepration ? parseInt(shopData?.deposit_per_day) : 0) +
-        (handover ? parseInt(shopData?.deposit_per_day) : 0);
+      const deposit = shopData?.deposit_per_day;
 
       const amount =
         datecount() * shopData?.rate_per_day +
@@ -445,7 +437,6 @@ const CreateRentPage = (props: CreateRentProps) => {
                   </label>
                 </div>
               </div>
-              {/* <div className="grow"></div> */}
 
               <p className="text-sm">
                 Prepration Day Charge :{" "}
@@ -491,6 +482,37 @@ const CreateRentPage = (props: CreateRentProps) => {
               </div>
             </div>
           )}
+          <h1 className="text-gray-500 text-xl mt-4 mb-2">
+            GST Details{" "}
+            <span className="text-rose-500 text-sm">
+              (Only businesses registered within the jurisdiction of Dadra and
+              Nagar Haveli are eligible to claim Goods and Services Tax (GST)
+              benefits under the applicable provisions of the GST Act.)
+            </span>
+          </h1>
+
+          <div className="flex gap-4">
+            <div className="grid items-center gap-1.5 w-full mt-2">
+              <Label htmlFor="gst_no">GST No</Label>
+              <Input
+                id="gst_no"
+                type="text"
+                className="w-full bg-white"
+                // value={shopData?.property?.name}
+                ref={gst_no}
+              />
+            </div>
+            <div className="grid items-center gap-1.5 w-full mt-2">
+              <Label htmlFor="company_name">Company Name</Label>
+              <Input
+                id="company_name"
+                type="text"
+                className="w-full bg-white"
+                ref={company_name}
+                // value={shopData?.name}
+              />
+            </div>
+          </div>
 
           <div className=" w-full mt-4 bg-gray-100 p-2 rounded-md">
             <Label htmlFor="user">
@@ -516,9 +538,7 @@ const CreateRentPage = (props: CreateRentProps) => {
               <p>Deposit</p>
               <div className="grow"></div>
               <p>
-                {datecount() * shopData?.deposit_per_day +
-                  (prepration ? parseInt(shopData?.deposit_per_day) : 0) +
-                  (handover ? parseInt(shopData?.deposit_per_day) : 0)}
+                {shopData?.deposit_per_day}
               </p>
             </div> */}
             <div className="w-full h-[1px] bg-gray-500"></div>
