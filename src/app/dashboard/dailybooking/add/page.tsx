@@ -1,6 +1,7 @@
 "use client";
 
 import CreateDailyProperty from "@/action/daily_property/createdailyproperty";
+import BackButton from "@/components/backbutton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -80,7 +81,10 @@ const AddPropertyPage = () => {
     <>
       <div className="p-6">
         <div className="bg-white rounded-sm shadow-sm p-4">
-          <p className="text-gray-500 text-xl">Add a property</p>
+          <div className="flex items-center gap-2">
+            <BackButton />
+            <p className="text-gray-500 text-xl">Add a property</p>
+          </div>
 
           <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">

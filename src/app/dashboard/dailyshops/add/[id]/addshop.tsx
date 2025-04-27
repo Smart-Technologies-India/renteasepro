@@ -56,7 +56,7 @@ const AddShopPage = (props: AddShopPageProps) => {
     setIsCreating(true);
     const result = safeParse(CreateUnitSchema, {
       id: parseInt(props.id.toString()),
-      // shopCategoryId: shopcategory,
+      shopCategoryId: 10,
       name: name.current?.value!,
       capacity: parseInt(capacity.current?.value!),
       rate_per_day: rate_per_day.current?.value!,
