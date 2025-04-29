@@ -115,7 +115,6 @@ const ShopView = (props: ShowShopProps) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
         <div className="bg-white rounded-sm shadow-sm">
           <div className="flex gap-2 border-b border-gray-300 py-2 px-4">
-            <BackButton />
             <p className="text-xl  font-semibold">Unit Details</p>
             <div className="grow"></div>
             {["ADMIN", "MANAGER", "ACCOUNTANT"].includes(user?.role!) && (

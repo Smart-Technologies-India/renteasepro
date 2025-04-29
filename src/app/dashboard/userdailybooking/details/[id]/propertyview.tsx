@@ -63,28 +63,28 @@ const PropertiesView = (props: PropertiesViewProps) => {
 
         //  example of sorting I-43,I-54,O-34,O-23 to I-43,I-54,O-23,O-34
 
-        const customSort = (a: any, b: any) => {
-          let numA: number;
-          let numB: number;
+        // const customSort = (a: any, b: any) => {
+        //   let numA: number;
+        //   let numB: number;
 
-          // Extract numeric part from shop IDs
-          if (a.shopNumber.includes("-")) {
-            numA = parseInt(a.shopNumber.split("-")[1]);
-          } else {
-            numA = parseInt(a.shopNumber);
-          }
+        //   // Extract numeric part from shop IDs
+        //   if (a.shopNumber.includes("-")) {
+        //     numA = parseInt(a.shopNumber.split("-")[1]);
+        //   } else {
+        //     numA = parseInt(a.shopNumber);
+        //   }
 
-          if (b.shopNumber.includes("-")) {
-            numB = parseInt(b.shopNumber.split("-")[1]);
-          } else {
-            numB = parseInt(b.shopNumber);
-          }
+        //   if (b.shopNumber.includes("-")) {
+        //     numB = parseInt(b.shopNumber.split("-")[1]);
+        //   } else {
+        //     numB = parseInt(b.shopNumber);
+        //   }
 
-          // Compare numeric parts
-          return numA - numB;
-        };
+        //   // Compare numeric parts
+        //   return numA - numB;
+        // };
 
-        const sortshop = shopresponse.data?.sort(customSort);
+        // const sortshop = shopresponse.data?.sort(customSort);
 
         // shopresponse.data?.sort((a: any, b: any) => {
         //   if (a.shopNumber < b.shopNumber) {
