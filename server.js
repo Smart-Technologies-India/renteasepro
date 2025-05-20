@@ -191,7 +191,6 @@ const postRes = (request, response) => {
               createdAt: "desc",
             },
           });
-          console.log(tranId);
 
           const bid_tranresponse = await prisma.bid_transact.updateMany({
             where: {

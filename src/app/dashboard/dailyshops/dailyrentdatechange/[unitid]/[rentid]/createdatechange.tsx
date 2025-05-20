@@ -9,12 +9,12 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { safeParse } from "valibot";
-import { addDays, eachDayOfInterval, format, isAfter, subDays } from "date-fns";
+import { addDays, addMonths, eachDayOfInterval, endOfMonth, format, isAfter, isSameDay, startOfMonth, startOfWeek, subDays } from "date-fns";
 import { default as MulSelect } from "react-select";
 import GetDailyShop from "@/action/dailyshop/getdailyshop";
 import { CreateDailyRentSchema } from "@/schema/createdailyrent";
 import { Checkbox } from "@/components/ui/checkbox";
-import { DatePicker } from "antd";
+import { DatePicker, Modal } from "antd";
 import GetDailyRent from "@/action/dailyrent/getdailyrent";
 import { customAlphabet } from "nanoid";
 import GetUser from "@/action/user/getuser";
@@ -264,6 +264,7 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
     }
     return 0;
   };
+  const [monthBox, setMonthBox] = useState<boolean>(false);
 
   if (isLoading)
     return (
@@ -307,10 +308,32 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
           </div>
           <div className="flex gap-4">
             <div className="grid items-center gap-1.5 w-full mt-4">
-              <Label>
-                Booking start to end date
-                <span className="text-rose-500">*</span>
-              </Label>
+              <div className="flex gap-2">
+                <Label>
+                  Booking start to end date
+                  <span className="text-rose-500">*</span>
+                </Label>
+                <div className="grow"></div>
+                <button
+                  className="text-sm rounded-md border border-blue-500 px-2 py-1 bg-blue-500 text-white"
+                  onClick={() => {
+                    setMonthBox(true);
+                  }}
+                >
+                  View Dates
+                </button>
+              </div>
+              <Modal
+                title="Available Dates"
+                open={monthBox}
+                width={1000}
+                onCancel={() => {
+                  setMonthBox(false);
+                }}
+                footer={null}
+              >
+                <CalendarMonths avaliableDays={rentdates} />
+              </Modal>
               <RangePicker
                 disabledDate={(current) => {
                   return current && current.toDate() < subDays(new Date(), 0);
@@ -629,3 +652,60 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
 };
 
 export default CreateDateChangePage;
+
+interface CalendarMonthsProps {
+  avaliableDays: Date[];
+}
+
+const CalendarMonths = (props: CalendarMonthsProps) => {
+  const today = new Date();
+  const months = [0, 1, 2].map((offset) => addMonths(today, offset));
+  const weekDays = Array.from({ length: 7 }, (_, i) =>
+    format(addDays(startOfWeek(new Date(), { weekStartsOn: 0 }), i), "EEE")
+  );
+
+  return (
+    <div className="flex mt-6 w-full flex-wrap justify-center gap-6">
+      {months.map((month, index) => {
+        const firstDay = startOfMonth(month);
+        const lastDay = endOfMonth(month);
+        const days = eachDayOfInterval({ start: firstDay, end: lastDay });
+        const startWeekday = firstDay.getDay();
+
+        return (
+          <div key={index} className="bg-white shadow p-2 rounded-md">
+            <h2 className="text-center font-semibold mb-2">
+              {format(month, "MMMM yyyy")}
+            </h2>
+            <div className="grid grid-cols-7 gap-3 text-center text-sm font-medium place-items-center">
+              {weekDays.map((day) => (
+                <div key={day} className="text-gray-500">
+                  {day}
+                </div>
+              ))}
+              {Array.from({ length: startWeekday }).map((_, i) => (
+                <div key={"empty-" + i}></div>
+              ))}
+              {days.map((day) => {
+                const isUnavailable = props.avaliableDays.some((d) =>
+                  isSameDay(d, day)
+                );
+
+                return (
+                  <div
+                    key={day.toISOString()}
+                    className={`py-1 rounded-full w-6 h-6 flex items-center justify-center ${
+                      isUnavailable ? "bg-rose-500 text-white" : ""
+                    }`}
+                  >
+                    {format(day, "d")}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};

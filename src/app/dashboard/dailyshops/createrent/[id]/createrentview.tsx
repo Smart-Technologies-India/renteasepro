@@ -24,7 +24,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { CreateDailyRentSchema } from "@/schema/createdailyrent";
 import CreateDailyRent from "@/action/dailyrent/createdailyrent";
 
-import { DatePicker, Space } from "antd";
+import { DatePicker, Modal, Space } from "antd";
 import GetDailyRent from "@/action/dailyrent/getdailyrent";
 import dayjs, { Dayjs } from "dayjs";
 import BackButton from "@/components/backbutton";

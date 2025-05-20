@@ -487,7 +487,7 @@ const CreateRentPage = (props: CreateRentProps) => {
                   </button>
                 ) : null}
 
-                {rentData?.daily_shop.daily_rent_transact.filter(
+                {/* {rentData?.daily_shop.daily_rent_transact.filter(
                   (val: daily_rent_transact) => val.status == "PAID"
                 ).length == 1 ? (
                   <button
@@ -506,7 +506,7 @@ const CreateRentPage = (props: CreateRentProps) => {
                   >
                     Pay Deposit
                   </button>
-                ) : null}
+                ) : null} */}
               </>
             )}
             {rentData?.daily_shop.daily_rent_transact.filter(
@@ -552,6 +552,32 @@ const CreateRentPage = (props: CreateRentProps) => {
                   View Refund Request
                 </button>
               )}
+
+            {["ACCOUNTANT"].includes(user?.role!) &&
+            rentData?.daily_shop.daily_rent_transact.filter(
+              (val: daily_rent_transact) => val.status == "PAID"
+            ).length == 1 ? (
+              <button
+                onClick={() => {
+                  router.push(
+                    `/dashboard/dailyshops/collectdeposit/${rentData?.daily_shop.daily_rent_transact[1]?.id}`
+                  );
+                  // const nanoid = customAlphabet("1234567890abcdef", 10);
+                  // const uniqueid = nanoid();
+                  // router.push(
+                  //   `/payamount?xlmnx=${rentData?.deposit_amount!}&ynboy=${uniqueid}&zgvfz=${
+                  //     rentData?.daily_shop.daily_rent_transact[1]?.id
+                  //   }_0_0_deposit&name=${user?.firstName}-${
+                  //     user?.lastName
+                  //   }&email=${user?.email}&mobile=${user?.contactone}`
+                  // );
+                }}
+                className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+              >
+                Collect Deposit
+              </button>
+            ) : null}
+
             {/* {["SYSTEM", "ADMIN", "ACCOUNTANT", "MANAGER"].includes(
               user?.role!
             ) &&
