@@ -2,7 +2,14 @@
 
 import { errorToString } from "@/utils/methods";
 import { ApiResponseType } from "@/models/response";
-import { daily_shop, shop } from "@prisma/client";
+import {
+  daily_property,
+  daily_rent_photo,
+  daily_shop,
+  property,
+  shop,
+  shop_category,
+} from "@prisma/client";
 import prisma from "../../../prisma/database";
 
 interface GetDailyShopPayload {
@@ -11,7 +18,16 @@ interface GetDailyShopPayload {
 
 const GetDailyShop = async (
   payload: GetDailyShopPayload
-): Promise<ApiResponseType<daily_shop | null>> => {
+): Promise<
+  ApiResponseType<
+    | (daily_shop & {
+        property: daily_property;
+        shop_category: shop_category;
+        daily_rent_photo: daily_rent_photo[];
+      })
+    | null
+  >
+> => {
   try {
     const shop = await prisma.daily_shop.findFirst({
       where: {
@@ -22,6 +38,7 @@ const GetDailyShop = async (
       include: {
         property: true,
         shop_category: true,
+        daily_rent_photo: true,
       },
     });
 

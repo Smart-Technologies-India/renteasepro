@@ -20,7 +20,15 @@ import {
 
 import GetUser from "@/action/user/getuser";
 
-import { daily_rent, RentTransactStatus, user } from "@prisma/client";
+import {
+  daily_property,
+  daily_rent,
+  daily_rent_photo,
+  daily_shop,
+  RentTransactStatus,
+  shop_category,
+  user,
+} from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -52,7 +60,13 @@ const ShopView = (props: ShowShopProps) => {
   }
 
   const [isLoading, setIsLoading] = useState(true);
-  const [shop, setShop] = useState<any>();
+  const [shop, setShop] = useState<
+    daily_shop & {
+      property: daily_property;
+      shop_category: shop_category;
+      daily_rent_photo: daily_rent_photo[];
+    }
+  >();
 
   const [user, setUser] = useState<user>();
 
@@ -227,7 +241,9 @@ const ShopView = (props: ShowShopProps) => {
         <div className="bg-white rounded-sm shadow-sm">
           <iframe
             // src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3742.712992782698!2d73.00302414832767!3d20.270734449556546!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be0cb42b635e293%3A0x3f857d55206a66f5!2sOffice%20Of%20District%20Collector!5e0!3m2!1sen!2sin!4v1708165544653!5m2!1sen!2sin"
-            src={`https://maps.google.com/maps?q=${shop.property?.latitude},${shop.property?.longitude}&output=embed`}
+            src={`https://maps.google.com/maps?q=${shop!.property?.latitude},${
+              shop!.property?.longitude
+            }&output=embed`}
             width="400"
             height="300"
             loading="lazy"
@@ -236,82 +252,63 @@ const ShopView = (props: ShowShopProps) => {
         </div>
       </div>
 
-      <div className="flex mt-4 mb-2 gap-2 items-center">
-        <h1 className="text-lg font-semibold text-gray-600">Photo Gallery</h1>
-        <div className="grow"></div>
-        <PrevButton swiperRef={swiperRef} /> {/* Pass the ref to PrevButton */}
-        <NextButton swiperRef={swiperRef} /> {/* Pass the ref to NextButton */}
-      </div>
+      {shop?.daily_rent_photo.length! > 0 && (
+        <>
+          <div className="flex mt-4 mb-2 gap-2 items-center">
+            <h1 className="text-lg font-semibold text-gray-600">
+              Photo Gallery
+            </h1>
+            <div className="grow"></div>
+            <PrevButton swiperRef={swiperRef} />{" "}
+            {/* Pass the ref to PrevButton */}
+            <NextButton swiperRef={swiperRef} />{" "}
+            {/* Pass the ref to NextButton */}
+          </div>
 
-      <Swiper
-        spaceBetween={50}
-        slidesPerView={3}
-        autoplay={{
-          delay: 2500,
-          disableOnInteraction: false,
-        }}
-        breakpoints={{
-          320: {
-            slidesPerView: 1,
-            spaceBetween: 10,
-          },
-          640: {
-            slidesPerView: 2,
-            spaceBetween: 20,
-          },
-          768: {
-            slidesPerView: 3,
-            spaceBetween: 40,
-          },
-        }}
-        scrollbar={{ draggable: true }}
-        onSlideChange={() => console.log("slide change")}
-        onSwiper={(swiper: any) => (swiperRef.current = swiper)}
-        loop={true}
-        modules={[Autoplay, Pagination, Navigation]}
-      >
-        <SwiperSlide>
-          <div className="relative w-full h-40">
-            <Image
-              src={"/log_in_bg.png"}
-              alt="Property"
-              fill={true}
-              className="w-full h-64 object-cover rounded-sm object-center"
-            />
-          </div>
-        </SwiperSlide>
-        <SwiperSlide>
-          <div className="relative w-full h-40">
-            <Image
-              src={"/log_in_bg.png"}
-              alt="Property"
-              fill={true}
-              className="w-full h-64 object-cover rounded-sm object-center"
-            />
-          </div>
-        </SwiperSlide>
-        <SwiperSlide>
-          <div className="relative w-full h-40">
-            <Image
-              src={"/log_in_bg.png"}
-              alt="Property"
-              fill={true}
-              className="w-full h-64 object-cover rounded-sm object-center"
-            />
-          </div>
-        </SwiperSlide>
-        <SwiperSlide>
-          <div className="relative w-full h-40">
-            <Image
-              src={"/log_in_bg.png"}
-              alt="Property"
-              fill={true}
-              className="w-full h-64 object-cover rounded-sm object-center"
-            />
-          </div>
-        </SwiperSlide>
-      </Swiper>
-      <h1 className="text-lg font-semibold text-gray-600 mt-4">
+          <Swiper
+            spaceBetween={50}
+            slidesPerView={3}
+            autoplay={{
+              delay: 2500,
+              disableOnInteraction: false,
+            }}
+            breakpoints={{
+              320: {
+                slidesPerView: 1,
+                spaceBetween: 10,
+              },
+              640: {
+                slidesPerView: 2,
+                spaceBetween: 20,
+              },
+              768: {
+                slidesPerView: 3,
+                spaceBetween: 40,
+              },
+            }}
+            scrollbar={{ draggable: true }}
+            onSlideChange={() => console.log("slide change")}
+            onSwiper={(swiper: any) => (swiperRef.current = swiper)}
+            loop={true}
+            modules={[Autoplay, Pagination, Navigation]}
+          >
+            {shop?.daily_rent_photo.map((photo, index) => (
+              <SwiperSlide key={index}>
+                <div className="relative aspect-video">
+                  <Image
+                    src={photo.path}
+                    alt="Property"
+                    fill={true}
+                    className="w-full h-64 object-cover rounded-sm object-center"
+                  />
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </>
+      )}
+
+      <h1 className="text-lg font-semibold text-gray-600 mt-4 text-center">
         Event Calendar
       </h1>
 
@@ -340,7 +337,7 @@ const CalendarMonths = (props: CalendarMonthsProps) => {
   );
 
   return (
-    <div className="flex mt-2 w-full flex-wrap justify-between gap-6">
+    <div className="flex mt-2 w-full flex-wrap justify-center gap-6">
       {months.map((month, index) => {
         const firstDay = startOfMonth(month);
         const lastDay = endOfMonth(month);

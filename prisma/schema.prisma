@@ -321,6 +321,10 @@ model user {
   refund_amount_update refund_amount[] @relation("refund_amount_updatedBy_userId")
   refund_amount_delete refund_amount[] @relation("refund_amount_deletedBy_userId")
   refund_amount        refund_amount[]
+
+  daily_rent_photo_create daily_rent_photo[] @relation("daily_rent_photo_createdBy_userId")
+  daily_rent_photo_update daily_rent_photo[] @relation("daily_rent_photo_updatedBy_userId")
+  daily_rent_photo_delete daily_rent_photo[] @relation("daily_rent_photo_deletedBy_userId")
 }
 
 model shop_category {
@@ -987,6 +991,7 @@ model daily_shop {
   // rentclose      rentclose[]
   daily_rent_transact daily_rent_transact[]
   refund_amount       refund_amount[]
+  daily_rent_photo    daily_rent_photo[]
 }
 
 model daily_rent {
@@ -1109,3 +1114,39 @@ model refund_amount {
   deletedBy            user?              @relation("refund_amount_deletedBy_userId", fields: [deletedById], references: [id])
   deletedById          Int?
 }
+
+model daily_rent_photo {
+  id          Int        @id @default(autoincrement())
+  daily_shop  daily_shop @relation(fields: [shopId], references: [id])
+  shopId      Int
+  name        String?
+  path        String
+  status      Status     @default(ACTIVE)
+  createdAt   DateTime   @default(now())
+  createdBy   user       @relation("daily_rent_photo_createdBy_userId", fields: [createdById], references: [id])
+  createdById Int
+  updatedAt   DateTime   @updatedAt
+  updatedBy   user?      @relation("daily_rent_photo_updatedBy_userId", fields: [updatedById], references: [id])
+  updatedById Int?
+  deletedAt   DateTime?
+  deletedBy   user?      @relation("daily_rent_photo_deletedBy_userId", fields: [deletedById], references: [id])
+  deletedById Int?
+}
+
+// model daily_rent_price {
+//   id           Int         @id @default(autoincrement())
+//   reason       String
+//   price        String
+//   status       Status      @default(ACTIVE)
+//   createdAt    DateTime    @default(now())
+//   createdBy    user        @relation("daily_rent_price_createdBy_userId", fields: [createdById], references: [id])
+//   createdById  Int
+//   updatedAt    DateTime    @updatedAt
+//   updatedBy    user?       @relation("daily_rent_price_updatedBy_userId", fields: [updatedById], references: [id])
+//   updatedById  Int?
+//   deletedAt    DateTime?
+//   deletedBy    user?       @relation("daily_rent_price_deletedBy_userId", fields: [deletedById], references: [id])
+//   deletedById  Int?
+//   daily_rent   daily_rent? @relation(fields: [daily_rentId], references: [id])
+//   daily_rentId Int?
+// }
