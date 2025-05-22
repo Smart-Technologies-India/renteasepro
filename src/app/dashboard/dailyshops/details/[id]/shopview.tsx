@@ -1,4 +1,11 @@
 "use client";
+import { Swiper, SwiperSlide } from "swiper/react";
+
+// Import Swiper styles
+import "swiper/css";
+import { Autoplay, Pagination, Navigation } from "swiper/modules";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
 
 import {
   format,
@@ -12,16 +19,19 @@ import {
 } from "date-fns";
 
 import GetUser from "@/action/user/getuser";
-import BackButton from "@/components/backbutton";
 
 import { daily_rent, RentTransactStatus, user } from "@prisma/client";
 import { getCookie } from "cookies-next";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 import GetDailyShop from "@/action/dailyshop/getdailyshop";
 import GetDailyRent from "@/action/dailyrent/getdailyrent";
 
+import { Swiper as SwiperType } from "swiper";
+import SwiperInstance from "swiper";
+import { Fa6SolidAngleLeft, Fa6SolidAngleRight } from "@/components/icons";
 interface ShowShopProps {
   id: number;
 }
@@ -103,6 +113,8 @@ const ShopView = (props: ShowShopProps) => {
     init();
   }, [props.id, userid]);
 
+  const swiperRef = useRef<SwiperType | null>(null);
+
   if (isLoading)
     return (
       <div className="h-screen w-full grid place-items-center text-3xl text-gray-600 bg-gray-200">
@@ -115,7 +127,7 @@ const ShopView = (props: ShowShopProps) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
         <div className="bg-white rounded-sm shadow-sm">
           <div className="flex gap-2 border-b border-gray-300 py-2 px-4">
-            <p className="text-xl  font-semibold">Unit Details</p>
+            <p className="text-xl  font-semibold">About Property</p>
             <div className="grow"></div>
             {["ADMIN", "MANAGER", "ACCOUNTANT"].includes(user?.role!) && (
               <>
@@ -224,6 +236,85 @@ const ShopView = (props: ShowShopProps) => {
         </div>
       </div>
 
+      <div className="flex mt-4 mb-2 gap-2 items-center">
+        <h1 className="text-lg font-semibold text-gray-600">Photo Gallery</h1>
+        <div className="grow"></div>
+        <PrevButton swiperRef={swiperRef} /> {/* Pass the ref to PrevButton */}
+        <NextButton swiperRef={swiperRef} /> {/* Pass the ref to NextButton */}
+      </div>
+
+      <Swiper
+        spaceBetween={50}
+        slidesPerView={3}
+        autoplay={{
+          delay: 2500,
+          disableOnInteraction: false,
+        }}
+        breakpoints={{
+          320: {
+            slidesPerView: 1,
+            spaceBetween: 10,
+          },
+          640: {
+            slidesPerView: 2,
+            spaceBetween: 20,
+          },
+          768: {
+            slidesPerView: 3,
+            spaceBetween: 40,
+          },
+        }}
+        scrollbar={{ draggable: true }}
+        onSlideChange={() => console.log("slide change")}
+        onSwiper={(swiper: any) => (swiperRef.current = swiper)}
+        loop={true}
+        modules={[Autoplay, Pagination, Navigation]}
+      >
+        <SwiperSlide>
+          <div className="relative w-full h-40">
+            <Image
+              src={"/log_in_bg.png"}
+              alt="Property"
+              fill={true}
+              className="w-full h-64 object-cover rounded-sm object-center"
+            />
+          </div>
+        </SwiperSlide>
+        <SwiperSlide>
+          <div className="relative w-full h-40">
+            <Image
+              src={"/log_in_bg.png"}
+              alt="Property"
+              fill={true}
+              className="w-full h-64 object-cover rounded-sm object-center"
+            />
+          </div>
+        </SwiperSlide>
+        <SwiperSlide>
+          <div className="relative w-full h-40">
+            <Image
+              src={"/log_in_bg.png"}
+              alt="Property"
+              fill={true}
+              className="w-full h-64 object-cover rounded-sm object-center"
+            />
+          </div>
+        </SwiperSlide>
+        <SwiperSlide>
+          <div className="relative w-full h-40">
+            <Image
+              src={"/log_in_bg.png"}
+              alt="Property"
+              fill={true}
+              className="w-full h-64 object-cover rounded-sm object-center"
+            />
+          </div>
+        </SwiperSlide>
+      </Swiper>
+      <h1 className="text-lg font-semibold text-gray-600 mt-4">
+        Event Calendar
+      </h1>
+
       <CalendarMonths
         // avaliableDays={{
         //   unavailable: [new Date("2025-04-04"), new Date("2025-03-18")],
@@ -249,7 +340,7 @@ const CalendarMonths = (props: CalendarMonthsProps) => {
   );
 
   return (
-    <div className="flex mt-6 w-full flex-wrap justify-center gap-6">
+    <div className="flex mt-2 w-full flex-wrap justify-between gap-6">
       {months.map((month, index) => {
         const firstDay = startOfMonth(month);
         const lastDay = endOfMonth(month);
@@ -291,5 +382,31 @@ const CalendarMonths = (props: CalendarMonthsProps) => {
         );
       })}
     </div>
+  );
+};
+
+export interface SwiperButtonProps {
+  swiperRef: React.RefObject<SwiperInstance | null>; // Define the type for swiperRef
+}
+
+const NextButton = ({ swiperRef }: SwiperButtonProps) => {
+  return (
+    <button
+      onClick={() => swiperRef.current?.slideNext()}
+      className="bg-gray-200 h-8 w-8 rounded-full grid place-items-center"
+    >
+      <Fa6SolidAngleRight />
+    </button>
+  );
+};
+
+const PrevButton = ({ swiperRef }: SwiperButtonProps) => {
+  return (
+    <button
+      onClick={() => swiperRef.current?.slidePrev()}
+      className="bg-gray-200 h-8 w-8 rounded-full grid place-items-center"
+    >
+      <Fa6SolidAngleLeft />
+    </button>
   );
 };
