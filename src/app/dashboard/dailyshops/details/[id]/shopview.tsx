@@ -295,6 +295,7 @@ const ShopView = (props: ShowShopProps) => {
             {shop?.daily_rent_photo.map((photo, index) => (
               <SwiperSlide key={index}>
                 <div className="relative aspect-video">
+                  <p>{photo.path}</p>
                   <Image
                     src={photo.path}
                     alt="Property"

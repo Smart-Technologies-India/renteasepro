@@ -4,7 +4,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    domains: ["192.168.0.106", "localhost"],
+    domains: ["192.168.0.106", "localhost", "194.238.22.198"],
   },
   env: {
     UPLOAD_LINK: process.env.UPLOAD_LINK,
