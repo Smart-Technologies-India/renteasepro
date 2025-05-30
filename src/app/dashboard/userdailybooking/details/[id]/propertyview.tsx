@@ -357,7 +357,7 @@ interface TermsAndConditionProps {
 const TermsAndCondition1 = (props: TermsAndConditionProps) => {
   return (
     <Modal
-      title="Terms & Condition"
+      title="Terms & Condition - Property"
       centered
       open={props.open}
       onCancel={() => props.setOpen(false)}
@@ -366,7 +366,7 @@ const TermsAndCondition1 = (props: TermsAndConditionProps) => {
       className="my-10 h-[600px] overflow-y-scroll"
     >
       <p className="text-sm  font-normal my-2 text-rose-500">
-        Property1 1. The DNHPDA reserves the right to cancel the allotment of
+        1. The DNHPDA reserves the right to cancel the allotment of
         space at Kala-Kendra, Auditorium and Banquet Hall in case of any
         government functions without assigning any reason thereof.
       </p>
