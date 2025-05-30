@@ -515,7 +515,7 @@ const CreateRentPage = (props: CreateRentProps) => {
               <button
                 onClick={() => {
                   router.push(
-                    `/dashboard/dailyrentrecept/${user?.id}/${props.rentid}/${rentData?.daily_shop.daily_rent_transact[0]?.id}`
+                    `/dashboard/dailyrentrecept/${rentData?.daily_shop.daily_rent_transact[0].userId}/${props.rentid}/${rentData?.daily_shop.daily_rent_transact[0]?.id}`
                   );
                 }}
                 className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
