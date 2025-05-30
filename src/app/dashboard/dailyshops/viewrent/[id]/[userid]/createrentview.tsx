@@ -560,7 +560,7 @@ const CreateRentPage = (props: CreateRentProps) => {
               <button
                 onClick={() => {
                   router.push(
-                    `/dashboard/dailyshops/collectdeposit/${rentData?.daily_shop.daily_rent_transact[1]?.id}`
+                    `/dashboard/dailyshops/collectdeposite/${rentData?.daily_shop.daily_rent_transact[1]?.id}`
                   );
                   // const nanoid = customAlphabet("1234567890abcdef", 10);
                   // const uniqueid = nanoid();

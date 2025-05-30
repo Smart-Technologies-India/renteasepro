@@ -179,7 +179,11 @@ const CreateDailyRent = async (
         createdById: payload.createdById,
         shopId: payload.shopId,
         status: "INACTIVE",
-        amount: payload.event_amount,
+        amount: (
+          parseInt(payload.event_amount) +
+          (payload.handover_day ? parseInt(payload.handover_day_amount) : 0) +
+          (payload.prep_day ? parseInt(payload.prep_day_amount) : 0)
+        ).toFixed(2),
       },
     });
 
@@ -188,6 +192,27 @@ const CreateDailyRent = async (
         status: false,
         data: null,
         message: "Unable to create daily rent transaction. Please try again.",
+        functionname: "CreateDailyRent",
+      };
+    }
+
+    const create_deposit_rent_transaction =
+      await prisma.daily_rent_transact.create({
+        data: {
+          rentId: rent_data.id,
+          userId: payload.userId,
+          createdById: payload.createdById,
+          shopId: payload.shopId,
+          status: "INACTIVE",
+          amount: payload.deposit_amount,
+        },
+      });
+
+    if (!create_deposit_rent_transaction) {
+      return {
+        status: false,
+        data: null,
+        message: "Unable to create deposit rent transaction. Please try again.",
         functionname: "CreateDailyRent",
       };
     }
