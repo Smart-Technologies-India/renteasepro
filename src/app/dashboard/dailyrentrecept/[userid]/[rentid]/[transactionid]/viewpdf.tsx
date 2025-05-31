@@ -301,8 +301,9 @@ const ViewPdf = (props: ViewPdfProps) => {
   //   return ` from ${formateDate(from_date)} to ${formateDate(to_date)}`;
   // };
 
-  function getFinancialYear(transactionDate: string): string {
-    const [day, month, year] = transactionDate.split("-").map(Number);
+  function getFinancialYear(transactionDate: Date): string {
+    const month = transactionDate.getMonth() + 1; // getMonth() is 0-based
+    const year = transactionDate.getFullYear();
 
     // If the month is before April, it belongs to the previous financial year
     const startYear = month < 4 ? year - 1 : year;
@@ -423,7 +424,9 @@ const ViewPdf = (props: ViewPdfProps) => {
           <Text style={styles.mbottom}>{rent?.daily_shop.name}</Text>
           <Text style={styles.rbottom}>Invoice No.</Text>
           <Text style={styles.mbottom2}>
+            {/* get financial year */}
             PDA /{(invoicenumber ?? "0").toString().padStart(4, "0")}/
+            {getFinancialYear(new Date(history[0]?.transaction_date!))}
             {/* {getFinancialYear(history[0]?.transaction_date.toDateString())} */}
             {/* {new Date(history[0]?.transaction_date)
               .getFullYear()
@@ -525,14 +528,6 @@ const ViewPdf = (props: ViewPdfProps) => {
           </Text>
         </View>
         <View style={styles.myflex}>
-          <Text style={styles.lbottom}>4</Text>
-          <Text style={styles.mbottom}>Deposit Amount</Text>
-          <Text style={styles.rbottom2}></Text>
-          <Text style={styles.rbottom}>
-            {parseFloat(rent?.deposit_amount!).toFixed(2)}
-          </Text>
-        </View>
-        <View style={styles.myflex}>
           <Text style={styles.lbottom}></Text>
           <Text
             style={{
@@ -617,7 +612,6 @@ const ViewPdf = (props: ViewPdfProps) => {
               (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
               (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
               (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100 +
-              parseInt(rent?.deposit_amount ?? "0") +
               ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                 (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                 (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
@@ -651,7 +645,6 @@ const ViewPdf = (props: ViewPdfProps) => {
                     (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                     (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                     (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100 +
-                    parseInt(rent?.deposit_amount ?? "0") +
                     ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                       (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                       (parseInt(rent?.handover_day_amount ?? "0") / 118) *
@@ -923,7 +916,6 @@ const ViewPdf = (props: ViewPdfProps) => {
               (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
               (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
               (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100 +
-              parseInt(rent?.deposit_amount ?? "0") +
               ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                 (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                 (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
@@ -941,7 +933,6 @@ const ViewPdf = (props: ViewPdfProps) => {
                     (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                     (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                     (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100 +
-                    parseInt(rent?.deposit_amount ?? "0") +
                     ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                       (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                       (parseInt(rent?.handover_day_amount ?? "0") / 118) *
@@ -986,7 +977,7 @@ const ViewPdf = (props: ViewPdfProps) => {
             }}
           >
             In the form of {history[0]?.paymentmode ?? "-"} vide Reference No.{" "}
-            {history[0]?.trackid ?? "-"} dated{" "}
+            {history[0]?.transactionid ?? "-"} dated{" "}
             {formateDate(new Date(history[0]?.transaction_date!))}
           </Text>
 
@@ -2264,7 +2255,6 @@ const ViewPdf = (props: ViewPdfProps) => {
                   (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                   (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                   (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100 +
-                  parseInt(rent?.deposit_amount ?? "0") +
                   ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                     (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                     (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *

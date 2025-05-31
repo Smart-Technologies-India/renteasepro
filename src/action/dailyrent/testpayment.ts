@@ -21,31 +21,11 @@ const TestPayment = async (
   payload: TestPaymentPayload
 ): Promise<ApiResponseType<daily_rent_transact | null>> => {
   try {
-    const gstnumber = await prisma.gstinvoice.findFirst({
-      orderBy: { id: "desc" },
-    });
-
-    if (!gstnumber) {
-      return {
-        status: false,
-        data: null,
-        message: "GST invoice number not found",
-        functionname: "TestPayment",
-      };
-    }
-
-    await prisma.gstinvoice.create({
-      data: {
-        number: gstnumber?.number + 1,
-      },
-    });
-
     const updatedata = await prisma.daily_rent_transact.update({
       where: {
         id: payload.rentid,
       },
       data: {
-        gstinvoice: gstnumber.number,
         transactionid: "12345678",
         trackid: payload.orderid,
         status: "PAID",

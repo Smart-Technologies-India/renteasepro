@@ -322,11 +322,7 @@ const postRes = (request, response) => {
       } else if (type == "deposit") {
         let updatedata;
 
-        let gstnumber;
-
-        gstnumber = await prisma.gstinvoice.findFirst({
-          orderBy: { id: "desc" },
-        });
+       
 
         // for (let i = 0; i < id_value.length; i++) {
         updatedata = await prisma.daily_rent_transact.update({
@@ -334,7 +330,6 @@ const postRes = (request, response) => {
             id: bidid,
           },
           data: {
-            gstinvoice: gstnumber.number,
             transactionid: result.bank_ref_no,
             trackid: result.tracking_id,
             status: "PAID",
