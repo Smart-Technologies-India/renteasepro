@@ -117,7 +117,7 @@ const UserBookingPage = () => {
                         : 0)}
                   </TableCell>
 
-                  <TableCell>{val.status}</TableCell>
+                  <TableCell>{val.status == "DEPOSITDUE"? "DEPOSIT DUE" : val.status}</TableCell>
                   <TableCell>
                     <Link
                       href={`/dashboard/dailyshops/viewrent/${val.id}/${val.userId}`}

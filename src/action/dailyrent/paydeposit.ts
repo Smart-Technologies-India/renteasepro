@@ -18,26 +18,11 @@ const PayDeposit = async (
   payload: PayDepositPayload
 ): Promise<ApiResponseType<rent_transact[] | null>> => {
   try {
-    const gstnumber = await prisma.gstinvoice.findFirst({
-      orderBy: { id: "desc" },
-    });
-
-    if (!gstnumber) {
-      return {
-        status: false,
-        data: null,
-        message:
-          "Something Went wrong unable to get gst number. Please try again.",
-        functionname: "PayDeposit",
-      };
-    }
-
     const updatedata = await prisma.daily_rent_transact.update({
       where: {
         id: payload.id,
       },
       data: {
-        gstinvoice: gstnumber.number,
         transactionid: payload.transactionid,
         status: "PAID",
         transaction_date: payload.startdate,
@@ -57,7 +42,7 @@ const PayDeposit = async (
         id: updatedata.daily_rent.id,
       },
       data: {
-        status: "COMPLETED",
+        status: "UPCOMING",
       },
     });
 

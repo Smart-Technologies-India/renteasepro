@@ -536,7 +536,8 @@ const CreateRentPage = (props: CreateRentProps) => {
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
               <Label htmlFor="chargethree">
-                Deposit/Day (Refundable) in Rs.{" "}
+                Deposit/Day in Rs.(Refundable), to be paid in the form of DD
+                within 7 days after successful booking{" "}
                 <span className="text-rose-500">*</span>
               </Label>
               <Input
@@ -848,6 +849,10 @@ const CreateRentPage = (props: CreateRentProps) => {
           main road. The applicant must not tamper with any of the car park
           systems, including access control, ventilation, fire protection,
           surveillance and communications in the parking area.
+        </p>
+        <p className="text-sm text-rose-500 font-normal my-2">
+          19. Deposit amount to be paid in the form of DD within 7 days after
+          successful booking failing which the booking will get cancelled.
         </p>
         <div>
           <button

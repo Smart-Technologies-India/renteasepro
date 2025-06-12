@@ -174,8 +174,8 @@ const CreateRentPage = (props: CreateRentProps) => {
       }
 
       toast.success("Unit booking request created successfully");
-      // router.back();
-      // router.push(`/dashboard/dailyshops/collectrent/${createrent.data.id}`);
+      router.push(`/dashboard/dailyshops/allbookinghistory`);
+      setIsCreating(false);
     } else {
       let errorMessage = "";
       if (result.issues[0].input) {

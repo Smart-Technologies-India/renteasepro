@@ -5,10 +5,10 @@ import { ApiResponseType } from "@/models/response";
 import prisma from "../../../prisma/database";
 import { daily_rent_transact } from "@prisma/client";
 
-interface GetAllDailyRentPayload {}
+interface GetAllDailyPaidRentPayload {}
 
-const GetAllDailyRent = async (
-  payload: GetAllDailyRentPayload
+const GetAllDailyPaidRent = async (
+  payload: GetAllDailyPaidRentPayload
 ): Promise<ApiResponseType<daily_rent_transact[] | null>> => {
   try {
     const rent_transact_response = await prisma.daily_rent_transact.findMany({
@@ -32,24 +32,24 @@ const GetAllDailyRent = async (
         status: false,
         data: null,
         message: "No Rent Transact Data Found for This User. Please try again.",
-        functionname: "GetAllDailyRent",
+        functionname: "GetAllDailyPaidRent",
       };
 
     return {
       status: true,
       data: rent_transact_response,
       message: "Daily Rent Transact data get successfully",
-      functionname: "GetAllDailyRent",
+      functionname: "GetAllDailyPaidRent",
     };
   } catch (e) {
     const response: ApiResponseType<null> = {
       status: false,
       data: null,
       message: errorToString(e),
-      functionname: "GetAllDailyRent",
+      functionname: "GetAllDailyPaidRent",
     };
     return response;
   }
 };
 
-export default GetAllDailyRent;
+export default GetAllDailyPaidRent;

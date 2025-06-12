@@ -322,8 +322,6 @@ const postRes = (request, response) => {
       } else if (type == "deposit") {
         let updatedata;
 
-       
-
         // for (let i = 0; i < id_value.length; i++) {
         updatedata = await prisma.daily_rent_transact.update({
           where: {
@@ -851,16 +849,6 @@ const checkpaymentstatus = async () => {
             data: {
               number: isrestart ? 1 : gstnumber.number + 1,
             },
-          });
-
-          console.log({
-            gstinvoice: isrestart ? 1 : gstnumber.number,
-            transactionid: obj["order_bank_ref_no"],
-            trackid: obj["reference_no"],
-            status: "PAID",
-            transaction_date: new Date().toISOString(),
-            paymentmode: obj["order_card_name"].toString().toUpperCase(),
-            remarks: "Success",
           });
 
           await prisma.rent_transact.update({

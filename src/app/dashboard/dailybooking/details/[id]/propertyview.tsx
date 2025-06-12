@@ -8,6 +8,7 @@ import { LucideArrowBigLeft, LucideArrowBigRight } from "@/components/icons";
 import { capitalcase, removeDuplicates } from "@/utils/methods";
 import { ShopStatus, daily_property, daily_shop } from "@prisma/client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface PropertiesViewProps {
@@ -15,6 +16,7 @@ interface PropertiesViewProps {
 }
 
 const PropertiesView = (props: PropertiesViewProps) => {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [shops, setShops] = useState<daily_shop[]>([]);
 
@@ -120,13 +122,22 @@ const PropertiesView = (props: PropertiesViewProps) => {
     <div className="p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
         <div className="bg-white rounded-sm shadow-sm">
-          <div className="flex gap-2 border-b border-gray-300">
+          <div className="flex gap-2 border-b border-gray-300 items-center px-2">
             <BackButton />
             <p className="text-xl p-2  font-semibold">Property Details</p>
+            <div className="grow"></div>
+            <button
+              className="text-white bg-blue-500 rounded h-8 px-2"
+              onClick={() => {
+                router.push(`/dashboard/dailybooking/report/${property?.id}`);
+              }}
+            >
+              Send Report
+            </button>
           </div>
           <div className="px-4 py-2 grid grid-cols-2 gap-4 mt-2">
             <p className="text-xs leading-3">
-              Propery Name <br />
+              Property Name <br />
               <span className="text-sm text-gray-500 font-medium">
                 {property?.name}
               </span>

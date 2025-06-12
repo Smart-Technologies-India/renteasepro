@@ -179,9 +179,9 @@ const ShopView = (props: ShowShopProps) => {
               </span>
             </p>
             <p className="text-xs leading-3">
-              Shop Category Name <br />
+              Unit Name <br />
               <span className="text-sm text-gray-500 font-medium">
-                {shop?.shop_category.name}
+                {shop?.name}
               </span>
             </p>
 

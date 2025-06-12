@@ -183,7 +183,17 @@ const ShopBidHistoryView = (props: ShopBidHistoryViewProps) => {
                     <TableCell className="p-2">{rentdata.status}</TableCell>
 
                     <TableCell className="text-right p-2">
-                      {rentdata.rent_transact.length > 0 ? (
+                      <button
+                        onClick={() => {
+                          router.push(
+                            `/dashboard/dailyshops/viewrent/${rentdata.id}/${rentdata.user.id}`
+                          );
+                        }}
+                        className="cursor-pointer bg-blue-500 text-sm px-2 py-1 rounded-md text-white text-nowrap"
+                      >
+                        View
+                      </button>
+                      {/* {rentdata.rent_transact.length > 0 ? (
                         <button
                           onClick={() => {
                             router.push(
@@ -196,7 +206,7 @@ const ShopBidHistoryView = (props: ShopBidHistoryViewProps) => {
                         </button>
                       ) : (
                         <p className="text-sm text-gray-500">No Receipt</p>
-                      )}
+                      )} */}
                       {/* {rentdata.is_approved &&
                       rentdata.rent_transact.length > 0 ? (
                         <>

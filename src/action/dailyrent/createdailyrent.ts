@@ -172,8 +172,28 @@ const CreateDailyRent = async (
       };
     }
 
+    const gstnumber = await prisma.gstinvoice.findFirst({
+      orderBy: { id: "desc" },
+    });
+
+    if (!gstnumber) {
+      return {
+        status: false,
+        data: null,
+        message:
+          "Something Went wrong unable to get gst number. Please try again.",
+        functionname: "PayDeposit",
+      };
+    }
+
+    const update_gstnumber = await prisma.gstinvoice.update({
+      where: { id: gstnumber.id },
+      data: { number: gstnumber.number + 1 },
+    });
+
     const create_rent_transaction = await prisma.daily_rent_transact.create({
       data: {
+        gstinvoice: gstnumber.number + 1,
         rentId: rent_data.id,
         userId: payload.userId,
         createdById: payload.createdById,

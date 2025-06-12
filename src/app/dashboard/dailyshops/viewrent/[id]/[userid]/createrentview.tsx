@@ -17,12 +17,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import GetDailyShop from "@/action/dailyshop/getdailyshop";
-import CreateDailyRent from "@/action/dailyrent/createdailyrent";
-import { CreateDailyRentSchema } from "@/schema/createdailyrent";
-import { Checkbox } from "@/components/ui/checkbox";
 import { DatePicker, Modal, Space } from "antd";
-import GetDailyRent from "@/action/dailyrent/getdailyrent";
-import { customAlphabet } from "nanoid";
 import GetUser from "@/action/user/getuser";
 import GetDailyRentById from "@/action/dailyshop/getdailyrent";
 import { formateDate, handleNumberChange, longtext } from "@/utils/methods";
@@ -35,6 +30,8 @@ import Image from "next/image";
 import UpdateRefundRequest from "@/action/refund/udpaterefundrequest";
 import { Textarea } from "@/components/ui/textarea";
 import GetRefundRequest2 from "@/action/refund/getrefundrequest2";
+import CancelRefundRequest from "@/action/refund/cancelrefundrequest";
+import DepartmentRequest from "@/action/refund/departmentcancelequest";
 
 const { RangePicker } = DatePicker;
 
@@ -113,7 +110,7 @@ const CreateRentPage = (props: CreateRentProps) => {
         setCencalRequest(cencal_requestresponse.data);
       }
 
-      const userresponse = await GetUser({ id: createuserid });
+      const userresponse = await GetUser({ id: props.userid });
       if (userresponse.status) {
         setUser(userresponse.data!);
       }
@@ -171,7 +168,7 @@ const CreateRentPage = (props: CreateRentProps) => {
           setCencalRequest(cencal_requestresponse.data);
         }
 
-        const userresponse = await GetUser({ id: createuserid });
+        const userresponse = await GetUser({ id: props.userid });
         if (userresponse.status) {
           setUser(userresponse.data!);
         }
@@ -201,6 +198,8 @@ const CreateRentPage = (props: CreateRentProps) => {
   const [refundRequestRemarkBox, setRefundRequestRemarkBox] = useState(false);
   const [refundRequestBox, setRefundRequestBox] = useState(false);
   const [userCancelBookingBox, setUserCancelBookingBox] = useState(false);
+  const [departmentCancelBookingBox, setDepartmentCancelBookingBox] =
+    useState(false);
 
   const [cencelRequestRemarkBox, setCencelRequestRemarkBox] = useState(false);
   const [cencelRequestBox, setCencelRequestBox] = useState(false);
@@ -292,7 +291,7 @@ const CreateRentPage = (props: CreateRentProps) => {
       photo1: uploadfile.data.filePath,
       photo2: uploadfile2.data.filePath,
       photo3: uploadfile3.data.filePath,
-      retund_type: "DEPOSITREFUND",
+      refund_type: "DEPOSITREFUND",
     });
 
     if (response.status) {
@@ -476,7 +475,21 @@ const CreateRentPage = (props: CreateRentProps) => {
 
                 {rentData?.daily_shop.daily_rent_transact.filter(
                   (val: daily_rent_transact) => val.status == "PAID"
-                ).length == 2 && refundRequest == null ? (
+                ).length == 2 &&
+                refundRequest == null &&
+                (() => {
+                  // Calculate the eligible refund date
+                  let eligibleDate: Date | null = null;
+                  if (rentData?.handover_day) {
+                    eligibleDate = new Date(rentData.handover_day);
+                    eligibleDate.setDate(eligibleDate.getDate() + 1);
+                  } else if (rentData?.event_to_date) {
+                    eligibleDate = new Date(rentData.event_to_date);
+                    eligibleDate.setDate(eligibleDate.getDate() + 1);
+                  }
+                  // Only show button if today is after eligibleDate
+                  return eligibleDate && new Date() >= eligibleDate;
+                })() ? (
                   <button
                     onClick={() => {
                       setDepositeModelBox(true);
@@ -486,27 +499,6 @@ const CreateRentPage = (props: CreateRentProps) => {
                     Request Refund
                   </button>
                 ) : null}
-
-                {/* {rentData?.daily_shop.daily_rent_transact.filter(
-                  (val: daily_rent_transact) => val.status == "PAID"
-                ).length == 1 ? (
-                  <button
-                    onClick={() => {
-                      const nanoid = customAlphabet("1234567890abcdef", 10);
-                      const uniqueid = nanoid();
-                      router.push(
-                        `/payamount?xlmnx=${rentData?.deposit_amount!}&ynboy=${uniqueid}&zgvfz=${
-                          rentData?.daily_shop.daily_rent_transact[1]?.id
-                        }_0_0_deposit&name=${user?.firstName}-${
-                          user?.lastName
-                        }&email=${user?.email}&mobile=${user?.contactone}`
-                      );
-                    }}
-                    className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
-                  >
-                    Pay Deposit
-                  </button>
-                ) : null} */}
               </>
             )}
             {rentData?.daily_shop.daily_rent_transact.filter(
@@ -554,6 +546,18 @@ const CreateRentPage = (props: CreateRentProps) => {
                   View Refund Request
                 </button>
               )}
+
+            {rentData?.daily_shop.daily_rent_transact.length == 0 &&
+            ["MANAGER", "ACCOUNTANT"].includes(user?.role!) ? (
+              <button
+                onClick={() => {
+                  setDepartmentCancelBookingBox(true);
+                }}
+                className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+              >
+                Cancel Booking
+              </button>
+            ) : null}
 
             {["ACCOUNTANT"].includes(user?.role!) &&
               refundRequest != null &&
@@ -686,7 +690,7 @@ const CreateRentPage = (props: CreateRentProps) => {
           {refundRequest?.bankname && (
             <div className="grid items-center gap-1.5 w-full mt-4 bg-gray-100 p-2 rounded-md">
               <Label htmlFor="user">
-                Refund Data <span className="text-rose-500">*</span>
+                Deposit Refund <span className="text-rose-500">*</span>
               </Label>
               <div className="">
                 <p>Bank Name: {refundRequest?.bankname}</p>
@@ -696,6 +700,7 @@ const CreateRentPage = (props: CreateRentProps) => {
                 <p>
                   Refund Date: {formateDate(refundRequest?.transaction_date!)}
                 </p>
+                <p>Remark: {refundRequest?.remarks}</p>
               </div>
             </div>
           )}
@@ -707,12 +712,13 @@ const CreateRentPage = (props: CreateRentProps) => {
               <div className="">
                 <p>Bank Name: {cencalRequest?.bankname}</p>
                 <p>Payment Mode: {cencalRequest?.paymentmode}</p>
-                <p>Transaction Id: {cencalRequest?.transactionid}</p>
+                <p>Transactaion Id: {cencalRequest?.transactionid}</p>
                 <p>Refund Amount: {cencalRequest?.actual_refund_amount}</p>
                 <p>
                   Cancel Booking Date:{" "}
                   {formateDate(cencalRequest?.transaction_date!)}
                 </p>
+                <p>Remark: {cencalRequest?.officer_remark}</p>
               </div>
             </div>
           )}
@@ -1367,27 +1373,16 @@ const CreateRentPage = (props: CreateRentProps) => {
         width={800}
         className="my-10 h-[600px]"
       >
-        <p className="text-sm  font-normal my-2 text-rose-500">
-          1. The DNHPDA reserves the right to cancel the allotment of space at
-          Kala-Kendra, Auditorium and Banquet Hall in case of any government
-          functions without assigning any reason thereof.
+        <p className="text-sm text-gray-800 font-normal my-2">
+          1. If the applicant has to cancel their booked date / allotted date,
+          50% Cancellation charges shall be applied and the remaining amount
+          shall be transferred to the applicant by the department.
+        </p>
+        <p className="text-sm text-gray-800 font-normal my-2">
+          2. If the applicant has to cancel their booked date / allotted date
+          before 1 week, in that case 100% Cancellation charge shall be applied.
         </p>
 
-        <p className="text-sm text-gray-800 font-normal my-2">
-          2. The applicant shall ensure that they shall maintain the floor and
-          premises of the Banquet hall clean by avoiding littering of food
-          materials over the wooden floors, by sufficient provision of waste
-          bins etc.
-        </p>
-        <p className="text-sm text-gray-800 font-normal my-2">
-          3. The applicant shall be responsible for maintaining cleanliness and
-          hygiene during and after completion of function at the allotted space
-          area and all used premises. If the same is not maintained and
-          cleanness is not observed by the component authority, and penalty
-          shall be levied amounting to Rs. 5000/- and the security deposit
-          submitted to the department shall be forfeited without any further
-          explanation.
-        </p>
         <div className="flex gap-4 mt-2 items-center bg-gray-100 px-2 py-2 rounded-sm">
           <Label htmlFor="termfile">Cancellation Charge</Label>
           <div className="grow"></div>
@@ -1400,7 +1395,15 @@ const CreateRentPage = (props: CreateRentProps) => {
                 parseFloat(
                   rentData?.prep_day ? rentData.prep_day_amount! : "0"
                 )) *
-              0.5
+              (() => {
+                const currentDate = new Date();
+                const eventFromDate = new Date(rentData?.event_from_date!);
+                // if the event date is more than 7 days away, apply 50% charge else 100%
+                return eventFromDate.getTime() - currentDate.getTime() >
+                  7 * 24 * 60 * 60 * 1000
+                  ? 0.5
+                  : 1;
+              })()
             ).toFixed(2)}
           </p>
         </div>
@@ -1408,7 +1411,7 @@ const CreateRentPage = (props: CreateRentProps) => {
           <div className="grow"></div>
           <Button
             onClick={async () => {
-              const response = await CreateRefundRequest({
+              const response = await CancelRefundRequest({
                 creadtedById: createuserid,
                 rentId: rentData?.id!,
                 shopId: rentData?.shopId!,
@@ -1423,10 +1426,19 @@ const CreateRentPage = (props: CreateRentProps) => {
                       parseFloat(
                         rentData?.prep_day ? rentData.prep_day_amount! : "0"
                       )) *
-                    0.5
+                    (() => {
+                      const currentDate = new Date();
+                      const eventFromDate = new Date(
+                        rentData?.event_from_date!
+                      );
+                      return eventFromDate.getTime() - currentDate.getTime() >
+                        7 * 24 * 60 * 60 * 1000
+                        ? 0.5
+                        : 1;
+                    })()
                   ).toFixed(2)
                 ),
-                retund_type: "CANCELREFUND",
+                refund_type: "CANCELREFUND",
               });
 
               if (response.status) {
@@ -1438,6 +1450,7 @@ const CreateRentPage = (props: CreateRentProps) => {
               }
 
               setUserCancelBookingBox(false);
+              window.location.reload();
             }}
             className="bg-blue-500 hover:bg-blue-600 text-white"
           >
@@ -1446,6 +1459,47 @@ const CreateRentPage = (props: CreateRentProps) => {
         </div>
       </Modal>
       {/* user cancel change end here*/}
+      {/* department cancel start here*/}
+      <Modal
+        centered
+        title="Cancellation Request"
+        open={departmentCancelBookingBox}
+        onCancel={() => setDepartmentCancelBookingBox(false)}
+        footer={null}
+        width={800}
+        className="my-10"
+      >
+        <p className="text-sm text-gray-800 font-normal my-2">
+          Are you sure you want to cancel this booking? This action cannot be
+          undone.
+        </p>
+        <div className="flex mt-2">
+          <div className="grow"></div>
+          <Button
+            onClick={async () => {
+              const response = await DepartmentRequest({
+                updatedById: createuserid,
+                rentId: rentData?.id!,
+              });
+
+              if (response.status) {
+                toast.success("Cancellation request created successfully", {
+                  theme: "light",
+                });
+              } else {
+                toast.error(response.message, { theme: "light" });
+              }
+
+              setUserCancelBookingBox(false);
+              window.location.reload();
+            }}
+            className="bg-blue-500 hover:bg-blue-600 text-white"
+          >
+            Submit
+          </Button>
+        </div>
+      </Modal>
+      {/* department cancel change end here*/}
     </>
   );
 };

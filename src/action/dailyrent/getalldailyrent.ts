@@ -42,6 +42,9 @@ const GetAllDailyRent = async (
           },
         },
       },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
 
     if (!rent_respone)

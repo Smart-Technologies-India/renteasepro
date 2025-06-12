@@ -132,7 +132,6 @@ const DepartmentCreateDailyRent = async (
       event_reason: payload.event_reason,
       userId: payload.userId,
       createdById: payload.createdById,
-
       status: payload.status,
     };
 

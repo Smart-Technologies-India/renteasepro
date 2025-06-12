@@ -7,9 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
 import { useEffect, useState } from "react";
-
 import {
   Popover,
   PopoverContent,
@@ -38,7 +36,8 @@ import {
   Font,
   usePDF,
 } from "@react-pdf/renderer";
-import GetAllDailyRent from "@/action/dailyrent/getalldailyrent";
+import GetAllDailyPaidRent from "@/action/rent_transact/getalldailyrent";
+import { daily_rent_transact, rent_transact } from "@prisma/client";
 
 Font.register({
   family: "Oswald",
@@ -164,13 +163,14 @@ const GstTable = () => {
   const [filterDateTwo, setFilterDateTwo] = useState<DateRange>();
   const [startDPopTwo, setStartDPopTwo] = useState<boolean>(false);
 
-  const [filterAccountTwo, setFilterAccountTwo] = useState<any[]>([]);
-
+  const [filterAccountTwo, setFilterAccountTwo] = useState<rent_transact[]>([]);
 
   const [filterDateThree, setFilterDateThree] = useState<DateRange>();
   const [startDPopThree, setStartDPopThree] = useState<boolean>(false);
 
-  const [filterAccountThree, setFilterAccountThree] = useState<any[]>([]);
+  const [filterAccountThree, setFilterAccountThree] = useState<
+    daily_rent_transact[]
+  >([]);
 
   const generateInvoiceGSTPDF = (invoices: any[]) => {
     const InvoiceGST = (
@@ -442,7 +442,7 @@ const GstTable = () => {
   const refreshDailyRent = async () => {
     setIsLoading(true);
 
-    const rentresponse = await GetAllDailyRent({});
+    const rentresponse = await GetAllDailyPaidRent({});
     if (rentresponse.status) {
       setFilterAccountThree(rentresponse.data!);
     }
@@ -476,9 +476,9 @@ const GstTable = () => {
         setRentGst(generateRentGSTPDF(rentresponse.data!));
       }, 1500);
 
-      const dailyrentresponse = await GetAllDailyRent({});
+      const dailyrentresponse = await GetAllDailyPaidRent({});
       if (dailyrentresponse.status) {
-        setFilterAccountThree(rentresponse.data!);
+        setFilterAccountThree(dailyrentresponse.data!);
       }
 
       setTimeout(() => {
@@ -515,8 +515,9 @@ const GstTable = () => {
               <Button
                 id="date"
                 variant={"outline"}
-                className={`w-full justify-start text-left font-normal ${filterDate ?? "text-muted-foreground"
-                  }`}
+                className={`w-full justify-start text-left font-normal ${
+                  filterDate ?? "text-muted-foreground"
+                }`}
               >
                 <IcBaselineCalendarMonth className="mr-2 h-4 w-4" />
                 {filterDate?.from ? (
@@ -650,16 +651,16 @@ const GstTable = () => {
                       parseFloat(accumulator) + parseFloat(currentValue.cgst)
                     );
                   }, 0) +
-                  filterAccount.reduce((accumulator, currentValue) => {
-                    return (
-                      parseFloat(accumulator) + parseFloat(currentValue.ugst)
-                    );
-                  }, 0) +
-                  filterAccount.reduce((accumulator, currentValue) => {
-                    return (
-                      parseFloat(accumulator) + parseFloat(currentValue.igst)
-                    );
-                  }, 0)
+                    filterAccount.reduce((accumulator, currentValue) => {
+                      return (
+                        parseFloat(accumulator) + parseFloat(currentValue.ugst)
+                      );
+                    }, 0) +
+                    filterAccount.reduce((accumulator, currentValue) => {
+                      return (
+                        parseFloat(accumulator) + parseFloat(currentValue.igst)
+                      );
+                    }, 0)
                 )}
               </TableCell>
             </TableRow>
@@ -687,8 +688,9 @@ const GstTable = () => {
               <Button
                 id="date"
                 variant={"outline"}
-                className={`w-full justify-start text-left font-normal ${filterDateTwo ?? "text-muted-foreground"
-                  }`}
+                className={`w-full justify-start text-left font-normal ${
+                  filterDateTwo ?? "text-muted-foreground"
+                }`}
               >
                 <IcBaselineCalendarMonth className="mr-2 h-4 w-4" />
                 {filterDateTwo?.from ? (
@@ -781,9 +783,7 @@ const GstTable = () => {
               <TableCell>
                 {numberWithIndianFormat(
                   filterAccountTwo.reduce((accumulator, currentValue) => {
-                    return (
-                      parseFloat(accumulator) + parseFloat(currentValue.amount)
-                    );
+                    return accumulator + currentValue.amount;
                   }, 0)
                 )}
               </TableCell>
@@ -792,11 +792,11 @@ const GstTable = () => {
                   filterAccountTwo
                     .flatMap((arr: any) => arr.amount)
                     .reduce((acc: any, curr: any) => acc + curr, 0) -
-                  (filterAccountTwo
-                    .flatMap((arr: any) => arr.amount)
-                    .reduce((acc: any, curr: any) => acc + curr, 0) *
-                    18) /
-                  118
+                    (filterAccountTwo
+                      .flatMap((arr: any) => arr.amount)
+                      .reduce((acc: any, curr: any) => acc + curr, 0) *
+                      18) /
+                      118
                 )}
               </TableCell>
               <TableCell>
@@ -805,8 +805,8 @@ const GstTable = () => {
                     .flatMap((arr: any) => arr.amount) // Extract numbers from objects
                     .reduce((acc: any, curr: any) => acc + curr, 0) *
                     18) /
-                  118 /
-                  2
+                    118 /
+                    2
                 )}
               </TableCell>
               <TableCell>
@@ -815,14 +815,14 @@ const GstTable = () => {
                     .flatMap((arr: any) => arr.amount) // Extract numbers from objects
                     .reduce((acc: any, curr: any) => acc + curr, 0) *
                     18) /
-                  118 /
-                  2
+                    118 /
+                    2
                 )}
               </TableCell>
               <TableCell>
                 {numberWithIndianFormat(
                   filterAccountTwo.reduce((accumulator, currentValue) => {
-                    return parseFloat(accumulator) + 0;
+                    return accumulator + 0;
                   }, 0)
                 )}
               </TableCell>
@@ -832,17 +832,17 @@ const GstTable = () => {
                     .flatMap((arr: any) => arr.amount) // Extract numbers from objects
                     .reduce((acc: any, curr: any) => acc + curr, 0) *
                     18) /
-                  118 /
-                  2 +
-                  (filterAccountTwo
-                    .flatMap((arr: any) => arr.amount) // Extract numbers from objects
-                    .reduce((acc: any, curr: any) => acc + curr, 0) *
-                    18) /
-                  118 /
-                  2 +
-                  filterAccountTwo.reduce((accumulator, currentValue) => {
-                    return parseFloat(accumulator) + 0;
-                  }, 0)
+                    118 /
+                    2 +
+                    (filterAccountTwo
+                      .flatMap((arr: any) => arr.amount) // Extract numbers from objects
+                      .reduce((acc: any, curr: any) => acc + curr, 0) *
+                      18) /
+                      118 /
+                      2 +
+                    filterAccountTwo.reduce((accumulator, currentValue) => {
+                      return accumulator + 0;
+                    }, 0)
                 )}
               </TableCell>
             </TableRow>
@@ -856,11 +856,13 @@ const GstTable = () => {
       {/* third section start from here */}
 
       <div className="flex gap-2 items-center mt-6">
-        <h1 className="text-[#162f57] text-2xl font-semibold">Daily Rent GST</h1>
+        <h1 className="text-[#162f57] text-2xl font-semibold">
+          Daily Rent GST
+        </h1>
         <div className="grow"></div>
         <a
           download
-          href={rentGst.url!}
+          href={dailyRentGst.url!}
           className="bg-[#162e57] hover:bg-[#162e57] text-white text-sm px-4 py-1 h-9 rounded-md grid place-items-center"
         >
           Download
@@ -871,8 +873,9 @@ const GstTable = () => {
               <Button
                 id="date"
                 variant={"outline"}
-                className={`w-full justify-start text-left font-normal ${filterDateThree ?? "text-muted-foreground"
-                  }`}
+                className={`w-full justify-start text-left font-normal ${
+                  filterDateThree ?? "text-muted-foreground"
+                }`}
               >
                 <IcBaselineCalendarMonth className="mr-2 h-4 w-4" />
                 {filterDateThree?.from ? (
@@ -965,68 +968,70 @@ const GstTable = () => {
               <TableCell>
                 {numberWithIndianFormat(
                   filterAccountThree.reduce((accumulator, currentValue) => {
-                    return (
-                      parseFloat(accumulator) + parseFloat(currentValue.amount)
-                    );
+                    return accumulator + parseFloat(currentValue.amount);
                   }, 0)
                 )}
               </TableCell>
               <TableCell>
                 {numberWithIndianFormat(
                   filterAccountThree
-                    .flatMap((arr: any) => arr.amount)
+                    .flatMap((arr: daily_rent_transact) =>
+                      parseFloat(arr.amount)
+                    )
                     .reduce((acc: any, curr: any) => acc + curr, 0) -
-                  (filterAccountThree
-                    .flatMap((arr: any) => arr.amount)
-                    .reduce((acc: any, curr: any) => acc + curr, 0) *
-                    18) /
-                  118
+                    (filterAccountThree
+                      .flatMap((arr: daily_rent_transact) =>
+                        parseFloat(arr.amount)
+                      )
+                      .reduce((acc: any, curr: any) => acc + curr, 0) *
+                      18) /
+                      118
                 )}
               </TableCell>
               <TableCell>
                 {numberWithIndianFormat(
                   (filterAccountThree
-                    .flatMap((arr: any) => arr.amount) // Extract numbers from objects
+                    .flatMap((arr: any) => parseFloat(arr.amount)) // Extract numbers from objects
                     .reduce((acc: any, curr: any) => acc + curr, 0) *
                     18) /
-                  118 /
-                  2
+                    118 /
+                    2
                 )}
               </TableCell>
               <TableCell>
                 {numberWithIndianFormat(
                   (filterAccountThree
-                    .flatMap((arr: any) => arr.amount) // Extract numbers from objects
+                    .flatMap((arr: any) => parseFloat(arr.amount)) // Extract numbers from objects
                     .reduce((acc: any, curr: any) => acc + curr, 0) *
                     18) /
-                  118 /
-                  2
+                    118 /
+                    2
                 )}
               </TableCell>
               <TableCell>
                 {numberWithIndianFormat(
                   filterAccountThree.reduce((accumulator, currentValue) => {
-                    return parseFloat(accumulator) + 0;
+                    return accumulator + 0;
                   }, 0)
                 )}
               </TableCell>
               <TableCell>
                 {numberWithIndianFormat(
                   (filterAccountThree
-                    .flatMap((arr: any) => arr.amount) // Extract numbers from objects
+                    .flatMap((arr: any) => parseFloat(arr.amount)) // Extract numbers from objects
                     .reduce((acc: any, curr: any) => acc + curr, 0) *
                     18) /
-                  118 /
-                  2 +
-                  (filterAccountThree
-                    .flatMap((arr: any) => arr.amount) // Extract numbers from objects
-                    .reduce((acc: any, curr: any) => acc + curr, 0) *
-                    18) /
-                  118 /
-                  2 +
-                  filterAccountThree.reduce((accumulator, currentValue) => {
-                    return parseFloat(accumulator) + 0;
-                  }, 0)
+                    118 /
+                    2 +
+                    (filterAccountThree
+                      .flatMap((arr: any) => parseFloat(arr.amount)) // Extract numbers from objects
+                      .reduce((acc: any, curr: any) => acc + curr, 0) *
+                      18) /
+                      118 /
+                      2 +
+                    filterAccountThree.reduce((accumulator, currentValue) => {
+                      return accumulator + 0;
+                    }, 0)
                 )}
               </TableCell>
             </TableRow>
@@ -1034,7 +1039,6 @@ const GstTable = () => {
         </Table>
       )}
       {/* thired section end here */}
-
     </div>
   );
 };
