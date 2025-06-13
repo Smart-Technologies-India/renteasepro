@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { user } from "@prisma/client";
+import { daily_rent_description, user } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -32,6 +32,7 @@ import { customAlphabet } from "nanoid";
 import GetUser from "@/action/user/getuser";
 import BackButton from "@/components/backbutton";
 import TestPayment from "@/action/dailyrent/testpayment";
+import GetDailyRentDescription from "@/action/dailyrentdescription/getdailyrentdescription";
 const { RangePicker } = DatePicker;
 
 interface CreateRentProps {
@@ -67,9 +68,28 @@ const CreateRentPage = (props: CreateRentProps) => {
   const gst_no = useRef<HTMLInputElement>(null);
   const company_name = useRef<HTMLInputElement>(null);
 
+  const [rentDescription, setRentDescription] = useState<
+    daily_rent_description[]
+  >([]);
+
+  const [dailyRentDescription, setDailyRentDescription] =
+    useState<daily_rent_description | null>(null);
+
   useEffect(() => {
     const init = async () => {
       setLoading(true);
+
+      const purpose = await GetDailyRentDescription({
+        id: props.unitid,
+      });
+
+      if (purpose.status && purpose.data) {
+        setRentDescription(purpose.data);
+      } else {
+        toast.error(purpose.message);
+        router.back();
+        return;
+      }
 
       const userresponse = await GetUser({ id: createuserid });
       if (userresponse.status) {
@@ -125,10 +145,16 @@ const CreateRentPage = (props: CreateRentProps) => {
     const result = safeParse(CreateDailyRentSchema, {
       userId: props.userid,
       unitId: props.unitid,
-      event_amount: (datecount() * shopData?.rate_per_day).toString(),
-      prep_day_amount: prepration ? shopData?.rate_prep_day : "0",
-      handover_day_amount: handover ? shopData?.rate_handover_day : "0",
-      deposit_amount: (shopData?.deposit_per_day).toString(),
+      event_amount: (
+        datecount() * parseInt(dailyRentDescription?.event_amount || "0")
+      ).toString(),
+      prep_day_amount: prepration
+        ? parseInt(dailyRentDescription?.prep_day_amount || "0").toFixed(0)
+        : "0",
+      handover_day_amount: handover
+        ? parseInt(dailyRentDescription?.handover_day_amount || "0").toFixed(0)
+        : "0",
+      deposit_amount: (dailyRentDescription?.deposit_amount || "0").toString(),
       event_from_date: startDate,
       event_to_date: endDate,
       event_reason: purpose,
@@ -252,10 +278,16 @@ const CreateRentPage = (props: CreateRentProps) => {
     const result = safeParse(CreateDailyRentSchema, {
       userId: props.userid,
       unitId: props.unitid,
-      event_amount: (datecount() * shopData?.rate_per_day).toString(),
-      prep_day_amount: prepration ? shopData?.rate_prep_day : "0",
-      handover_day_amount: handover ? shopData?.rate_handover_day : "0",
-      deposit_amount: (shopData?.deposit_per_day).toString(),
+      event_amount: (
+        datecount() * parseInt(dailyRentDescription?.event_amount || "0")
+      ).toString(),
+      prep_day_amount: prepration
+        ? parseInt(dailyRentDescription?.prep_day_amount || "0").toFixed(0)
+        : "0",
+      handover_day_amount: handover
+        ? parseInt(dailyRentDescription?.handover_day_amount || "0").toFixed(0)
+        : "0",
+      deposit_amount: (dailyRentDescription?.deposit_amount || "0").toString(),
       event_from_date: startDate,
       event_to_date: endDate,
       event_reason: purpose,
@@ -276,12 +308,22 @@ const CreateRentPage = (props: CreateRentProps) => {
         shopId: props.unitid,
         userId: props.userid,
         createdById: createuserid,
-        event_amount: (datecount() * shopData?.rate_per_day).toString(),
         event_from_date: startDate!.toISOString(),
         event_to_date: endDate!.toISOString(),
-        prep_day_amount: prepration ? shopData?.rate_prep_day : "0",
-        handover_day_amount: handover ? shopData?.rate_handover_day : "0",
-        deposit_amount: (shopData?.deposit_per_day).toString(),
+        event_amount: (
+          datecount() * parseInt(dailyRentDescription?.event_amount || "0")
+        ).toString(),
+        prep_day_amount: prepration
+          ? parseInt(dailyRentDescription?.prep_day_amount || "0").toFixed(0)
+          : "0",
+        handover_day_amount: handover
+          ? parseInt(dailyRentDescription?.handover_day_amount || "0").toFixed(
+              0
+            )
+          : "0",
+        deposit_amount: (
+          dailyRentDescription?.deposit_amount || "0"
+        ).toString(),
         event_reason: purpose,
         ...(prepration && { prep_day: subDays(startDate!, 1).toISOString() }), // Day before startDate
         ...(handover && { handover_day: addDays(endDate!, 1).toISOString() }),
@@ -300,22 +342,6 @@ const CreateRentPage = (props: CreateRentProps) => {
       const nanoid = customAlphabet("1234567890abcdef", 10);
 
       const uniqueid = nanoid();
-
-      const amount_discount = parseFloat(
-        (
-          datecount() * shopData?.rate_per_day +
-          (prepration ? parseInt(shopData?.rate_prep_day) : 0) +
-          (handover ? parseInt(shopData?.rate_handover_day) : 0) +
-          shopData?.deposit_per_day
-        ).toString()
-      ).toFixed(2);
-
-      const deposit = shopData?.deposit_per_day;
-
-      const amount =
-        datecount() * shopData?.rate_per_day +
-        (prepration ? parseInt(shopData?.rate_prep_day) : 0) +
-        (handover ? parseInt(shopData?.rate_handover_day) : 0);
 
       const paymentresponse = await TestPayment({
         rentid: createrent.data.id,
@@ -485,27 +511,37 @@ const CreateRentPage = (props: CreateRentProps) => {
               </Label>
               <MulSelect
                 isMulti={false}
-                options={[
-                  "Public gatherings",
-                  "Government gatherings",
-                  "Seminars",
-                  "Engagement / Reception /Sangeet function",
-                  "Cultural functions and events",
-                  "Official meetings of private companies / organizations",
-                  "Theatre / Play shows",
-                  "Educational Seminars",
-                  "Exhibition cum sale / Market mela",
-                  "Birthday/Baby shower functions",
-                  "Havan / Pooja / Katha functions",
-                  "Catering services (Breakfast / Lunch / High tea / Dinner)",
-                ].map((val: string) => ({
-                  value: val,
-                  label: val,
+                // options={[
+                //   "Public gatherings",
+                //   "Government gatherings",
+                //   "Seminars",
+                //   "Engagement / Reception /Sangeet function",
+                //   "Cultural functions and events",
+                //   "Official meetings of private companies / organizations",
+                //   "Theatre / Play shows",
+                //   "Educational Seminars",
+                //   "Exhibition cum sale / Market mela",
+                //   "Birthday/Baby shower functions",
+                //   "Havan / Pooja / Katha functions",
+                //   "Catering services (Breakfast / Lunch / High tea / Dinner)",
+                // ].map((val: string) => ({
+                //   value: val,
+                //   label: val,
+                // }))}
+                options={rentDescription.map((val: daily_rent_description) => ({
+                  value: val.purpose,
+                  label: val.purpose,
                 }))}
                 className="w-full accent-slate-900"
                 onChange={(val: any) => {
                   if (!val) return;
                   setPurpose(val.value.toString());
+                  const rentDesc = rentDescription.find(
+                    (desc) => desc.purpose === val.value
+                  );
+                  if (rentDesc) {
+                    setDailyRentDescription(rentDesc);
+                  }
                 }}
               />
             </div>
@@ -531,7 +567,7 @@ const CreateRentPage = (props: CreateRentProps) => {
                 //   }
                 // }}
                 disabled
-                value={shopData?.rate_per_day}
+                value={dailyRentDescription?.event_amount || "0"}
               />
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
@@ -547,9 +583,7 @@ const CreateRentPage = (props: CreateRentProps) => {
                 // onChange={handleNumberChange}
                 ref={chargeThree}
                 disabled={true}
-                value={
-                  shopData?.deposit_per_day ? shopData?.deposit_per_day : "0"
-                }
+                value={dailyRentDescription?.deposit_amount || "0"}
               />
             </div>
           </div>
@@ -567,7 +601,7 @@ const CreateRentPage = (props: CreateRentProps) => {
                 // onChange={handleNumberChange}
                 disabled={true}
                 ref={chargeone}
-                value={shopData?.rate_prep_day}
+                value={dailyRentDescription?.prep_day_amount || "0"}
               />
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
@@ -582,7 +616,7 @@ const CreateRentPage = (props: CreateRentProps) => {
                 // onChange={handleNumberChange}
                 ref={chargetwo}
                 disabled={true}
-                value={shopData?.rate_handover_day}
+                value={dailyRentDescription?.handover_day_amount || "0"}
               />
             </div>
           </div>
@@ -608,7 +642,9 @@ const CreateRentPage = (props: CreateRentProps) => {
 
               <p className="text-sm">
                 Prepration Day Charge :{" "}
-                {prepration ? shopData?.rate_prep_day : "0"}
+                {prepration
+                  ? parseInt(dailyRentDescription?.prep_day_amount || "0")
+                  : "0"}
               </p>
             </div>
             <div className="flex mt-4 gap-6   flex-1">
@@ -631,7 +667,8 @@ const CreateRentPage = (props: CreateRentProps) => {
               </div>
               {/* <div className="grow"></div> */}
               <p className="text-sm">
-                Handover Charge : {handover ? shopData?.rate_handover_day : "0"}
+                Handover Charge :
+                {handover ? dailyRentDescription?.handover_day_amount : "0"}
               </p>
             </div>
           </div>
@@ -690,17 +727,28 @@ const CreateRentPage = (props: CreateRentProps) => {
             <div className="flex w-full">
               <p>Price</p>
               <div className="grow"></div>
-              <p>{datecount() * shopData?.rate_per_day}</p>
+              <p>
+                {datecount() *
+                  parseInt(dailyRentDescription?.event_amount || "0")}
+              </p>
             </div>
             <div className="flex w-full">
               <p>Pre-Preparation Charge</p>
               <div className="grow"></div>
-              <p> {prepration ? shopData?.rate_prep_day : "0"}</p>
+              <p>
+                {prepration
+                  ? parseInt(dailyRentDescription?.prep_day_amount || "0")
+                  : "0"}
+              </p>
             </div>
             <div className="flex w-full">
               <p>Venue-Handover Charge</p>
               <div className="grow"></div>
-              <p>{handover ? shopData?.rate_handover_day : "0"}</p>
+              <p>
+                {handover
+                  ? parseInt(dailyRentDescription?.handover_day_amount || "0")
+                  : "0"}
+              </p>
             </div>
             {/* <div className="flex w-full">
               <p>Deposit</p>
@@ -714,9 +762,14 @@ const CreateRentPage = (props: CreateRentProps) => {
               <p>Total</p>
               <div className="grow"></div>
               <p>
-                {datecount() * shopData?.rate_per_day +
-                  (prepration ? parseInt(shopData?.rate_prep_day) : 0) +
-                  (handover ? parseInt(shopData?.rate_handover_day) : 0)}
+                {datecount() *
+                  parseInt(dailyRentDescription?.event_amount || "0") +
+                  (prepration
+                    ? parseInt(dailyRentDescription?.prep_day_amount || "0")
+                    : 0) +
+                  (handover
+                    ? parseInt(dailyRentDescription?.handover_day_amount || "0")
+                    : 0)}
               </p>
             </div>
           </div>

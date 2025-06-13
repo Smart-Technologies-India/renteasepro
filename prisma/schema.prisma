@@ -325,6 +325,10 @@ model user {
   daily_rent_photo_create daily_rent_photo[] @relation("daily_rent_photo_createdBy_userId")
   daily_rent_photo_update daily_rent_photo[] @relation("daily_rent_photo_updatedBy_userId")
   daily_rent_photo_delete daily_rent_photo[] @relation("daily_rent_photo_deletedBy_userId")
+
+  daily_rent_description_create daily_rent_description[] @relation("daily_rent_description_createdBy_userId")
+  daily_rent_description_update daily_rent_description[] @relation("daily_rent_description_updatedBy_userId")
+  daily_rent_description_delete daily_rent_description[] @relation("daily_rent_description_deletedBy_userId")
 }
 
 model shop_category {
@@ -957,30 +961,30 @@ model daily_property {
 }
 
 model daily_shop {
-  id                  Int                   @id @default(autoincrement())
-  shop_category       shop_category         @relation(fields: [shopCategoryId], references: [id])
-  shopCategoryId      Int
-  property            daily_property        @relation(fields: [propertyId], references: [id])
-  propertyId          Int
-  name                String
-  capacity            Int
-  rate_per_day        String
-  rate_prep_day       String
-  rate_handover_day   String
-  deposit_per_day     String
-  description         String?
-  remarks             String?
-  status              ShopStatus            @default(VACANT)
-  createdAt           DateTime              @default(now())
-  createdBy           user                  @relation("daily_shop_createdBy_userId", fields: [createdById], references: [id])
-  createdById         Int
-  updatedAt           DateTime              @updatedAt
-  updatedBy           user?                 @relation("daily_shop_updatedBy_userId", fields: [updatedById], references: [id])
-  updatedById         Int?
-  deletedAt           DateTime?
-  deletedBy           user?                 @relation("daily_shop_deletedBy_userId", fields: [deletedById], references: [id])
-  deletedById         Int?
-  daily_rent          daily_rent[]
+  id                     Int                      @id @default(autoincrement())
+  shop_category          shop_category            @relation(fields: [shopCategoryId], references: [id])
+  shopCategoryId         Int
+  property               daily_property           @relation(fields: [propertyId], references: [id])
+  propertyId             Int
+  name                   String
+  capacity               Int
+  rate_per_day           String
+  rate_prep_day          String
+  rate_handover_day      String
+  deposit_per_day        String
+  description            String?
+  remarks                String?
+  status                 ShopStatus               @default(VACANT)
+  createdAt              DateTime                 @default(now())
+  createdBy              user                     @relation("daily_shop_createdBy_userId", fields: [createdById], references: [id])
+  createdById            Int
+  updatedAt              DateTime                 @updatedAt
+  updatedBy              user?                    @relation("daily_shop_updatedBy_userId", fields: [updatedById], references: [id])
+  updatedById            Int?
+  deletedAt              DateTime?
+  deletedBy              user?                    @relation("daily_shop_deletedBy_userId", fields: [deletedById], references: [id])
+  deletedById            Int?
+  daily_rent             daily_rent[]
   // bid            bid[]
   // bid_transact   bid_transact[]
   // exempt         exempt[]
@@ -989,9 +993,10 @@ model daily_shop {
   // bid_payment    bid_payment[]
   // demand_node    demand_node[]
   // rentclose      rentclose[]
-  daily_rent_transact daily_rent_transact[]
-  refund_amount       refund_amount[]
-  daily_rent_photo    daily_rent_photo[]
+  daily_rent_transact    daily_rent_transact[]
+  refund_amount          refund_amount[]
+  daily_rent_photo       daily_rent_photo[]
+  daily_rent_description daily_rent_description[]
 }
 
 model daily_rent {
@@ -1150,3 +1155,25 @@ model daily_rent_photo {
 //   daily_rent   daily_rent? @relation(fields: [daily_rentId], references: [id])
 //   daily_rentId Int?
 // }
+
+model daily_rent_description {
+  id                  Int        @id @default(autoincrement())
+  daily_shop          daily_shop @relation(fields: [shopId], references: [id])
+  shopId              Int
+  event_amount        String
+  prep_day_amount     String?
+  handover_day_amount String?
+  deposit_amount      String
+  purpose             String
+  capacity            String?
+  status              Status     @default(ACTIVE)
+  createdAt           DateTime   @default(now())
+  createdBy           user       @relation("daily_rent_description_createdBy_userId", fields: [createdById], references: [id])
+  createdById         Int
+  updatedAt           DateTime   @updatedAt
+  updatedBy           user?      @relation("daily_rent_description_updatedBy_userId", fields: [updatedById], references: [id])
+  updatedById         Int?
+  deletedAt           DateTime?
+  deletedBy           user?      @relation("daily_rent_description_deletedBy_userId", fields: [deletedById], references: [id])
+  deletedById         Int?
+}
