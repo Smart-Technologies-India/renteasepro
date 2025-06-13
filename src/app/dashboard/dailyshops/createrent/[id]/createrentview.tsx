@@ -433,7 +433,7 @@ const CreateRentPage = (props: CreateRentProps) => {
                 // onChange={handleNumberChange}
                 disabled={true}
                 ref={chargeone}
-                value={dailyRentDescription?.event_amount || 0}
+                value={dailyRentDescription?.prep_day_amount || 0}
               />
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
