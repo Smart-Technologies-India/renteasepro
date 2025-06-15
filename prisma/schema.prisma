@@ -441,7 +441,7 @@ model bid {
   shop                 shop           @relation(fields: [shopId], references: [id])
   shopId               Int
   title                String
-  description          String?
+  description          String?        @db.MediumText
   instruction          String?        @db.MediumText
   min_bid_amount       Int            @db.MediumInt
   bidincrementamount   PercentageType @default(PERCENTAGE)
