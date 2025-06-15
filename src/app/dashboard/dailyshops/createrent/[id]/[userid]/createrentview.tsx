@@ -183,96 +183,6 @@ const CreateRentPage = (props: CreateRentProps) => {
   };
 
   //  This code is for takes to payment gateway
-  // const submit = async () => {
-  //   setIsCreating(true);
-  //   const result = safeParse(CreateDailyRentSchema, {
-  //     userId: props.userid,
-  //     unitId: props.unitid,
-  //     event_amount: (datecount() * shopData?.rate_per_day).toString(),
-  //     prep_day_amount: prepration ? shopData?.rate_prep_day : "0",
-  //     handover_day_amount: handover ? shopData?.rate_handover_day : "0",
-  //     deposit_amount: (shopData?.deposit_per_day).toString(),
-  //     event_from_date: startDate,
-  //     event_to_date: endDate,
-  //     event_reason: purpose,
-  //   });
-
-  //   if (result.success) {
-  //     // end date should be bigger then start date
-  //     if (
-  //       isAfter(
-  //         new Date(result.output.event_from_date),
-  //         new Date(result.output.event_to_date)
-  //       )
-  //     ) {
-  //       setIsCreating(false);
-  //       return toast.error("End date should be bigger then start date");
-  //     }
-  //     const createrent = await CreateDailyRent({
-  //       shopId: props.unitid,
-  //       userId: props.userid,
-  //       createdById: createuserid,
-  //       event_amount: (datecount() * shopData?.rate_per_day).toString(),
-  //       event_from_date: startDate!.toISOString(),
-  //       event_to_date: endDate!.toISOString(),
-  //       prep_day_amount: prepration ? shopData?.rate_prep_day : "0",
-  //       handover_day_amount: handover ? shopData?.rate_handover_day : "0",
-  //       deposit_amount: (shopData?.deposit_per_day).toString(),
-  //       event_reason: purpose,
-  //       ...(prepration && { prep_day: subDays(startDate!, 1).toISOString() }), // Day before startDate
-  //       ...(handover && { handover_day: addDays(endDate!, 1).toISOString() }),
-  //       // is_approved: true,
-  //       // approvedById: createuserid,
-  //       status: "FAILED",
-  //       company_name: company_name.current?.value,
-  //       gst_no: gst_no.current?.value,
-  //     });
-
-  //     if (!(createrent.status && createrent.data)) {
-  //       setIsCreating(false);
-  //       return toast.error(createrent.message);
-  //     }
-
-  //     toast.success("Unit booking request created successfully");
-  //     // router.back();
-  //     // router.push(`/dashboard/dailyshops/collectrent/${createrent.data.id}`);
-
-  //     const nanoid = customAlphabet("1234567890abcdef", 10);
-
-  //     const uniqueid = nanoid();
-
-  //     const amount_discount = parseFloat(
-  //       (
-  //         datecount() * shopData?.rate_per_day +
-  //         (prepration ? parseInt(shopData?.rate_prep_day) : 0) +
-  //         (handover ? parseInt(shopData?.rate_handover_day) : 0) +
-  //         shopData?.deposit_per_day
-  //       ).toString()
-  //     ).toFixed(2);
-
-  //     const deposit = shopData?.deposit_per_day;
-
-  //     const amount =
-  //       datecount() * shopData?.rate_per_day +
-  //       (prepration ? parseInt(shopData?.rate_prep_day) : 0) +
-  //       (handover ? parseInt(shopData?.rate_handover_day) : 0);
-
-  //     router.back();
-  //     window.open(
-  //       `/payamount?xlmnx=${amount}&ynboy=${uniqueid}&zgvfz=${createrent.data.id}_0_0_dailyrent&name=${user?.firstName}-${user?.lastName}&email=${user?.email}&mobile=${user?.contactone}`
-  //     );
-  //   } else {
-  //     let errorMessage = "";
-  //     if (result.issues[0].input) {
-  //       errorMessage = result.issues[0].message;
-  //     } else {
-  //       errorMessage = result.issues[0].path![0].key + " is required";
-  //     }
-  //     toast.error(errorMessage);
-  //   }
-  //   setIsCreating(false);
-  // };
-
   const submit = async () => {
     setIsCreating(true);
     const result = safeParse(CreateDailyRentSchema, {
@@ -343,18 +253,19 @@ const CreateRentPage = (props: CreateRentProps) => {
 
       const uniqueid = nanoid();
 
-      const paymentresponse = await TestPayment({
-        rentid: createrent.data.id,
-        orderid: uniqueid,
-      });
+      const amount =
+        datecount() * parseInt(dailyRentDescription?.event_amount || "0") +
+        (prepration
+          ? parseInt(dailyRentDescription?.prep_day_amount || "0")
+          : 0) +
+        (handover
+          ? parseInt(dailyRentDescription?.handover_day_amount || "0")
+          : 0);
 
-      if (!paymentresponse.status) {
-        setIsCreating(false);
-        return toast.error(paymentresponse.message);
-      } else {
-        toast.success("Payment initiated successfully");
-        router.back();
-      }
+      router.back();
+      window.open(
+        `/payamount?xlmnx=${amount}&ynboy=${uniqueid}&zgvfz=${createrent.data.id}_0_0_dailyrent&name=${user?.firstName}-${user?.lastName}&email=${user?.email}&mobile=${user?.contactone}`
+      );
     } else {
       let errorMessage = "";
       if (result.issues[0].input) {
@@ -366,6 +277,100 @@ const CreateRentPage = (props: CreateRentProps) => {
     }
     setIsCreating(false);
   };
+
+  // const submit = async () => {
+  //   setIsCreating(true);
+  //   const result = safeParse(CreateDailyRentSchema, {
+  //     userId: props.userid,
+  //     unitId: props.unitid,
+  //     event_amount: (
+  //       datecount() * parseInt(dailyRentDescription?.event_amount || "0")
+  //     ).toString(),
+  //     prep_day_amount: prepration
+  //       ? parseInt(dailyRentDescription?.prep_day_amount || "0").toFixed(0)
+  //       : "0",
+  //     handover_day_amount: handover
+  //       ? parseInt(dailyRentDescription?.handover_day_amount || "0").toFixed(0)
+  //       : "0",
+  //     deposit_amount: (dailyRentDescription?.deposit_amount || "0").toString(),
+  //     event_from_date: startDate,
+  //     event_to_date: endDate,
+  //     event_reason: purpose,
+  //   });
+
+  //   if (result.success) {
+  //     // end date should be bigger then start date
+  //     if (
+  //       isAfter(
+  //         new Date(result.output.event_from_date),
+  //         new Date(result.output.event_to_date)
+  //       )
+  //     ) {
+  //       setIsCreating(false);
+  //       return toast.error("End date should be bigger then start date");
+  //     }
+  //     const createrent = await CreateDailyRent({
+  //       shopId: props.unitid,
+  //       userId: props.userid,
+  //       createdById: createuserid,
+  //       event_from_date: startDate!.toISOString(),
+  //       event_to_date: endDate!.toISOString(),
+  //       event_amount: (
+  //         datecount() * parseInt(dailyRentDescription?.event_amount || "0")
+  //       ).toString(),
+  //       prep_day_amount: prepration
+  //         ? parseInt(dailyRentDescription?.prep_day_amount || "0").toFixed(0)
+  //         : "0",
+  //       handover_day_amount: handover
+  //         ? parseInt(dailyRentDescription?.handover_day_amount || "0").toFixed(
+  //             0
+  //           )
+  //         : "0",
+  //       deposit_amount: (
+  //         dailyRentDescription?.deposit_amount || "0"
+  //       ).toString(),
+  //       event_reason: purpose,
+  //       ...(prepration && { prep_day: subDays(startDate!, 1).toISOString() }), // Day before startDate
+  //       ...(handover && { handover_day: addDays(endDate!, 1).toISOString() }),
+  //       status: "FAILED",
+  //       company_name: company_name.current?.value,
+  //       gst_no: gst_no.current?.value,
+  //     });
+
+  //     if (!(createrent.status && createrent.data)) {
+  //       setIsCreating(false);
+  //       return toast.error(createrent.message);
+  //     }
+
+  //     toast.success("Unit booking request created successfully");
+
+  //     const nanoid = customAlphabet("1234567890abcdef", 10);
+
+  //     const uniqueid = nanoid();
+
+  //     const paymentresponse = await TestPayment({
+  //       rentid: createrent.data.id,
+  //       orderid: uniqueid,
+  //     });
+
+  //     if (!paymentresponse.status) {
+  //       setIsCreating(false);
+  //       return toast.error(paymentresponse.message);
+  //     } else {
+  //       toast.success("Payment initiated successfully");
+  //       router.back();
+  //     }
+  //   } else {
+  //     let errorMessage = "";
+  //     if (result.issues[0].input) {
+  //       errorMessage = result.issues[0].message;
+  //     } else {
+  //       errorMessage = result.issues[0].path![0].key + " is required";
+  //     }
+  //     toast.error(errorMessage);
+  //   }
+  //   setIsCreating(false);
+  // };
 
   interface MonthType {
     isDisable: boolean;
