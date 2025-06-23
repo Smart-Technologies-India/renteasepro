@@ -383,7 +383,7 @@ const ViewPdf = (props: ViewPdfProps) => {
               }}
             >
               {`From ${formateDate(new Date())} to ${formateDate(
-                new Date(new Date().setDate(new Date().getDate() - 15))
+                new Date(new Date().setDate(new Date().getDate() + 15))
               )}`}
             </Text>
           </View>

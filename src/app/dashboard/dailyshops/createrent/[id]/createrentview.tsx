@@ -180,8 +180,8 @@ const CreateRentPage = (props: CreateRentProps) => {
         event_amount: (
           datecount() * parseInt(dailyRentDescription?.event_amount || "0")
         ).toString(),
-        event_from_date: startDate!.toISOString(),
-        event_to_date: endDate!.toISOString(),
+        event_from_date: startDate!.toLocaleString(),
+        event_to_date: endDate!.toLocaleString(),
         prep_day_amount: prepration
           ? parseInt(dailyRentDescription?.prep_day_amount || "0").toFixed(0)
           : "0",
@@ -194,8 +194,8 @@ const CreateRentPage = (props: CreateRentProps) => {
           dailyRentDescription?.deposit_amount || "0"
         ).toString(),
         event_reason: purpose,
-        ...(prepration && { prep_day: subDays(startDate!, 1).toISOString() }), // Day before startDate
-        ...(handover && { handover_day: addDays(endDate!, 1).toISOString() }),
+        ...(prepration && { prep_day: subDays(startDate!, 1).toLocaleString() }), // Day before startDate
+        ...(handover && { handover_day: addDays(endDate!, 1).toLocaleString() }),
         status: "UPCOMING",
       });
 

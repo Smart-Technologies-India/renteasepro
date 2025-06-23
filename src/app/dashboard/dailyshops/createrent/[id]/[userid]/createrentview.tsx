@@ -218,8 +218,8 @@ const CreateRentPage = (props: CreateRentProps) => {
         shopId: props.unitid,
         userId: props.userid,
         createdById: createuserid,
-        event_from_date: startDate!.toISOString(),
-        event_to_date: endDate!.toISOString(),
+        event_from_date: startDate!.toLocaleString(),
+        event_to_date: endDate!.toLocaleString(),
         event_amount: (
           datecount() * parseInt(dailyRentDescription?.event_amount || "0")
         ).toString(),
@@ -235,8 +235,8 @@ const CreateRentPage = (props: CreateRentProps) => {
           dailyRentDescription?.deposit_amount || "0"
         ).toString(),
         event_reason: purpose,
-        ...(prepration && { prep_day: subDays(startDate!, 1).toISOString() }), // Day before startDate
-        ...(handover && { handover_day: addDays(endDate!, 1).toISOString() }),
+        ...(prepration && { prep_day: subDays(startDate!, 1).toLocaleString() }), // Day before startDate
+        ...(handover && { handover_day: addDays(endDate!, 1).toLocaleString() }),
         status: "FAILED",
         company_name: company_name.current?.value,
         gst_no: gst_no.current?.value,
