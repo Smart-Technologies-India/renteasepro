@@ -5,6 +5,7 @@ import {
   email,
   maxLength,
   minLength,
+  nullish,
   object,
   string,
 } from "valibot";
@@ -29,20 +30,36 @@ const UpdateUserSchema = object({
     maxLength(12, "Aadhar number should be 12 digits."),
     custom(isContainSpace, "Aadhar number cannot contain space."),
   ]),
-  pan: string([
-    minLength(1, "Please enter your pan number."),
-    maxLength(10, "Pan number should be 10 digits."),
-    custom(isContainSpace, "Pan number cannot contain space."),
-  ]),
-  bankName: string([minLength(1, "Please enter your bank name.")]),
-  bankAccountNumber: string([
-    minLength(1, "Please enter your bank account number."),
-    custom(isContainSpace, "Bank account number cannot contain space."),
-  ]),
-  ifscCode: string([
-    minLength(1, "Please enter your ifsc code."),
-    custom(isContainSpace, "IFSC code cannot contain space."),
-  ]),
+  pan: nullish(
+    string("Please enter your pan number."),
+    "Pan number is optional."
+  ),
+  bankName: nullish(
+    string("Please enter your bank name."),
+    "Bank name is optional."
+  ),
+  bankAccountNumber: nullish(
+    string("Please enter your bank account number."),
+    "Bank account number is optional."
+  ),
+  ifscCode: nullish(
+    string("Please enter your IFSC code."),
+    "IFSC code is optional."
+  ),
+  // pan: string([
+  //   minLength(1, "Please enter your pan number."),
+  //   maxLength(10, "Pan number should be 10 digits."),
+  //   custom(isContainSpace, "Pan number cannot contain space."),
+  // ]),
+  // bankName: string([minLength(1, "Please enter your bank name.")]),
+  // bankAccountNumber: string([
+  //   minLength(1, "Please enter your bank account number."),
+  //   custom(isContainSpace, "Bank account number cannot contain space."),
+  // ]),
+  // ifscCode: string([
+  //   minLength(1, "Please enter your ifsc code."),
+  //   custom(isContainSpace, "IFSC code cannot contain space."),
+  // ]),
 });
 
 type UpdateUserForm = Input<typeof UpdateUserSchema>;

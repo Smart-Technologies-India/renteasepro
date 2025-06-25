@@ -10,7 +10,6 @@ import {
   MaterialSymbolsLightErrorOutlineRounded,
 } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -22,7 +21,7 @@ import axios from "axios";
 import { getCookie } from "cookies-next";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { RefObject, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { safeParse } from "valibot";
 
@@ -68,54 +67,54 @@ async function uploadfile(
 const UserBidsRunning = () => {
   const [isProfileCompleted, setIsProfileCompleted] = useState<boolean>(false);
 
-  const [isCreating, setIsCreating] = useState<boolean>(false);
+  // const [isCreating, setIsCreating] = useState<boolean>(false);
 
-  const items = [
-    {
-      id: "forwomen",
-      label: "For Women",
-    },
-    {
-      id: "category",
-      label: "For Reserved Category",
-    },
-    {
-      id: "abled",
-      label: "For Differently Abled",
-    },
-    {
-      id: "msme",
-      label: "For MSME",
-    },
-    {
-      id: "stsc",
-      label: "For SC/ST",
-    },
-    {
-      id: "tribal",
-      label: "For Tribal",
-    },
-  ] as const;
+  // const items = [
+  //   {
+  //     id: "forwomen",
+  //     label: "For Women",
+  //   },
+  //   {
+  //     id: "category",
+  //     label: "For Reserved Category",
+  //   },
+  //   {
+  //     id: "abled",
+  //     label: "For Differently Abled",
+  //   },
+  //   {
+  //     id: "msme",
+  //     label: "For MSME",
+  //   },
+  //   {
+  //     id: "stsc",
+  //     label: "For SC/ST",
+  //   },
+  //   {
+  //     id: "tribal",
+  //     label: "For Tribal",
+  //   },
+  // ] as const;
 
-  const [field, setField] = useState<string[]>([]);
+  // const [field, setField] = useState<string[]>([]);
 
-  const [womenfile, setWomenFile] = useState<File | null>(null);
-  const cWomenFile = useRef<HTMLInputElement>(null);
+  // const [womenfile, setWomenFile] = useState<File | null>(null);
+  // const cWomenFile = useRef<HTMLInputElement>(null);
 
-  const [category, setCategory] = useState<File | null>(null);
-  const cCategory = useRef<HTMLInputElement>(null);
+  // const [category, setCategory] = useState<File | null>(null);
+  // const cCategory = useRef<HTMLInputElement>(null);
 
-  const [abled, setAbled] = useState<File | null>(null);
-  const cAbled = useRef<HTMLInputElement>(null);
+  // const [abled, setAbled] = useState<File | null>(null);
+  // const cAbled = useRef<HTMLInputElement>(null);
 
-  const [msme, setMsme] = useState<File | null>(null);
-  const cMsme = useRef<HTMLInputElement>(null);
+  // const [msme, setMsme] = useState<File | null>(null);
+  // const cMsme = useRef<HTMLInputElement>(null);
 
-  const [stsc, setStsc] = useState<File | null>(null);
-  const cStsc = useRef<HTMLInputElement>(null);
+  // const [stsc, setStsc] = useState<File | null>(null);
+  // const cStsc = useRef<HTMLInputElement>(null);
 
-  const [tribal, setTribal] = useState<File | null>(null);
-  const cTribal = useRef<HTMLInputElement>(null);
+  // const [tribal, setTribal] = useState<File | null>(null);
+  // const cTribal = useRef<HTMLInputElement>(null);
 
   const [aadhar, setAadhar] = useState<File | null>(null);
   const cAadhar = useRef<HTMLInputElement>(null);
@@ -392,59 +391,59 @@ const UserBidsRunning = () => {
         }
       }
 
-      if (getPan.status == false) {
-        if (pan == null) {
-          return toast.error("Please upload pan card", { theme: "light" });
-        }
-      }
+      // if (getPan.status == false) {
+      //   if (pan == null) {
+      //     return toast.error("Please upload pan card", { theme: "light" });
+      //   }
+      // }
 
-      if (getBankPassbook.status == false) {
-        if (bankpassbook == null) {
-          return toast.error("Please upload bank passbook", { theme: "light" });
-        }
-      }
+      // if (getBankPassbook.status == false) {
+      //   if (bankpassbook == null) {
+      //     return toast.error("Please upload bank passbook", { theme: "light" });
+      //   }
+      // }
 
-      if (getPhoto.status == false) {
-        if (photo == null) {
-          return toast.error("Please upload photo", { theme: "light" });
-        }
-      }
+      // if (getPhoto.status == false) {
+      //   if (photo == null) {
+      //     return toast.error("Please upload photo", { theme: "light" });
+      //   }
+      // }
 
-      if (field.includes("forwomen") && womenfile == null) {
-        return toast.error("Please upload Women Certificate", {
-          theme: "light",
-        });
-      }
+      // if (field.includes("forwomen") && womenfile == null) {
+      //   return toast.error("Please upload Women Certificate", {
+      //     theme: "light",
+      //   });
+      // }
 
-      if (field.includes("category") && category == null) {
-        return toast.error("Please upload Category Certificate", {
-          theme: "light",
-        });
-      }
+      // if (field.includes("category") && category == null) {
+      //   return toast.error("Please upload Category Certificate", {
+      //     theme: "light",
+      //   });
+      // }
 
-      if (field.includes("abled") && abled == null) {
-        return toast.error("Please upload Differently Abled Certificate", {
-          theme: "light",
-        });
-      }
+      // if (field.includes("abled") && abled == null) {
+      //   return toast.error("Please upload Differently Abled Certificate", {
+      //     theme: "light",
+      //   });
+      // }
 
-      if (field.includes("msme") && msme == null) {
-        return toast.error("Please upload MSME Certificate", {
-          theme: "light",
-        });
-      }
+      // if (field.includes("msme") && msme == null) {
+      //   return toast.error("Please upload MSME Certificate", {
+      //     theme: "light",
+      //   });
+      // }
 
-      if (field.includes("stsc") && stsc == null) {
-        return toast.error("Please upload SC/ST Certificate", {
-          theme: "light",
-        });
-      }
+      // if (field.includes("stsc") && stsc == null) {
+      //   return toast.error("Please upload SC/ST Certificate", {
+      //     theme: "light",
+      //   });
+      // }
 
-      if (field.includes("tribal") && tribal == null) {
-        return toast.error("Please upload Tribal Certificate", {
-          theme: "light",
-        });
-      }
+      // if (field.includes("tribal") && tribal == null) {
+      //   return toast.error("Please upload Tribal Certificate", {
+      //     theme: "light",
+      //   });
+      // }
 
       const updateuserresponse = await updateUser({
         id: userid,
@@ -474,97 +473,103 @@ const UserBidsRunning = () => {
         }
 
         if (getPan.status == false) {
-          await uploadfile(
-            pan!,
-            process.env.UPLOAD_LINK ?? "",
-            userid,
-            UserDocType.PAN
-          );
-        }
-
-        if (getBankPassbook.status == false) {
-          await uploadfile(
-            bankpassbook!,
-            process.env.UPLOAD_LINK ?? "",
-            userid,
-            UserDocType.BANK
-          );
-        }
-
-        if (getPhoto.status == false) {
-          await uploadfile(
-            photo!,
-            process.env.UPLOAD_LINK ?? "",
-            userid,
-            UserDocType.PHOTO
-          );
-        }
-
-        if (field.includes("forwomen") && womenfile != null) {
-          await uploadfile(
-            womenfile!,
-            process.env.UPLOAD_LINK ?? "",
-            userid,
-            UserDocType.WOMEN
-          );
-        }
-
-        if (field.includes("category") && category != null) {
-          await uploadfile(
-            category!,
-            process.env.UPLOAD_LINK ?? "",
-            userid,
-            UserDocType.RESERVED
-          );
-        }
-
-        if (field.includes("abled") && abled != null) {
-          await uploadfile(
-            abled!,
-            process.env.UPLOAD_LINK ?? "",
-            userid,
-            UserDocType.DIFFERENTLY_ABLED
-          );
-        }
-
-        if (field.includes("msme") && msme != null) {
-          await uploadfile(
-            msme!,
-            process.env.UPLOAD_LINK ?? "",
-            userid,
-            UserDocType.MSME
-          );
-        }
-
-        if (field.includes("stsc") && stsc != null) {
-          await uploadfile(
-            stsc!,
-            process.env.UPLOAD_LINK ?? "",
-            userid,
-            UserDocType.SC_ST
-          );
-        }
-
-        if (field.includes("tribal") && tribal != null) {
-          await uploadfile(
-            tribal!,
-            process.env.UPLOAD_LINK ?? "",
-            userid,
-            UserDocType.TRIBAL
-          );
-        }
-
-        for (let i = 0; i < additionalFile.length; i++) {
-          if (additionalFile[i].file != null) {
+          if (pan != null) {
             await uploadfile(
-              additionalFile[i].file!,
+              pan,
               process.env.UPLOAD_LINK ?? "",
               userid,
-              UserDocType.OTHER,
-              additionalFile[i].name
+              UserDocType.PAN
             );
           }
         }
+
+        if (getBankPassbook.status == false) {
+          if (bankpassbook != null) {
+            await uploadfile(
+              bankpassbook,
+              process.env.UPLOAD_LINK ?? "",
+              userid,
+              UserDocType.BANK
+            );
+          }
+        }
+
+        if (getPhoto.status == false) {
+          if (photo != null) {
+            await uploadfile(
+              photo,
+              process.env.UPLOAD_LINK ?? "",
+              userid,
+              UserDocType.PHOTO
+            );
+          }
+        }
+
+        // if (field.includes("forwomen") && womenfile != null) {
+        //   await uploadfile(
+        //     womenfile!,
+        //     process.env.UPLOAD_LINK ?? "",
+        //     userid,
+        //     UserDocType.WOMEN
+        //   );
+        // }
+
+        // if (field.includes("category") && category != null) {
+        //   await uploadfile(
+        //     category!,
+        //     process.env.UPLOAD_LINK ?? "",
+        //     userid,
+        //     UserDocType.RESERVED
+        //   );
+        // }
+
+        // if (field.includes("abled") && abled != null) {
+        //   await uploadfile(
+        //     abled!,
+        //     process.env.UPLOAD_LINK ?? "",
+        //     userid,
+        //     UserDocType.DIFFERENTLY_ABLED
+        //   );
+        // }
+
+        // if (field.includes("msme") && msme != null) {
+        //   await uploadfile(
+        //     msme!,
+        //     process.env.UPLOAD_LINK ?? "",
+        //     userid,
+        //     UserDocType.MSME
+        //   );
+        // }
+
+        // if (field.includes("stsc") && stsc != null) {
+        //   await uploadfile(
+        //     stsc!,
+        //     process.env.UPLOAD_LINK ?? "",
+        //     userid,
+        //     UserDocType.SC_ST
+        //   );
+        // }
+
+        // if (field.includes("tribal") && tribal != null) {
+        //   await uploadfile(
+        //     tribal!,
+        //     process.env.UPLOAD_LINK ?? "",
+        //     userid,
+        //     UserDocType.TRIBAL
+        //   );
+        // }
+
+        // for (let i = 0; i < additionalFile.length; i++) {
+        //   if (additionalFile[i].file != null) {
+        //     await uploadfile(
+        //       additionalFile[i].file!,
+        //       process.env.UPLOAD_LINK ?? "",
+        //       userid,
+        //       UserDocType.OTHER,
+        //       additionalFile[i].name
+        //     );
+        //   }
+        // }
 
         toast.success(updateuserresponse.message);
         router.back();
@@ -751,9 +756,7 @@ const UserBidsRunning = () => {
             />
           </div>
           <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="pan">
-              Pan <span className="text-rose-500">*</span>
-            </Label>
+            <Label htmlFor="pan">Pan</Label>
             <Input
               id="pan"
               type="text"
@@ -765,9 +768,7 @@ const UserBidsRunning = () => {
         </div>
         <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 ">
           <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="bankname">
-              Bank Name <span className="text-rose-500">*</span>
-            </Label>
+            <Label htmlFor="bankname">Bank Name</Label>
             <Input
               id="bankname"
               type="text"
@@ -776,9 +777,7 @@ const UserBidsRunning = () => {
             />
           </div>
           <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="accountnumber">
-              Account Number <span className="text-rose-500">*</span>
-            </Label>
+            <Label htmlFor="accountnumber">Account Number</Label>
             <Input
               id="accountnumber"
               type="text"
@@ -788,9 +787,7 @@ const UserBidsRunning = () => {
             />
           </div>
           <div className="grid items-center gap-1.5 w-full mt-4">
-            <Label htmlFor="ifsccode">
-              IFSC Code <span className="text-rose-500">*</span>
-            </Label>
+            <Label htmlFor="ifsccode">IFSC Code</Label>
             <Input id="ifsccode" type="text" className="w-full" ref={ifscRef} />
           </div>
         </div>
@@ -802,7 +799,8 @@ const UserBidsRunning = () => {
             <>
               <div className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between">
                 <p>
-                  Aadhar Card <span className="text-rose-500">*</span>
+                  Aadhar Card (Front and back mandatory)
+                  <span className="text-rose-500">*</span>
                 </p>
                 <Link
                   target="_blank"
@@ -996,7 +994,7 @@ const UserBidsRunning = () => {
             <></>
           )}
         </div>
-        <p className="text-gray-500 mt-4">
+        {/* <p className="text-gray-500 mt-4">
           Select Your Category
           <span className="text-[0.50rem] font-normal">(Optional)</span>
         </p>
@@ -1070,14 +1068,14 @@ const UserBidsRunning = () => {
             setFile={setTribal}
             cFile={cTribal}
           />
-        )}
+        )} */}
 
         {/* id: number;
   file: File | null;
   cFile: RefObject<HTMLInputElement>;
   name: string; */}
 
-        {additionalFile?.map((addDoc: AdditionalFile, index: number) => {
+        {/* {additionalFile?.map((addDoc: AdditionalFile, index: number) => {
           return (
             <OtherDocUploader
               key={index}
@@ -1087,12 +1085,12 @@ const UserBidsRunning = () => {
             />
           );
         })}
-        {/* <OtherDocUploader
+       <OtherDocUploader
           index={1}
           file={tribal}
           setFile={setTribal}
           cFile={cTribal}
-        /> */}
+        />  */}
 
         <div className="flex gap-2">
           <Button
@@ -1101,7 +1099,7 @@ const UserBidsRunning = () => {
           >
             Add Additional Document
           </Button>
-          {isCreating ? (
+          {/* {isCreating ? (
             <Button
               disabled
               className="w-full mt-4 bg-[#172e57] hover:bg-[#21427d] flex-1"
@@ -1115,7 +1113,13 @@ const UserBidsRunning = () => {
             >
               Submit
             </Button>
-          )}
+          )} */}
+          <Button
+            className="w-full mt-4 bg-[#172e57] hover:bg-[#21427d] flex-1"
+            onClick={update}
+          >
+            Submit
+          </Button>
         </div>
       </div>
     </div>
