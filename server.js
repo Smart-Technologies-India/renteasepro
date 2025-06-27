@@ -278,7 +278,7 @@ const postRes = (request, response) => {
 
         updatedata = await prisma.daily_rent_transact.update({
           where: {
-            id: bidid,
+            id: bidid ? parseInt(bidid) : 0,
           },
           data: {
             gstinvoice: gstnumber.number,
