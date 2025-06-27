@@ -64,7 +64,7 @@ const Sidebar = (props: SidebarProps) => {
             icco={
               <FluentBuildingShop20Regular className="text-gray-300  w-6" />
             }
-            name="Daily Booking"
+            name="Event Booking"
             path={path}
             pathcheck={"/dashboard/userdailybooking"}
           />
@@ -182,6 +182,12 @@ const Sidebar = (props: SidebarProps) => {
             name="Rent History"
             path={path}
             pathcheck={"/dashboard/allrenthistory"}
+          />
+          <MenuTab
+            icco={<AntDesignHistoryOutlined className="text-gray-300  w-6" />}
+            name="Event Rent History"
+            path={path}
+            pathcheck={"/dashboard/alldailyrenthistory"}
           />
           <MenuTab
             icco={<Fa6RegularRectangleList className="text-gray-300  w-6" />}

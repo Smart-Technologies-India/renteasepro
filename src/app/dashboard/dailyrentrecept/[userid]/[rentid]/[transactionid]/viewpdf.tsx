@@ -458,6 +458,12 @@ const ViewPdf = (props: ViewPdfProps) => {
             {formateDate(new Date(rent?.event_to_date!))}
           </Text>
         </View>
+        <View style={styles.myflex}>
+          <Text style={styles.lbottom}>GST No</Text>
+            <Text style={styles.mbottom}>{rent?.gst_no ? rent.gst_no : "NA"}</Text>
+          <Text style={styles.rbottom}>Company</Text>
+            <Text style={styles.mbottom2}>{rent?.company_name ? rent.company_name : "NA"}</Text>
+        </View>
 
         <View
           style={{

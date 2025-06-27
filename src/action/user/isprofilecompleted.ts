@@ -24,16 +24,6 @@ const IsProfileCompleted = async (
         functionname: "IsProfileCompleted",
       };
 
-      // ||
-      // user.pan == null ||
-      // user.pan == "" ||
-      // user.bankName == null ||
-      // user.bankName == "" ||
-      // user.bankAccountNumber == null ||
-      // user.bankAccountNumber == "" ||
-      // user.ifscCode == null ||
-      // user.ifscCode == ""
-
     if (
       user.username == null ||
       user.username == "" ||
@@ -48,7 +38,7 @@ const IsProfileCompleted = async (
       user.aadhar == null ||
       user.aadhar == "" ||
       user.city == null ||
-      user.city == "" 
+      user.city == ""
     ) {
       return {
         status: false,

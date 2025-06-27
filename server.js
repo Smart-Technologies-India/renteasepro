@@ -276,7 +276,6 @@ const postRes = (request, response) => {
           },
         });
 
-        // for (let i = 0; i < id_value.length; i++) {
         updatedata = await prisma.daily_rent_transact.update({
           where: {
             id: bidid,
@@ -311,7 +310,15 @@ const postRes = (request, response) => {
           },
         });
 
-        const RentIsPaid = `https://api.arihantsms.com/api/v2/SendSMS?SenderId=DNHPDA&Is_Unicode=false&Is_Flash=false&Message=Confirmation%3A%20Your%20rent%20for%20${updatedata.daily_shop.shop_category.name}%20at%20${updatedata.daily_shop.property.name}%20has%20been%20paid.%20We%20appreciate%20your%20timely%20payment%20-DNH%20PDA.&MobileNumbers=91${updatedata.user.contactone}&ApiKey=rL56LBkGeOa1MKFm5SrSKtz%2Bq55zMVdxk5PNvQkg2nY%3D&ClientId=ebff4d6c-072b-4342-b71f-dcca677713f8`;
+        const RentIsPaid = `https://api.arihantsms.com/api/v2/SendSMS?SenderId=DNHPDA&Is_Unicode=false&Is_Flash=false&Message=${
+          updatedata.daily_shop.property.name
+        }%20on%20${
+          updatedata.daily_shop.name
+        }%20is%20confirmed.%20Booking%20ID%3A%20${
+          "PDA-EVENT-" + updatedata.id
+        }.%20%E2%80%93DNHPDA&MobileNumbers=91${
+          updatedata.user.contactone
+        }&ApiKey=rL56LBkGeOa1MKFm5SrSKtz%2Bq55zMVdxk5PNvQkg2nY%3D&ClientId=ebff4d6c-072b-4342-b71f-dcca677713f8`;
 
         const message_response = await fetch(RentIsPaid, {
           method: "GET",

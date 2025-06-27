@@ -331,7 +331,7 @@ interface CalendarMonthsProps {
 
 const CalendarMonths = (props: CalendarMonthsProps) => {
   const today = new Date();
-  const months = [0, 1, 2].map((offset) => addMonths(today, offset));
+  const months = [0, 1, 2, 3, 4, 5].map((offset) => addMonths(today, offset));
   const weekDays = Array.from({ length: 7 }, (_, i) =>
     format(addDays(startOfWeek(new Date(), { weekStartsOn: 0 }), i), "EEE")
   );
