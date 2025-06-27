@@ -460,10 +460,29 @@ const ViewPdf = (props: ViewPdfProps) => {
         </View>
         <View style={styles.myflex}>
           <Text style={styles.lbottom}>GST No</Text>
-            <Text style={styles.mbottom}>{rent?.gst_no ? rent.gst_no : "NA"}</Text>
+          <Text style={styles.mbottom}>
+            {rent?.gst_no ? rent.gst_no : "NA"}
+          </Text>
           <Text style={styles.rbottom}>Company</Text>
-            <Text style={styles.mbottom2}>{rent?.company_name ? rent.company_name : "NA"}</Text>
+          <Text style={styles.mbottom2}>
+            {rent?.company_name ? rent.company_name : "NA"}
+          </Text>
         </View>
+        <Text
+          style={{
+            fontSize: "10px",
+            fontWeight: "normal",
+            color: "#374151",
+            width: "100%",
+            padding: "4px 4px",
+            borderLeft: "1px solid #6b7280",
+            borderBottom: "1px solid #6b7280",
+            borderRight: "1px solid #6b7280",
+            textAlign: "left",
+          }}
+        >
+          Address: {user?.address ? user.address : "NA"}
+        </Text>
 
         <View
           style={{
@@ -1105,10 +1124,11 @@ const ViewPdf = (props: ViewPdfProps) => {
                 margin: "4px 0",
               }}
             >
-              6. The penalty of Rs. 100/- per Sq. Mt is imposed in case the
-              applicant has not taken the permission and approval from the
-              competent authority for utilizing the extra open space (Outer
-              space) occupied for function other than allotment space.
+              6. Applicant shall not occupy and hinder the common areas such as
+              entry / exit points, corridors / passage, common road and foot
+              paths etc. If the applicant does so, a penalty amounting to Rs.
+              5000/- shall be levied and the security deposit submitted to the
+              department shall be forfeited without any further explanation.
             </Text>
             <Text
               style={{
@@ -1172,16 +1192,14 @@ const ViewPdf = (props: ViewPdfProps) => {
             <Text
               style={{
                 fontSize: 10,
-                color: "grey",
+                color: "red",
                 width: "100%",
                 margin: "4px 0",
               }}
             >
-              12. After receiving or informing the applicant about the Allotment
-              Order, the payment should be done within a week by the applicant.
-              If the applicant fails to do so, the booked date / allotted date
-              shall be considered as cancelled without any intimation and same
-              shall be allotted to the other applicant in the queue.
+              12. Deposit amount to be paid in the form of DD within 7 days
+              after successful booking failing which the booking will get
+              cancelled.
             </Text>
             <Text
               style={{
@@ -1342,10 +1360,11 @@ const ViewPdf = (props: ViewPdfProps) => {
                 margin: "4px 0",
               }}
             >
-              6. The penalty of Rs. 100/- per Sq. Mt is imposed in case the
-              applicant has not taken the permission and approval from the
-              competent authority for utilizing the extra open space (Outer
-              space) occupied for function other than allotment space.
+              6. Applicant shall not occupy and hinder the common areas such as
+              entry / exit points, corridors / passage, common road and foot
+              paths etc. If the applicant does so, a penalty amounting to Rs.
+              5000/- shall be levied and the security deposit submitted to the
+              department shall be forfeited without any further explanation.
             </Text>
             <Text
               style={{
@@ -1409,16 +1428,14 @@ const ViewPdf = (props: ViewPdfProps) => {
             <Text
               style={{
                 fontSize: 10,
-                color: "grey",
+                color: "red",
                 width: "100%",
                 margin: "4px 0",
               }}
             >
-              12. After receiving or informing the applicant about the Allotment
-              Order, the payment should be done within a week by the applicant.
-              If the applicant fails to do so, the booked date / allotted date
-              shall be considered as cancelled without any intimation and same
-              shall be allotted to the other applicant in the queue.
+              12. Deposit amount to be paid in the form of DD within 7 days
+              after successful booking failing which the booking will get
+              cancelled.
             </Text>
             <Text
               style={{
@@ -1579,10 +1596,11 @@ const ViewPdf = (props: ViewPdfProps) => {
                 margin: "4px 0",
               }}
             >
-              6. The penalty of Rs. 100/- per Sq. Mt is imposed in case the
-              applicant has not taken the permission and approval from the
-              competent authority for utilizing the extra open space (Outer
-              space) occupied for function other than allotment space.
+              6. Applicant shall not occupy and hinder the common areas such as
+              entry / exit points, corridors / passage, common road and foot
+              paths etc. If the applicant does so, a penalty amounting to Rs.
+              5000/- shall be levied and the security deposit submitted to the
+              department shall be forfeited without any further explanation.
             </Text>
             <Text
               style={{
@@ -1646,16 +1664,14 @@ const ViewPdf = (props: ViewPdfProps) => {
             <Text
               style={{
                 fontSize: 10,
-                color: "grey",
+                color: "red",
                 width: "100%",
                 margin: "4px 0",
               }}
             >
-              12. After receiving or informing the applicant about the Allotment
-              Order, the payment should be done within a week by the applicant.
-              If the applicant fails to do so, the booked date / allotted date
-              shall be considered as cancelled without any intimation and same
-              shall be allotted to the other applicant in the queue.
+              12. Deposit amount to be paid in the form of DD within 7 days
+              after successful booking failing which the booking will get
+              cancelled.
             </Text>
             <Text
               style={{
@@ -1816,10 +1832,11 @@ const ViewPdf = (props: ViewPdfProps) => {
                 margin: "4px 0",
               }}
             >
-              6. The penalty of Rs. 100/- per Sq. Mt is imposed in case the
-              applicant has not taken the permission and approval from the
-              competent authority for utilizing the extra open space (Outer
-              space) occupied for function other than allotment space.
+              6. Applicant shall not occupy and hinder the common areas such as
+              entry / exit points, corridors / passage, common road and foot
+              paths etc. If the applicant does so, a penalty amounting to Rs.
+              5000/- shall be levied and the security deposit submitted to the
+              department shall be forfeited without any further explanation.
             </Text>
             <Text
               style={{
@@ -1883,16 +1900,14 @@ const ViewPdf = (props: ViewPdfProps) => {
             <Text
               style={{
                 fontSize: 10,
-                color: "grey",
+                color: "red",
                 width: "100%",
                 margin: "4px 0",
               }}
             >
-              12. After receiving or informing the applicant about the Allotment
-              Order, the payment should be done within a week by the applicant.
-              If the applicant fails to do so, the booked date / allotted date
-              shall be considered as cancelled without any intimation and same
-              shall be allotted to the other applicant in the queue.
+              12. Deposit amount to be paid in the form of DD within 7 days
+              after successful booking failing which the booking will get
+              cancelled.
             </Text>
             <Text
               style={{
@@ -2053,10 +2068,11 @@ const ViewPdf = (props: ViewPdfProps) => {
                 margin: "4px 0",
               }}
             >
-              6. The penalty of Rs. 100/- per Sq. Mt is imposed in case the
-              applicant has not taken the permission and approval from the
-              competent authority for utilizing the extra open space (Outer
-              space) occupied for function other than allotment space.
+              6. Applicant shall not occupy and hinder the common areas such as
+              entry / exit points, corridors / passage, common road and foot
+              paths etc. If the applicant does so, a penalty amounting to Rs.
+              5000/- shall be levied and the security deposit submitted to the
+              department shall be forfeited without any further explanation.
             </Text>
             <Text
               style={{
@@ -2120,16 +2136,14 @@ const ViewPdf = (props: ViewPdfProps) => {
             <Text
               style={{
                 fontSize: 10,
-                color: "grey",
+                color: "red",
                 width: "100%",
                 margin: "4px 0",
               }}
             >
-              12. After receiving or informing the applicant about the Allotment
-              Order, the payment should be done within a week by the applicant.
-              If the applicant fails to do so, the booked date / allotted date
-              shall be considered as cancelled without any intimation and same
-              shall be allotted to the other applicant in the queue.
+              12. Deposit amount to be paid in the form of DD within 7 days
+              after successful booking failing which the booking will get
+              cancelled.
             </Text>
             <Text
               style={{

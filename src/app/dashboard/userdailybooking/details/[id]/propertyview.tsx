@@ -96,7 +96,6 @@ const PropertiesView = (props: PropertiesViewProps) => {
         //   return 0;
         // });
 
-
         setShops(shopresponse.data ?? []);
         setFilterShop(shopresponse.data ?? []);
       }
@@ -366,9 +365,9 @@ const TermsAndCondition1 = (props: TermsAndConditionProps) => {
       className="my-10 h-[600px] overflow-y-scroll"
     >
       <p className="text-sm  font-normal my-2 text-rose-500">
-        1. The DNHPDA reserves the right to cancel the allotment of
-        space at Kala-Kendra, Auditorium and Banquet Hall in case of any
-        government functions without assigning any reason thereof.
+        1. The DNHPDA reserves the right to cancel the allotment of space at
+        Kala-Kendra, Auditorium and Banquet Hall in case of any government
+        functions without assigning any reason thereof.
       </p>
 
       <p className="text-sm text-gray-800 font-normal my-2">
@@ -400,10 +399,11 @@ const TermsAndCondition1 = (props: TermsAndConditionProps) => {
         area etc. of the allotted space area/ premises.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
-        6. The penalty of Rs. 100/- per Sq. Mt is imposed in case the applicant
-        has not taken the permission and approval from the competent authority
-        for utilizing the extra open space (Outer space) occupied for function
-        other than allotment space.
+        6. Applicant shall not occupy and hinder the common areas such as entry
+        / exit points, corridors / passage, common road and foot paths etc. If
+        the applicant does so, a penalty amounting to Rs. 5000/- shall be levied
+        and the security deposit submitted to the department shall be forfeited
+        without any further explanation.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
         7. Havan, Pooja, Outdoor cooking, Tandoor etc. is prohibited in the
@@ -427,12 +427,8 @@ const TermsAndCondition1 = (props: TermsAndConditionProps) => {
         Halls and if found, the applicant shall have to pay a penalty amount of
         Rs. 5000/- to the concerned department.
       </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        12. After receiving or informing the applicant about the Allotment
-        Order, the payment should be done within a week by the applicant. If the
-        applicant fails to do so, the booked date / allotted date shall be
-        considered as cancelled without any intimation and same shall be
-        allotted to the other applicant in the queue.
+      <p className="text-sm text-rose-800 font-normal my-2">
+        12. Deposit amount to be paid in the form of DD within 7 days after successful booking failing which the booking will get cancelled.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
         13. If the applicant has to change their booked date / allotted date,
@@ -520,10 +516,11 @@ const TermsAndCondition2 = (props: TermsAndConditionProps) => {
         area etc. of the allotted space area/ premises.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
-        6. The penalty of Rs. 100/- per Sq. Mt is imposed in case the applicant
-        has not taken the permission and approval from the competent authority
-        for utilizing the extra open space (Outer space) occupied for function
-        other than allotment space.
+        6. Applicant shall not occupy and hinder the common areas such as entry
+        / exit points, corridors / passage, common road and foot paths etc. If
+        the applicant does so, a penalty amounting to Rs. 5000/- shall be levied
+        and the security deposit submitted to the department shall be forfeited
+        without any further explanation.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
         7. Havan, Pooja, Outdoor cooking, Tandoor etc. is prohibited in the
@@ -547,12 +544,8 @@ const TermsAndCondition2 = (props: TermsAndConditionProps) => {
         Halls and if found, the applicant shall have to pay a penalty amount of
         Rs. 5000/- to the concerned department.
       </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        12. After receiving or informing the applicant about the Allotment
-        Order, the payment should be done within a week by the applicant. If the
-        applicant fails to do so, the booked date / allotted date shall be
-        considered as cancelled without any intimation and same shall be
-        allotted to the other applicant in the queue.
+      <p className="text-sm text-rose-800 font-normal my-2">
+        12. Deposit amount to be paid in the form of DD within 7 days after successful booking failing which the booking will get cancelled.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
         13. If the applicant has to change their booked date / allotted date,
@@ -640,10 +633,11 @@ const TermsAndCondition3 = (props: TermsAndConditionProps) => {
         area etc. of the allotted space area/ premises.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
-        6. The penalty of Rs. 100/- per Sq. Mt is imposed in case the applicant
-        has not taken the permission and approval from the competent authority
-        for utilizing the extra open space (Outer space) occupied for function
-        other than allotment space.
+        6. Applicant shall not occupy and hinder the common areas such as entry
+        / exit points, corridors / passage, common road and foot paths etc. If
+        the applicant does so, a penalty amounting to Rs. 5000/- shall be levied
+        and the security deposit submitted to the department shall be forfeited
+        without any further explanation.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
         7. Havan, Pooja, Outdoor cooking, Tandoor etc. is prohibited in the
@@ -667,12 +661,8 @@ const TermsAndCondition3 = (props: TermsAndConditionProps) => {
         Halls and if found, the applicant shall have to pay a penalty amount of
         Rs. 5000/- to the concerned department.
       </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        12. After receiving or informing the applicant about the Allotment
-        Order, the payment should be done within a week by the applicant. If the
-        applicant fails to do so, the booked date / allotted date shall be
-        considered as cancelled without any intimation and same shall be
-        allotted to the other applicant in the queue.
+      <p className="text-sm text-rose-500 font-normal my-2">
+        12. Deposit amount to be paid in the form of DD within 7 days after successful booking failing which the booking will get cancelled.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
         13. If the applicant has to change their booked date / allotted date,
@@ -760,10 +750,11 @@ const TermsAndCondition4 = (props: TermsAndConditionProps) => {
         area etc. of the allotted space area/ premises.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
-        6. The penalty of Rs. 100/- per Sq. Mt is imposed in case the applicant
-        has not taken the permission and approval from the competent authority
-        for utilizing the extra open space (Outer space) occupied for function
-        other than allotment space.
+        6. Applicant shall not occupy and hinder the common areas such as entry
+        / exit points, corridors / passage, common road and foot paths etc. If
+        the applicant does so, a penalty amounting to Rs. 5000/- shall be levied
+        and the security deposit submitted to the department shall be forfeited
+        without any further explanation.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
         7. Havan, Pooja, Outdoor cooking, Tandoor etc. is prohibited in the
@@ -787,12 +778,9 @@ const TermsAndCondition4 = (props: TermsAndConditionProps) => {
         Halls and if found, the applicant shall have to pay a penalty amount of
         Rs. 5000/- to the concerned department.
       </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        12. After receiving or informing the applicant about the Allotment
-        Order, the payment should be done within a week by the applicant. If the
-        applicant fails to do so, the booked date / allotted date shall be
-        considered as cancelled without any intimation and same shall be
-        allotted to the other applicant in the queue.
+      <p className="text-sm text-rose-500 font-normal my-2">
+        12. Deposit amount to be paid in the form of DD within 7 days after
+        successful booking failing which the booking will get cancelled.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
         13. If the applicant has to change their booked date / allotted date,
@@ -880,10 +868,11 @@ const TermsAndCondition5 = (props: TermsAndConditionProps) => {
         area etc. of the allotted space area/ premises.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
-        6. The penalty of Rs. 100/- per Sq. Mt is imposed in case the applicant
-        has not taken the permission and approval from the competent authority
-        for utilizing the extra open space (Outer space) occupied for function
-        other than allotment space.
+        6. Applicant shall not occupy and hinder the common areas such as entry
+        / exit points, corridors / passage, common road and foot paths etc. If
+        the applicant does so, a penalty amounting to Rs. 5000/- shall be levied
+        and the security deposit submitted to the department shall be forfeited
+        without any further explanation.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
         7. Havan, Pooja, Outdoor cooking, Tandoor etc. is prohibited in the
@@ -907,12 +896,9 @@ const TermsAndCondition5 = (props: TermsAndConditionProps) => {
         Halls and if found, the applicant shall have to pay a penalty amount of
         Rs. 5000/- to the concerned department.
       </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        12. After receiving or informing the applicant about the Allotment
-        Order, the payment should be done within a week by the applicant. If the
-        applicant fails to do so, the booked date / allotted date shall be
-        considered as cancelled without any intimation and same shall be
-        allotted to the other applicant in the queue.
+      <p className="text-sm text-rose-500 font-normal my-2">
+        12. Deposit amount to be paid in the form of DD within 7 days after
+        successful booking failing which the booking will get cancelled.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
         13. If the applicant has to change their booked date / allotted date,

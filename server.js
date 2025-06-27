@@ -310,8 +310,17 @@ const postRes = (request, response) => {
           },
         });
 
-        const RentIsPaid = `https://api.arihantsms.com/api/v2/SendSMS?SenderId=DNHPDA&Is_Unicode=false&Is_Flash=false&Message=${
-          updatedata.daily_shop.property.name
+        const RentIsPaid = `https://api.arihantsms.com/api/v2/SendSMS?SenderId=DNHPDA&Is_Unicode=false&Is_Flash=false&Message=Your%20booking%20at%20${updatedata.daily_shop.property.name}%20at%20${updatedata.daily_shop.name}%20is%20due.%20Please%20pay%20to%20confirm.%20Failing%20to%20pay%20would%20cancel%20booking.%20%E2%80%93DNHPDA.&MobileNumbers=91${updatedata.user.contactone}&ApiKey=rL56LBkGeOa1MKFm5SrSKtz%2Bq55zMVdxk5PNvQkg2nY%3D&ClientId=ebff4d6c-072b-4342-b71f-dcca677713f8`;
+
+        const message_response = await fetch(RentIsPaid, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        const RentIsPaid2 = `https://api.arihantsms.com/api/v2/SendSMS?SenderId=DNHPDA&Is_Unicode=false&Is_Flash=false&Message=Your%20deposit%20for%20booking%20ID%20${
+          "PDA-EVENT-" + updatedata.id
         }%20on%20${
           updatedata.daily_shop.name
         }%20is%20confirmed.%20Booking%20ID%3A%20${
@@ -320,7 +329,7 @@ const postRes = (request, response) => {
           updatedata.user.contactone
         }&ApiKey=rL56LBkGeOa1MKFm5SrSKtz%2Bq55zMVdxk5PNvQkg2nY%3D&ClientId=ebff4d6c-072b-4342-b71f-dcca677713f8`;
 
-        const message_response = await fetch(RentIsPaid, {
+        const message_response2 = await fetch(RentIsPaid2, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
