@@ -60,6 +60,7 @@ const CreateRentPage = (props: CreateRentProps) => {
   >();
 
   const [user, setUser] = useState<user | null>(null);
+  const [currentUser, setCurrentUser] = useState<user | null>(null);
   const [refundRequest, setRefundRequest] = useState<refund_amount | null>(
     null
   );
@@ -113,6 +114,11 @@ const CreateRentPage = (props: CreateRentProps) => {
       const userresponse = await GetUser({ id: props.userid });
       if (userresponse.status) {
         setUser(userresponse.data!);
+      }
+
+      const currentUserResponse = await GetUser({ id: createuserid });
+      if (currentUserResponse.status) {
+        setCurrentUser(currentUserResponse.data!);
       }
 
       const shopresponse = await GetDailyShop({
@@ -171,6 +177,11 @@ const CreateRentPage = (props: CreateRentProps) => {
         const userresponse = await GetUser({ id: props.userid });
         if (userresponse.status) {
           setUser(userresponse.data!);
+        }
+
+        const currentUserResponse = await GetUser({ id: createuserid });
+        if (currentUserResponse.status) {
+          setCurrentUser(currentUserResponse.data!);
         }
 
         const shopresponse = await GetDailyShop({
@@ -444,7 +455,7 @@ const CreateRentPage = (props: CreateRentProps) => {
             <p className="text-gray-500 text-xl gap-4">Booking Details</p>
             <div className="grow"></div>
 
-            {user?.role == "USER" && (
+            {currentUser?.role == "USER" && (
               <>
                 {rentData?.daily_shop.daily_rent_transact.filter(
                   (val: daily_rent_transact) => val.status == "PAID"
@@ -536,7 +547,7 @@ const CreateRentPage = (props: CreateRentProps) => {
               Terms & Condition
             </button>
 
-            {["MANAGER"].includes(user?.role!) &&
+            {["MANAGER"].includes(currentUser?.role!) &&
               refundRequest != null &&
               refundRequest.status != "PAID" && (
                 <button
@@ -548,7 +559,7 @@ const CreateRentPage = (props: CreateRentProps) => {
               )}
 
             {rentData?.daily_shop.daily_rent_transact.length == 0 &&
-            ["MANAGER", "ACCOUNTANT"].includes(user?.role!) ? (
+            ["MANAGER", "ACCOUNTANT"].includes(currentUser?.role!) ? (
               <button
                 onClick={() => {
                   setDepartmentCancelBookingBox(true);
@@ -559,7 +570,7 @@ const CreateRentPage = (props: CreateRentProps) => {
               </button>
             ) : null}
 
-            {["ACCOUNTANT"].includes(user?.role!) &&
+            {["ACCOUNTANT"].includes(currentUser?.role!) &&
               refundRequest != null &&
               refundRequest.status != "PAID" &&
               refundRequest.officer_remark != null && (
@@ -571,7 +582,7 @@ const CreateRentPage = (props: CreateRentProps) => {
                 </button>
               )}
 
-            {["ACCOUNTANT"].includes(user?.role!) &&
+            {["ACCOUNTANT", "MANAGER"].includes(currentUser?.role!) &&
             rentData?.daily_shop.daily_rent_transact.filter(
               (val: daily_rent_transact) => val.status == "PAID"
             ).length == 1 ? (
@@ -609,16 +620,17 @@ const CreateRentPage = (props: CreateRentProps) => {
                 </button>
               )} */}
 
-            {["MANAGER"].includes(user?.role!) && cencalRequest != null && (
-              <button
-                onClick={() => setCencelRequestRemarkBox(true)}
-                className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
-              >
-                View Cancel Request
-              </button>
-            )}
+            {["MANAGER"].includes(currentUser?.role!) &&
+              cencalRequest != null && (
+                <button
+                  onClick={() => setCencelRequestRemarkBox(true)}
+                  className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                >
+                  View Cancel Request
+                </button>
+              )}
 
-            {["ACCOUNTANT"].includes(user?.role!) &&
+            {["ACCOUNTANT"].includes(currentUser?.role!) &&
               cencalRequest != null &&
               cencalRequest.officer_remark != null && (
                 <button
