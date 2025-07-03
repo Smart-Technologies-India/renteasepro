@@ -386,8 +386,8 @@ const ViewPdf = (props: ViewPdfProps) => {
           <Text style={styles.rbottom}>Invoice No.</Text>
           <Text style={styles.mbottom2}>
             PDA /{(invoicenumber ?? "0").toString().padStart(4, "0")}/
-            {new Date(rent?.createdAt).getFullYear().toString().slice(2)}-
-            {(new Date(rent?.createdAt).getFullYear() + 1).toString().slice(2)}
+            {new Date(history[0]?.transaction_date).getFullYear().toString().slice(2)}-
+            {(new Date(history[0]?.transaction_date).getFullYear() + 1).toString().slice(2)}
           </Text>
         </View>
 
