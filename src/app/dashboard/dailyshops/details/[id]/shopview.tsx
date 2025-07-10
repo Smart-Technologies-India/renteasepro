@@ -30,7 +30,7 @@ import {
   user,
 } from "@prisma/client";
 import { getCookie } from "cookies-next";
-import { useEffect, useRef, useState } from "react";
+import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
@@ -128,6 +128,7 @@ const ShopView = (props: ShowShopProps) => {
   }, [props.id, userid]);
 
   const swiperRef = useRef<SwiperType | null>(null);
+  const calSwiperRef = useRef<SwiperType | null>(null);
 
   if (isLoading)
     return (
@@ -251,7 +252,6 @@ const ShopView = (props: ShowShopProps) => {
           ></iframe>
         </div>
       </div>
-
       {shop?.daily_rent_photo.length! > 0 && (
         <>
           <div className="flex mt-4 mb-2 gap-2 items-center">
@@ -307,16 +307,24 @@ const ShopView = (props: ShowShopProps) => {
           </Swiper>
         </>
       )}
-
+      {/* 
       <h1 className="text-lg font-semibold text-gray-600 mt-4 text-center">
         Event Calendar
-      </h1>
-
+      </h1> */}{" "}
+      <div className="flex mt-4 mb-2 gap-2 items-center">
+        <h1 className="text-lg font-semibold text-gray-600">Event Calendar</h1>
+        <div className="grow"></div>
+        <PrevButton swiperRef={calSwiperRef} />{" "}
+        {/* Pass the ref to PrevButton */}
+        <NextButton swiperRef={calSwiperRef} />{" "}
+        {/* Pass the ref to NextButton */}
+      </div>
       <CalendarMonths
         // avaliableDays={{
         //   unavailable: [new Date("2025-04-04"), new Date("2025-03-18")],
         //   disabled: [new Date("2025-04-05"), new Date("2025-03-19")],
         // }}
+        calref={calSwiperRef}
         avaliableDays={rentdates}
       />
     </div>
@@ -327,6 +335,7 @@ export default ShopView;
 
 interface CalendarMonthsProps {
   avaliableDays: Date[];
+  calref: MutableRefObject<SwiperType | null>;
 }
 
 const CalendarMonths = (props: CalendarMonthsProps) => {
@@ -337,7 +346,35 @@ const CalendarMonths = (props: CalendarMonthsProps) => {
   );
 
   return (
-    <div className="flex mt-2 w-full flex-wrap justify-center gap-6">
+    // <div className="flex mt-2 w-full flex-wrap justify-center gap-6">
+
+    <Swiper
+      spaceBetween={50}
+      slidesPerView={3}
+      // autoplay={{
+      //   delay: 2500,
+      //   disableOnInteraction: false,
+      // }}
+      breakpoints={{
+        320: {
+          slidesPerView: 1,
+          spaceBetween: 10,
+        },
+        640: {
+          slidesPerView: 2,
+          spaceBetween: 20,
+        },
+        768: {
+          slidesPerView: 3,
+          spaceBetween: 40,
+        },
+      }}
+      scrollbar={{ draggable: true }}
+      onSlideChange={() => console.log("slide change")}
+      onSwiper={(swiper: any) => (props.calref.current = swiper)}
+      // loop={true}
+      modules={[Autoplay, Pagination, Navigation]}
+    >
       {months.map((month, index) => {
         const firstDay = startOfMonth(month);
         const lastDay = endOfMonth(month);
@@ -345,40 +382,43 @@ const CalendarMonths = (props: CalendarMonthsProps) => {
         const startWeekday = firstDay.getDay();
 
         return (
-          <div key={index} className="bg-white shadow p-2 rounded-md">
-            <h2 className="text-center font-semibold mb-2">
-              {format(month, "MMMM yyyy")}
-            </h2>
-            <div className="grid grid-cols-7 gap-3 text-center text-sm font-medium place-items-center">
-              {weekDays.map((day) => (
-                <div key={day} className="text-gray-500">
-                  {day}
-                </div>
-              ))}
-              {Array.from({ length: startWeekday }).map((_, i) => (
-                <div key={"empty-" + i}></div>
-              ))}
-              {days.map((day) => {
-                const isUnavailable = props.avaliableDays.some((d) =>
-                  isSameDay(d, day)
-                );
-
-                return (
-                  <div
-                    key={day.toISOString()}
-                    className={`py-1 rounded-full w-6 h-6 flex items-center justify-center ${
-                      isUnavailable ? "bg-rose-500 text-white" : ""
-                    }`}
-                  >
-                    {format(day, "d")}
+          <SwiperSlide key={index}>
+            <div key={index} className="bg-white shadow p-2 rounded-md">
+              <h2 className="text-center font-semibold mb-2">
+                {format(month, "MMMM yyyy")}
+              </h2>
+              <div className="grid grid-cols-7 gap-3 text-center text-sm font-medium place-items-center">
+                {weekDays.map((day) => (
+                  <div key={day} className="text-gray-500">
+                    {day}
                   </div>
-                );
-              })}
+                ))}
+                {Array.from({ length: startWeekday }).map((_, i) => (
+                  <div key={"empty-" + i}></div>
+                ))}
+                {days.map((day) => {
+                  const isUnavailable = props.avaliableDays.some((d) =>
+                    isSameDay(d, day)
+                  );
+
+                  return (
+                    <div
+                      key={day.toISOString()}
+                      className={`py-1 rounded-full w-6 h-6 flex items-center justify-center ${
+                        isUnavailable ? "bg-rose-500 text-white" : ""
+                      }`}
+                    >
+                      {format(day, "d")}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          </SwiperSlide>
         );
       })}
-    </div>
+      {/* </div> */}
+    </Swiper>
   );
 };
 

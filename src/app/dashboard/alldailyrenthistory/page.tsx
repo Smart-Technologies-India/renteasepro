@@ -28,7 +28,6 @@ import { usePagination } from "@/hooks/usepagination";
 import Pagination from "@/components/pagination";
 import { DateRange } from "react-day-picker";
 import GetAllDailyPaidRent from "@/action/rent_transact/getalldailyrent";
-import dayjs from "dayjs";
 
 const UserRentHistoryView = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -45,9 +44,7 @@ const UserRentHistoryView = () => {
   const [isSearch, setIsSearch] = useState<boolean>(false);
 
   const [searchresult, setSearchresult] = useState<any[]>([]);
-
   const pagination = usePagination(filterAccount);
-
   const paginationsearch = usePagination(searchresult);
 
   // pagination end here
@@ -55,8 +52,6 @@ const UserRentHistoryView = () => {
     const init = async () => {
       setIsLoading(true);
       const rentresponse = await GetAllDailyPaidRent({});
-
-      console.log("rentresponse", rentresponse);
 
       if (rentresponse.status) {
         setFilterAccount(rentresponse.data ?? []);
@@ -117,10 +112,7 @@ const UserRentHistoryView = () => {
                 .includes(
                   searchRef.current?.value.toString().toLowerCase() ?? ""
                 ) ||
-              (account.daily_shop.shopNumber !== null
-                ? account.daily_shop.shopNumber
-                : ""
-              )
+              (account.daily_shop.name !== null ? account.daily_shop.name : "")
                 .toString()
                 .toLowerCase()
                 .includes(

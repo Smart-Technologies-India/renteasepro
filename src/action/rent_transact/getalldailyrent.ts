@@ -14,6 +14,9 @@ const GetAllDailyPaidRent = async (
     const rent_transact_response = await prisma.daily_rent_transact.findMany({
       where: {
         status: "PAID",
+        gstinvoice: {
+          not: null,
+        },
         deletedAt: null,
         deletedBy: null,
       },

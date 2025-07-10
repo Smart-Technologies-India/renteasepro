@@ -119,7 +119,7 @@ const PropertiesView = (props: PropertiesViewProps) => {
   const [open2, setOpen2] = useState(false);
   const [open3, setOpen3] = useState(false);
   const [open4, setOpen4] = useState(false);
-  const [open5, setOpen5] = useState(false);
+  // const [open5, setOpen5] = useState(false);
 
   if (isLoading)
     return (
@@ -137,7 +137,7 @@ const PropertiesView = (props: PropertiesViewProps) => {
             <p className="text-xl p-2  font-semibold">Property Details</p>
             <div className="grow"></div>
 
-            {[setOpen1, setOpen2, setOpen3, setOpen4, setOpen5].map(
+            {/* {[setOpen1, setOpen2, setOpen3, setOpen4].map(
               (setOpen, index: number) =>
                 property?.id == index + 1 && (
                   <button
@@ -148,8 +148,23 @@ const PropertiesView = (props: PropertiesViewProps) => {
                     Terms & Condition
                   </button>
                 )
-            )}
+            )} */}
 
+            {property?.id === 2 ? (
+              <button
+                onClick={() => setOpen1(true)}
+                className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+              >
+                Terms & Condition
+              </button>
+            ) : (
+              <button
+                onClick={() => setOpen2(true)}
+                className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+              >
+                Terms & Condition
+              </button>
+            )}
             <div className="w-2"></div>
           </div>
           <div className="px-4 py-2 grid grid-cols-2 gap-4 mt-2">
@@ -242,9 +257,9 @@ const PropertiesView = (props: PropertiesViewProps) => {
 
       <TermsAndCondition1 open={open1} setOpen={setOpen1} />
       <TermsAndCondition2 open={open2} setOpen={setOpen2} />
-      <TermsAndCondition3 open={open2} setOpen={setOpen2} />
-      <TermsAndCondition4 open={open2} setOpen={setOpen2} />
-      <TermsAndCondition5 open={open2} setOpen={setOpen2} />
+      <TermsAndCondition3 open={open3} setOpen={setOpen3} />
+      <TermsAndCondition4 open={open4} setOpen={setOpen4} />
+      {/* <TermsAndCondition5 open={open2} setOpen={setOpen2} /> */}
     </div>
   );
 };
@@ -364,96 +379,103 @@ const TermsAndCondition1 = (props: TermsAndConditionProps) => {
       width={800}
       className="my-10 h-[600px] overflow-y-scroll"
     >
-      <p className="text-sm  font-normal my-2 text-rose-500">
-        1. The DNHPDA reserves the right to cancel the allotment of space at
-        Kala-Kendra, Auditorium and Banquet Hall in case of any government
-        functions without assigning any reason thereof.
+      <p className="text-sm  font-normal my-2 text-gray-500">
+        1. The permission of videography / Photography shall be granted only on
+        the given date while utilizing the space of Open-Air Amphitheatre area
+        along with Pavilion area at Dr. APJ Abdul Kalam College Campus,
+        Dokmardi, Silvassa, DNH.
       </p>
 
-      <p className="text-sm text-gray-800 font-normal my-2">
-        2. The applicant shall ensure that they shall maintain the floor and
-        premises of the Banquet hall clean by avoiding littering of food
-        materials over the wooden floors, by sufficient provision of waste bins
-        etc.
+      <p className="text-sm text-rose-500 font-normal my-2">
+        2. The applicant has to pay an amount of Rs. 10,000/- (Refundable) in
+        the form of Demand Draft in the favour Dadra and Nagar Haveli Planning &
+        Development Authority as Security Deposit before your function / event
+        date physically in the office of DNHPDA, Silvassa and failing to do so
+        shall be understood that the said booking is cancelled. The Security
+        Deposit shall be refundable if the allotted space is found in neat and
+        tidy condition by the competent authority.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
-        3. The applicant shall be responsible for maintaining cleanliness and
+        3.The entire premises shall be available from 7:00 AM to 10:00 PM only.
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        4. The applicant shall obey the timing orders and failing to do so,
+        shall lead to forfeiture of the deposit submitted by the applicant.
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        5. You shall ensure that there shall not be any damages to the assets
+        such as viewers chairs at Pavilion area, seating steps at Open Air
+        Amphitheatre area along with Pavilion area at Dr. APJ Abdul Kalam
+        College Campus, Dokmardi, Silvassa, DNH.
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        6. The applicant shall be responsible for maintaining cleanliness and
         hygiene during and after completion of function at the allotted space
         area and all used premises. If the same is not maintained and cleanness
-        is not observed by the component authority, and penalty shall be levied
+        is not observed by the component authority, a penalty shall be levied
         amounting to Rs. 5000/- and the security deposit submitted to the
         department shall be forfeited without any further explanation.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
-        4. The applicant shall not stick any adhesive based posters in the
-        entire premises.
+        7. You shall ensure to maintain the floor, carpet area and premises of
+        the Auditorium Hall at Dr. APJ Abdul Kalam College Campus, Dokmardi,
+        Silvassa, DNH.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
-        5. The applicant shall ensure that there shall not be any damages to the
-        assets such as Auditorium and Banquet Hall/Exhibition Hall space,
-        Acoustic wall panels, lighting components, floor carpets, stage
-        platform, mic podiums, projectors, lighting Components and its
-        accessories, Audio sound system and accessories, seating chairs, V.I.P
-        chairs, recliners, electrical connections, main stage accessories,
-        viewers chairs at Pavilion area, seating steps at Open air Amphitheatre
-        area etc. of the allotted space area/ premises.
+        8. Havan, Pooja, Katha, burning of crackers etc. shall not be allowed
+        and is strictly prohibited in Auditorium Hall.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
-        6. Applicant shall not occupy and hinder the common areas such as entry
+        9. You shall use the lighting arrangements, Audio systems, projectors
+        HVAC systems, light and audio mixers available in the premises during
+        the function only and if any damages or alterations are found in the
+        aforementioned items, you shall be liable to pay the repair or
+        replacement amount for the same.
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        10. You shall not stick any adhesive based posters in the entire
+        premises.
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        11. Eating and drinking is strictly prohibited inside the Auditorium
+        Hall at Dr. APJ Abdul Kalam College Campus, Dokmardi, Silvassa, DNH and
+        if found, you shall have to pay a penalty amount of Rs. 5000/- to the
+        concerned department.
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        12. Applicant shall not occupy and hinder the common areas such as entry
         / exit points, corridors / passage, common road and foot paths etc. If
         the applicant does so, a penalty amounting to Rs. 5000/- shall be levied
         and the security deposit submitted to the department shall be forfeited
         without any further explanation.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
-        7. Havan, Pooja, Outdoor cooking, Tandoor etc. is prohibited in the
-        Extra Open Space (Outer Space).
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        8. The entire premises shall be available from 7:00 AM to 10:00 PM only.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        9. The applicant shall obey the timing orders and failing to do so,
-        shall lead to forfeiture of the deposit submitted by the applicant.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        10. Havan, Pooja, Katha, Crackers etc. shall not be allowed and is
-        strictly prohibited in Auditorium Hall, Banquet hall, Exhibition Hall,
-        Bride room and Groom Room. The same shall only be allowed in Open Air
-        Amphitheatre with all the preventive measures.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        11. Eating and drinking is strictly prohibited inside the Auditorium
-        Halls and if found, the applicant shall have to pay a penalty amount of
-        Rs. 5000/- to the concerned department.
-      </p>
-      <p className="text-sm text-rose-800 font-normal my-2">
-        12. Deposit amount to be paid in the form of DD within 7 days after successful booking failing which the booking will get cancelled.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        13. If the applicant has to change their booked date / allotted date,
-        25% shifting charges shall be applied.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        14. If the applicant has to cancel their booked date / allotted date,
-        50% Cancellation charges shall be applied and the remaining amount shall
-        be transferred to the applicant by the department.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        15. If the applicant has to cancel their booked date / allotted date
-        before 1 week, in that case 100% Cancellation charge shall be applied.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        16. Smoking, drinking of alcohol, non-vegetarian food, chewing of
-        tobacco is strictly prohibited in the entire premises and if found, you
-        shall have to pay a penalty amount of Rs. 5000/- and also the security
-        deposit submitted to the department shall be forfeited without any
+        13. Smoking, drinking of alcohol, chewing of tobacco and non-vegetarian
+        food is strictly prohibited in the entire premises and if found, you
+        shall have to pay a penalty amount of Rs. 5000/- and also the Security
+        Deposit submitted to the department shall be forfeited without any
         further explanation.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
-        17. Violation or lapses found in any of the above conditions by the
-        applicant, the competent authority has the right to take necessary
-        action or by imposing the penalty as assigned thereof.
+        14. If the applicant has to change their booking date / allotted date,
+        25% shifting charges shall be applied.
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        15. If the applicant has to cancel their booking date / allotted date,
+        50% cancellation charges shall be applied and the remaining amount shall
+        be transferred to the applicant by the department.
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        16. If the applicant has to cancel their booking date / allotted date
+        before 1 week of their function / event date, in that case 100%
+        cancellation charge shall be applied.
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        17. You shall be responsible to hand over the entire premises in neat
+        and clean condition after completion of your function. If cleanliness of
+        the used premises is not found satisfactory, the department shall impose
+        a penalty and shall also forfeit the Security Deposit without any
+        further explanation.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
         18. The applicant shall manage all the parking arrangements of their
@@ -461,6 +483,17 @@ const TermsAndCondition1 = (props: TermsAndConditionProps) => {
         main road. The applicant must not tamper with any of the car park
         systems, including access control, ventilation, fire protection,
         surveillance and communications in the parking area.
+      </p>
+      <p className="text-sm text-rose-500 font-normal my-2">
+        19. The DNHPDA reserves the right to cancel the allotment of space at
+        Open Air Amphitheatre along with Pavilion area at Dr. APJ Abdul Kalam
+        College Campus, Dokmardi, Silvassa, DNH in case of any government
+        functions without assigning any reason thereof.
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        20. Violation or lapses found in any of the above conditions by the
+        applicant, the competent authority has the right to take necessary
+        action or by imposing the penalty as assigned thereof.
       </p>
     </Modal>
   );
@@ -481,103 +514,110 @@ const TermsAndCondition2 = (props: TermsAndConditionProps) => {
       width={800}
       className="my-10 h-[600px] overflow-y-scroll"
     >
-      <p className="text-sm  font-normal my-2 text-rose-500">
-        Property2 1. The DNHPDA reserves the right to cancel the allotment of
-        space at Kala-Kendra, Auditorium and Banquet Hall in case of any
-        government functions without assigning any reason thereof.
+      <p className="text-sm  font-normal my-2 text-gray-500">
+        1. The permission of videography / Photography shall be granted only on
+        the given date while utilizing the space of Open-Air Amphitheatre area
+        along with Pavilion area at Dr. APJ Abdul Kalam College Campus,
+        Dokmardi, Silvassa, DNH.
       </p>
 
-      <p className="text-sm text-gray-800 font-normal my-2">
-        2. The applicant shall ensure that they shall maintain the floor and
-        premises of the Banquet hall clean by avoiding littering of food
-        materials over the wooden floors, by sufficient provision of waste bins
-        etc.
+      <p className="text-sm text-rose-500 font-normal my-2">
+        2. The applicant has to pay an amount of Rs. 10,000/- (Refundable) in
+        the form of Demand Draft in the favour Dadra and Nagar Haveli Planning &
+        Development Authority as Security Deposit before your function / event
+        date physically in the office of DNHPDA, Silvassa and failing to do so
+        shall be understood that the said booking is cancelled. The Security
+        Deposit shall be refundable if the allotted space is found in neat and
+        tidy condition by the competent authority.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
-        3. The applicant shall be responsible for maintaining cleanliness and
+        3.The entire premises shall be available from 7:00 AM to 10:00 PM only.
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        4. The applicant shall obey the timing orders and failing to do so,
+        shall lead to forfeiture of the deposit submitted by the applicant.
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        5. The applicant shall ensure that there shall not be any damages to the
+        assets such as Auditorium and Banquet Hall / Exhibition Hall space,
+        Acoustic wall panels, lighting components, floor carpets, stage
+        platform, mic podiums, projectors, lighting components and its
+        accessories, Audio sound system and accessories, seating chairs, V.I.P
+        chairs, recliners, electrical connections, main stage accessories,
+        viewers chairs at Pavilion area, seating steps at Open air Amphitheatre
+        area etc. of the allotted space.
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        6. The applicant shall be responsible for maintaining cleanliness and
         hygiene during and after completion of function at the allotted space
         area and all used premises. If the same is not maintained and cleanness
-        is not observed by the component authority, and penalty shall be levied
+        is not observed by the component authority, a penalty shall be levied
         amounting to Rs. 5000/- and the security deposit submitted to the
         department shall be forfeited without any further explanation.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
-        4. The applicant shall not stick any adhesive based posters in the
-        entire premises.
+        7. The applicant shall ensure that they shall maintain the floor and
+        premises of the allotted space, clean by avoiding littering of food
+        materials over the floors, by sufficient provision of waste bins etc.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
-        5. The applicant shall ensure that there shall not be any damages to the
-        assets such as Auditorium and Banquet Hall/Exhibition Hall space,
-        Acoustic wall panels, lighting components, floor carpets, stage
-        platform, mic podiums, projectors, lighting Components and its
-        accessories, Audio sound system and accessories, seating chairs, V.I.P
-        chairs, recliners, electrical connections, main stage accessories,
-        viewers chairs at Pavilion area, seating steps at Open air Amphitheatre
-        area etc. of the allotted space area/ premises.
+        8. Havan, Pooja, Katha, burning of crackers etc. shall not be allowed
+        and is strictly prohibited in Auditorium Hall.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
-        6. Applicant shall not occupy and hinder the common areas such as entry
+        9. The applicant shall not stick any adhesive based posters in the
+        allotted space and entire premises.
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        10. Eating and drinking is strictly prohibited inside the Auditorium
+        Halls and if found, the applicant shall have to pay a penalty amount of
+        Rs. 5000/- to the concerned department.
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        11. Applicant shall not occupy and hinder the common areas such as entry
         / exit points, corridors / passage, common road and foot paths etc. If
         the applicant does so, a penalty amounting to Rs. 5000/- shall be levied
         and the security deposit submitted to the department shall be forfeited
         without any further explanation.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
-        7. Havan, Pooja, Outdoor cooking, Tandoor etc. is prohibited in the
-        Extra Open Space (Outer Space).
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        8. The entire premises shall be available from 7:00 AM to 10:00 PM only.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        9. The applicant shall obey the timing orders and failing to do so,
-        shall lead to forfeiture of the deposit submitted by the applicant.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        10. Havan, Pooja, Katha, Crackers etc. shall not be allowed and is
-        strictly prohibited in Auditorium Hall, Banquet hall, Exhibition Hall,
-        Bride room and Groom Room. The same shall only be allowed in Open Air
-        Amphitheatre with all the preventive measures.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        11. Eating and drinking is strictly prohibited inside the Auditorium
-        Halls and if found, the applicant shall have to pay a penalty amount of
-        Rs. 5000/- to the concerned department.
-      </p>
-      <p className="text-sm text-rose-800 font-normal my-2">
-        12. Deposit amount to be paid in the form of DD within 7 days after successful booking failing which the booking will get cancelled.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        13. If the applicant has to change their booked date / allotted date,
-        25% shifting charges shall be applied.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        14. If the applicant has to cancel their booked date / allotted date,
-        50% Cancellation charges shall be applied and the remaining amount shall
-        be transferred to the applicant by the department.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        15. If the applicant has to cancel their booked date / allotted date
-        before 1 week, in that case 100% Cancellation charge shall be applied.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        16. Smoking, drinking of alcohol, non-vegetarian food, chewing of
+        12. Smoking, drinking of alcohol, non-vegetarian food, chewing of
         tobacco is strictly prohibited in the entire premises and if found, you
         shall have to pay a penalty amount of Rs. 5000/- and also the security
         deposit submitted to the department shall be forfeited without any
         further explanation.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
-        17. Violation or lapses found in any of the above conditions by the
-        applicant, the competent authority has the right to take necessary
-        action or by imposing the penalty as assigned thereof.
+        13. If the applicant has to change their booking date / allotted date,
+        25% shifting charges shall be applied.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
-        18. The applicant shall manage all the parking arrangements of their
+        14. If the applicant has to cancel their booking date / allotted date,
+        50% cancellation charges shall be applied and the remaining amount shall
+        be transferred to the applicant by the department.
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        15. If the applicant has to cancel their booking date / allotted date
+        before 1 week of their function / event date, in that case 100%
+        cancellation charge shall be applied.
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        16. The applicant shall manage all the parking arrangements of their
         guests by their own and shall not park the vehicles at service roads /
         main road. The applicant must not tamper with any of the car park
         systems, including access control, ventilation, fire protection,
         surveillance and communications in the parking area.
+      </p>
+      <p className="text-sm text-rose-500 font-normal my-2">
+        17. The DNHPDA reserves the right to cancel the allotment of space at
+        Open Air Amphitheatre along with Pavilion area at Dr. APJ Abdul Kalam
+        College Campus, Dokmardi, Silvassa, DNH in case of any government
+        functions without assigning any reason thereof.
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        18. Violation or lapses found in any of the above conditions by the
+        applicant, the competent authority has the right to take necessary
+        action or by imposing the penalty as assigned thereof.
       </p>
     </Modal>
   );
@@ -662,7 +702,8 @@ const TermsAndCondition3 = (props: TermsAndConditionProps) => {
         Rs. 5000/- to the concerned department.
       </p>
       <p className="text-sm text-rose-500 font-normal my-2">
-        12. Deposit amount to be paid in the form of DD within 7 days after successful booking failing which the booking will get cancelled.
+        12. Deposit amount to be paid in the form of DD within 7 days after
+        successful booking failing which the booking will get cancelled.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
         13. If the applicant has to change their booked date / allotted date,
@@ -818,120 +859,120 @@ const TermsAndCondition4 = (props: TermsAndConditionProps) => {
   );
 };
 
-interface TermsAndConditionProps {
-  open: boolean;
-  setOpen: (value: boolean) => void;
-}
-const TermsAndCondition5 = (props: TermsAndConditionProps) => {
-  return (
-    <Modal
-      title="Terms & Condition"
-      centered
-      open={props.open}
-      onCancel={() => props.setOpen(false)}
-      footer={null}
-      width={800}
-      className="my-10 h-[600px] overflow-y-scroll"
-    >
-      <p className="text-sm  font-normal my-2 text-rose-500">
-        Property5 1. The DNHPDA reserves the right to cancel the allotment of
-        space at Kala-Kendra, Auditorium and Banquet Hall in case of any
-        government functions without assigning any reason thereof.
-      </p>
+// interface TermsAndConditionProps {
+//   open: boolean;
+//   setOpen: (value: boolean) => void;
+// }
+// const TermsAndCondition5 = (props: TermsAndConditionProps) => {
+//   return (
+//     <Modal
+//       title="Terms & Condition"
+//       centered
+//       open={props.open}
+//       onCancel={() => props.setOpen(false)}
+//       footer={null}
+//       width={800}
+//       className="my-10 h-[600px] overflow-y-scroll"
+//     >
+//       <p className="text-sm  font-normal my-2 text-rose-500">
+//         Property5 1. The DNHPDA reserves the right to cancel the allotment of
+//         space at Kala-Kendra, Auditorium and Banquet Hall in case of any
+//         government functions without assigning any reason thereof.
+//       </p>
 
-      <p className="text-sm text-gray-800 font-normal my-2">
-        2. The applicant shall ensure that they shall maintain the floor and
-        premises of the Banquet hall clean by avoiding littering of food
-        materials over the wooden floors, by sufficient provision of waste bins
-        etc.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        3. The applicant shall be responsible for maintaining cleanliness and
-        hygiene during and after completion of function at the allotted space
-        area and all used premises. If the same is not maintained and cleanness
-        is not observed by the component authority, and penalty shall be levied
-        amounting to Rs. 5000/- and the security deposit submitted to the
-        department shall be forfeited without any further explanation.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        4. The applicant shall not stick any adhesive based posters in the
-        entire premises.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        5. The applicant shall ensure that there shall not be any damages to the
-        assets such as Auditorium and Banquet Hall/Exhibition Hall space,
-        Acoustic wall panels, lighting components, floor carpets, stage
-        platform, mic podiums, projectors, lighting Components and its
-        accessories, Audio sound system and accessories, seating chairs, V.I.P
-        chairs, recliners, electrical connections, main stage accessories,
-        viewers chairs at Pavilion area, seating steps at Open air Amphitheatre
-        area etc. of the allotted space area/ premises.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        6. Applicant shall not occupy and hinder the common areas such as entry
-        / exit points, corridors / passage, common road and foot paths etc. If
-        the applicant does so, a penalty amounting to Rs. 5000/- shall be levied
-        and the security deposit submitted to the department shall be forfeited
-        without any further explanation.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        7. Havan, Pooja, Outdoor cooking, Tandoor etc. is prohibited in the
-        Extra Open Space (Outer Space).
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        8. The entire premises shall be available from 7:00 AM to 10:00 PM only.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        9. The applicant shall obey the timing orders and failing to do so,
-        shall lead to forfeiture of the deposit submitted by the applicant.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        10. Havan, Pooja, Katha, Crackers etc. shall not be allowed and is
-        strictly prohibited in Auditorium Hall, Banquet hall, Exhibition Hall,
-        Bride room and Groom Room. The same shall only be allowed in Open Air
-        Amphitheatre with all the preventive measures.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        11. Eating and drinking is strictly prohibited inside the Auditorium
-        Halls and if found, the applicant shall have to pay a penalty amount of
-        Rs. 5000/- to the concerned department.
-      </p>
-      <p className="text-sm text-rose-500 font-normal my-2">
-        12. Deposit amount to be paid in the form of DD within 7 days after
-        successful booking failing which the booking will get cancelled.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        13. If the applicant has to change their booked date / allotted date,
-        25% shifting charges shall be applied.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        14. If the applicant has to cancel their booked date / allotted date,
-        50% Cancellation charges shall be applied and the remaining amount shall
-        be transferred to the applicant by the department.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        15. If the applicant has to cancel their booked date / allotted date
-        before 1 week, in that case 100% Cancellation charge shall be applied.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        16. Smoking, drinking of alcohol, non-vegetarian food, chewing of
-        tobacco is strictly prohibited in the entire premises and if found, you
-        shall have to pay a penalty amount of Rs. 5000/- and also the security
-        deposit submitted to the department shall be forfeited without any
-        further explanation.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        17. Violation or lapses found in any of the above conditions by the
-        applicant, the competent authority has the right to take necessary
-        action or by imposing the penalty as assigned thereof.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        18. The applicant shall manage all the parking arrangements of their
-        guests by their own and shall not park the vehicles at service roads /
-        main road. The applicant must not tamper with any of the car park
-        systems, including access control, ventilation, fire protection,
-        surveillance and communications in the parking area.
-      </p>
-    </Modal>
-  );
-};
+//       <p className="text-sm text-gray-800 font-normal my-2">
+//         2. The applicant shall ensure that they shall maintain the floor and
+//         premises of the Banquet hall clean by avoiding littering of food
+//         materials over the wooden floors, by sufficient provision of waste bins
+//         etc.
+//       </p>
+//       <p className="text-sm text-gray-800 font-normal my-2">
+//         3. The applicant shall be responsible for maintaining cleanliness and
+//         hygiene during and after completion of function at the allotted space
+//         area and all used premises. If the same is not maintained and cleanness
+//         is not observed by the component authority, and penalty shall be levied
+//         amounting to Rs. 5000/- and the security deposit submitted to the
+//         department shall be forfeited without any further explanation.
+//       </p>
+//       <p className="text-sm text-gray-800 font-normal my-2">
+//         4. The applicant shall not stick any adhesive based posters in the
+//         entire premises.
+//       </p>
+//       <p className="text-sm text-gray-800 font-normal my-2">
+//         5. The applicant shall ensure that there shall not be any damages to the
+//         assets such as Auditorium and Banquet Hall/Exhibition Hall space,
+//         Acoustic wall panels, lighting components, floor carpets, stage
+//         platform, mic podiums, projectors, lighting Components and its
+//         accessories, Audio sound system and accessories, seating chairs, V.I.P
+//         chairs, recliners, electrical connections, main stage accessories,
+//         viewers chairs at Pavilion area, seating steps at Open air Amphitheatre
+//         area etc. of the allotted space area/ premises.
+//       </p>
+//       <p className="text-sm text-gray-800 font-normal my-2">
+//         6. Applicant shall not occupy and hinder the common areas such as entry
+//         / exit points, corridors / passage, common road and foot paths etc. If
+//         the applicant does so, a penalty amounting to Rs. 5000/- shall be levied
+//         and the security deposit submitted to the department shall be forfeited
+//         without any further explanation.
+//       </p>
+//       <p className="text-sm text-gray-800 font-normal my-2">
+//         7. Havan, Pooja, Outdoor cooking, Tandoor etc. is prohibited in the
+//         Extra Open Space (Outer Space).
+//       </p>
+//       <p className="text-sm text-gray-800 font-normal my-2">
+//         8. The entire premises shall be available from 7:00 AM to 10:00 PM only.
+//       </p>
+//       <p className="text-sm text-gray-800 font-normal my-2">
+//         9. The applicant shall obey the timing orders and failing to do so,
+//         shall lead to forfeiture of the deposit submitted by the applicant.
+//       </p>
+//       <p className="text-sm text-gray-800 font-normal my-2">
+//         10. Havan, Pooja, Katha, Crackers etc. shall not be allowed and is
+//         strictly prohibited in Auditorium Hall, Banquet hall, Exhibition Hall,
+//         Bride room and Groom Room. The same shall only be allowed in Open Air
+//         Amphitheatre with all the preventive measures.
+//       </p>
+//       <p className="text-sm text-gray-800 font-normal my-2">
+//         11. Eating and drinking is strictly prohibited inside the Auditorium
+//         Halls and if found, the applicant shall have to pay a penalty amount of
+//         Rs. 5000/- to the concerned department.
+//       </p>
+//       <p className="text-sm text-rose-500 font-normal my-2">
+//         12. Deposit amount to be paid in the form of DD within 7 days after
+//         successful booking failing which the booking will get cancelled.
+//       </p>
+//       <p className="text-sm text-gray-800 font-normal my-2">
+//         13. If the applicant has to change their booked date / allotted date,
+//         25% shifting charges shall be applied.
+//       </p>
+//       <p className="text-sm text-gray-800 font-normal my-2">
+//         14. If the applicant has to cancel their booked date / allotted date,
+//         50% Cancellation charges shall be applied and the remaining amount shall
+//         be transferred to the applicant by the department.
+//       </p>
+//       <p className="text-sm text-gray-800 font-normal my-2">
+//         15. If the applicant has to cancel their booked date / allotted date
+//         before 1 week, in that case 100% Cancellation charge shall be applied.
+//       </p>
+//       <p className="text-sm text-gray-800 font-normal my-2">
+//         16. Smoking, drinking of alcohol, non-vegetarian food, chewing of
+//         tobacco is strictly prohibited in the entire premises and if found, you
+//         shall have to pay a penalty amount of Rs. 5000/- and also the security
+//         deposit submitted to the department shall be forfeited without any
+//         further explanation.
+//       </p>
+//       <p className="text-sm text-gray-800 font-normal my-2">
+//         17. Violation or lapses found in any of the above conditions by the
+//         applicant, the competent authority has the right to take necessary
+//         action or by imposing the penalty as assigned thereof.
+//       </p>
+//       <p className="text-sm text-gray-800 font-normal my-2">
+//         18. The applicant shall manage all the parking arrangements of their
+//         guests by their own and shall not park the vehicles at service roads /
+//         main road. The applicant must not tamper with any of the car park
+//         systems, including access control, ventilation, fire protection,
+//         surveillance and communications in the parking area.
+//       </p>
+//     </Modal>
+//   );
+// };
