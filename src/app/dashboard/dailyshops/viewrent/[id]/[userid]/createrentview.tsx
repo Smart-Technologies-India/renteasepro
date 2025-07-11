@@ -1174,9 +1174,8 @@ const CreateRentPage = (props: CreateRentProps) => {
       >
         <p className="text-sm  font-normal my-2 text-gray-800">
           1. The permission of videography / Photography shall be granted only
-          on the given date while utilizing the space of Open-Air Amphitheatre
-          area along with Pavilion area at Dr. APJ Abdul Kalam College Campus,
-          Dokmardi, Silvassa, DNH.
+          on the given date while utilizing the allotted space at Kala Kendra,
+          Silvassa, DNH.
         </p>
 
         <p className="text-sm text-rose-500 font-normal my-2">
@@ -1221,7 +1220,9 @@ const CreateRentPage = (props: CreateRentProps) => {
         </p>
         <p className="text-sm text-gray-800 font-normal my-2">
           8. Havan, Pooja, Katha, burning of crackers etc. shall not be allowed
-          and is strictly prohibited in Auditorium Hall.
+          and is strictly prohibited in Auditorium Hall, Banquet Hall, Bride
+          room and Groom Room. The same shall only be allowed in Open Air
+          Amphitheatre with all the preventive measures.
         </p>
         <p className="text-sm text-gray-800 font-normal my-2">
           9. The applicant shall not stick any adhesive based posters in the
@@ -1269,8 +1270,7 @@ const CreateRentPage = (props: CreateRentProps) => {
         </p>
         <p className="text-sm text-rose-500 font-normal my-2">
           17. The DNHPDA reserves the right to cancel the allotment of space at
-          Open Air Amphitheatre along with Pavilion area at Dr. APJ Abdul Kalam
-          College Campus, Dokmardi, Silvassa, DNH in case of any government
+          Kala-Kendra, Auditorium and Banquet Hall in case of any government
           functions without assigning any reason thereof.
         </p>
         <p className="text-sm text-gray-800 font-normal my-2">
