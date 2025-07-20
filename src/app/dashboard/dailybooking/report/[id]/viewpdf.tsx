@@ -489,7 +489,7 @@ const ViewPdf = (props: ViewPdfProps) => {
         </View>
         {report.map((item, index) => (
           <>
-            <View style={styles.myflex}>
+            <View style={styles.myflex} key={index}>
               <Text
                 style={{
                   fontSize: "10px",
