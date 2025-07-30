@@ -46,7 +46,7 @@ const TermAndConditionPage = () => {
           For inquiries or assistance, please don&apos;t hesitate to contact us
           at ATP, Planning and Development Authority, &quot;A&quot; Wing, Second
           Floor, District Secretariat, Silvassa-396230, or via email at
-          pdadnh@gmail.com. We&apos;re here to support you in finding the ideal
+          dnhpda@gmail.com. We&apos;re here to support you in finding the ideal
           government-owned rental property to suit your needs.
         </p>
         <p className="text-lg mt-2">
@@ -72,12 +72,12 @@ const TermAndConditionPage = () => {
         </section>
         <section className="mb-8">
           <h2 className="text-2xl font-semibold">Email: </h2>
-          <p className="text-lg">pdadnh@gmail.com</p>
+          <p className="text-lg">dnhpda@gmail.com</p>
         </section>
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold">Phone: </h2>
-          <p className="text-lg">+91-9428713770</p>
+          <p className="text-lg">0260-2630146/147</p>
           <p className="text-lg">
             For inquiries, assistance with rental agreements, or any other
             concerns, please don&apos;t hesitate to reach out to us via email or

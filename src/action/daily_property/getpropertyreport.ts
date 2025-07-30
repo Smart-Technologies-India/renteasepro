@@ -7,15 +7,13 @@ import {
   daily_rent,
   daily_rent_transact,
   daily_shop,
-  rent,
-  rent_transact,
-  shop,
   user,
 } from "@prisma/client";
 import prisma from "../../../prisma/database";
 
 interface GetPropertyReportPayload {
   id: number;
+  all: boolean;
 }
 
 const GetPropertyReport = async (
@@ -33,66 +31,6 @@ const GetPropertyReport = async (
 > => {
   console.log("GetPropertyReport called with payload:", payload);
   try {
-    // const start_date = new Date();
-    // const end_date = new Date(new Date().setDate(new Date().getDate() + 15));
-    // const rent_respone = await prisma.daily_rent.findMany({
-    //   where: {
-    //     daily_shop: {
-    //       id: parseInt(payload.id.toString() ?? "0"),
-    //     },
-    //     deletedAt: null,
-    //     deletedBy: null,
-    //     ...(start_date && end_date
-    //       ? {
-    //           OR: [
-    //             {
-    //               prep_day: {
-    //                 gte: start_date,
-    //                 lte: end_date,
-    //               },
-    //             },
-    //             {
-    //               handover_day: {
-    //                 gte: start_date,
-    //                 lte: end_date,
-    //               },
-    //             },
-    //           ],
-    //         }
-    //       : {}),
-    //     event_from_date: {
-    //       gte: start_date,
-    //     },
-    //     event_to_date: {
-    //       lte: end_date,
-    //     },
-    //   },
-    //   include: {
-    //     rent_transact: true,
-    //     user: true,
-    //     daily_shop: {
-    //       include: {
-    //         property: true,
-    //       },
-    //     },
-    //   },
-    // });
-    // console.log(rent_respone);
-
-    // if (!rent_respone)
-    //   return {
-    //     status: false,
-    //     data: null,
-    //     message: "Invalid id. Please try again.",
-    //     functionname: "GetPropertyReport",
-    //   };
-
-    // return {
-    //   status: true,
-    //   data: rent_respone,
-    //   message: "Rent data get successfully",
-    //   functionname: "GetPropertyReport",
-    // };
     const today = new Date();
     const end_date = new Date(today);
     end_date.setDate(today.getDate() + 15);
@@ -106,6 +44,14 @@ const GetPropertyReport = async (
         },
         deletedAt: null,
         deletedBy: null,
+        OR: [
+          {
+            status: "DEPOSITDUE",
+          },
+          {
+            status: "UPCOMING",
+          },
+        ],
       },
       include: {
         rent_transact: true,
@@ -123,6 +69,15 @@ const GetPropertyReport = async (
         status: false,
         data: null,
         message: "No rent data found for the specified property.",
+        functionname: "GetPropertyReport",
+      };
+    }
+
+    if (payload.all) {
+      return {
+        status: true,
+        data: rent_respone,
+        message: "All rent data fetched successfully",
         functionname: "GetPropertyReport",
       };
     }

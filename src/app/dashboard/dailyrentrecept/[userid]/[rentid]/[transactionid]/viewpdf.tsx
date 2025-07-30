@@ -444,18 +444,30 @@ const ViewPdf = (props: ViewPdfProps) => {
           <Text style={styles.mbottom}>
             {user?.firstName} {user?.lastName}
           </Text>
-          <Text style={styles.rbottom}>Start Date</Text>
-          <Text style={styles.mbottom2}>
-            {formateDate(new Date(rent?.event_from_date!))}
-          </Text>
+          <Text style={styles.rbottom}>Mobile</Text>
+          <Text style={styles.mbottom2}>{user?.contactone!}</Text>
         </View>
 
         <View style={styles.myflex}>
-          <Text style={styles.lbottom}>Mobile</Text>
-          <Text style={styles.mbottom}>{user?.contactone!}</Text>
+          <Text style={styles.lbottom}>Start Date</Text>
+          <Text style={styles.mbottom}>
+            {formateDate(new Date(rent?.event_from_date!))}
+          </Text>
           <Text style={styles.rbottom}>End Date</Text>
           <Text style={styles.mbottom2}>
             {formateDate(new Date(rent?.event_to_date!))}
+          </Text>
+        </View>
+        <View style={styles.myflex}>
+          <Text style={styles.lbottom}>Handover Date</Text>
+          <Text style={styles.mbottom}>
+            {rent?.handover_day
+              ? formateDate(new Date(rent?.handover_day!))
+              : "NA"}
+          </Text>
+          <Text style={styles.rbottom}>Pre-Prep Date</Text>
+          <Text style={styles.mbottom2}>
+            {rent?.prep_day ? formateDate(new Date(rent?.prep_day!)) : "NA"}
           </Text>
         </View>
         <View style={styles.myflex}>
@@ -535,7 +547,10 @@ const ViewPdf = (props: ViewPdfProps) => {
 
         <View style={styles.myflex}>
           <Text style={styles.lbottom}>2</Text>
-          <Text style={styles.mbottom}>Pre-Preparation Day Charges</Text>
+          <Text style={styles.mbottom}>
+            Pre-Prep Day Charges (
+            {rent?.prep_day ? formateDate(new Date(rent?.prep_day!)) : "N/A"})
+          </Text>
           <Text style={styles.rbottom2}>997212</Text>
           <Text style={styles.rbottom}>
             {((parseInt(rent?.prep_day_amount ?? "0") / 118) * 100).toFixed(2)}
@@ -543,13 +558,55 @@ const ViewPdf = (props: ViewPdfProps) => {
         </View>
         <View style={styles.myflex}>
           <Text style={styles.lbottom}>3</Text>
-          <Text style={styles.mbottom}>Handover Day Charges</Text>
+          <Text style={styles.mbottom}>
+            Handover Day Charges (
+            {rent?.handover_day
+              ? formateDate(new Date(rent?.handover_day!))
+              : "N/A"}
+            )
+          </Text>
           <Text style={styles.rbottom2}>997212</Text>
 
           <Text style={styles.rbottom}>
             {((parseInt(rent?.handover_day_amount ?? "0") / 118) * 100).toFixed(
               2
             )}
+          </Text>
+        </View>
+        <View style={styles.myflex}>
+          <Text style={styles.lbottom}></Text>
+          <Text
+            style={{
+              textAlign: "right",
+              fontSize: "10px",
+              color: "#000",
+              flex: 3,
+              padding: "4px 4px",
+              borderBottom: "1px solid #6b7280",
+              fontFamily: "Oswald",
+            }}
+          >
+            Total
+          </Text>
+          <Text style={styles.rbottom2}></Text>
+          <Text
+            style={{
+              fontSize: "10px",
+              fontWeight: "normal",
+              color: "#374151",
+              flex: 1,
+              padding: "4px 4px",
+              borderBottom: "1px solid #6b7280",
+              borderRight: "1px solid #6b7280",
+              borderLeft: "1px solid #6b7280",
+              fontFamily: "Oswald",
+            }}
+          >
+            {(
+              (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+              (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+              (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100
+            ).toFixed(2)}
           </Text>
         </View>
         <View style={styles.myflex}>
@@ -617,7 +674,7 @@ const ViewPdf = (props: ViewPdfProps) => {
               fontFamily: "Oswald",
             }}
           >
-            Total
+            Grand Total
           </Text>
           <Text style={styles.rbottom2}></Text>
           <Text

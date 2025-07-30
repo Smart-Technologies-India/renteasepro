@@ -63,7 +63,10 @@ const ViewPdf = (props: ViewPdfProps) => {
   useEffect(() => {
     const init = async () => {
       setIsloading(true);
-      const rentresponse = await GetPropertyReport({ id: props.id });
+      const rentresponse = await GetPropertyReport({
+        id: props.id,
+        all: props.id.toString() == "2",
+      });
       if (rentresponse.status && rentresponse.data) {
         setReportData(rentresponse.data);
 
@@ -339,7 +342,9 @@ const ViewPdf = (props: ViewPdfProps) => {
         </View>
 
         <View>
-          <Text style={styles.title}>Weekly Report</Text>
+          <Text style={styles.title}>
+            {props.id.toString() == "2" ? "Booking Report" : "Weekly Report"}
+          </Text>
           <View
             style={{
               height: "10px",
@@ -357,42 +362,48 @@ const ViewPdf = (props: ViewPdfProps) => {
           ></View>
         </View>
 
-        <View
-          style={{
-            marginTop: "10px",
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <View
-            style={{
-              flexGrow: 1,
-              display: "flex",
-              justifyContent: "center",
-              flexDirection: "row",
-            }}
-          >
-            <Text
+        {props.id.toString() == "2" ? (
+          <></>
+        ) : (
+          <>
+            <View
               style={{
-                fontSize: "16px",
-                color: "#1f2937",
-                textAlign: "center",
-                fontWeight: "normal",
-                textDecoration: "underline",
+                marginTop: "10px",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
               }}
             >
-              {`From ${formateDate(new Date())} to ${formateDate(
-                new Date(new Date().setDate(new Date().getDate() + 15))
-              )}`}
-            </Text>
-          </View>
-        </View>
-        <View
-          style={{
-            marginTop: "10px",
-          }}
-        ></View>
+              <View
+                style={{
+                  flexGrow: 1,
+                  display: "flex",
+                  justifyContent: "center",
+                  flexDirection: "row",
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: "16px",
+                    color: "#1f2937",
+                    textAlign: "center",
+                    fontWeight: "normal",
+                    textDecoration: "underline",
+                  }}
+                >
+                  {`From ${formateDate(new Date())} to ${formateDate(
+                    new Date(new Date().setDate(new Date().getDate() + 15))
+                  )}`}
+                </Text>
+              </View>
+            </View>
+            <View
+              style={{
+                marginTop: "10px",
+              }}
+            ></View>
+          </>
+        )}
 
         <View style={styles.myflex}>
           <Text style={styles.ltop}>Sr. No.</Text>

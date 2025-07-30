@@ -223,7 +223,7 @@ const TermAndConditionPage = () => {
             If you wish to withdraw your consent for the use and disclosure of
             your personal information in the manner provided in this Policy or
             you want your data to be deleted, please write to us at
-            pdadnh@gmail.com. Please note that we may take time to process such
+            dnhpda@gmail.com. Please note that we may take time to process such
             requests, and your request shall take effect no later than 5 (Five)
             business days from the receipt of such request, after which we will
             not use your personal data for any processing unless required by us
@@ -261,7 +261,7 @@ const TermAndConditionPage = () => {
           </p>
           <p className="text-lg mt-2">
             If you come across any abuse or violation of the Policy, please
-            report to pdadnh@gmail.com.
+            report to dnhpda@gmail.com.
           </p>
           <p className="text-lg mt-2">
             Further, please note that the PDA DNH Rent Platform stores your data
@@ -289,7 +289,7 @@ const TermAndConditionPage = () => {
           </p>
           <h2 className="text-2xl font-semibold mb-4">INDIA</h2>
           <p className="text-lg">Contact: +91-9428713770</p>
-          <p className="text-lg">Email: pdadnh@gmail.com</p>
+          <p className="text-lg">Email: dnhpda@gmail.com</p>
         </section>
       </div>
     </div>
