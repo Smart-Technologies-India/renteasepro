@@ -9,7 +9,18 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { safeParse } from "valibot";
-import { addDays, addMonths, eachDayOfInterval, endOfMonth, format, isAfter, isSameDay, startOfMonth, startOfWeek, subDays } from "date-fns";
+import {
+  addDays,
+  addMonths,
+  eachDayOfInterval,
+  endOfMonth,
+  format,
+  isAfter,
+  isSameDay,
+  startOfMonth,
+  startOfWeek,
+  subDays,
+} from "date-fns";
 import { default as MulSelect } from "react-select";
 import GetDailyShop from "@/action/dailyshop/getdailyshop";
 import { CreateDailyRentSchema } from "@/schema/createdailyrent";
@@ -360,6 +371,7 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
                   setStartDate(e[0].toDate());
                   setEndDate(e[1].toDate());
                 }}
+                format={"DD-MM-YYYY"}
               />
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">

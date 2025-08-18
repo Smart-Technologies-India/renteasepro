@@ -772,7 +772,7 @@ const ViewPdf = (props: ViewPdfProps) => {
               margin: "4px 0",
             }}
           >
-            Deposit of Goverment Buildings, Booking of {rent?.daily_shop.name}{" "}
+            Deposit of Government Buildings, Booking of {rent?.daily_shop.name}{" "}
             at {rent?.daily_shop.property.name}{" "}
             {/* {getDate(rent?.event_from_date!, rent?.event_to_date!)} for{" "} */}
             for {rent?.event_reason} purpose.

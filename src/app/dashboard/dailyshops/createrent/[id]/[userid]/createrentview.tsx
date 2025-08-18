@@ -523,6 +523,7 @@ const CreateRentPage = (props: CreateRentProps) => {
                   setStartDate(e[0].toDate());
                   setEndDate(e[1].toDate());
                 }}
+                format={"DD-MM-YYYY"}
               />
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">

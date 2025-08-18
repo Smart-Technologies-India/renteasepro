@@ -459,15 +459,15 @@ const ViewPdf = (props: ViewPdfProps) => {
           </Text>
         </View>
         <View style={styles.myflex}>
-          <Text style={styles.lbottom}>Handover Date</Text>
+          <Text style={styles.lbottom}>Pre-Prep Date</Text>
           <Text style={styles.mbottom}>
+            {rent?.prep_day ? formateDate(new Date(rent?.prep_day!)) : "NA"}
+          </Text>
+          <Text style={styles.rbottom}>Handover Date</Text>
+          <Text style={styles.mbottom2}>
             {rent?.handover_day
               ? formateDate(new Date(rent?.handover_day!))
               : "NA"}
-          </Text>
-          <Text style={styles.rbottom}>Pre-Prep Date</Text>
-          <Text style={styles.mbottom2}>
-            {rent?.prep_day ? formateDate(new Date(rent?.prep_day!)) : "NA"}
           </Text>
         </View>
         <View style={styles.myflex}>
@@ -511,7 +511,7 @@ const ViewPdf = (props: ViewPdfProps) => {
         <View style={styles.myflex}>
           <Text style={styles.lbottom}>1</Text>
           <Text style={styles.mbottom}>
-            Rent of Goverment Buildings
+            Rent of Government Buildings
             {"\n"}
             <Text
               style={{
@@ -1046,7 +1046,7 @@ const ViewPdf = (props: ViewPdfProps) => {
               margin: "4px 0",
             }}
           >
-            Rent of Goverment Buildings, Booking of {rent?.daily_shop.name} at{" "}
+            Rent of Government Buildings, Booking of {rent?.daily_shop.name} at{" "}
             {rent?.daily_shop.property.name}{" "}
             {/* {getDate(rent?.event_from_date!, rent?.event_to_date!)} for{" "} */}
             for {rent?.event_reason} purpose.
