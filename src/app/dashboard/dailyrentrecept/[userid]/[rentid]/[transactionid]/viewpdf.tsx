@@ -2104,7 +2104,7 @@ const ViewPdf = (props: ViewPdfProps) => {
 
         <View
           style={{
-            marginTop: "200px",
+            marginTop: "140px",
           }}
         ></View>
 
