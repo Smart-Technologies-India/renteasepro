@@ -10,6 +10,7 @@ import {
   MaterialSymbolsLightErrorOutlineRounded,
 } from "@/components/icons";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -155,35 +156,35 @@ const UserBidsRunning = () => {
     path: "",
   });
 
-  const [getWomenFile, setGetWomenFile] = useState<FileGetResponse>({
-    status: false,
-    path: "",
-  });
+  // const [getWomenFile, setGetWomenFile] = useState<FileGetResponse>({
+  //   status: false,
+  //   path: "",
+  // });
 
-  const [getCategory, setGetCategory] = useState<FileGetResponse>({
-    status: false,
-    path: "",
-  });
+  // const [getCategory, setGetCategory] = useState<FileGetResponse>({
+  //   status: false,
+  //   path: "",
+  // });
 
-  const [getAbled, setGetAbled] = useState<FileGetResponse>({
-    status: false,
-    path: "",
-  });
+  // const [getAbled, setGetAbled] = useState<FileGetResponse>({
+  //   status: false,
+  //   path: "",
+  // });
 
-  const [getMsme, setGetMsme] = useState<FileGetResponse>({
-    status: false,
-    path: "",
-  });
+  // const [getMsme, setGetMsme] = useState<FileGetResponse>({
+  //   status: false,
+  //   path: "",
+  // });
 
-  const [getStsc, setGetStsc] = useState<FileGetResponse>({
-    status: false,
-    path: "",
-  });
+  // const [getStsc, setGetStsc] = useState<FileGetResponse>({
+  //   status: false,
+  //   path: "",
+  // });
 
-  const [getTribal, setGetTribal] = useState<FileGetResponse>({
-    status: false,
-    path: "",
-  });
+  // const [getTribal, setGetTribal] = useState<FileGetResponse>({
+  //   status: false,
+  //   path: "",
+  // });
 
   //   file upload section end here
   const userid: number = parseInt(getCookie("id") ?? "0");
@@ -266,77 +267,77 @@ const UserBidsRunning = () => {
         });
       }
 
-      const womenfileresponse = await getUploadFileUser({
-        userId: userid,
-        doc_type: UserDocType.WOMEN,
-      });
+      // const womenfileresponse = await getUploadFileUser({
+      //   userId: userid,
+      //   doc_type: UserDocType.WOMEN,
+      // });
 
-      if (womenfileresponse.status) {
-        setGetWomenFile({
-          status: true,
-          path: womenfileresponse.data?.path!,
-        });
-      }
+      // if (womenfileresponse.status) {
+      //   setGetWomenFile({
+      //     status: true,
+      //     path: womenfileresponse.data?.path!,
+      //   });
+      // }
 
-      const categoryresponse = await getUploadFileUser({
-        userId: userid,
-        doc_type: UserDocType.RESERVED,
-      });
+      // const categoryresponse = await getUploadFileUser({
+      //   userId: userid,
+      //   doc_type: UserDocType.RESERVED,
+      // });
 
-      if (categoryresponse.status) {
-        setGetCategory({
-          status: true,
-          path: categoryresponse.data?.path!,
-        });
-      }
+      // if (categoryresponse.status) {
+      //   setGetCategory({
+      //     status: true,
+      //     path: categoryresponse.data?.path!,
+      //   });
+      // }
 
-      const abledresponse = await getUploadFileUser({
-        userId: userid,
-        doc_type: UserDocType.DIFFERENTLY_ABLED,
-      });
+      // const abledresponse = await getUploadFileUser({
+      //   userId: userid,
+      //   doc_type: UserDocType.DIFFERENTLY_ABLED,
+      // });
 
-      if (abledresponse.status) {
-        setGetAbled({
-          status: true,
-          path: abledresponse.data?.path!,
-        });
-      }
+      // if (abledresponse.status) {
+      //   setGetAbled({
+      //     status: true,
+      //     path: abledresponse.data?.path!,
+      //   });
+      // }
 
-      const msmeresponse = await getUploadFileUser({
-        userId: userid,
-        doc_type: UserDocType.MSME,
-      });
+      // const msmeresponse = await getUploadFileUser({
+      //   userId: userid,
+      //   doc_type: UserDocType.MSME,
+      // });
 
-      if (msmeresponse.status) {
-        setGetMsme({
-          status: true,
-          path: msmeresponse.data?.path!,
-        });
-      }
+      // if (msmeresponse.status) {
+      //   setGetMsme({
+      //     status: true,
+      //     path: msmeresponse.data?.path!,
+      //   });
+      // }
 
-      const stscresponse = await getUploadFileUser({
-        userId: userid,
-        doc_type: UserDocType.SC_ST,
-      });
+      // const stscresponse = await getUploadFileUser({
+      //   userId: userid,
+      //   doc_type: UserDocType.SC_ST,
+      // });
 
-      if (stscresponse.status) {
-        setGetStsc({
-          status: true,
-          path: stscresponse.data?.path!,
-        });
-      }
+      // if (stscresponse.status) {
+      //   setGetStsc({
+      //     status: true,
+      //     path: stscresponse.data?.path!,
+      //   });
+      // }
 
-      const tribalresponse = await getUploadFileUser({
-        userId: userid,
-        doc_type: UserDocType.TRIBAL,
-      });
+      // const tribalresponse = await getUploadFileUser({
+      //   userId: userid,
+      //   doc_type: UserDocType.TRIBAL,
+      // });
 
-      if (tribalresponse.status) {
-        setGetTribal({
-          status: true,
-          path: tribalresponse.data?.path!,
-        });
-      }
+      // if (tribalresponse.status) {
+      //   setGetTribal({
+      //     status: true,
+      //     path: tribalresponse.data?.path!,
+      //   });
+      // }
 
       setTimeout(() => {
         emailRef.current!.value = userrespone.data?.email! ?? "";
@@ -391,23 +392,23 @@ const UserBidsRunning = () => {
         }
       }
 
-      // if (getPan.status == false) {
-      //   if (pan == null) {
-      //     return toast.error("Please upload pan card", { theme: "light" });
-      //   }
-      // }
+      if (getPan.status == false) {
+        if (pan == null) {
+          return toast.error("Please upload pan card", { theme: "light" });
+        }
+      }
 
-      // if (getBankPassbook.status == false) {
-      //   if (bankpassbook == null) {
-      //     return toast.error("Please upload bank passbook", { theme: "light" });
-      //   }
-      // }
+      if (getBankPassbook.status == false) {
+        if (bankpassbook == null) {
+          return toast.error("Please upload bank passbook", { theme: "light" });
+        }
+      }
 
-      // if (getPhoto.status == false) {
-      //   if (photo == null) {
-      //     return toast.error("Please upload photo", { theme: "light" });
-      //   }
-      // }
+      if (getPhoto.status == false) {
+        if (photo == null) {
+          return toast.error("Please upload photo", { theme: "light" });
+        }
+      }
 
       // if (field.includes("forwomen") && womenfile == null) {
       //   return toast.error("Please upload Women Certificate", {
@@ -559,17 +560,17 @@ const UserBidsRunning = () => {
         //   );
         // }
 
-        // for (let i = 0; i < additionalFile.length; i++) {
-        //   if (additionalFile[i].file != null) {
-        //     await uploadfile(
-        //       additionalFile[i].file!,
-        //       process.env.UPLOAD_LINK ?? "",
-        //       userid,
-        //       UserDocType.OTHER,
-        //       additionalFile[i].name
-        //     );
-        //   }
-        // }
+        for (let i = 0; i < additionalFile.length; i++) {
+          if (additionalFile[i].file != null) {
+            await uploadfile(
+              additionalFile[i].file!,
+              process.env.UPLOAD_LINK ?? "",
+              userid,
+              UserDocType.OTHER,
+              additionalFile[i].name
+            );
+          }
+        }
 
         toast.success(updateuserresponse.message);
         router.back();
@@ -587,32 +588,32 @@ const UserBidsRunning = () => {
     }
   };
 
-  const checkIsUploaded = (value: string): boolean => {
-    switch (value) {
-      case "forwomen":
-        return getWomenFile.status;
-      case "category":
-        return getCategory.status;
-      case "abled":
-        return getAbled.status;
-      case "msme":
-        return getMsme.status;
-      case "stsc":
-        return getStsc.status;
-      case "tribal":
-        return getTribal.status;
-      default:
-        return false;
-    }
-  };
+  // const checkIsUploaded = (value: string): boolean => {
+  //   switch (value) {
+  //     case "forwomen":
+  //       return getWomenFile.status;
+  //     case "category":
+  //       return getCategory.status;
+  //     case "abled":
+  //       return getAbled.status;
+  //     case "msme":
+  //       return getMsme.status;
+  //     case "stsc":
+  //       return getStsc.status;
+  //     case "tribal":
+  //       return getTribal.status;
+  //     default:
+  //       return false;
+  //   }
+  // };
 
   const refs = useRef([]);
 
   const adddocumet = () => {
     setAdditionalFile([
-      ...additionalFile!,
+      ...additionalFile,
       {
-        id: additionalFile!.length + 1,
+        id: additionalFile.length + 1,
         file: null,
         name: "",
       },
@@ -892,7 +893,7 @@ const UserBidsRunning = () => {
             />
           )}
 
-          {getWomenFile.status ? (
+          {/* {getWomenFile.status ? (
             <>
               <div className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between">
                 <p>For Women</p>
@@ -958,9 +959,9 @@ const UserBidsRunning = () => {
             </>
           ) : (
             <></>
-          )}
+          )} 
 
-          {getStsc.status ? (
+           {getStsc.status ? (
             <>
               <div className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between">
                 <p>For SC/ST</p>
@@ -992,7 +993,7 @@ const UserBidsRunning = () => {
             </>
           ) : (
             <></>
-          )}
+          )} */}
         </div>
         {/* <p className="text-gray-500 mt-4">
           Select Your Category
@@ -1020,8 +1021,8 @@ const UserBidsRunning = () => {
               {item.label}
             </Label>
           </div>
-        ))}
-        {field.includes("forwomen") && (
+        ))} */}
+        {/* {field.includes("forwomen") && (
           <DocUploader
             title="Aadhar Card/Pan Card/Passport"
             file={womenfile}
@@ -1075,7 +1076,7 @@ const UserBidsRunning = () => {
   cFile: RefObject<HTMLInputElement>;
   name: string; */}
 
-        {/* {additionalFile?.map((addDoc: AdditionalFile, index: number) => {
+        {additionalFile?.map((addDoc: AdditionalFile, index: number) => {
           return (
             <OtherDocUploader
               key={index}
@@ -1085,12 +1086,12 @@ const UserBidsRunning = () => {
             />
           );
         })}
-       <OtherDocUploader
+        {/* <OtherDocUploader
           index={1}
-          file={tribal}
+          file={tribal!}
           setFile={setTribal}
           cFile={cTribal}
-        />  */}
+        /> */}
 
         <div className="flex gap-2">
           <Button
