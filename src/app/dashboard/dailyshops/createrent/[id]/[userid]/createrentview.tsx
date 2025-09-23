@@ -505,18 +505,26 @@ const CreateRentPage = (props: CreateRentProps) => {
                   if (e.length != 2) return;
 
                   if (e[0] == null || e[1] == null) return;
+                  console.log(rentdates);
 
-                  // rentdates contains the dates which are already booked show error
-                  const isDateBooked = (date: Date) => {
-                    return rentdates.some(
+                  // Check if any date in the selected range is already booked
+                  const selectedDates = eachDayOfInterval({
+                    start: e[0].toDate(),
+                    end: e[1].toDate(),
+                  });
+
+                  const isAnyDateBooked = selectedDates.some((date) =>
+                    rentdates.some(
                       (bookedDate) =>
                         format(bookedDate, "yyyy-MM-dd") ===
                         format(date, "yyyy-MM-dd")
-                    );
-                  };
+                    )
+                  );
 
-                  if (isDateBooked(e[0].toDate())) {
-                    toast.error("Selected date is already booked");
+                  if (isAnyDateBooked) {
+                    toast.error(
+                      "Selected dates are already booked"
+                    );
                     return;
                   }
 
