@@ -1,7 +1,6 @@
 "use client";
 
-import GetUser from "@/action/user/getuser";
-import { capitalcase, formateDate } from "@/utils/methods";
+import { formateDate } from "@/utils/methods";
 import { ToWords } from "to-words";
 import { eachDayOfInterval } from "date-fns";
 

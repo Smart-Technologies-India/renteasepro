@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import GetDailyShop from "@/action/dailyshop/getdailyshop";
-import { DatePicker, Modal, Space } from "antd";
+import { Modal } from "antd";
 import GetUser from "@/action/user/getuser";
 import GetDailyRentById from "@/action/dailyshop/getdailyrent";
 import { formateDate, handleNumberChange, longtext } from "@/utils/methods";
@@ -32,8 +32,6 @@ import { Textarea } from "@/components/ui/textarea";
 import GetRefundRequest2 from "@/action/refund/getrefundrequest2";
 import CancelRefundRequest from "@/action/refund/cancelrefundrequest";
 import DepartmentRequest from "@/action/refund/departmentcancelequest";
-
-const { RangePicker } = DatePicker;
 
 interface CreateRentProps {
   rentid: number;

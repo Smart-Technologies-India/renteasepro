@@ -29,7 +29,6 @@ const GetPropertyReport = async (
     }
   > | null>
 > => {
-  console.log("GetPropertyReport called with payload:", payload);
   try {
     const today = new Date();
     const end_date = new Date(today);
@@ -74,10 +73,53 @@ const GetPropertyReport = async (
     }
 
     if (payload.all) {
+      end_date.setDate(today.getDate() + 50);
+
+      // return {
+      //   status: true,
+      //   data: rent_respone,
+      //   message: "All rent data fetched successfully",
+      //   functionname: "GetPropertyReport",
+      // };
+      // Step 2: Create array of dates from today to end_date
+      const dateRange: string[] = [];
+      const tempDate = new Date(today);
+
+      while (tempDate <= end_date) {
+        dateRange.push(tempDate.toISOString().split("T")[0]); // Format: YYYY-MM-DD
+        tempDate.setDate(tempDate.getDate() + 1);
+      }
+
+      // Step 3: Filter records where any date field matches the range
+      const matchedResults = rent_respone.filter((rent) => {
+        const checkDates = [
+          rent.prep_day,
+          rent.handover_day,
+          rent.event_from_date,
+          rent.event_to_date,
+        ];
+
+        return checkDates.some((date) => {
+          if (!date) return false;
+          const d = new Date(date).toISOString().split("T")[0];
+          return dateRange.includes(d);
+        });
+      });
+
+      // Step 4: Return results
+      if (!matchedResults || matchedResults.length === 0) {
+        return {
+          status: false,
+          data: null,
+          message: "No matching rent data found.",
+          functionname: "GetPropertyReport",
+        };
+      }
+
       return {
         status: true,
-        data: rent_respone,
-        message: "All rent data fetched successfully",
+        data: matchedResults,
+        message: "Rent data fetched successfully",
         functionname: "GetPropertyReport",
       };
     }
@@ -86,12 +128,10 @@ const GetPropertyReport = async (
     const dateRange: string[] = [];
     const tempDate = new Date(today);
 
-    console.log(tempDate, end_date);
     while (tempDate <= end_date) {
       dateRange.push(tempDate.toISOString().split("T")[0]); // Format: YYYY-MM-DD
       tempDate.setDate(tempDate.getDate() + 1);
     }
-    console.log("Date Range:", dateRange);
 
     // Step 3: Filter records where any date field matches the range
     const matchedResults = rent_respone.filter((rent) => {

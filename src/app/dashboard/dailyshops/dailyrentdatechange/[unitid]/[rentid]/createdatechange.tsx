@@ -161,6 +161,23 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
     });
 
     if (result.success) {
+      const selectedDates = eachDayOfInterval({
+        start: startDate!,
+        end: endDate!,
+      });
+
+      const isAnyDateBooked = selectedDates.some((date) =>
+        rentdates.some(
+          (bookedDate) =>
+            format(bookedDate, "yyyy-MM-dd") === format(date, "yyyy-MM-dd")
+        )
+      );
+
+      if (isAnyDateBooked) {
+        toast.error("Selected dates are already booked");
+        setIsCreating(false);
+        return;
+      }
       // end date should be bigger then start date
       if (
         isAfter(
@@ -353,7 +370,6 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
                   if (e.length != 2) return;
 
                   if (e[0] == null || e[1] == null) return;
-                  console.log(rentdates);
 
                   // Check if any date in the selected range is already booked
                   const selectedDates = eachDayOfInterval({

@@ -117,6 +117,23 @@ const CreateRentPage = (props: CreateRentProps) => {
     });
 
     if (result.success) {
+      const selectedDates = eachDayOfInterval({
+        start: startDate!,
+        end: endDate!,
+      });
+
+      const isAnyDateBooked = selectedDates.some((date) =>
+        rentdates.some(
+          (bookedDate) =>
+            format(bookedDate, "yyyy-MM-dd") === format(date, "yyyy-MM-dd")
+        )
+      );
+
+      if (isAnyDateBooked) {
+        toast.error("Selected dates are already booked");
+        setIsCreating(false);
+        return;
+      }
       // end date should be bigger then start date
       if (
         isAfter(
@@ -251,24 +268,26 @@ const CreateRentPage = (props: CreateRentProps) => {
                   return current && current.toDate() < subDays(new Date(), 0);
                 }}
                 onChange={(e) => {
-                  if (e && e.length != 2) return;
+                  if (e.length != 2) return;
 
                   if (e[0] == null || e[1] == null) return;
 
-                  // rentdates contains the dates which are already booked show error
-                  const isDateBooked = (date: Date) => {
-                    return rentdates.some(
+                  // Check if any date in the selected range is already booked
+                  const selectedDates = eachDayOfInterval({
+                    start: e[0].toDate(),
+                    end: e[1].toDate(),
+                  });
+
+                  const isAnyDateBooked = selectedDates.some((date) =>
+                    rentdates.some(
                       (bookedDate) =>
                         format(bookedDate, "yyyy-MM-dd") ===
                         format(date, "yyyy-MM-dd")
-                    );
-                  };
+                    )
+                  );
 
-                  if (isDateBooked(e[0].toDate())) {
-                    toast.error("Selected date is already booked");
-                    // clear date field
-                    setDatefield({ start: null, end: null });
-
+                  if (isAnyDateBooked) {
+                    toast.error("Selected dates are already booked");
                     return;
                   }
 
