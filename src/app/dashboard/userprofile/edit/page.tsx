@@ -392,23 +392,23 @@ const UserBidsRunning = () => {
         }
       }
 
-      if (getPan.status == false) {
-        if (pan == null) {
-          return toast.error("Please upload pan card", { theme: "light" });
-        }
-      }
+      // if (getPan.status == false) {
+      //   if (pan == null) {
+      //     return toast.error("Please upload pan card", { theme: "light" });
+      //   }
+      // }
 
-      if (getBankPassbook.status == false) {
-        if (bankpassbook == null) {
-          return toast.error("Please upload bank passbook", { theme: "light" });
-        }
-      }
+      // if (getBankPassbook.status == false) {
+      //   if (bankpassbook == null) {
+      //     return toast.error("Please upload bank passbook", { theme: "light" });
+      //   }
+      // }
 
-      if (getPhoto.status == false) {
-        if (photo == null) {
-          return toast.error("Please upload photo", { theme: "light" });
-        }
-      }
+      // if (getPhoto.status == false) {
+      //   if (photo == null) {
+      //     return toast.error("Please upload photo", { theme: "light" });
+      //   }
+      // }
 
       // if (field.includes("forwomen") && womenfile == null) {
       //   return toast.error("Please upload Women Certificate", {
