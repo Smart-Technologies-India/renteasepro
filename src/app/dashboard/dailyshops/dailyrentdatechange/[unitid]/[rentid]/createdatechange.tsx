@@ -32,6 +32,8 @@ import GetUser from "@/action/user/getuser";
 import BackButton from "@/components/backbutton";
 import GetDailyRentById from "@/action/dailyrent/getdailyrentbyid";
 import CreateDateChangeDailyRent from "@/action/dailyrent/createdatechangedailyrent";
+import GetDailyRentDescription from "@/action/dailyrentdescription/getdailyrentdescription";
+import { daily_rent_description } from "@prisma/client";
 const { RangePicker } = DatePicker;
 
 interface CreateDateChangeProps {
@@ -70,9 +72,28 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
   const gst_no = useRef<HTMLInputElement>(null);
   const company_name = useRef<HTMLInputElement>(null);
 
+  const [rentDescription, setRentDescription] = useState<
+    daily_rent_description[]
+  >([]);
+
+  const [dailyRentDescription, setDailyRentDescription] =
+    useState<daily_rent_description | null>(null);
+
   useEffect(() => {
     const init = async () => {
       setLoading(true);
+
+      const purpose = await GetDailyRentDescription({
+        id: props.unitid,
+      });
+
+      if (purpose.status && purpose.data) {
+        setRentDescription(purpose.data);
+      } else {
+        toast.error(purpose.message);
+        router.back();
+        return;
+      }
 
       const rent_response = await GetDailyRentById({
         id: props.rentid,
@@ -134,9 +155,9 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
     setIsCreating(true);
 
     if (
-      datecount() * shopData?.rate_per_day +
-        (prepration ? parseInt(shopData?.rate_prep_day) : 0) +
-        (handover ? parseInt(shopData?.rate_handover_day) : 0) -
+      datecount() * parseInt(dailyRentDescription?.event_amount || "0") +
+        (prepration ? parseInt(dailyRentDescription?.prep_day_amount || "0") : 0) +
+        (handover ? parseInt(dailyRentDescription?.handover_day_amount || "0") : 0) -
         (parseFloat(
           rentdata?.handover_day ? rentdata.handover_day_amount! : "0"
         ) +
@@ -151,10 +172,16 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
     const result = safeParse(CreateDailyRentSchema, {
       userId: createuserid,
       unitId: props.unitid,
-      event_amount: (datecount() * shopData?.rate_per_day).toString(),
-      prep_day_amount: prepration ? shopData?.rate_prep_day : "0",
-      handover_day_amount: handover ? shopData?.rate_handover_day : "0",
-      deposit_amount: (shopData?.deposit_per_day).toString(),
+      event_amount: (
+        datecount() * parseInt(dailyRentDescription?.event_amount || "0")
+      ).toString(),
+      prep_day_amount: prepration
+        ? parseInt(dailyRentDescription?.prep_day_amount || "0").toFixed(0)
+        : "0",
+      handover_day_amount: handover
+        ? parseInt(dailyRentDescription?.handover_day_amount || "0").toFixed(0)
+        : "0",
+      deposit_amount: (dailyRentDescription?.deposit_amount || "0").toString(),
       event_from_date: startDate,
       event_to_date: endDate,
       event_reason: purpose,
@@ -193,12 +220,22 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
         shopId: props.unitid,
         userId: createuserid,
         createdById: createuserid,
-        event_amount: (datecount() * shopData?.rate_per_day).toString(),
+        event_amount: (
+          datecount() * parseInt(dailyRentDescription?.event_amount || "0")
+        ).toString(),
         event_from_date: startDate!.toISOString(),
         event_to_date: endDate!.toISOString(),
-        prep_day_amount: prepration ? shopData?.rate_prep_day : "0",
-        handover_day_amount: handover ? shopData?.rate_handover_day : "0",
-        deposit_amount: (shopData?.deposit_per_day).toString(),
+        prep_day_amount: prepration
+          ? parseInt(dailyRentDescription?.prep_day_amount || "0").toFixed(0)
+          : "0",
+        handover_day_amount: handover
+          ? parseInt(dailyRentDescription?.handover_day_amount || "0").toFixed(
+              0
+            )
+          : "0",
+        deposit_amount: (
+          dailyRentDescription?.deposit_amount || "0"
+        ).toString(),
         event_reason: purpose,
         ...(prepration && { prep_day: subDays(startDate!, 1).toISOString() }), // Day before startDate
         ...(handover && { handover_day: addDays(endDate!, 1).toISOString() }),
@@ -224,19 +261,19 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
 
       const amount_discount = parseFloat(
         (
-          datecount() * shopData?.rate_per_day +
-          (prepration ? parseInt(shopData?.rate_prep_day) : 0) +
-          (handover ? parseInt(shopData?.rate_handover_day) : 0) +
-          shopData?.deposit_per_day
+          datecount() * parseInt(dailyRentDescription?.event_amount || "0") +
+          (prepration ? parseInt(dailyRentDescription?.prep_day_amount || "0") : 0) +
+          (handover ? parseInt(dailyRentDescription?.handover_day_amount || "0") : 0) +
+          parseInt(dailyRentDescription?.deposit_amount || "0")
         ).toString()
       ).toFixed(2);
 
-      const deposit = shopData?.deposit_per_day;
+      const deposit = dailyRentDescription?.deposit_amount || "0";
 
       const amount =
-        datecount() * shopData?.rate_per_day +
-        (prepration ? parseInt(shopData?.rate_prep_day) : 0) +
-        (handover ? parseInt(shopData?.rate_handover_day) : 0);
+        datecount() * parseInt(dailyRentDescription?.event_amount || "0") +
+        (prepration ? parseInt(dailyRentDescription?.prep_day_amount || "0") : 0) +
+        (handover ? parseInt(dailyRentDescription?.handover_day_amount || "0") : 0);
 
       router.back();
       window.open(
@@ -402,27 +439,21 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
               </Label>
               <MulSelect
                 isMulti={false}
-                options={[
-                  "Public gatherings",
-                  "Government gatherings",
-                  "Seminars",
-                  "Engagement / Reception /Sangeet function",
-                  "Cultural functions and events",
-                  "Official meetings of private companies / organizations",
-                  "Theatre / Play shows",
-                  "Educational Seminars",
-                  "Exhibition cum sale / Market mela",
-                  "Birthday/Baby shower functions",
-                  "Havan / Pooja / Katha functions",
-                  "Catering services (Breakfast / Lunch / High tea / Dinner)",
-                ].map((val: string) => ({
-                  value: val,
-                  label: val,
+                options={rentDescription.map((val: daily_rent_description) => ({
+                  value: val.purpose,
+                  label: val.purpose,
                 }))}
                 className="w-full accent-slate-900"
                 onChange={(val: any) => {
                   if (!val) return;
                   setPurpose(val.value.toString());
+
+                  const rentDesc = rentDescription.find(
+                    (desc) => desc.purpose === val.value
+                  );
+                  if (rentDesc) {
+                    setDailyRentDescription(rentDesc);
+                  }
                 }}
               />
             </div>
@@ -438,17 +469,8 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
                 id="amount"
                 type="text"
                 className="w-full bg-gray-100"
-                // onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                //   const onlyNumbersRegex = /^[0-9]*$/;
-
-                //   const { value } = event.target;
-                //   if (onlyNumbersRegex.test(value)) {
-                //     // setAmount(event.target.value.slice(0, -1));
-                //     setAmount(value);
-                //   }
-                // }}
                 disabled
-                value={shopData?.rate_per_day}
+                value={dailyRentDescription?.event_amount || 0}
               />
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
@@ -460,12 +482,9 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
                 id="chargethree"
                 type="text"
                 className="w-full bg-gray-100"
-                // onChange={handleNumberChange}
                 ref={chargeThree}
                 disabled={true}
-                value={
-                  shopData?.deposit_per_day ? shopData?.deposit_per_day : "0"
-                }
+                value={dailyRentDescription?.deposit_amount || 0}
               />
             </div>
           </div>
@@ -480,10 +499,9 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
                 id="chargeone"
                 type="text"
                 className="w-full bg-gray-100"
-                // onChange={handleNumberChange}
                 disabled={true}
                 ref={chargeone}
-                value={shopData?.rate_prep_day}
+                value={dailyRentDescription?.prep_day_amount || 0}
               />
             </div>
             <div className="grid items-center gap-1.5 w-full mt-4">
@@ -495,10 +513,9 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
                 id="chargetwo"
                 type="text"
                 className="w-full bg-gray-100"
-                // onChange={handleNumberChange}
-                ref={chargetwo}
                 disabled={true}
-                value={shopData?.rate_handover_day}
+                ref={chargetwo}
+                value={dailyRentDescription?.handover_day_amount || 0}
               />
             </div>
           </div>
@@ -524,7 +541,7 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
 
               <p className="text-sm">
                 Prepration Day Charge :{" "}
-                {prepration ? shopData?.rate_prep_day : "0"}
+                {prepration ? dailyRentDescription?.prep_day_amount || 0 : "0"}
               </p>
             </div>
             <div className="flex mt-4 gap-6   flex-1">
@@ -545,9 +562,11 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
                   </label>
                 </div>
               </div>
-              {/* <div className="grow"></div> */}
               <p className="text-sm">
-                Handover Charge : {handover ? shopData?.rate_handover_day : "0"}
+                Handover Charge :{" "}
+                {handover
+                  ? dailyRentDescription?.handover_day_amount || 0
+                  : "0"}
               </p>
             </div>
           </div>
@@ -606,17 +625,26 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
             <div className="flex w-full">
               <p>Price</p>
               <div className="grow"></div>
-              <p>{datecount() * shopData?.rate_per_day}</p>
+              <p>
+                {datecount() *
+                  parseInt(dailyRentDescription?.event_amount || "0")}
+              </p>
             </div>
             <div className="flex w-full">
               <p>Pre-Preparation Charge</p>
               <div className="grow"></div>
-              <p> {prepration ? shopData?.rate_prep_day : "0"}</p>
+              <p>
+                {prepration ? dailyRentDescription?.prep_day_amount || 0 : "0"}
+              </p>
             </div>
             <div className="flex w-full">
               <p>Venue-Handover Charge</p>
               <div className="grow"></div>
-              <p>{handover ? shopData?.rate_handover_day : "0"}</p>
+              <p>
+                {handover
+                  ? dailyRentDescription?.handover_day_amount || 0
+                  : "0"}
+              </p>
             </div>
             <div className="flex w-full">
               <p>Date Refund Charge</p>
@@ -635,22 +663,20 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
                 ).toFixed(2)}
               </p>
             </div>
-            {/* <div className="flex w-full">
-              <p>Deposit</p>
-              <div className="grow"></div>
-              <p>
-                {shopData?.deposit_per_day}
-              </p>
-            </div> */}
             <div className="w-full h-[1px] bg-gray-500"></div>
             <div className="flex w-full">
               <p>Total</p>
               <div className="grow"></div>
               <p>
                 {(
-                  datecount() * shopData?.rate_per_day +
-                  (prepration ? parseInt(shopData?.rate_prep_day) : 0) +
-                  (handover ? parseInt(shopData?.rate_handover_day) : 0) -
+                  datecount() *
+                    parseInt(dailyRentDescription?.event_amount || "0") +
+                  (prepration
+                    ? parseInt(dailyRentDescription?.prep_day_amount || "0")
+                    : 0) +
+                  (handover
+                    ? parseInt(dailyRentDescription?.handover_day_amount || "0")
+                    : 0) -
                   (parseFloat(
                     rentdata?.handover_day ? rentdata.handover_day_amount! : "0"
                   ) +

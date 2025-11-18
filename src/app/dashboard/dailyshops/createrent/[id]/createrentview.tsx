@@ -16,9 +16,8 @@ import { getCookie } from "cookies-next";
 import GetDailyShop from "@/action/dailyshop/getdailyshop";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CreateDailyRentSchema } from "@/schema/createdailyrent";
-import CreateDailyRent from "@/action/dailyrent/createdailyrent";
 
-import { DatePicker, Modal, Space } from "antd";
+import { DatePicker } from "antd";
 import GetDailyRent from "@/action/dailyrent/getdailyrent";
 import dayjs, { Dayjs } from "dayjs";
 import BackButton from "@/components/backbutton";
