@@ -163,11 +163,11 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
         ) +
           parseFloat(rentdata?.prep_day ? rentdata.prep_day_amount! : "0") +
           parseFloat(rentdata?.event_amount!)) *
-          0.75 <
+          0.75 <=
       0
     ) {
       setIsCreating(false);
-      return toast.error("Total amount should be greater than 0");
+      return toast.error("Total amount must be greater than 0. Please select different dates or add preparation/handover days.");
     }
     const result = safeParse(CreateDailyRentSchema, {
       userId: createuserid,
@@ -270,10 +270,21 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
 
       const deposit = dailyRentDescription?.deposit_amount || "0";
 
+      const dateRefundCharge = 
+        (parseFloat(
+          rentdata?.handover_day ? rentdata.handover_day_amount! : "0"
+        ) +
+          parseFloat(
+            rentdata?.prep_day ? rentdata.prep_day_amount! : "0"
+          ) +
+          parseFloat(rentdata?.event_amount!)) *
+        0.75;
+
       const amount =
         datecount() * parseInt(dailyRentDescription?.event_amount || "0") +
         (prepration ? parseInt(dailyRentDescription?.prep_day_amount || "0") : 0) +
-        (handover ? parseInt(dailyRentDescription?.handover_day_amount || "0") : 0);
+        (handover ? parseInt(dailyRentDescription?.handover_day_amount || "0") : 0) -
+        dateRefundCharge;
 
       router.back();
       window.open(
@@ -330,6 +341,28 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
     return 0;
   };
   const [monthBox, setMonthBox] = useState<boolean>(false);
+
+  // Calculate total amount
+  const calculateTotalAmount = (): number => {
+    return (
+      datecount() *
+        parseInt(dailyRentDescription?.event_amount || "0") +
+      (prepration
+        ? parseInt(dailyRentDescription?.prep_day_amount || "0")
+        : 0) +
+      (handover
+        ? parseInt(dailyRentDescription?.handover_day_amount || "0")
+        : 0) -
+      (parseFloat(
+        rentdata?.handover_day ? rentdata.handover_day_amount! : "0"
+      ) +
+        parseFloat(
+          rentdata?.prep_day ? rentdata.prep_day_amount! : "0"
+        ) +
+        parseFloat(rentdata?.event_amount!)) *
+        0.75
+    );
+  };
 
   if (isLoading)
     return (
@@ -668,27 +701,19 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
               <p>Total</p>
               <div className="grow"></div>
               <p>
-                {(
-                  datecount() *
-                    parseInt(dailyRentDescription?.event_amount || "0") +
-                  (prepration
-                    ? parseInt(dailyRentDescription?.prep_day_amount || "0")
-                    : 0) +
-                  (handover
-                    ? parseInt(dailyRentDescription?.handover_day_amount || "0")
-                    : 0) -
-                  (parseFloat(
-                    rentdata?.handover_day ? rentdata.handover_day_amount! : "0"
-                  ) +
-                    parseFloat(
-                      rentdata?.prep_day ? rentdata.prep_day_amount! : "0"
-                    ) +
-                    parseFloat(rentdata?.event_amount!)) *
-                    0.75
-                ).toFixed(2)}
+                {calculateTotalAmount().toFixed(2)}
               </p>
             </div>
           </div>
+
+          {calculateTotalAmount() <= 0 && (
+            <div className="w-full mt-4 bg-rose-100 border border-rose-400 text-rose-700 px-4 py-3 rounded-md">
+              <p className="font-semibold">Unable to proceed with booking</p>
+              <p className="text-sm">
+                The total amount must be greater than 0. Please select different dates or add preparation/handover days to continue.
+              </p>
+            </div>
+          )}
 
           {isCreating ? (
             <Button
@@ -701,6 +726,7 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
             <Button
               className="w-full mt-4 bg-[#172e57] hover:bg-[#21427d]"
               onClick={create}
+              disabled={calculateTotalAmount() <= 0}
             >
               Submit
             </Button>
