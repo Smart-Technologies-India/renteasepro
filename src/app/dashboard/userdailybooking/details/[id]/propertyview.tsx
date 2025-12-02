@@ -157,6 +157,13 @@ const PropertiesView = (props: PropertiesViewProps) => {
               >
                 Terms & Condition
               </button>
+            ) : property?.id === 3 ? (
+              <button
+                onClick={() => setOpen3(true)}
+                className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+              >
+                Terms & Condition
+              </button>
             ) : (
               <button
                 onClick={() => setOpen2(true)}
@@ -638,104 +645,124 @@ const TermsAndCondition3 = (props: TermsAndConditionProps) => {
       width={800}
       className="my-10 h-[600px] overflow-y-scroll"
     >
-      <p className="text-sm  font-normal my-2 text-rose-500">
-        Property3 1. The DNHPDA reserves the right to cancel the allotment of
-        space at Kala-Kendra, Auditorium and Banquet Hall in case of any
-        government functions without assigning any reason thereof.
+      <p className="text-sm  font-normal my-2 text-gray-800">
+        1. The permission of videography / Photography shall be granted only on
+        the given date while utilizing the allotted space at Damanganga
+        Riverfront, Silvassa, DNH.
       </p>
 
-      <p className="text-sm text-gray-800 font-normal my-2">
-        2. The applicant shall ensure that they shall maintain the floor and
-        premises of the Banquet hall clean by avoiding littering of food
-        materials over the wooden floors, by sufficient provision of waste bins
-        etc.
+      <p className="text-sm  font-normal my-2  text-rose-500">
+        2. The applicant has to pay deposit amount (Refundable) in the form of
+        Demand Draft in the favour Dadra and Nagar Haveli Planning & Development
+        Authority as Security Deposit before your function / event date
+        physically in the office of DNHPDA, Silvassa and failing to do so shall
+        be understood that the said booking is cancelled. The Security Deposit
+        shall be refundable if the allotted space is found in neat and tidy
+        condition by the competent authority.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
-        3. The applicant shall be responsible for maintaining cleanliness and
-        hygiene during and after completion of function at the allotted space
-        area and all used premises. If the same is not maintained and cleanness
-        is not observed by the component authority, and penalty shall be levied
-        amounting to Rs. 5000/- and the security deposit submitted to the
-        department shall be forfeited without any further explanation.
+        3. The entire premises shall be available from 7:00 AM to 10:00 PM only.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
-        4. The applicant shall not stick any adhesive based posters in the
-        entire premises.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        5. The applicant shall ensure that there shall not be any damages to the
-        assets such as Auditorium and Banquet Hall/Exhibition Hall space,
-        Acoustic wall panels, lighting components, floor carpets, stage
-        platform, mic podiums, projectors, lighting Components and its
-        accessories, Audio sound system and accessories, seating chairs, V.I.P
-        chairs, recliners, electrical connections, main stage accessories,
-        viewers chairs at Pavilion area, seating steps at Open air Amphitheatre
-        area etc. of the allotted space area/ premises.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        6. Applicant shall not occupy and hinder the common areas such as entry
-        / exit points, corridors / passage, common road and foot paths etc. If
-        the applicant does so, a penalty amounting to Rs. 5000/- shall be levied
-        and the security deposit submitted to the department shall be forfeited
-        without any further explanation.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        7. Havan, Pooja, Outdoor cooking, Tandoor etc. is prohibited in the
-        Extra Open Space (Outer Space).
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        8. The entire premises shall be available from 7:00 AM to 10:00 PM only.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        9. The applicant shall obey the timing orders and failing to do so,
+        4. The applicant shall obey the timing orders and failing to do so,
         shall lead to forfeiture of the deposit submitted by the applicant.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
-        10. Havan, Pooja, Katha, Crackers etc. shall not be allowed and is
-        strictly prohibited in Auditorium Hall, Banquet hall, Exhibition Hall,
-        Bride room and Groom Room. The same shall only be allowed in Open Air
-        Amphitheatre with all the preventive measures.
+        5. The applicant shall be responsible for maintaining cleanliness and
+        hygiene during and after completion of function at the allotted space
+        area and all used premises. If the same is not maintained and cleanness
+        is not observed by the component authority, a penalty shall be levied
+        (as decided by competent authority) and the security deposit submitted
+        to the department shall be forfeited without any further explanation.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
-        11. Eating and drinking is strictly prohibited inside the Auditorium
-        Halls and if found, the applicant shall have to pay a penalty amount of
-        Rs. 5000/- to the concerned department.
-      </p>
-      <p className="text-sm text-rose-500 font-normal my-2">
-        12. Deposit amount to be paid in the form of DD within 7 days after
-        successful booking failing which the booking will get cancelled.
+        6. The applicant shall ensure that they shall maintain the floor and
+        premises of the allotted space, clean by avoiding littering of food
+        materials over the floors, by sufficient provision of waste bins etc.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
-        13. If the applicant has to change their booked date / allotted date,
+        7. The applicant shall not stick any adhesive based posters in the
+        allotted space and entire premises
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        8. Applicant shall not occupy and hinder the common areas such as entry
+        / exit points, corridors / passage, common road and foot paths etc. If
+        the applicant does so, a penalty (as decided by competent authority)
+        shall be levied and the security deposit submitted to the department
+        shall be forfeited without any further explanation.
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        9. Smoking, drinking of alcohol, non-vegetarian food, chewing of tobacco
+        is strictly prohibited in the entire premises and if found, a penalty
+        (as decided by competent authority) shall be levied and also the
+        security deposit submitted to the department shall be forfeited without
+        any further explanation.
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        10. If the applicant has to change their booking date / allotted date,
         25% shifting charges shall be applied.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
-        14. If the applicant has to cancel their booked date / allotted date,
-        50% Cancellation charges shall be applied and the remaining amount shall
+        11. If the applicant has to cancel their booking date / allotted date,
+        50% cancellation charges shall be applied and the remaining amount shall
         be transferred to the applicant by the department.
       </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        15. If the applicant has to cancel their booked date / allotted date
-        before 1 week, in that case 100% Cancellation charge shall be applied.
+      <p className="text-sm text-rose-500 font-normal my-2">
+        12. If the applicant has to cancel their booking date / allotted date
+        before 1 week of their function / event date, in that case 100%
+        cancellation charge shall be applied.
       </p>
       <p className="text-sm text-gray-800 font-normal my-2">
-        16. Smoking, drinking of alcohol, non-vegetarian food, chewing of
-        tobacco is strictly prohibited in the entire premises and if found, you
-        shall have to pay a penalty amount of Rs. 5000/- and also the security
-        deposit submitted to the department shall be forfeited without any
-        further explanation.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        17. Violation or lapses found in any of the above conditions by the
-        applicant, the competent authority has the right to take necessary
-        action or by imposing the penalty as assigned thereof.
-      </p>
-      <p className="text-sm text-gray-800 font-normal my-2">
-        18. The applicant shall manage all the parking arrangements of their
+        13. The applicant shall manage all the parking arrangements of their
         guests by their own and shall not park the vehicles at service roads /
         main road. The applicant must not tamper with any of the car park
         systems, including access control, ventilation, fire protection,
         surveillance and communications in the parking area.
+      </p>
+      <p className="text-sm text-rose-500 font-normal my-2">
+        14. The DNHPDA reserves the right to cancel the allotment of space at
+        Damanganga Riverfront, Silvassa in case of any government functions
+        without assigning any reason thereof.
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        15. The existing lighting arrangements such as walkway lightings, High
+        Mast lightings in the Riverfront will be allowed to be utilized by the
+        applicant.
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        16. Any additional arrangements such as Pandals, Stage decorations,
+        lighting connections for Pandals and sound systems etc. shall be the
+        responsibility of the applicant concerned.
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        17. The applicant shall not be permitted to enter any motor vehicle in
+        the walkway premises of the Riverfront.
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        18.The applicant shall take into consideration that none of the
+        components installed in the Riverfront shall be damaged in the allotted
+        space.
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        19.The applicant provide sufficient dustbin and must ensure that no
+        garbage or waste is thrown or dumped in river & entire riverfront
+        premises.
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        20. Any incidents involving drowning or accidental entry into the river
+        by any person during the event shall be the sole responsibility of the
+        applicant. The DNHPDA shall not be held liable for any such incidents
+        arising from negligence, lack of supervision, or mismanagement by the
+        applicant.
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        21.The applicant shall arrange and maintain all necessary fire-resistant
+        equipment and fire-safety measures at their own cost during the event.
+        This includes fire extinguishers, fire blankets, and any other safety
+        tools required as per safety norms.
+      </p>
+      <p className="text-sm text-gray-800 font-normal my-2">
+        22. Violation or lapses found in any of the above conditions by the applicant, the competent authority has the right to take necessary action or by imposing the penalty as assigned thereof.
       </p>
     </Modal>
   );
