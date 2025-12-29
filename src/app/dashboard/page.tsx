@@ -17,16 +17,17 @@ import { Separator } from "@radix-ui/react-dropdown-menu";
 import numberWithIndianFormat from "@/utils/methods";
 import getMonthInfo from "@/action/dashboard/monthinfo";
 import getGraph from "@/action/dashboard/getgraph";
-import { getCookie } from "cookies-next";
+import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 import GetUser from "@/action/user/getuser";
 import { user } from "@prisma/client";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 // ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale);
 ChartJS.register(...registerables);
 
 const DashboardPage = () => {
-  const userid: number = parseInt(getCookie("id") ?? "0");
+  const [userid, setUserid] = useState<number>(0);
   const router = useRouter();
 
   function isPositive(number: number) {
@@ -56,6 +57,12 @@ const DashboardPage = () => {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
+      const authResponse = await getAuthenticatedUserId();
+      if (!authResponse.status) {
+        toast.error(authResponse.message);
+        return router.push("/login");
+      }
+      setUserid(authResponse.data);
       const response = await getDashboardCount({});
       if (response.status) {
         setCount(response.data!);
@@ -70,7 +77,7 @@ const DashboardPage = () => {
         setGraphData(graphresponse.data!);
       }
 
-      const userresponse = await GetUser({ id: userid });
+      const userresponse = await GetUser({ id: authResponse.data });
       if (userresponse.status) {
         setUser(userresponse.data!);
       }

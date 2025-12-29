@@ -20,7 +20,6 @@ import {
 } from "@prisma/client";
 import { handleNumberChange } from "@/utils/methods";
 import { default as MulSelect } from "react-select";
-import { getCookie } from "cookies-next";
 import { Textarea } from "@/components/ui/textarea";
 import AllAccountCategorys from "@/action/account/getallaccountcategory";
 import BackButton from "@/components/backbutton";
@@ -29,11 +28,11 @@ import { safeParse } from "valibot";
 import { AccountSchema } from "@/schema/createaccount";
 import { ApiResponseType } from "@/models/response";
 import CreateAccount from "@/action/account/createacount";
+import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 
 const CreateRentPage = () => {
   const router = useRouter();
-  const createuserid: number = parseInt(getCookie("id") ?? "0");
-
+  const [createuserid, setCreateuserid] = useState<number>(0);
   const [isCreating, setIsCreating] = useState<boolean>(false);
 
   const [isLoading, setLoading] = useState<boolean>(true);
@@ -79,6 +78,12 @@ const CreateRentPage = () => {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
+      const authResponse = await getAuthenticatedUserId();
+      if (!authResponse.status) {
+        toast.error(authResponse.message);
+        return router.push("/login");
+      }
+      setCreateuserid(authResponse.data);
       const accountcategoryresponse = await AllAccountCategorys({});
       if (accountcategoryresponse.status) {
         setCategory(accountcategoryresponse.data ?? []);
@@ -283,7 +288,7 @@ const CreateRentPage = () => {
                   <Button
                     variant={"outline"}
                     className={`w-full justify-start text-left font-normal ${
-                      !transcationDate ?? "text-muted-foreground"
+                      transcationDate ? "text-gray-900" : "text-muted-foreground"
                     }`}
                   >
                     <IcBaselineCalendarMonth className="mr-2 h-4 w-4" />

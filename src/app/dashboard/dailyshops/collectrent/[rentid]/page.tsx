@@ -22,10 +22,10 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import GetDailyRentById from "@/action/dailyrent/getdailyrentbyid";
 import PayDailyRent from "@/action/dailyrent/paydailyrent";
-import { getCookie } from "cookies-next";
+import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 
 const CollectRent = () => {
-  const createuserid: number = parseInt(getCookie("id") ?? "0");
+  const [userid, setUserid] = useState<number>(0);
 
   const params = useParams<{ rentid: string }>();
   const rentid: number = parseInt(params.rentid);
@@ -33,7 +33,6 @@ const CollectRent = () => {
   const router = useRouter();
 
   const [isPaying, setPaying] = useState<boolean>(false);
-
 
   const [isLoading, setLoading] = useState<boolean>(true);
   const [rent, setRent] = useState<
@@ -49,6 +48,13 @@ const CollectRent = () => {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
+
+      const authResponse = await getAuthenticatedUserId();
+      if (!authResponse.status) {
+        toast.error(authResponse.message);
+        return router.push("/login");
+      }
+      setUserid(authResponse.data);
 
       const rentresponse = await GetDailyRentById({
         id: parseInt(rentid.toString()),
@@ -97,7 +103,7 @@ const CollectRent = () => {
       bankname: banknameRef.current?.value ?? "",
       orderid: uniqueid,
       startdate: startDate,
-      approvedById: createuserid,
+      approvedById: userid,
     });
 
     if (payrent_response.status) {

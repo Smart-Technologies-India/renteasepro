@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { daily_property, daily_rent, daily_shop, user } from "@prisma/client";
-import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
@@ -35,6 +34,7 @@ import CreateDateChangeDailyRent from "@/action/dailyrent/createdatechangedailyr
 import GetDailyRentDescription from "@/action/dailyrentdescription/getdailyrentdescription";
 import { daily_rent_description } from "@prisma/client";
 const { RangePicker } = DatePicker;
+import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 
 interface CreateDateChangeProps {
   rentid: number;
@@ -43,7 +43,8 @@ interface CreateDateChangeProps {
 
 const CreateDateChangePage = (props: CreateDateChangeProps) => {
   const router = useRouter();
-  const createuserid: number = parseInt(getCookie("id") ?? "0");
+  // const createuserid: number = parseInt(getCookie("id") ?? "0");
+  const [createuserid, setCreateUserid] = useState<number>(0);
 
   const [isCreating, setIsCreating] = useState<boolean>(false);
 
@@ -82,7 +83,12 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
-
+      const authResponse = await getAuthenticatedUserId();
+      if (!authResponse.status) {
+        toast.error(authResponse.message);
+        return router.push("/login");
+      }
+      setCreateUserid(authResponse.data);
       const purpose = await GetDailyRentDescription({
         id: props.unitid,
       });
@@ -156,8 +162,12 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
 
     if (
       datecount() * parseInt(dailyRentDescription?.event_amount || "0") +
-        (prepration ? parseInt(dailyRentDescription?.prep_day_amount || "0") : 0) +
-        (handover ? parseInt(dailyRentDescription?.handover_day_amount || "0") : 0) -
+        (prepration
+          ? parseInt(dailyRentDescription?.prep_day_amount || "0")
+          : 0) +
+        (handover
+          ? parseInt(dailyRentDescription?.handover_day_amount || "0")
+          : 0) -
         (parseFloat(
           rentdata?.handover_day ? rentdata.handover_day_amount! : "0"
         ) +
@@ -167,7 +177,9 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
       0
     ) {
       setIsCreating(false);
-      return toast.error("Total amount must be greater than 0. Please select different dates or add preparation/handover days.");
+      return toast.error(
+        "Total amount must be greater than 0. Please select different dates or add preparation/handover days."
+      );
     }
     const result = safeParse(CreateDailyRentSchema, {
       userId: createuserid,
@@ -262,28 +274,34 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
       const amount_discount = parseFloat(
         (
           datecount() * parseInt(dailyRentDescription?.event_amount || "0") +
-          (prepration ? parseInt(dailyRentDescription?.prep_day_amount || "0") : 0) +
-          (handover ? parseInt(dailyRentDescription?.handover_day_amount || "0") : 0) +
+          (prepration
+            ? parseInt(dailyRentDescription?.prep_day_amount || "0")
+            : 0) +
+          (handover
+            ? parseInt(dailyRentDescription?.handover_day_amount || "0")
+            : 0) +
           parseInt(dailyRentDescription?.deposit_amount || "0")
         ).toString()
       ).toFixed(2);
 
       const deposit = dailyRentDescription?.deposit_amount || "0";
 
-      const dateRefundCharge = 
+      const dateRefundCharge =
         (parseFloat(
           rentdata?.handover_day ? rentdata.handover_day_amount! : "0"
         ) +
-          parseFloat(
-            rentdata?.prep_day ? rentdata.prep_day_amount! : "0"
-          ) +
+          parseFloat(rentdata?.prep_day ? rentdata.prep_day_amount! : "0") +
           parseFloat(rentdata?.event_amount!)) *
         0.75;
 
       const amount =
         datecount() * parseInt(dailyRentDescription?.event_amount || "0") +
-        (prepration ? parseInt(dailyRentDescription?.prep_day_amount || "0") : 0) +
-        (handover ? parseInt(dailyRentDescription?.handover_day_amount || "0") : 0) -
+        (prepration
+          ? parseInt(dailyRentDescription?.prep_day_amount || "0")
+          : 0) +
+        (handover
+          ? parseInt(dailyRentDescription?.handover_day_amount || "0")
+          : 0) -
         dateRefundCharge;
 
       router.back();
@@ -345,8 +363,7 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
   // Calculate total amount
   const calculateTotalAmount = (): number => {
     return (
-      datecount() *
-        parseInt(dailyRentDescription?.event_amount || "0") +
+      datecount() * parseInt(dailyRentDescription?.event_amount || "0") +
       (prepration
         ? parseInt(dailyRentDescription?.prep_day_amount || "0")
         : 0) +
@@ -356,9 +373,7 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
       (parseFloat(
         rentdata?.handover_day ? rentdata.handover_day_amount! : "0"
       ) +
-        parseFloat(
-          rentdata?.prep_day ? rentdata.prep_day_amount! : "0"
-        ) +
+        parseFloat(rentdata?.prep_day ? rentdata.prep_day_amount! : "0") +
         parseFloat(rentdata?.event_amount!)) *
         0.75
     );
@@ -437,6 +452,7 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
                   return current && current.toDate() < subDays(new Date(), 0);
                 }}
                 onChange={(e) => {
+                  if (e == null) return;
                   if (e.length != 2) return;
 
                   if (e[0] == null || e[1] == null) return;
@@ -700,9 +716,7 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
             <div className="flex w-full">
               <p>Total</p>
               <div className="grow"></div>
-              <p>
-                {calculateTotalAmount().toFixed(2)}
-              </p>
+              <p>{calculateTotalAmount().toFixed(2)}</p>
             </div>
           </div>
 
@@ -710,7 +724,8 @@ const CreateDateChangePage = (props: CreateDateChangeProps) => {
             <div className="w-full mt-4 bg-rose-100 border border-rose-400 text-rose-700 px-4 py-3 rounded-md">
               <p className="font-semibold">Unable to proceed with booking</p>
               <p className="text-sm">
-                The total amount must be greater than 0. Please select different dates or add preparation/handover days to continue.
+                The total amount must be greater than 0. Please select different
+                dates or add preparation/handover days to continue.
               </p>
             </div>
           )}

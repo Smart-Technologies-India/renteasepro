@@ -7,11 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CreateUnitSchema } from "@/schema/createunit";
 import { shop_category } from "@prisma/client";
-import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { safeParse } from "valibot";
+import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 
 interface AddShopPageProps {
   id: number;
@@ -19,18 +19,12 @@ interface AddShopPageProps {
 }
 
 const AddShopPage = (props: AddShopPageProps) => {
-  const userid: number = parseInt(getCookie("id") ?? "0");
+  const [userid, setUserid] = useState<number>(0);
 
   const router = useRouter();
   const [isLoading, setLoading] = useState<boolean>(true);
   const [isCreating, setIsCreating] = useState<boolean>(false);
   const [shop_category, setShopCategory] = useState<shop_category[]>([]);
-  // const [shopcategory, setshopcategory] = useState<number>(0);
-  // const [floor, setFloor] = useState<Floors>(Floors.GROUND);
-
-  // const shopnumber = useRef<HTMLInputElement>(null);
-  // const size = useRef<HTMLInputElement>(null);
-  // const meter = useRef<HTMLInputElement>(null);
 
   const name = useRef<HTMLInputElement>(null);
   const capacity = useRef<HTMLInputElement>(null);
@@ -42,6 +36,13 @@ const AddShopPage = (props: AddShopPageProps) => {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
+      
+      const authResponse = await getAuthenticatedUserId();
+      if (!authResponse.status) {
+        toast.error(authResponse.message);
+        return router.push("/login");
+      }
+      setUserid(authResponse.data);
       const shop_categoryresponse = await AllShopCategorys({});
       if (shop_categoryresponse.status) {
         setShopCategory(shop_categoryresponse.data ?? []);

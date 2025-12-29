@@ -1,31 +1,30 @@
 import { Floors } from "@prisma/client";
 import {
-  Input,
-  custom,
+  InferInput,
+  check,
   enum_,
   forward,
   minLength,
   minValue,
   number,
   object,
+  pipe,
   string,
 } from "valibot";
 
-const CreateShopSchema = object(
-  {
-    id: number([minValue(1, "Please select your property.")]),
-    shopCategoryId: number([minValue(1, "Please Select shop category.")]),
+const CreateShopSchema = pipe(
+  object({
+    id: pipe(number(), minValue(1, "Please select your property.")),
+    shopCategoryId: pipe(number(), minValue(1, "Please Select shop category.")),
     floor: enum_(Floors, "Please select floor."),
-    shopNumber: string([minLength(1, "Please Enter shop number.")]),
-    shopSize: string([minLength(1, "Please Enter shop size.")]),
-  },
-  [
-    forward(
-      custom((input) => input.shopCategoryId != 0, "Select Shop Category."),
-      ["shopCategoryId"]
-    ),
-  ]
+    shopNumber: pipe(string(), minLength(1, "Please Enter shop number.")),
+    shopSize: pipe(string(), minLength(1, "Please Enter shop size.")),
+  }),
+  forward(
+    check((input) => input.shopCategoryId != 0, "Select Shop Category."),
+    ["shopCategoryId"]
+  )
 );
 
-type CreateShopForm = Input<typeof CreateShopSchema>;
+type CreateShopForm = InferInput<typeof CreateShopSchema>;
 export { CreateShopSchema, type CreateShopForm };

@@ -6,14 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CreatePropertySchema } from "@/schema/createproperty";
 import { handleDecimalChange, handleNumberChange } from "@/utils/methods";
-import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { safeParse } from "valibot";
+import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 
 const AddPropertyPage = () => {
-  const userid: number = parseInt(getCookie("id") ?? "0");
+  const [userid, setUserid] = useState<number>(0);
 
   const [isCreating, setIsCreating] = useState<boolean>(false);
 
@@ -78,6 +78,17 @@ const AddPropertyPage = () => {
 
     setIsCreating(false);
   };
+  useEffect(() => {
+    const init = async () => {
+      const authResponse = await getAuthenticatedUserId();
+      if (!authResponse.status) {
+        toast.error(authResponse.message);
+        return router.push("/login");
+      }
+      setUserid(authResponse.data);
+    };
+    init();
+  }, []);
 
   return (
     <>

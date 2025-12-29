@@ -5,6 +5,7 @@ import { ApiResponseType } from "@/models/response";
 import { user } from "@prisma/client";
 import { cookies } from "next/headers";
 import prisma from "../../../prisma/database";
+import { generateToken } from "@/lib/jwt";
 
 interface LoginOtpPayload {
   contact: string;
@@ -17,6 +18,7 @@ const LoginOtp = async (
   payload: LoginOtpPayload
 ): Promise<ApiResponseType<user | null>> => {
   try {
+    const cookiesStore = await cookies();
     const user = await prisma.user.findFirst({
       where: { contactone: payload.contact, status: "ACTIVE" },
     });
@@ -56,11 +58,26 @@ const LoginOtp = async (
       };
     }
 
-    cookies().set("id", user.id.toString());
+    // Generate secure JWT token
+    const token = generateToken({
+      userId: user.id,
+      contactone: user.contactone ?? "",
+      role: user.role,
+    });
+
+    // Set httpOnly secure cookie
+    cookiesStore.set("auth_token", token, {
+      httpOnly: true, // Cannot be accessed by JavaScript
+      secure: process.env.NODE_ENV === "production", // Only over HTTPS in production
+      sameSite: "strict", // CSRF protection
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: "/",
+    });
+
     return {
       status: true,
-      data: user,
-      message: "Login successfully",
+      data: user_resut,
+      message: "Login successful",
       functionname: "LoginOtp",
     };
   } catch (e) {

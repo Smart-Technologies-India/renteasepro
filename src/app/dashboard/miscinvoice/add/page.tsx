@@ -20,7 +20,6 @@ import {
 } from "@prisma/client";
 import { handleDecimalChange, handleNumberChange } from "@/utils/methods";
 import { default as MulSelect } from "react-select";
-import { getCookie } from "cookies-next";
 import { Textarea } from "@/components/ui/textarea";
 import AllAccountCategorys from "@/action/account/getallaccountcategory";
 import BackButton from "@/components/backbutton";
@@ -29,10 +28,11 @@ import { safeParse } from "valibot";
 import { ApiResponseType } from "@/models/response";
 import CreateInvoice from "@/action/invoice/createinvoice";
 import { InvoiceSchema } from "@/schema/createinvoice";
+import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 
 const CreateRentPage = () => {
   const router = useRouter();
-  const createuserid: number = parseInt(getCookie("id") ?? "0");
+  const [createuserid, setCreateuserid] = useState<number>(0);
 
   const [isCreating, setIsCreating] = useState<boolean>(false);
 
@@ -60,7 +60,6 @@ const CreateRentPage = () => {
   const [startDPop, setStartDPop] = useState<boolean>(false);
 
   const gstRef = useRef<HTMLInputElement>(null);
-  // const placeOfSupplyRef = useRef<HTMLInputElement>(null);
   const [placeOfSupply, setPlaceOfSupply] = useState<string>("");
   const customerAddressRef = useRef<HTMLTextAreaElement>(null);
 
@@ -95,6 +94,12 @@ const CreateRentPage = () => {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
+      const authResponse = await getAuthenticatedUserId();
+      if (!authResponse.status) {
+        toast.error(authResponse.message);
+        return router.push("/login");
+      }
+      setCreateuserid(authResponse.data);
       const accountcategoryresponse = await AllAccountCategorys({});
       if (accountcategoryresponse.status) {
         setCategory(accountcategoryresponse.data ?? []);
@@ -454,7 +459,7 @@ const CreateRentPage = () => {
                   <Button
                     variant={"outline"}
                     className={`w-full justify-start text-left font-normal ${
-                      !transcationDate ?? "text-muted-foreground"
+                      transcationDate ? "text-gray-900" : "text-muted-foreground"
                     }`}
                   >
                     <IcBaselineCalendarMonth className="mr-2 h-4 w-4" />

@@ -5,19 +5,11 @@ import {
   MaterialSymbolsCloseSmall,
   SolarHamburgerMenuOutline,
 } from "../icons";
-import { Button } from "../ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
 import { toast } from "react-toastify";
 import { deleteCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
+import { Button, Dropdown, Avatar, Space } from "antd";
+import type { MenuProps } from "antd";
 
 interface NavbarProps {
   isOpen: boolean;
@@ -42,94 +34,77 @@ const Navbar = (props: NavbarProps) => {
     return router.push("/");
   };
 
+  const menuItems: MenuProps["items"] = [
+    {
+      key: "account",
+      label: "My Account",
+      type: "group",
+    },
+    {
+      key: "changepassword",
+      label: "Change Password",
+      onClick: () => router.push("/dashboard/changepassword"),
+    },
+    {
+      type: "divider",
+    },
+    {
+      key: "logout",
+      label: "Log out",
+      onClick: logoutbtn,
+      danger: true,
+    },
+  ];
+
   return (
-    <nav className="py-1 px-4 w-full bg-[#f0f1f5] flex items-center gap-2 shadow fixed top-0 left-0 z-10">
+    <nav className="py-2 px-4 w-full bg-white flex items-center gap-2 shadow-sm fixed top-0 left-0 z-10 border-b border-gray-200">
       <div className="md:hidden">
         {props.isOpen ? (
-          <MaterialSymbolsCloseSmall
-            className="text-xl"
+          <Button
+            type="text"
+            icon={<MaterialSymbolsCloseSmall className="text-2xl" />}
             onClick={() => props.setIsOpen((val) => !val)}
+            style={{ padding: '4px 8px' }}
           />
         ) : (
-          <SolarHamburgerMenuOutline
-            className="text-xl"
+          <Button
+            type="text"
+            icon={<SolarHamburgerMenuOutline className="text-2xl" />}
             onClick={() => props.setIsOpen((val) => !val)}
+            style={{ padding: '4px 8px' }}
           />
         )}
       </div>
 
       <div className="grow"></div>
+      
       {["ADMIN", "MANAGER"].includes(props.role) && (
         <>
-          <IcBaselineRefresh
-            className="text-xl md:block hidden cursor-pointer"
+          <Button
+            type="text"
+            icon={<IcBaselineRefresh className="text-xl" />}
             onClick={refreshrent}
+            className="md:flex hidden hover:rotate-180 transition-transform duration-300"
+            style={{ padding: '4px 8px' }}
           />
-          <div className="w-[1px] h-6 bg-gray-500"></div>
+          <div className="w-[1px] h-6 bg-gray-300 md:block hidden"></div>
         </>
       )}
 
-      {/* <SolarCalendarMinimalisticBold className="text-xl md:block hidden" />
-      <SolarBellBold className="text-2xl md:block hidden" />
-      <SolarLightbulbMinimalisticBold className="text-xl md:block hidden" /> */}
-      <div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild className="px-1">
-            <Button variant="ghost" className="gap-2 flex text-right">
-              <div>
-                <p className="font-medium text-sm">{props.name}</p>
-                <p className="text-xs text-gray-500">{props.role}</p>
-              </div>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem
-                onClick={() => router.push("/dashboard/changepassword")}
-                className="cursor-pointer"
-              >
-                Change Password
-              </DropdownMenuItem>
-              {/* <DropdownMenuItem>
-              Keyboard shortcuts
-              <DropdownMenuShortcut>⌘K</DropdownMenuShortcut>
-            </DropdownMenuItem> */}
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            {/* <DropdownMenuGroup>
-            <DropdownMenuItem>Team</DropdownMenuItem>
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger>Invite users</DropdownMenuSubTrigger>
-              <DropdownMenuPortal>
-                <DropdownMenuSubContent>
-                  <DropdownMenuItem>Email</DropdownMenuItem>
-                  <DropdownMenuItem>Message</DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>More...</DropdownMenuItem>
-                </DropdownMenuSubContent>
-              </DropdownMenuPortal>
-            </DropdownMenuSub>
-            <DropdownMenuItem>
-              New Team
-              <DropdownMenuShortcut>⌘+T</DropdownMenuShortcut>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>GitHub</DropdownMenuItem>
-          <DropdownMenuItem>Support</DropdownMenuItem>
-          <DropdownMenuItem disabled>API</DropdownMenuItem> */}
-            {/* <DropdownMenuSeparator /> */}
-            <DropdownMenuItem onClick={logoutbtn} className="cursor-pointer">
-              Log out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <div className="rounded-full bg-[#172e57] shrink-0 h-8 w-8 grid place-items-center text-lg font-semibold text-white">
-        {props.name[0].toUpperCase()}
-      </div>
+      <Dropdown menu={{ items: menuItems }} placement="bottomRight" trigger={["click"]}>
+        <Space className="cursor-pointer hover:bg-gray-50 px-3 py-1 rounded-md transition-colors">
+          <div className="text-right hidden sm:block">
+            <p className="font-medium text-sm leading-tight">{props.name}</p>
+            <p className="text-xs text-gray-500 leading-tight">{props.role}</p>
+          </div>
+          <Avatar
+            size={36}
+            className="bg-[#172e57] shrink-0 font-semibold uppercase"
+          >
+            {props.name[0]}
+          </Avatar>
+        </Space>
+      </Dropdown>
     </nav>
   );
 };

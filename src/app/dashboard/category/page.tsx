@@ -24,7 +24,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "react-toastify";
 import CreateShopCategory from "@/action/shop_category/createshopcategory";
-import { getCookie } from "cookies-next";
 import {
   Status,
   account_category,
@@ -39,8 +38,12 @@ import { Switch } from "@/components/ui/switch";
 import CahangeShopCategory from "@/action/shop_category/shopcateogrystatus";
 import AllAccountCategorys from "@/action/account/getallaccountcategory";
 import CreateAccountCategory from "@/action/account/createaccountcategory";
+import { getAuthenticatedUserId } from "@/action/auth/getuserid";
+import { useRouter } from "next/navigation";
 
 const Category = () => {
+  const router = useRouter();
+  const [userid, setUserid] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [shops, setShops] = useState<shop_category[]>([]);
   const [users, setUsers] = useState<user_category[]>([]);
@@ -75,6 +78,12 @@ const Category = () => {
   useEffect(() => {
     const init = async () => {
       setIsLoading(true);
+      const authResponse = await getAuthenticatedUserId();
+      if (!authResponse.status) {
+        toast.error(authResponse.message);
+        return router.push("/login");
+      }
+      setUserid(authResponse.data);
       const shopcategoryresponse = await AllShopCategorys({});
       if (shopcategoryresponse.status) {
         setShops(shopcategoryresponse.data ?? []);
@@ -98,7 +107,7 @@ const Category = () => {
     const statusresponse = await CahangeShopCategory({
       id: id,
       status: status,
-      userId: parseInt(getCookie("id") ?? "0"),
+      userId: userid,
     });
 
     if (statusresponse.status) {
@@ -364,7 +373,7 @@ const Category = () => {
               </DialogDescription>
             </DialogHeader>
             {/* <ProfileForm /> */}
-            <UserCategory setUserBox={setUserBox} init={initdata} />
+            <UserCategory setUserBox={setUserBox} init={initdata} userid={userid} />
           </DialogContent>
         </Dialog>
       ) : (
@@ -381,7 +390,7 @@ const Category = () => {
             </DrawerHeader>
             {/* <ProfileForm className="px-4" /> */}
             <div className="p-4">
-              <UserCategory setUserBox={setUserBox} init={initdata} />
+              <UserCategory setUserBox={setUserBox} init={initdata} userid={userid} />
             </div>
 
             {/*  <DrawerFooter className="pt-2">
@@ -405,7 +414,7 @@ const Category = () => {
               </DialogDescription>
             </DialogHeader>
             {/* <ProfileForm /> */}
-            <AccountCategory setAccountBox={setAccountBox} init={initdata} />
+            <AccountCategory setAccountBox={setAccountBox} init={initdata} userid={userid} />
           </DialogContent>
         </Dialog>
       ) : (
@@ -422,7 +431,7 @@ const Category = () => {
             </DrawerHeader>
             {/* <ProfileForm className="px-4" /> */}
             <div className="p-4">
-              <AccountCategory setAccountBox={setAccountBox} init={initdata} />
+              <AccountCategory setAccountBox={setAccountBox} init={initdata} userid={userid} />
             </div>
           </DrawerContent>
         </Drawer>
@@ -439,7 +448,11 @@ interface ShopCategoryProps {
 const ShopCategory = (props: ShopCategoryProps) => {
   const name = useRef<HTMLInputElement>(null);
 
-  const userid: number = parseInt(getCookie("id") ?? "0");
+  const [userid, setUserid] = useState<number>(0);
+  useEffect(() => {
+
+    
+  }, []);
 
   const createshop = async () => {
     if (
@@ -485,11 +498,11 @@ const ShopCategory = (props: ShopCategoryProps) => {
 interface UserCategoryProps {
   setUserBox: (val: boolean) => void;
   init: () => Promise<void>;
+  userid: number;
 }
 const UserCategory = (props: UserCategoryProps) => {
   const name = useRef<HTMLInputElement>(null);
 
-  const userid: number = parseInt(getCookie("id") ?? "0");
 
   const createshop = async () => {
     if (
@@ -501,7 +514,7 @@ const UserCategory = (props: UserCategoryProps) => {
     } else {
       const shopcategory = await CreateUserCategory({
         name: name.current?.value ?? "",
-        createdById: userid,
+        createdById: props.userid,
       });
       if (shopcategory.status) {
         toast.success(shopcategory.message);
@@ -535,11 +548,11 @@ const UserCategory = (props: UserCategoryProps) => {
 interface AccountCategoryProps {
   setAccountBox: (val: boolean) => void;
   init: () => Promise<void>;
+  userid: number;
 }
 const AccountCategory = (props: AccountCategoryProps) => {
   const name = useRef<HTMLInputElement>(null);
 
-  const userid: number = parseInt(getCookie("id") ?? "0");
 
   const createaccout = async () => {
     if (
@@ -551,7 +564,7 @@ const AccountCategory = (props: AccountCategoryProps) => {
     } else {
       const shopcategory = await CreateAccountCategory({
         name: name.current?.value ?? "",
-        createdById: userid,
+        createdById: props.userid,
       });
       if (shopcategory.status) {
         // toast.success(shopcategory.message);

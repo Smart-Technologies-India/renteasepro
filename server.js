@@ -7,17 +7,16 @@ const crypto = require("crypto");
 const http = require("http");
 const fs = require("fs");
 const qs = require("querystring");
-const { PrismaClient } = require("@prisma/client");
 const cron = require("node-cron");
 
 const axios = require("axios");
 const { interval } = require("date-fns");
+const prisma = require("./prisma/database");
+
 // variable declaration
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
 const port = 9999;
-
-const prisma = new PrismaClient();
 
 // utils function start from here
 
@@ -200,7 +199,6 @@ const postRes = (request, response) => {
               deletedAt: null,
             },
           });
-          console.log(bid_tranresponse);
         } catch (e) {
           console.log(e);
         }
@@ -783,12 +781,15 @@ app.prepare().then(() => {
   //   response.json(allusers);
   // });
 
-  server.all("*", (req, res) => {
+  server.all("/{*splat}", (req, res) => {
     return handle(req, res);
   });
 
   server.listen(port, (err) => {
-    if (err) throw err;
+    if (err) {
+      console.error('Failed to start server:', err);
+      throw err;
+    }
     console.log(`------------> Ready on http://localhost:${port}`);
   });
 });

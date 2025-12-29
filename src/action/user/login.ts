@@ -10,11 +10,13 @@ import { user } from "@prisma/client";
 import { compare } from "bcrypt";
 import { cookies } from "next/headers";
 import prisma from "../../../prisma/database";
+import { generateToken } from "@/lib/jwt";
 
 const Login = async (
   payload: LoginPayload
 ): Promise<ApiResponseType<user | null>> => {
   try {
+    const cookiesStore = await cookies();
     const user = await prisma.user.findFirst({
       where: { contactone: payload.contactone, status: "ACTIVE" },
     });
@@ -35,7 +37,6 @@ const Login = async (
         functionname: "Login",
       };
 
-
     const password = await compare(payload.password, user.password!);
     if (!password)
       return {
@@ -44,11 +45,27 @@ const Login = async (
         message: "Invalid Credentials. Please try again.",
         functionname: "Login",
       };
-    cookies().set("id", user.id.toString());
+
+    // Generate secure JWT token
+    const token = generateToken({
+      userId: user.id,
+      contactone: user.contactone ?? "",
+      role: user.role,
+    });
+
+    // Set httpOnly secure cookie
+    cookiesStore.set("auth_token", token, {
+      httpOnly: true, // Cannot be accessed by JavaScript
+      secure: process.env.NODE_ENV === "production", // Only over HTTPS in production
+      sameSite: "strict", // CSRF protection
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: "/",
+    });
+
     return {
       status: true,
       data: user,
-      message: "Login successfully",
+      message: "Login successful",
       functionname: "Login",
     };
   } catch (e) {

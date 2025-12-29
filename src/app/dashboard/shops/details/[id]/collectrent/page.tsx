@@ -27,8 +27,10 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 
 const CollectRent = () => {
-  const params = useParams<{ id: string }>();
-  const shopid: number = parseInt(params.id);
+  const param = useParams();
+  const shopid: number = parseInt(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
+  );
 
   const [field, setField] = useState<number[]>([]);
   const router = useRouter();

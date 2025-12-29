@@ -1,18 +1,15 @@
 "use client";
 
 import ChangePassword from "@/action/user/changepassword";
-import LoginOtp from "@/action/user/loginotp";
-import SendOtp from "@/action/user/sendotp";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ForgetpasswordSchema } from "@/schema/forgetpassword";
-import { handleNumberChange } from "@/utils/methods";
-import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { safeParse } from "valibot";
+import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 
 export default function Home() {
   const router = useRouter();
@@ -20,6 +17,19 @@ export default function Home() {
   const repassword = useRef<HTMLInputElement>(null);
 
   const [isCahanging, setIsChanging] = useState<boolean>(false);
+  const [userid, setUserid] = useState<number>(0);
+
+  useEffect(() => {
+    const init = async () => {
+      const authResponse = await getAuthenticatedUserId();
+      if (!authResponse.status) {
+        toast.error(authResponse.message);
+        return router.push("/login");
+      }
+      setUserid(authResponse.data);
+    };
+    init();
+  }, []);
 
   const changePassword = async () => {
     setIsChanging(true);
@@ -33,7 +43,7 @@ export default function Home() {
 
     if (result.success) {
       const passwordrespone = await ChangePassword({
-        id: parseInt(getCookie("id") ?? "0"),
+        id: userid,
         password: result.output.password,
       });
 

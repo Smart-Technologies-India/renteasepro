@@ -8,16 +8,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
-import { getCookie } from "cookies-next";
+import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 import Link from "next/link";
 import { RentStatus } from "@prisma/client";
 import GetUserRent from "@/action/rent/getrentbyuser";
-import { formateDate } from "@/utils/methods";
+import { encryptURLData, formateDate } from "@/utils/methods";
 import { useRouter } from "next/navigation";
 import IsProfileCompleted from "@/action/user/isprofilecompleted";
+import { toast } from "react-toastify";
 
 const UserRentPage = () => {
-  const id: number = parseInt(getCookie("id") ?? "0");
+  const [userid, setUserid] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
@@ -48,16 +49,23 @@ const UserRentPage = () => {
     const init = async () => {
       setIsLoading(true);
 
+      const authResponse = await getAuthenticatedUserId();
+      if (!authResponse.status) {
+        toast.error(authResponse.message);
+        return router.push("/login");
+      }
+      setUserid(authResponse.data);
+
       const isprofilecompleted = await IsProfileCompleted({
-        id: id,
+        id: authResponse.data,
       });
 
       if (!isprofilecompleted.status) {
         return router.push("/dashboard/userprofile/edit");
       }
-      
+
       const rentresponse = await GetUserRent({
-        userid: id,
+        userid: authResponse.data,
       });
 
       if (rentresponse.status) {
@@ -69,7 +77,7 @@ const UserRentPage = () => {
     };
 
     init();
-  }, [id]);
+  }, [userid]);
 
   if (isLoading)
     return (
@@ -132,7 +140,7 @@ const UserRentPage = () => {
                   </Link>
                   <div className="w-4"></div>
                   <Link
-                    href={`/dashboard/userrent/history/${rent_data.id}`}
+                    href={`/dashboard/userrent/history/${encryptURLData(rent_data.id)}`}
                     className="bg-green-500 hover:bg-green-500 py-2 px-4 rounded-md text-white text-sm font-medium cursor-pointer"
                   >
                     History

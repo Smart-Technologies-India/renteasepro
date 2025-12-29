@@ -107,7 +107,7 @@ const SendOtp = async (
     // return {
     //   status: true,
     //   data: user,
-    //   message: "Login successfully",
+    //   message: "Login successful",
     //   functionname: "SendOtp",
     // };
   } catch (e) {

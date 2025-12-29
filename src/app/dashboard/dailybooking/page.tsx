@@ -149,7 +149,7 @@ const Properties = () => {
           {properties.length == 0 && (
             <Alert
               variant="destructive"
-              className="mt-4 bg-rose-500 bg-opacity-10"
+              className="mt-4 bg-rose-500/10"
             >
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>

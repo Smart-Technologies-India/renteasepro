@@ -9,7 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
-import { getCookie } from "cookies-next";
+import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 import { BidTransact } from "@prisma/client";
 import { capitalcase } from "@/utils/methods";
 import {
@@ -40,7 +40,7 @@ import RejectUserBid from "@/action/bid_transact/rejactuserbid";
 import IsProfileCompleted from "@/action/user/isprofilecompleted";
 
 const UserBidHistoryPage = () => {
-  const id: number = parseInt(getCookie("id") ?? "0");
+  const [userid, setUserid] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const [category, setCategory] = useState<string[]>([
@@ -83,16 +83,22 @@ const UserBidHistoryPage = () => {
   useEffect(() => {
     const init = async () => {
       setIsLoading(true);
+      const authResponse = await getAuthenticatedUserId();
+      if (!authResponse.status) {
+        toast.error(authResponse.message);
+        return router.push("/login");
+      }
+      setUserid(authResponse.data);
 
       const isprofilecompleted = await IsProfileCompleted({
-        id: id,
+        id: authResponse.data,
       });
 
       if (!isprofilecompleted.status) {
         return router.push("/dashboard/userprofile/edit");
       }
       const bidresponse = await GetUserBid({
-        userid: id,
+        userid: authResponse.data,
       });
 
       if (bidresponse.status) {
@@ -104,7 +110,7 @@ const UserBidHistoryPage = () => {
     };
 
     init();
-  }, [id]);
+  }, [userid]);
 
   const recjectBid = async () => {
     if (rejectReason == "" || rejectReason == undefined || rejectReason == null)
@@ -119,7 +125,7 @@ const UserBidHistoryPage = () => {
       toast.success("Bid Rejected Successfully");
       setIsLoading(true);
       const bidresponse = await GetUserBid({
-        userid: id,
+        userid: userid,
       });
 
       if (bidresponse.status) {

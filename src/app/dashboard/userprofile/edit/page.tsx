@@ -10,7 +10,6 @@ import {
   MaterialSymbolsLightErrorOutlineRounded,
 } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -19,12 +18,12 @@ import { UpdateUserSchema } from "@/schema/updateuser";
 import { handleNumberChange, longtext } from "@/utils/methods";
 import { UserDocType, user } from "@prisma/client";
 import axios from "axios";
-import { getCookie } from "cookies-next";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { safeParse } from "valibot";
+import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 
 interface AdditionalFile {
   id: number;
@@ -187,7 +186,7 @@ const UserBidsRunning = () => {
   // });
 
   //   file upload section end here
-  const userid: number = parseInt(getCookie("id") ?? "0");
+  const [userid, setUserid] = useState<number>(0);
 
   const router = useRouter();
   const [isLoading, setLoading] = useState<boolean>(true);
@@ -212,15 +211,22 @@ const UserBidsRunning = () => {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
+
+      const authResponse = await getAuthenticatedUserId();
+      if (!authResponse.status) {
+        toast.error(authResponse.message);
+        return router.push("/login");
+      }
+      setUserid(authResponse.data);
       const userrespone = await GetUser({
-        id: userid,
+        id: authResponse.data,
       });
 
       if (userrespone.status) {
         setUser(userrespone.data!);
       }
       const aadharresponse = await getUploadFileUser({
-        userId: userid,
+        userId: authResponse.data,
         doc_type: UserDocType.AADHAR,
       });
 
@@ -232,7 +238,7 @@ const UserBidsRunning = () => {
       }
 
       const panresponse = await getUploadFileUser({
-        userId: userid,
+        userId: authResponse.data,
         doc_type: UserDocType.PAN,
       });
 
@@ -244,7 +250,7 @@ const UserBidsRunning = () => {
       }
 
       const bankpassbookresponse = await getUploadFileUser({
-        userId: userid,
+        userId: authResponse.data,
         doc_type: UserDocType.BANK,
       });
 
@@ -256,7 +262,7 @@ const UserBidsRunning = () => {
       }
 
       const photoresponse = await getUploadFileUser({
-        userId: userid,
+        userId: authResponse.data,
         doc_type: UserDocType.PHOTO,
       });
 
@@ -637,7 +643,7 @@ const UserBidsRunning = () => {
       </div>
 
       {!isProfileCompleted && (
-        <div className="bg-rose-500 px-4 py-2 rounded bg-opacity-20 mt-4 flex items-center gap-2">
+        <div className="bg-rose-500/20 px-4 py-2 rounded mt-4 flex items-center gap-2">
           <div>
             <MaterialSymbolsLightErrorOutlineRounded className="text-3xl text-rose-500" />
           </div>
@@ -1132,7 +1138,7 @@ interface DocUploaderProps {
   title: string;
   file: File | null;
   setFile: React.Dispatch<React.SetStateAction<File | null>>;
-  cFile: React.RefObject<HTMLInputElement>;
+  cFile: React.RefObject<HTMLInputElement | null>;
 }
 
 const DocUploader = (props: DocUploaderProps) => {

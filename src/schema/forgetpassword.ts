@@ -1,17 +1,19 @@
 import { isContainSpace } from "@/utils/methods";
 import {
-  Input,
-  custom,
+  InferInput,
+  check,
   forward,
   minLength,
   object,
+  pipe,
   regex,
   string,
 } from "valibot";
 
-const ForgetpasswordSchema = object(
-  {
-    password: string([
+const ForgetpasswordSchema = pipe(
+  object({
+    password: pipe(
+      string(),
       minLength(1, "Please enter your password."),
       minLength(8, "Your password must have 8 characters or more."),
       regex(/^(?=.*[0-9]).*$/, "Your password must have at least one number."),
@@ -27,9 +29,10 @@ const ForgetpasswordSchema = object(
         /^(?=.*[a-z]).*$/,
         "Your password must have at least one lowercase."
       ),
-      custom(isContainSpace, "Password cannot contain space."),
-    ]),
-    repassword: string([
+      check(isContainSpace, "Password cannot contain space.")
+    ),
+    repassword: pipe(
+      string(),
       minLength(1, "Please enter your re-password."),
       minLength(8, "Your re-password must have 8 characters or more."),
       regex(
@@ -48,19 +51,17 @@ const ForgetpasswordSchema = object(
         /^(?=.*[a-z]).*$/,
         "Your re-password must have at least one lowercase."
       ),
-      custom(isContainSpace, "Re-password cannot contain space."),
-    ]),
-  },
-  [
-    forward(
-      custom(
-        (input) => input.password === input.repassword,
-        "Password and Re-Password should be same."
-      ),
-      ["repassword"]
+      check(isContainSpace, "Re-password cannot contain space.")
     ),
-  ]
+  }),
+  forward(
+    check(
+      (input) => input.password === input.repassword,
+      "Password and Re-Password should be same."
+    ),
+    ["repassword"]
+  )
 );
 
-type ForgetPasswordForm = Input<typeof ForgetpasswordSchema>;
+type ForgetPasswordForm = InferInput<typeof ForgetpasswordSchema>;
 export { ForgetpasswordSchema, type ForgetPasswordForm };

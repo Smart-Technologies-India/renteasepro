@@ -8,15 +8,16 @@ import {
   RiMoneyRupeeCircleLine,
 } from "@/components/icons";
 import { useEffect, useState } from "react";
-import { getCookie } from "cookies-next";
+import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 import GetUser from "@/action/user/getuser";
 import { user } from "@prisma/client";
 import { useRouter } from "next/navigation";
 
 import getReportCount from "@/action/report/getreportcount";
+import { toast } from "react-toastify";
 
 const DashboardPage = () => {
-  const userid: number = parseInt(getCookie("id") ?? "0");
+  const [userid, setUserid] = useState<number>(0);
   const router = useRouter();
 
   const [isLoading, setLoading] = useState<boolean>(true);
@@ -26,12 +27,20 @@ const DashboardPage = () => {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
+
+      const authResponse = await getAuthenticatedUserId();
+      if (!authResponse.status) {
+        toast.error(authResponse.message);
+        return router.push("/login");
+      }
+      setUserid(authResponse.data);
+
       const response = await getReportCount({});
       if (response.status) {
         setCount(response.data!);
       }
 
-      const userresponse = await GetUser({ id: userid });
+      const userresponse = await GetUser({ id: authResponse.data });
       if (userresponse.status) {
         setUser(userresponse.data!);
       }

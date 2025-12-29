@@ -3,21 +3,19 @@
 import { capitalcase } from "@/utils/methods";
 import { ShopStatus, shop, user } from "@prisma/client";
 import { useEffect, useState } from "react";
-import { getCookie } from "cookies-next";
-import GetUserRendedShop from "@/action/bid/getapplyedshopformbid";
 import { toast } from "react-toastify";
 import IsProfileCompleted from "@/action/user/isprofilecompleted";
 import { useRouter } from "next/navigation";
 import { LucideArrowBigLeft, LucideArrowBigRight } from "@/components/icons";
 import { customAlphabet } from "nanoid";
-import GetUserRent from "@/action/rent_transact/getuserrent";
 import GetPandingRentShopByUserId from "@/action/rent/getpadingrentshopbyuserid";
 import AddOrderId from "@/action/rent_transact/addorderid";
 import GetUser from "@/action/user/getuser";
+import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 
 const BidPropertiesView = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const userid: number = parseInt(getCookie("id") ?? "0");
+  const [userid, setUserid] = useState<number>(0);
   const router = useRouter();
 
   const [user, setUser] = useState<user>();
@@ -46,20 +44,27 @@ const BidPropertiesView = () => {
     const init = async () => {
       setIsLoading(true);
 
+      const authResponse = await getAuthenticatedUserId();
+      if (!authResponse.status) {
+        toast.error(authResponse.message);
+        return router.push("/login");
+      }
+      setUserid(authResponse.data);
+
       const isprofilecompleted = await IsProfileCompleted({
-        id: userid,
+        id: authResponse.data,
       });
 
       if (!isprofilecompleted.status) {
         return router.push("/dashboard/userprofile/edit");
       }
-      const userresponse = await GetUser({ id: userid });
+      const userresponse = await GetUser({ id: authResponse.data });
       if (userresponse.status) {
         setUser(userresponse.data!);
       }
 
       const rent_transaction = await GetPandingRentShopByUserId({
-        userid: userid,
+        userid: authResponse.data,
       });
 
       if (!rent_transaction.status)

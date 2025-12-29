@@ -1,3 +1,6 @@
+import CryptoJS from "crypto-js";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+
 /**
  * Converts an error object or string to a string format.
  * If the input is a string, it converts it to uppercase.
@@ -15,8 +18,8 @@ const errorToString = (e: unknown): string => {
   return err;
 };
 
-export { errorToString };
 
+export { errorToString };
 /**
  * Check if the given string contains any space character.
  * @param {string} value - The string to check for spaces.
@@ -174,3 +177,31 @@ const numberWithIndianFormat = (x: number) => {
   return parts.join(".");
 };
 export default numberWithIndianFormat;
+
+const secretKey = "knf92fg#G$%2Ij309pwkn4gf#WTF#WCc2@#$WTfwe4gFVD";
+
+// Helper functions for URL-safe Base64 encoding and decoding
+const toBase64Url = (str: string): string =>
+  str.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+
+const fromBase64Url = (str: string): string =>
+  str.replace(/-/g, "+").replace(/_/g, "/") + "==".slice(str.length % 4 || 4);
+
+export const encryptURLData = (data: string): string => {
+  const encryptedData = CryptoJS.AES.encrypt(data, secretKey).toString();
+  return toBase64Url(encryptedData);
+};
+
+export const decryptURLData = (
+  cipherText: string,
+  router: AppRouterInstance
+): string => {
+  try {
+    const decodedCipherText = fromBase64Url(cipherText); // Convert back from URL-safe Base64
+    const bytes = CryptoJS.AES.decrypt(decodedCipherText, secretKey);
+    return bytes.toString(CryptoJS.enc.Utf8);
+  } catch {
+    router.back();
+    return "";
+  }
+};

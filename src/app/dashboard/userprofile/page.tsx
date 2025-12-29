@@ -5,13 +5,14 @@ import GetUser from "@/action/user/getuser";
 import { IcBaselineAccountCircle } from "@/components/icons";
 import { Separator } from "@/components/ui/separator";
 import { UserDocType, user } from "@prisma/client";
-import { getCookie } from "cookies-next";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { getAuthenticatedUserId } from "@/action/auth/getuserid";
+import { toast } from "react-toastify";
 
 const UserBidsRunning = () => {
-  const userid: number = parseInt(getCookie("id") ?? "0");
+  const [userid, setUserid] = useState<number>(0);
 
   const [pdffile, setPdffile] = useState<string | null>(null);
 
@@ -85,8 +86,20 @@ const UserBidsRunning = () => {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
+      
+      // Get authenticated user ID from server
+      const authResponse = await getAuthenticatedUserId();
+      if (!authResponse.status) {
+        toast.error(authResponse.message);
+        router.push("/login");
+        return;
+      }
+      
+      const authenticatedUserId = authResponse.data;
+      setUserid(authenticatedUserId);
+      
       const userrespone = await GetUser({
-        id: userid,
+        id: authenticatedUserId,
       });
       if (userrespone.status) {
         setUser(userrespone.data!);

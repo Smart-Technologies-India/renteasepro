@@ -3,8 +3,10 @@ import GetUser from "@/action/user/getuser";
 import Navbar from "@/components/dashboard/header";
 import Sidebar from "@/components/dashboard/sidebar";
 import { useEffect, useState } from "react";
-import { getCookie } from "cookies-next";
 import { Role, user } from "@prisma/client";
+import { getAuthenticatedUserId } from "@/action/auth/getuserid";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 export default function DashboardLayout({
   children,
@@ -14,20 +16,30 @@ export default function DashboardLayout({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [userdata, setUpser] = useState<user>();
   const [isLoading, setLoading] = useState<boolean>(true);
+  const router = useRouter();
 
   useEffect(() => {
     const init = async () => {
       setLoading(true);
-      const id: number = parseInt(getCookie("id") ?? "0");
 
-      const userrespone = await GetUser({ id: id });
+      // Get authenticated user ID from server
+      const authResponse = await getAuthenticatedUserId();
+      if (!authResponse.status) {
+        toast.error("Please login to continue");
+        router.push("/login");
+        return;
+      }
+      
+      const authenticatedUserId = authResponse.data;
+
+      const userrespone = await GetUser({ id: authenticatedUserId });
       if (userrespone.status) {
         setUpser(userrespone.data!);
       }
       setLoading(false);
     };
     init();
-  }, []);
+  }, [router]);
 
   if (isLoading)
     return (
@@ -50,7 +62,7 @@ export default function DashboardLayout({
           setIsOpen={setIsOpen}
           name={userdata?.username ?? ""}
         ></Navbar>
-        <div className="h-10"></div>
+        <div className="h-16"></div>
         {children}
       </div>
     </div>

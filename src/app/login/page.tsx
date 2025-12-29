@@ -1,6 +1,5 @@
 "use client";
 
-import { Label } from "@/components/ui/label";
 import { ApiResponseType } from "@/models/response";
 import { user } from "@prisma/client";
 import { useRef, useState } from "react";
@@ -8,29 +7,28 @@ import { toast } from "react-toastify";
 import { safeParse } from "valibot";
 
 import Login from "@/action/user/login";
-import { Button } from "@/components/ui/button";
 import { LoginSchema } from "@/schema/login";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Fa6RegularEye, Fa6RegularEyeSlash } from "@/components/icons";
 import Link from "next/link";
-import { handleNumberChange } from "@/utils/methods";
-import { Input } from "@/components/ui/input";
+import { Input, Button, Typography, Space, InputRef } from "antd";
+
+const { Title, Text } = Typography;
 
 export default function LoginPage() {
-  const mobile = useRef<HTMLInputElement>(null);
-  const password = useRef<HTMLInputElement>(null);
+  const mobile = useRef<InputRef>(null);
+  const password = useRef<InputRef>(null);
 
   const router = useRouter();
 
-  const [isShow, setIsShow] = useState<boolean>(false);
   const [isLogin, setIsLogin] = useState<boolean>(false);
 
   const loginuser = async () => {
     setIsLogin(true);
     const result = safeParse(LoginSchema, {
-      contactone: mobile.current?.value,
-      password: password.current?.value,
+      contactone: mobile.current?.input?.value,
+      password: password.current?.input?.value,
     });
 
     if (result.success) {
@@ -40,8 +38,8 @@ export default function LoginPage() {
       });
       if (loginrespone.status) {
         toast.success(loginrespone.message);
-        mobile.current!.value = "";
-        password.current!.value = "";
+        if (mobile.current?.input) mobile.current.input.value = "";
+        if (password.current?.input) password.current.input.value = "";
         router.push("/dashboard");
       } else {
         toast.error(loginrespone.message);
@@ -103,76 +101,55 @@ export default function LoginPage() {
             </Link>
           </div>
           <div>
-            <h1 className="text-lg font-semibold mt-2 lg:mt-6 text-center">
-              Welcome to PDA,DNH
-            </h1>
-            <h1 className="text-sm font-normal pb-2 text-center">
-              Login to access your Account
-            </h1>
-            <div className="grid max-w-sm items-center gap-1.5 w-80 mt-4">
-              <Label htmlFor="mobile" className="text-xs">
-                Mobile{" "}
-              </Label>
-
-              <input
-                id="mobile"
-                type="text"
-                ref={mobile}
-                className="border border-gray-300 grow outline-none focus:ring-0 ring-0 focus:outline-none rounded-md py-2 focus-visible:right-0 px-2 bg-transparent fill-none appearance-none"
-              />
-            </div>
-            <div className="grid max-w-sm items-center gap-1.5 w-80 mt-2 lg:mt-6">
-              <Label htmlFor="password" className="text-xs">
-                Password{" "}
-              </Label>
-              <div>
-                <div className="flex items-center gap-2 px-2 rounded border border-gray-300 bg-[#e8f0fe]">
-                  <input
-                    id="password"
-                    type={isShow ? "text" : "password"}
-                    ref={password}
-                    className="grow border-0 outline-none focus:ring-0 ring-0 focus:border-0 focus:outline-none rounded-md py-2 focus-visible:right-0"
-                  />
-                  {isShow ? (
-                    <Fa6RegularEyeSlash
-                      className="cursor-pointer"
-                      onClick={() => {
-                        setIsShow(false);
-                      }}
-                    />
-                  ) : (
-                    <Fa6RegularEye
-                      className="cursor-pointer"
-                      onClick={() => {
-                        setIsShow(true);
-                      }}
-                    />
-                  )}
-                </div>
+            <Space orientation="vertical" size="large" className="w-full">
+              <div className="text-center">
+                <Title level={3} className="!mb-2">
+                  Welcome to PDA,DNH
+                </Title>
+                <Text type="secondary">
+                  Login to access your Account
+                </Text>
               </div>
-            </div>
-
-            {isLogin ? (
-              <Button
-                className="mt-4 text-center font-semibold text-white bg-[#2350f0] hover:bg-blue-600 rounded-md block py-2 w-full "
-                disabled
-              >
-                Loading...
-              </Button>
-            ) : (
-              <Button
-                onClick={loginuser}
-                className="mt-4 text-center font-semibold text-white bg-[#2350f0] hover:bg-blue-600 rounded-md block py-2 w-full "
-              >
-                Login
-              </Button>
-            )}
-
-            <div className="flex w-full mt-2 lg:mt-6 items-center gap-4 justify-center">
-              <a href="/" className="text-center text-xs text-[#2350f0]">
-                Login With OTP
-              </a>
-            </div>
+              <Space orientation="vertical" size="middle" className="w-80">
+                <div>
+                  <Text className="text-xs block mb-1">Mobile Number</Text>
+                  <Input
+                    ref={mobile}
+                    type="text"
+                    size="large"
+                    placeholder="Enter mobile number"
+                    maxLength={10}
+                  />
+                </div>
+                <div>
+                  <Text className="text-xs block mb-1">Password</Text>
+                  <Input.Password
+                    ref={password}
+                    type="password"
+                    size="large"
+                    placeholder="Enter password"
+                    iconRender={(visible) =>
+                      visible ? <Fa6RegularEyeSlash /> : <Fa6RegularEye />
+                    }
+                  />
+                </div>
+                <Button
+                  type="primary"
+                  size="large"
+                  block
+                  loading={isLogin}
+                  onClick={loginuser}
+                  className="!bg-[#2350f0] !hover:bg-blue-600 !mt-2"
+                >
+                  Login
+                </Button>
+                <div className="text-center mt-2">
+                  <Link href="/" className="text-xs text-[#2350f0] hover:text-blue-600">
+                    Login With OTP
+                  </Link>
+                </div>
+              </Space>
+            </Space>
           </div>
         </div>
       </div>

@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { daily_rent_description, user } from "@prisma/client";
-import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
@@ -32,6 +31,7 @@ import { customAlphabet } from "nanoid";
 import GetUser from "@/action/user/getuser";
 import BackButton from "@/components/backbutton";
 import GetDailyRentDescription from "@/action/dailyrentdescription/getdailyrentdescription";
+import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 const { RangePicker } = DatePicker;
 
 interface CreateRentProps {
@@ -41,7 +41,7 @@ interface CreateRentProps {
 
 const CreateRentPage = (props: CreateRentProps) => {
   const router = useRouter();
-  const createuserid: number = parseInt(getCookie("id") ?? "0");
+  const [createuserid, setCreateduserid] = useState<number>(0);
 
   const [isCreating, setIsCreating] = useState<boolean>(false);
 
@@ -77,6 +77,13 @@ const CreateRentPage = (props: CreateRentProps) => {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
+
+      const authResponse = await getAuthenticatedUserId();
+      if (!authResponse.status) {
+        toast.error(authResponse.message);
+        return router.push("/login");
+      }
+      setCreateduserid(authResponse.data);
 
       const purpose = await GetDailyRentDescription({
         id: props.unitid,
@@ -519,6 +526,7 @@ const CreateRentPage = (props: CreateRentProps) => {
                   return current && current.toDate() < subDays(new Date(), 0);
                 }}
                 onChange={(e) => {
+                  if (e == null) return;
                   if (e.length != 2) return;
 
                   if (e[0] == null || e[1] == null) return;

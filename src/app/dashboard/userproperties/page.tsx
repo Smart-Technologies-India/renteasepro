@@ -4,17 +4,17 @@ import { capitalcase } from "@/utils/methods";
 import { ShopStatus, shop, user } from "@prisma/client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getCookie } from "cookies-next";
 import GetUser from "@/action/user/getuser";
 import GetUserRendedShop from "@/action/bid/getapplyedshopformbid";
 import { toast } from "react-toastify";
 import IsProfileCompleted from "@/action/user/isprofilecompleted";
 import { useRouter } from "next/navigation";
 import { LucideArrowBigLeft, LucideArrowBigRight } from "@/components/icons";
+import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 
 const BidPropertiesView = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const userid: number = parseInt(getCookie("id") ?? "0");
+  const [userid, setUserid] = useState<number>(0);
   const router = useRouter();
 
   // const [user, setUser] = useState<user>();
@@ -43,19 +43,29 @@ const BidPropertiesView = () => {
     const init = async () => {
       setIsLoading(true);
 
+      // Get authenticated user ID from server
+      const authResponse = await getAuthenticatedUserId();
+      if (!authResponse.status) {
+        toast.error(authResponse.message);
+        return router.push("/login");
+      }
+      
+      const authenticatedUserId = authResponse.data;
+      setUserid(authenticatedUserId);
+
       const isprofilecompleted = await IsProfileCompleted({
-        id: userid,
+        id: authenticatedUserId,
       });
 
       if (!isprofilecompleted.status) {
         return router.push("/dashboard/userprofile/edit");
       }
-      // const userresponse = await GetUser({ id: userid });
+      // const userresponse = await GetUser({ id: authenticatedUserId });
       // if (userresponse.status) {
       //   setUser(userresponse.data!);
       // }
 
-      const rent_transaction = await GetUserRendedShop({ userid: userid });
+      const rent_transaction = await GetUserRendedShop({ userid: authenticatedUserId });
       if (!rent_transaction.status)
         return toast.error(rent_transaction.message);
 

@@ -2,9 +2,6 @@
 
 import LoginOtp from "@/action/user/loginotp";
 import SendOtp from "@/action/user/sendotp";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { handleNumberChange } from "@/utils/methods";
 import { user } from "@prisma/client";
 import Image from "next/image";
@@ -12,24 +9,27 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { toast } from "react-toastify";
 import Link from "next/link";
+import { Input, Button, Typography, Card, Space, InputRef } from "antd";
+
+const { Title, Text } = Typography;
 
 export default function Home() {
   const router = useRouter();
-  const firstname = useRef<HTMLInputElement>(null);
-  const lastname = useRef<HTMLInputElement>(null);
+  const firstname = useRef<InputRef>(null);
+  const lastname = useRef<InputRef>(null);
 
   const [isOtpSent, setIsOtpSent] = useState(false);
 
   const [otpresponse, setOtpResponse] = useState<user>();
 
-  const mobileNumber = useRef<HTMLInputElement>(null);
-  const otpRef = useRef<HTMLInputElement>(null);
+  const mobileNumber = useRef<InputRef>(null);
+  const otpRef = useRef<InputRef>(null);
 
   const [isLogin, setIsLogin] = useState<boolean>(false);
 
   const sendOtp = async () => {
     setIsLogin(true);
-    const mobile = mobileNumber.current?.value;
+    const mobile = mobileNumber.current?.input?.value;
     if (!mobile) {
       toast.error("Please enter a valid mobile number");
       setIsLogin(false);
@@ -41,6 +41,7 @@ export default function Home() {
       setIsLogin(false);
       return;
     }
+
     const response = await SendOtp({ contact: mobile });
     if (!response.status) {
       toast.error(response.message);
@@ -56,10 +57,11 @@ export default function Home() {
 
   const verifyOtp = async () => {
     setIsLogin(true);
-    const mobile = mobileNumber.current?.value;
-    const otp = otpRef.current?.value;
-    const firstnameValue = otpresponse?.firstName ?? firstname.current?.value;
-    const lastnameValue = otpresponse?.lastName ?? lastname.current?.value;
+    const mobile = otpresponse?.contactone || mobileNumber.current?.input?.value;
+    const otp = otpRef.current?.input?.value;
+    const firstnameValue = otpresponse?.firstName ?? firstname.current?.input?.value;
+    const lastnameValue = otpresponse?.lastName ?? lastname.current?.input?.value;
+    console.log({ mobile, otp, firstnameValue, lastnameValue });
 
     if (!mobile) {
       toast.error("Please enter a valid mobile number");
@@ -153,118 +155,142 @@ export default function Home() {
             </Link>
           </div>
           <div>
-            <h1 className="text-lg font-semibold lg:mt-6 text-center">
-              Welcome to PDA,DNH
-            </h1>
-            <h1 className="text-sm font-normal pb-2 text-center">
-              Login to access your Account
-            </h1>
-            <div className="grid max-w-sm items-center gap-1.5 w-60 lg:w-80 mt-4">
-              {isOtpSent ? (
-                <>
-                  {otpresponse?.firstName == null ||
-                  otpresponse?.firstName == "" ||
-                  otpresponse?.lastName == null ||
-                  otpresponse?.lastName == "" ? (
-                    <>
-                      <Label htmlFor="mobile" className="text-xs">
-                        Mobile Number
-                      </Label>
+            <Space orientation="vertical" size="large" className="w-full">
+              <div className="text-center">
+                <Title level={3} className="!mb-2">
+                  Welcome to PDA,DNH
+                </Title>
+                <Text type="secondary">
+                  Login to access your Account
+                </Text>
+              </div>
+              <Space orientation="vertical" size="middle" className="w-60 lg:w-80">
+                {isOtpSent ? (
+                  <>
+                    {otpresponse?.firstName == null ||
+                    otpresponse?.firstName == "" ||
+                    otpresponse?.lastName == null ||
+                    otpresponse?.lastName == "" ? (
+                      <>
+                        <div>
+                          <Text className="text-xs block mb-1">
+                            Mobile Number
+                          </Text>
+                          <Input
+                            type="text"
+                            value={otpresponse?.contactone!}
+                            disabled
+                            maxLength={10}
+                            size="large"
+                            placeholder="Enter mobile number"
+                          />
+                        </div>
+                        <div>
+                          <Text className="text-xs block mb-1">
+                            First Name
+                          </Text>
+                          <Input
+                            ref={firstname}
+                            type="text"
+                            size="large"
+                            placeholder="Enter first name"
+                          />
+                        </div>
+                        <div>
+                          <Text className="text-xs block mb-1">
+                            Last Name
+                          </Text>
+                          <Input
+                            ref={lastname}
+                            type="text"
+                            size="large"
+                            placeholder="Enter last name"
+                          />
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <Title level={4} className="!mb-4">
+                          Hello {otpresponse?.firstName} {otpresponse?.lastName}
+                        </Title>
+                        <div>
+                          <Text className="text-xs block mb-1">
+                            Mobile Number
+                          </Text>
+                          <Input
+                            type="text"
+                            value={otpresponse?.contactone!}
+                            maxLength={10}
+                            disabled
+                            size="large"
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    <div>
+                      <Text className="text-xs block mb-1">OTP</Text>
                       <Input
-                        id="mobile"
+                        ref={otpRef}
                         type="text"
-                        value={otpresponse?.contactone!}
-                        ref={mobileNumber}
-                        disabled
-                        maxLength={10}
-                        className="w-full"
-                        onChange={handleNumberChange}
+                        maxLength={4}
+                        size="large"
+                        placeholder="Enter OTP"
+                        
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (otpRef.current?.input) {
+                            otpRef.current.input.value = value.replace(/\D/g, "");
+                          }
+                        }}
                       />
-                      <Label htmlFor="firstname" className="text-xs">
-                        First Name
-                      </Label>
-                      <Input id="firstname" type="text" ref={firstname} />
-
-                      <Label htmlFor="lastname" className="text-xs">
-                        Last Name
-                      </Label>
-                      <Input id="lastname" type="text" ref={lastname} />
-                    </>
-                  ) : (
-                    <>
-                      <h1 className="text-left text-xl mb-6">
-                        Hello {otpresponse?.firstName} {otpresponse?.lastName}
-                      </h1>
-                      <Label htmlFor="mobile" className="text-xs">
-                        Mobile Number
-                      </Label>
-                      <div className="flex">
-                        <Input
-                          id="mobile"
-                          type="text"
-                          ref={mobileNumber}
-                          value={otpresponse?.contactone!}
-                          maxLength={10}
-                          disabled
-                          onChange={handleNumberChange}
-                        />
-                      </div>
-                    </>
-                  )}
-
-                  <Label htmlFor="otp" className="text-xs">
-                    OTP
-                  </Label>
-                  <Input
-                    id="otp"
-                    type="text"
-                    ref={otpRef}
-                    maxLength={4}
-                    onChange={handleNumberChange}
-                  />
-                  {isLogin ? (
-                    <Button className="mt-4 text-center font-semibold text-white bg-[#2350f0] hover:bg-blue-600 rounded-md block py-2 w-full ">
-                      Loading...
-                    </Button>
-                  ) : (
+                    </div>
                     <Button
+                      type="primary"
+                      size="large"
+                      block
+                      loading={isLogin}
                       onClick={verifyOtp}
-                      className="mt-4 text-center font-semibold text-white bg-[#2350f0] hover:bg-blue-600 rounded-md block py-2 w-full "
+                      className="!bg-[#2350f0] !hover:bg-blue-600 !mt-2"
                     >
                       Verify OTP
                     </Button>
-                  )}
-                </>
-              ) : (
-                <>
-                  <Label htmlFor="mobile" className="text-xs">
-                    Mobile Number
-                  </Label>
-                  <Input
-                    id="mobile"
-                    type="text"
-                    ref={mobileNumber}
-                    maxLength={10}
-                    onChange={handleNumberChange}
-                  />
-                  {isLogin ? (
+                  </>
+                ) : (
+                  <>
+                    <div>
+                      <Text className="text-xs block mb-1">
+                        Mobile Number
+                      </Text>
+                      <Input
+                        ref={mobileNumber}
+                        type="text"
+                        maxLength={10}
+                        size="large"
+                        placeholder="Enter mobile number"
+                        onChange={(e) => {
+                          const value = e.target.value;
+
+                          if (mobileNumber.current?.input) {
+                            mobileNumber.current.input.value = value.replace(/\D/g, "");
+                          }
+                        }}
+                      />
+                    </div>
                     <Button
-                      disabled
-                      className="mt-4 text-center font-semibold text-white bg-[#2350f0] hover:bg-blue-600 rounded-md block py-2 w-full "
-                    >
-                      Loading...
-                    </Button>
-                  ) : (
-                    <Button
+                      type="primary"
+                      size="large"
+                      block
+                      loading={isLogin}
                       onClick={sendOtp}
-                      className="mt-4 text-center font-semibold text-white bg-[#2350f0] hover:bg-blue-600 rounded-md block py-2 w-full "
+                      className="!bg-[#2350f0] !hover:bg-blue-600 !mt-2"
                     >
                       Send OTP
                     </Button>
-                  )}
-                </>
-              )}
-            </div>
+                  </>
+                )}
+              </Space>
+            </Space>
           </div>
         </div>
       </div>

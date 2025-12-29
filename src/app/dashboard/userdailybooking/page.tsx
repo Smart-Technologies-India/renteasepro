@@ -9,12 +9,13 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { daily_property, property } from "@prisma/client";
-import { getCookie } from "cookies-next";
+import { daily_property } from "@prisma/client";
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { getAuthenticatedUserId } from "@/action/auth/getuserid";
+import { toast } from "react-toastify";
 
 const Properties = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -26,14 +27,20 @@ const Properties = () => {
   const searchtext = useRef<HTMLInputElement>(null);
   const [searchresult, setSearchresult] = useState<daily_property[]>([]);
 
-  const userid: number = parseInt(getCookie("id") ?? "0");
+  const [userid, setUserid] = useState<number>(0);
   const router = useRouter();
 
   useEffect(() => {
     const init = async () => {
       setIsLoading(true);
+      const authResponse = await getAuthenticatedUserId();
+      if (!authResponse.status) {
+        toast.error(authResponse.message);
+        return router.push("/login");
+      }
+      setUserid(authResponse.data);
       const isprofilecompleted = await IsProfileCompleted({
-        id: userid,
+        id: authResponse.data,
       });
 
       if (!isprofilecompleted.status) {
@@ -154,10 +161,7 @@ const Properties = () => {
       ) : (
         <>
           {properties.length == 0 && (
-            <Alert
-              variant="destructive"
-              className="mt-4 bg-rose-500 bg-opacity-10"
-            >
+            <Alert variant="destructive" className="mt-4 bg-rose-500/10">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
               <AlertDescription>No Property created yet.</AlertDescription>

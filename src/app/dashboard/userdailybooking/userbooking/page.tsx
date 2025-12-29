@@ -1,5 +1,4 @@
 "use client";
-import GetUserBid from "@/action/bid/getuserbid";
 import {
   Table,
   TableBody,
@@ -9,16 +8,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
-import { getCookie } from "cookies-next";
+import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 import { daily_property, daily_rent, daily_shop, user } from "@prisma/client";
 import { formateDate } from "@/utils/methods";
 import { useRouter } from "next/navigation";
 import IsProfileCompleted from "@/action/user/isprofilecompleted";
 import GetUserBookingHistory from "@/action/dailyrent/getuserbookinghistory";
 import Link from "next/link";
+import { toast } from "react-toastify";
 
 const UserBookingPage = () => {
-  const id: number = parseInt(getCookie("id") ?? "0");
+  const [userid, setUserid] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
@@ -34,16 +34,22 @@ const UserBookingPage = () => {
   useEffect(() => {
     const init = async () => {
       setIsLoading(true);
+      const authResponse = await getAuthenticatedUserId();
+      if (!authResponse.status) {
+        toast.error(authResponse.message);
+        return router.push("/login");
+      }
+      setUserid(authResponse.data);
 
       const isprofilecompleted = await IsProfileCompleted({
-        id: id,
+        id: authResponse.data,
       });
 
       if (!isprofilecompleted.status) {
         return router.push("/dashboard/userprofile/edit");
       }
       const booking_response = await GetUserBookingHistory({
-        userid: id,
+        userid: authResponse.data,
       });
 
       if (booking_response.status && booking_response.data) {
@@ -54,7 +60,7 @@ const UserBookingPage = () => {
     };
 
     init();
-  }, [id]);
+  }, [userid]);
 
   if (isLoading)
     return (
@@ -117,7 +123,9 @@ const UserBookingPage = () => {
                         : 0)}
                   </TableCell>
 
-                  <TableCell>{val.status == "DEPOSITDUE"? "DEPOSIT DUE" : val.status}</TableCell>
+                  <TableCell>
+                    {val.status == "DEPOSITDUE" ? "DEPOSIT DUE" : val.status}
+                  </TableCell>
                   <TableCell>
                     <Link
                       href={`/dashboard/dailyshops/viewrent/${val.id}/${val.userId}`}

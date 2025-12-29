@@ -165,7 +165,7 @@ const UserBidHistoryView = () => {
                 id="date"
                 variant={"outline"}
                 className={`w-full justify-start text-left font-normal ${
-                  !filterDate ?? "text-muted-foreground"
+                  filterDate ? "" : "text-muted-foreground"
                 }`}
               >
                 <IcBaselineCalendarMonth className="mr-2 h-4 w-4" />

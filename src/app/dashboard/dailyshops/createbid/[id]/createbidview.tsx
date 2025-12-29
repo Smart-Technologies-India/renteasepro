@@ -7,19 +7,16 @@ import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { CreateBidSchema } from "@/schema/createbid";
 import { PercentageType, RefundType } from "@prisma/client";
-import { getCookie } from "cookies-next";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { SetStateAction, useEffect, useRef, useState } from "react";
@@ -33,6 +30,7 @@ import { longtext } from "@/utils/methods";
 import UploadFile from "@/action/file_upload/uploadfile";
 import AddFileBid from "@/action/bid/addbidfile";
 import BackButton from "@/components/backbutton";
+import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 
 interface CreateBidPageProps {
   shopid: number;
@@ -70,7 +68,7 @@ function setTime(date: Date, timeString: string): Date | void {
 }
 
 const CreateBidPage = (props: CreateBidPageProps) => {
-  const userid: number = parseInt(getCookie("id") ?? "0");
+  const [userid, setUserid] = useState<number>(0);
 
   const [isCreating, setIsCreating] = useState<boolean>(false);
 
@@ -213,6 +211,14 @@ const CreateBidPage = (props: CreateBidPageProps) => {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
+      
+      const authResponse = await getAuthenticatedUserId();
+      if (!authResponse.status) {
+        toast.error(authResponse.message);
+        return router.push("/login");
+      }
+      setUserid(authResponse.data);
+
       const shopresponse = await GetShop({ id: props.shopid });
       if (shopresponse.status) {
         setShop(shopresponse.data);
@@ -580,6 +586,7 @@ const CreateBidPage = (props: CreateBidPageProps) => {
                 format="h:mm a"
                 size="large"
                 onChange={(time) => {
+                  if (!time) return;
                   setStartTime(time.format("h:mm a"));
                 }}
               />
@@ -632,6 +639,7 @@ const CreateBidPage = (props: CreateBidPageProps) => {
                 format="h:mm a"
                 size="large"
                 onChange={(time) => {
+                  if (!time) return;
                   setEndTime(time.format("h:mm a"));
                 }}
               />
@@ -648,7 +656,7 @@ const CreateBidPage = (props: CreateBidPageProps) => {
                   <Button
                     variant={"outline"}
                     className={`w-full justify-start text-left font-normal ${
-                      !deadlineDate ?? "text-muted-foreground"
+                      deadlineDate ? "text-gray-900" : "text-muted-foreground"
                     }`}
                   >
                     <IcBaselineCalendarMonth className="mr-2 h-4 w-4" />

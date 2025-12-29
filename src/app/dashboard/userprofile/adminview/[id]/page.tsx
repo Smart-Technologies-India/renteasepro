@@ -1,8 +1,520 @@
-import UserAdminView from "./adminview";
+"use client";
+import getOtherUploadFilesUser from "@/action/user/getotheruploadedfiles";
+import getUploadFileUser from "@/action/user/getuploadedfile";
+import GetUser from "@/action/user/getuser";
+import { IcBaselineAccountCircle } from "@/components/icons";
+import { Separator } from "@/components/ui/separator";
+import { UserDocType, user } from "@prisma/client";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
-const UserProfileDetails = async ({ params }: { params: any }) => {
-  const id: number = params.id;
-  return <UserAdminView id={id} />;
+const UserAdminView = () => {
+  const param = useParams();
+  const userid: number = parseInt(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
+  );
+
+  const [isLoading, setLoading] = useState<boolean>(true);
+
+  const [user, setUser] = useState<user>();
+
+  interface AdditionalFile {
+    name: string;
+    path: string;
+  }
+
+  const [additionalFile, setAdditionalFile] = useState<AdditionalFile[]>([]);
+
+  interface FileGetResponse {
+    status: boolean;
+    path: string;
+  }
+
+  const [getAadhar, setGetAadhar] = useState<FileGetResponse>({
+    status: false,
+    path: "",
+  });
+
+  const [getPan, setGetPan] = useState<FileGetResponse>({
+    status: false,
+    path: "",
+  });
+
+  const [getBankPassbook, setGetBankPassbook] = useState<FileGetResponse>({
+    status: false,
+    path: "",
+  });
+
+  const [getPhoto, setGetPhoto] = useState<FileGetResponse>({
+    status: false,
+    path: "",
+  });
+
+  const [getWomenFile, setGetWomenFile] = useState<FileGetResponse>({
+    status: false,
+    path: "",
+  });
+
+  const [getCategory, setGetCategory] = useState<FileGetResponse>({
+    status: false,
+    path: "",
+  });
+
+  const [getAbled, setGetAbled] = useState<FileGetResponse>({
+    status: false,
+    path: "",
+  });
+
+  const [getMsme, setGetMsme] = useState<FileGetResponse>({
+    status: false,
+    path: "",
+  });
+
+  const [getStsc, setGetStsc] = useState<FileGetResponse>({
+    status: false,
+    path: "",
+  });
+
+  const [getTribal, setGetTribal] = useState<FileGetResponse>({
+    status: false,
+    path: "",
+  });
+
+  useEffect(() => {
+    const init = async () => {
+      setLoading(true);
+      const userrespone = await GetUser({
+        id: userid,
+      });
+      if (userrespone.status) {
+        setUser(userrespone.data!);
+      }
+
+      const aadharresponse = await getUploadFileUser({
+        userId: userrespone.data?.id!,
+        doc_type: UserDocType.AADHAR,
+      });
+
+      if (aadharresponse.status) {
+        setGetAadhar({
+          status: true,
+          path: aadharresponse.data?.path!,
+        });
+      }
+
+      const panresponse = await getUploadFileUser({
+        userId: userrespone.data?.id!,
+        doc_type: UserDocType.PAN,
+      });
+
+      if (panresponse.status) {
+        setGetPan({
+          status: true,
+          path: panresponse.data?.path!,
+        });
+      }
+
+      const bankpassbookresponse = await getUploadFileUser({
+        userId: userrespone.data?.id!,
+        doc_type: UserDocType.BANK,
+      });
+
+      if (bankpassbookresponse.status) {
+        setGetBankPassbook({
+          status: true,
+          path: bankpassbookresponse.data?.path!,
+        });
+      }
+
+      const photoresponse = await getUploadFileUser({
+        userId: userrespone.data?.id!,
+        doc_type: UserDocType.PHOTO,
+      });
+
+      if (photoresponse.status) {
+        setGetPhoto({
+          status: true,
+          path: photoresponse.data?.path!,
+        });
+      }
+
+      const womenfileresponse = await getUploadFileUser({
+        userId: userid,
+        doc_type: UserDocType.WOMEN,
+      });
+
+      if (womenfileresponse.status) {
+        setGetWomenFile({
+          status: true,
+          path: womenfileresponse.data?.path!,
+        });
+      }
+
+      const categoryresponse = await getUploadFileUser({
+        userId: userid,
+        doc_type: UserDocType.RESERVED,
+      });
+
+      if (categoryresponse.status) {
+        setGetCategory({
+          status: true,
+          path: categoryresponse.data?.path!,
+        });
+      }
+
+      const abledresponse = await getUploadFileUser({
+        userId: userid,
+        doc_type: UserDocType.DIFFERENTLY_ABLED,
+      });
+
+      if (abledresponse.status) {
+        setGetAbled({
+          status: true,
+          path: abledresponse.data?.path!,
+        });
+      }
+
+      const msmeresponse = await getUploadFileUser({
+        userId: userid,
+        doc_type: UserDocType.MSME,
+      });
+
+      if (msmeresponse.status) {
+        setGetMsme({
+          status: true,
+          path: msmeresponse.data?.path!,
+        });
+      }
+
+      const stscresponse = await getUploadFileUser({
+        userId: userid,
+        doc_type: UserDocType.SC_ST,
+      });
+
+      if (stscresponse.status) {
+        setGetStsc({
+          status: true,
+          path: stscresponse.data?.path!,
+        });
+      }
+
+      const tribalresponse = await getUploadFileUser({
+        userId: userid,
+        doc_type: UserDocType.TRIBAL,
+      });
+
+      if (tribalresponse.status) {
+        setGetTribal({
+          status: true,
+          path: tribalresponse.data?.path!,
+        });
+      }
+
+      const additionalfileresponse = await getOtherUploadFilesUser({
+        userId: userid,
+      });
+
+      if (additionalfileresponse.status) {
+        setAdditionalFile(
+          additionalfileresponse.data?.map((file) => ({
+            name: file.name,
+            path: file.path,
+          })) ?? []
+        );
+      }
+
+      setLoading(false);
+    };
+
+    init();
+  }, [userid]);
+
+  if (isLoading)
+    return (
+      <div className="h-screen w-full grid place-items-center text-3xl text-gray-600 bg-gray-200">
+        Loading...
+      </div>
+    );
+
+  return (
+    <div className="p-6">
+      <div className="flex gap-2 items-center">
+        <IcBaselineAccountCircle className="text-3xl" />
+        <p className="text-sm font-semibold text-gray-600">User Profile</p>
+        <div className="grow"></div>
+      </div>
+      <div className="bg-white p-4 rounded-md shadow-md mt-6">
+        <p className="text-gray-500 text-center">User Basic Information</p>
+        <Separator />
+        <div className="mt-2 flex gap-2">
+          <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
+            <h1 className="text-sm text-black">Username</h1>
+            <p className="text-sm font-semibold">{user?.username ?? "-"}</p>
+          </div>
+
+          <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
+            <h1 className="text-sm text-black">Email:</h1>
+            <p className="text-sm font-semibold">{user?.email ?? "-"}</p>
+          </div>
+        </div>
+
+        <div className="mt-2 flex gap-2">
+          <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
+            <h1 className="text-sm text-black">First Name</h1>
+            <p className="text-sm font-semibold">{user?.firstName ?? "-"}</p>
+          </div>
+
+          <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
+            <h1 className="text-sm text-black">Last Name:</h1>
+            <p className="text-sm font-semibold">{user?.lastName ?? "-"}</p>
+          </div>
+        </div>
+
+        <div className="mt-2 flex gap-2">
+          <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
+            <h1 className="text-sm text-black">Mobile Number</h1>
+            <p className="text-sm font-semibold">{user?.contactone ?? "-"}</p>
+          </div>
+
+          <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
+            <h1 className="text-sm text-black">Alternate Contact Number</h1>
+            <p className="text-sm font-semibold">{user?.contacttwo ?? "-"}</p>
+          </div>
+        </div>
+
+        <div className="mt-2 flex gap-2">
+          <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
+            <h1 className="text-sm text-black">Aadhar</h1>
+            <p className="text-sm font-semibold">{user?.aadhar ?? "-"}</p>
+          </div>
+
+          <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
+            <h1 className="text-sm text-black">Pan</h1>
+            <p className="text-sm font-semibold">{user?.pan ?? "-"}</p>
+          </div>
+        </div>
+
+        <div className="mt-2 flex gap-2">
+          <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
+            <h1 className="text-sm text-black">Address</h1>
+            <p className="text-sm font-semibold">{user?.address ?? "-"}</p>
+          </div>
+
+          <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
+            <h1 className="text-sm text-black">City</h1>
+            <p className="text-sm font-semibold">{user?.city ?? "-"}</p>
+          </div>
+        </div>
+
+        <div className="mt-2 flex gap-2">
+          <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
+            <h1 className="text-sm text-black">Bank Name</h1>
+            <p className="text-sm font-semibold">{user?.bankName ?? "-"}</p>
+          </div>
+
+          <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
+            <h1 className="text-sm text-black">Bank Amount Number</h1>
+            <p className="text-sm font-semibold">
+              {user?.bankAccountNumber ?? "-"}
+            </p>
+          </div>
+
+          <div className="rounded-md py-1 px-4 bg-gray-100 flex-1">
+            <h1 className="text-sm text-black">Ifsc Code</h1>
+            <p className="text-sm font-semibold">{user?.ifscCode ?? "-"}</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+          {getAadhar.status ? (
+            <>
+              <div className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between">
+                <p>Aadhar Card</p>
+                <Link
+                  target="_blank"
+                  href={getAadhar.path}
+                  className="bg-gray-200 text-black py-1 px-4 rounded-md text-sm h-8 grid place-items-center"
+                >
+                  View File
+                </Link>
+              </div>
+            </>
+          ) : (
+            <></>
+          )}
+
+          {getPan.status ? (
+            <>
+              <div className="flex gap-4 items-center  bg-gray-100 p-2 rounded justify-between">
+                <p>Pan Card</p>
+                <Link
+                  target="_blank"
+                  href={getPan.path}
+                  className="bg-gray-200 text-black py-1 px-4 rounded-md text-sm h-8 grid place-items-center"
+                >
+                  View File
+                </Link>
+              </div>
+            </>
+          ) : (
+            <></>
+          )}
+
+          {getBankPassbook.status ? (
+            <>
+              <div className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between">
+                <p>Bank Passbook</p>
+                <Link
+                  target="_blank"
+                  href={getBankPassbook.path}
+                  className="bg-gray-200 text-black py-1 px-4 rounded-md text-sm h-8 grid place-items-center"
+                >
+                  View File
+                </Link>
+              </div>
+            </>
+          ) : (
+            <></>
+          )}
+
+          {getPhoto.status ? (
+            <>
+              <div className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between">
+                <p>Photo</p>
+                <Link
+                  target="_blank"
+                  href={getPhoto.path}
+                  className="bg-gray-200 text-black py-1 px-4 rounded-md text-sm h-8 grid place-items-center"
+                >
+                  View File
+                </Link>
+              </div>
+            </>
+          ) : (
+            <></>
+          )}
+
+          {getWomenFile.status ? (
+            <>
+              <div className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between">
+                <p>For Women</p>
+                <Link
+                  target="_blank"
+                  href={getWomenFile.path}
+                  className="bg-gray-200 text-black py-1 px-4 rounded-md text-sm h-8 grid place-items-center"
+                >
+                  View File
+                </Link>
+              </div>
+            </>
+          ) : (
+            <></>
+          )}
+
+          {getCategory.status ? (
+            <>
+              <div className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between">
+                <p>For Reserved Category</p>
+                <Link
+                  target="_blank"
+                  href={getCategory.path}
+                  className="bg-gray-200 text-black py-1 px-4 rounded-md text-sm h-8 grid place-items-center"
+                >
+                  View File
+                </Link>
+              </div>
+            </>
+          ) : (
+            <></>
+          )}
+
+          {getAbled.status ? (
+            <>
+              <div className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between">
+                <p>For Differently Abled</p>
+                <Link
+                  target="_blank"
+                  href={getAbled.path}
+                  className="bg-gray-200 text-black py-1 px-4 rounded-md text-sm h-8 grid place-items-center"
+                >
+                  View File
+                </Link>
+              </div>
+            </>
+          ) : (
+            <></>
+          )}
+
+          {getMsme.status ? (
+            <>
+              <div className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between">
+                <p>For MSME</p>
+                <Link
+                  target="_blank"
+                  href={getMsme.path}
+                  className="bg-gray-200 text-black py-1 px-4 rounded-md text-sm h-8 grid place-items-center"
+                >
+                  View File
+                </Link>
+              </div>
+            </>
+          ) : (
+            <></>
+          )}
+
+          {getStsc.status ? (
+            <>
+              <div className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between">
+                <p>For SC/ST</p>
+                <Link
+                  target="_blank"
+                  href={getStsc.path}
+                  className="bg-gray-200 text-black py-1 px-4 rounded-md text-sm h-8 grid place-items-center"
+                >
+                  View File
+                </Link>
+              </div>
+            </>
+          ) : (
+            <></>
+          )}
+
+          {getTribal.status ? (
+            <>
+              <div className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between">
+                <p>For Tribal</p>
+                <Link
+                  target="_blank"
+                  href={getTribal.path}
+                  className="bg-gray-200 text-black py-1 px-4 rounded-md text-sm h-8 grid place-items-center"
+                >
+                  View File
+                </Link>
+              </div>
+            </>
+          ) : (
+            <></>
+          )}
+
+          {additionalFile.map((file, index) => (
+            <div
+              key={index}
+              className="flex gap-4 items-center bg-gray-100 p-2 rounded justify-between"
+            >
+              <p>{file.name}</p>
+              <Link
+                target="_blank"
+                href={file.path}
+                className="bg-gray-200 text-black py-1 px-4 rounded-md text-sm h-8 grid place-items-center"
+              >
+                View File
+              </Link>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 };
 
-export default UserProfileDetails;
+export default UserAdminView;

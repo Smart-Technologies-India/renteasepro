@@ -1,31 +1,30 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { ApiResponseType } from "@/models/response";
-import { CreateUserSchema } from "@/schema/createuser";
 import { Role, user } from "@prisma/client";
 import { useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { safeParse } from "valibot";
 
 import createUser from "@/action/user/createuser";
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { RegisterUserSchema } from "@/schema/registeruser";
 import Link from "next/link";
+import { Input, Button, Typography, Space, InputRef } from "antd";
+
+const { Title, Text } = Typography;
 export default function Home() {
-  const username = useRef<HTMLInputElement>(null);
-  const password = useRef<HTMLInputElement>(null);
-  const repassword = useRef<HTMLInputElement>(null);
+  const username = useRef<InputRef>(null);
+  const password = useRef<InputRef>(null);
+  const repassword = useRef<InputRef>(null);
   const [isCreating, setIsCreating] = useState<boolean>(false);
 
   const onSubmit = async () => {
     setIsCreating(true);
     const result = safeParse(RegisterUserSchema, {
-      username: username.current?.value,
-      password: password.current?.value,
-      repassword: repassword.current?.value,
+      username: username.current?.input?.value,
+      password: password.current?.input?.value,
+      repassword: repassword.current?.input?.value,
       role: "ADMIN",
     });
 
@@ -37,9 +36,9 @@ export default function Home() {
       });
       if (registerrespone.status) {
         toast.success(registerrespone.message);
-        username.current!.value = "";
-        password.current!.value = "";
-        repassword.current!.value = "";
+        if (username.current?.input) username.current.input.value = "";
+        if (password.current?.input) password.current.input.value = "";
+        if (repassword.current?.input) repassword.current.input.value = "";
       } else {
         toast.error(registerrespone.message);
       }
@@ -91,36 +90,52 @@ export default function Home() {
             </Link>
           </div>
           <div>
-            <h1 className="text-2xl font-semibold mt-6 mb-2 border-b border-gray-300 pb-2 ">
-              Register
-            </h1>
-            <div className="grid max-w-sm items-center gap-1.5 w-80">
-              <Label htmlFor="username">Username : </Label>
-              <Input id="username" type="text" ref={username} />
-            </div>
-            <div className="grid max-w-sm items-center gap-1.5 w-80 mt-6">
-              <Label htmlFor="password">Password : </Label>
-              <Input id="password" type="text" ref={password} />
-            </div>
-            <div className="grid max-w-sm items-center gap-1.5 w-80 mt-6">
-              <Label htmlFor="repassword">Re-Password : </Label>
-              <Input id="repassword" type="text" ref={repassword} />
-            </div>
-            {isCreating ? (
-              <Button
-                disabled
-                className="mt-4 text-center font-semibold text-white bg-black rounded-md block py-2 "
-              >
-                Loading...
-              </Button>
-            ) : (
-              <Button
-                onClick={onSubmit}
-                className="mt-4 text-center font-semibold text-white bg-black rounded-md block py-2 "
-              >
-                Register
-              </Button>
-            )}
+            <Space orientation="vertical" size="large" className="w-full">
+              <div className="border-b border-gray-300 pb-4">
+                <Title level={2} className="!mb-0">
+                  Register
+                </Title>
+              </div>
+              <Space orientation="vertical" size="middle" className="w-80">
+                <div>
+                  <Text className="text-sm block mb-1">Username</Text>
+                  <Input
+                    ref={username}
+                    type="text"
+                    size="large"
+                    placeholder="Enter username"
+                  />
+                </div>
+                <div>
+                  <Text className="text-sm block mb-1">Password</Text>
+                  <Input.Password
+                    ref={password}
+                    type="password"
+                    size="large"
+                    placeholder="Enter password"
+                  />
+                </div>
+                <div>
+                  <Text className="text-sm block mb-1">Re-Password</Text>
+                  <Input.Password
+                    ref={repassword}
+                    type="password"
+                    size="large"
+                    placeholder="Re-enter password"
+                  />
+                </div>
+                <Button
+                  type="primary"
+                  size="large"
+                  block
+                  loading={isCreating}
+                  onClick={onSubmit}
+                  className="!bg-black !hover:bg-gray-800 !mt-2"
+                >
+                  Register
+                </Button>
+              </Space>
+            </Space>
           </div>
         </div>
       </div>

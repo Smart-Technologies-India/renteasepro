@@ -1,5 +1,6 @@
 "use client";
 
+import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 import GetAllDailyRent from "@/action/dailyrent/getalldailyrent";
 import BackButton from "@/components/backbutton";
 import { FluentMdl2Home } from "@/components/icons";
@@ -21,14 +22,12 @@ import {
   daily_shop,
   user,
 } from "@prisma/client";
-import { Button } from "antd";
-import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 const AllBookingHistory = () => {
-  const userid: number = parseInt(getCookie("id") ?? "0");
+  const [userid, setUserid] = useState<number>(0);
   const router = useRouter();
 
   const [isLoading, setLoading] = useState<boolean>(true);
@@ -45,6 +44,12 @@ const AllBookingHistory = () => {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
+      const authResponse = await getAuthenticatedUserId();
+      if (!authResponse.status) {
+        toast.error(authResponse.message);
+        return router.push("/login");
+      }
+      setUserid(authResponse.data);
 
       const dailyrent_response = await GetAllDailyRent({});
 

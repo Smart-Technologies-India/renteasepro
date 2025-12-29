@@ -451,8 +451,6 @@ function getAlgorithm(keyBase64: string) {
 //       trackid: null,
 //     },
 //   });
-//   console.log(pending_rent.length);
-//   console.log(pending_rent);
 
 //   if (pending_rent.length > 0) {
 //     for (let i = 0; i < pending_rent.length; i++) {
@@ -469,10 +467,8 @@ function getAlgorithm(keyBase64: string) {
 //       let enc_code = result.data.toString().split("=").pop();
 
 //       let ccavResponse = decrypt(enc_code, keyBase64, ivBase64);
-//       console.log(ccavResponse);
 
 //       let obj = JSON.parse(ccavResponse);
-//       console.log(obj);
 
 //       if (obj["status"] == 0) {
 //         if (
@@ -489,15 +485,7 @@ function getAlgorithm(keyBase64: string) {
 //             },
 //           });
 
-//           console.log({
-//             gstinvoice: gstnumber.number,
-//             transactionid: obj["order_bank_ref_no"],
-//             trackid: obj["reference_no"],
-//             status: "PAID",
-//             transaction_date: new Date().toISOString(),
-//             paymentmode: obj["order_card_name"].toString().toUpperCase(),
-//             remarks: "Success",
-//           });
+
 
 //           await prisma.rent_transact.update({
 //             where: {

@@ -3,14 +3,13 @@
 import BackButton from "@/components/backbutton";
 import { Separator } from "@/components/ui/separator";
 import { formateDate } from "@/utils/methods";
-import { daily_rent, daily_shop, rent_transact } from "@prisma/client";
+import { daily_rent, daily_shop } from "@prisma/client";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { customAlphabet } from "nanoid";
 import { toast } from "react-toastify";
 import { format } from "date-fns";
-
 import {
   Popover,
   PopoverContent,
@@ -21,15 +20,17 @@ import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import GetDailyRentById from "@/action/dailyrent/getdailyrentbyid";
-import { getCookie } from "cookies-next";
 import GetDailyTransactionById from "@/action/dailyrentrecept/getdailytransactionbyid";
 import PayDeposit from "@/action/dailyrent/paydeposit";
+import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 
 const CollectDeposite = () => {
-  const createuserid: number = parseInt(getCookie("id") ?? "0");
+  const [createuserid, setCreateUserid] = useState<number>(0);
 
-  const params = useParams<{ id: string }>();
-  const id: number = parseInt(params.id);
+  const param = useParams();
+  const id: number = parseInt(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
+  );
 
   const router = useRouter();
 
@@ -49,6 +50,13 @@ const CollectDeposite = () => {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
+      const authResponse = await getAuthenticatedUserId();
+      if (!authResponse.status) {
+        toast.error(authResponse.message);
+        return router.push("/login");
+      }
+
+      setCreateUserid(authResponse.data);
 
       const daily_rent_transact = await GetDailyTransactionById({
         id: parseInt(id.toString()),

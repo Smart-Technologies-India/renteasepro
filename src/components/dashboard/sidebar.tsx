@@ -24,7 +24,7 @@ import React from "react";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { Role } from "@prisma/client";
-import { deleteCookie } from "cookies-next";
+import { logout } from "@/lib/auth";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -36,16 +36,12 @@ const Sidebar = (props: SidebarProps) => {
   const path = usePathname();
   const router = useRouter();
 
-  const logoutbtn = async () => {
-    deleteCookie("id");
-    return router.push("/");
-  };
 
   return (
     <div
       className={`fixed gap-2 top-0 left-0 z-20 shrink-0 w-52 h-screen flex flex-col bg-gradient-to-t from-[#172e57] to-[#162f57] md:translate-x-0 py-6 ${
         props.isOpen ? "translate-x-0" : "-translate-x-52"
-      }  transition-transform duration-300 ease-in-out`}
+      } transition-transform duration-300 ease-in-out`}
     >
       <p className="text-xl font-semibold text-white text-center">
         RentEasePro
@@ -218,7 +214,7 @@ const Sidebar = (props: SidebarProps) => {
         </>
       )}
       <button
-        className="text-white md:hidden text-left items-center flex justify-start gap-4 rounded-none px-4 py-2 hover:bg-rose-500 hover:border-l-2 hover:border-rose-500 bg-transparent hover:bg-opacity-20"
+        className="text-white md:hidden text-left items-center flex justify-start gap-4 rounded-none px-4 py-2 hover:bg-rose-500/20 hover:border-l-2 hover:border-rose-500 bg-transparent"
         onClick={() => props.setIsOpen(false)}
       >
         <MaterialSymbolsCloseSmall className="text-2xl" />
@@ -226,8 +222,11 @@ const Sidebar = (props: SidebarProps) => {
       </button>
 
       <Button
-        onClick={logoutbtn}
-        className={`flex justify-start gap-4 rounded-none px-4 py-2 hover:bg-rose-500 hover:border-l-2 hover:border-rose-500 bg-transparent hover:bg-opacity-20 `}
+        onClick={async ()=>{
+          await logout();
+          router.push("/");
+        }}
+        className={`flex justify-start gap-4 rounded-none px-4 py-2 hover:bg-rose-500/20 hover:border-l-2 hover:border-rose-500 bg-transparent`}
       >
         <SolarLogout2Bold className="text-gray-300  w-6" />
         <p className="text-gray-300 text-sm">Logout</p>
@@ -250,7 +249,7 @@ const MenuTab = (props: MenuTabProps) => {
       href={props.pathcheck}
       className={`flex gap-2 px-4 items-center py-2 ${
         props.path == props.pathcheck
-          ? "border-l-2 border-green-500 bg-white bg-opacity-10"
+          ? "border-l-2 border-green-500 bg-white/10"
           : ""
       }`}
     >

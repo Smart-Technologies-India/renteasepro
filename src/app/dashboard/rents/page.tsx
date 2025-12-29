@@ -9,12 +9,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { property } from "@prisma/client";
-import { getCookie } from "cookies-next";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 const RentRunning = () => {
-  const userid: number = parseInt(getCookie("id") ?? "0");
 
   const [isLoading, setLoading] = useState<boolean>(true);
   const [search, setSearch] = useState<boolean>(false);

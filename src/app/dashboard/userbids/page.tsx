@@ -9,13 +9,14 @@ import {
   MdiReceiptTextClock,
   RiAuctionLine,
 } from "@/components/icons";
-import { getCookie } from "cookies-next";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { getAuthenticatedUserId } from "@/action/auth/getuserid";
+import { toast } from "react-toastify";
 
 const UserBidsRunning = () => {
-  const userid: number = parseInt(getCookie("id") ?? "0");
+  const [userid, setUserid] = useState<number>(0);
   const router = useRouter();
 
   const [isLoading, setLoading] = useState<boolean>(true);
@@ -25,9 +26,15 @@ const UserBidsRunning = () => {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
+      const authResponse = await getAuthenticatedUserId();
+      if (!authResponse.status) {
+        toast.error(authResponse.message);
+        return router.push('/login');
+      }
+      setUserid(authResponse.data);
 
       const isprofilecompleted = await IsProfileCompleted({
-        id: userid,
+        id: authResponse.data,
       });
 
       if (!isprofilecompleted.status) {

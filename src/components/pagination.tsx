@@ -24,9 +24,7 @@ interface PaginationProps {
   getTotalItemsLength: () => number;
 }
 
-const Pagination: React.FC<PaginationProps> = (
-  props: PaginationProps
-): JSX.Element => {
+const Pagination: React.FC<PaginationProps> = (props: PaginationProps) => {
   const [isSelectPage, setSelectPage] = useState<boolean>(false);
 
   const handelPageChange = () => {
@@ -59,7 +57,7 @@ const Pagination: React.FC<PaginationProps> = (
           onClick={() => props.changeActivePage(i)}
           className={`bg-transparent rounded border border-gray-500 hover:border-blue-500 hover:text-blue-500 text-sm text-center min-w-7 h-7 px-1 grid place-items-center ${
             props.activePage === i
-              ? "bg-blue-500 bg-opacity-25 text-blue-500 border-blue-500"
+              ? "bg-blue-500/25 text-blue-500 border-blue-500"
               : ""
           }`}
         >
@@ -156,7 +154,7 @@ const Pagination: React.FC<PaginationProps> = (
                     handelPageChange();
                     props.ChangePerPage(val);
                   }}
-                  className="rounded-md hover:bg-blue-500 hover:bg-opacity-25 cursor-pointer px-2 mx-2 my-1 text-sm"
+                  className="rounded-md hover:bg-blue-500/25 cursor-pointer px-2 mx-2 my-1 text-sm"
                 >
                   {val} / Page
                 </p>

@@ -2,19 +2,15 @@
 
 import GetRent from "@/action/rent/getrent";
 import BackButton from "@/components/backbutton";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
-import { formateDate, handleNumberChange } from "@/utils/methods";
+import { formateDate } from "@/utils/methods";
 import { rent, rent_transact, shop, user } from "@prisma/client";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import GetUserRent from "@/action/rent_transact/getuserrent";
-import { customAlphabet } from "nanoid";
-import AddOrderId from "@/action/rent_transact/addorderid";
 import { toast } from "react-toastify";
-import PayRent from "@/action/rent_transact/payrent";
-import { format, setDate } from "date-fns";
+import { format } from "date-fns";
 
 import {
   Popover,
@@ -27,13 +23,15 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Settlerent from "@/action/shop/settlerent";
-import { getCookie } from "cookies-next";
+import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 
 const CollectRent = () => {
-  const current_user_id: number = parseInt(getCookie("id") ?? "0");
+  const [userid, setUserid] = useState<number>(0);
 
-  const params = useParams<{ id: string }>();
-  const shopid: number = parseInt(params.id);
+  const param = useParams();
+  const shopid: number = parseInt(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
+  );
 
   //   const [field, setField] = useState<number[]>([]);
   const router = useRouter();
@@ -61,6 +59,12 @@ const CollectRent = () => {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
+      const authResponse = await getAuthenticatedUserId();
+      if (!authResponse.status) {
+        toast.error(authResponse.message);
+        return router.push("/login");
+      }
+      setUserid(authResponse.data);
 
       const rentresponse = await GetRent({ id: parseInt(shopid.toString()) });
       if (rentresponse.status && rentresponse.data) {
@@ -111,7 +115,7 @@ const CollectRent = () => {
       userid: rent?.userId!,
       rentid: rent?.id!,
       shopid: rent?.shopId!,
-      currentuser: current_user_id,
+      currentuser: userid,
       fd_amount: throughfd ?? 0,
       letoff_amount: letoffamount ?? 0,
       offline_amount: offlinepayment ?? 0,
@@ -240,7 +244,7 @@ const CollectRent = () => {
                     <Button
                       variant={"outline"}
                       className={`w-full justify-start text-left font-normal ${
-                        !startDate ?? "text-muted-foreground"
+                        startDate ? "text-black" : "text-muted-foreground"
                       }`}
                     >
                       <IcBaselineCalendarMonth className="mr-2 h-4 w-4" />
