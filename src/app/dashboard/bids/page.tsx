@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { encryptURLData } from "@/utils/methods";
 
 const BidsRunning = () => {
   const router = useRouter();
@@ -172,7 +173,7 @@ interface CardDetailsProps {
 const CardDetails = (props: CardDetailsProps) => {
   return (
     <Link
-      href={`/dashboard/bids/property/${props.id}`}
+      href={`/dashboard/bids/property/${encryptURLData(props.id.toString())}`}
       className="rounded-md my-4 bg-white w-full p-4 flex gap-2 lg:gap-4 items-center hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-pointer"
     >
       <div className="hidden lg:block">{props.icon}</div>

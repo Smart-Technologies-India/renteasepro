@@ -22,6 +22,7 @@ import BackButton from "@/components/backbutton";
 import DepartmentCreateDailyRent from "@/action/dailyrent/departmentcreatedailyrent";
 import GetDailyRentDescription from "@/action/dailyrentdescription/getdailyrentdescription";
 import { getAuthenticatedUserId } from "@/action/auth/getuserid";
+import { decryptURLData } from "@/utils/methods";
 
 const { RangePicker } = DatePicker;
 
@@ -30,9 +31,11 @@ const CreateRentPage = () => {
 
   const param = useParams();
 
-  const shopid: number = parseInt(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
+  const encid: string = decryptURLData(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
+    router
   );
+  const shopid: number = parseInt(encid);
 
   const [createduserid, setCreateduserid] = useState<number>(0);
 

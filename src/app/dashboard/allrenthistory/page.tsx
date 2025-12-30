@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/table";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 
-import { formateDate } from "@/utils/methods";
+import { formateDate, encryptURLData } from "@/utils/methods";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import GetAllPaidRent from "@/action/rent_transact/getallpaid";
@@ -323,7 +323,7 @@ const UserRentHistoryView = () => {
                     <Button
                       onClick={() => {
                         router.push(
-                          `/dashboard/rentrecept/${rent_data.user.id}/${rent_data.rentId}/${rent_data.transactionid}`
+                          `/dashboard/rentrecept/${encryptURLData(rent_data.user.id.toString())}/${encryptURLData(rent_data.rentId.toString())}/${encryptURLData(rent_data.transactionid)}`
                         );
                       }}
                       className="cursor-pointer text-sm font-normal px-3 py-1 h-8"

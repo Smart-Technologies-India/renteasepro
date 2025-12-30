@@ -13,7 +13,7 @@ import GetShop from "@/action/shop/getshop";
 import GetUser from "@/action/user/getuser";
 import BackButton from "@/components/backbutton";
 
-import { capitalcase, encryptURLData, formatDateTime, formateDate } from "@/utils/methods";
+import { capitalcase, encryptURLData, formatDateTime, formateDate, decryptURLData } from "@/utils/methods";
 import {
   BidStatus,
   RentTransactStatus,
@@ -47,13 +47,14 @@ import { toast } from "react-toastify";
 import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 
 const ShopView = () => {
-  const param = useParams();
-  const id: number = parseInt(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
-  );
-  const [userid, setUserid] = useState<number>(0);
-
   const router = useRouter();
+  const param = useParams();
+  const encid: string = decryptURLData(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
+    router
+  );
+  const id: number = parseInt(encid);
+  const [userid, setUserid] = useState<number>(0);
 
   interface ItemsType {
     name: string;
@@ -281,7 +282,7 @@ const ShopView = () => {
                             }
 
                             router.push(
-                              `/dashboard/shops/createbid/${id}`
+                              `/dashboard/shops/createbid/${encryptURLData(id.toString())}`
                             );
                           }}
                           className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
@@ -293,7 +294,7 @@ const ShopView = () => {
                       <>
                         {bid && (
                           <Link
-                            href={`/dashboard/shops/shopbidhistory/${id}`}
+                            href={`/dashboard/shops/shopbidhistory/${encryptURLData(id.toString())}`}
                             className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                           >
                             Bid History
@@ -303,7 +304,7 @@ const ShopView = () => {
                           <button
                             onClick={() => {
                               return router.push(
-                                `/dashboard/rents/edit/${rentdata?.id}`
+                                `/dashboard/rents/edit/${encryptURLData(rentdata?.id.toString() ?? "0")}`
                               );
                             }}
                             className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
@@ -326,7 +327,7 @@ const ShopView = () => {
                               }
 
                               router.push(
-                                `/dashboard/shops/createbid/${id}`
+                                `/dashboard/shops/createbid/${encryptURLData(id.toString())}`
                               );
                             }}
                             className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
@@ -350,7 +351,7 @@ const ShopView = () => {
                           return;
                         }
 
-                        router.push(`/dashboard/shops/createbid/${id}`);
+                        router.push(`/dashboard/shops/createbid/${encryptURLData(id.toString())}`);
                       }}
                       className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                     >
@@ -371,7 +372,7 @@ const ShopView = () => {
                         return;
                       }
 
-                      router.push(`/dashboard/shops/createrent/${id}`);
+                      router.push(`/dashboard/shops/createrent/${encryptURLData(id.toString())}`);
                     }}
                     className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                   >
@@ -380,7 +381,7 @@ const ShopView = () => {
                 ) : new Date(rentdata?.rent_end_date ?? "") < new Date() ? (
                   <>
                     <Link
-                      href={`/dashboard/shops/createrent/${id}`}
+                      href={`/dashboard/shops/createrent/${encryptURLData(id.toString())}`}
                       className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                     >
                       Add Rent
@@ -461,7 +462,7 @@ const ShopView = () => {
             ) : user?.role === "USER" ? (
               bid.is_auction == true ? (
                 <Link
-                  href={`/dashboard/bids/apply/${bid.id}`}
+                  href={`/dashboard/bids/apply/${encryptURLData(bid.id.toString())}`}
                   className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                 >
                   Apply Bid
@@ -470,7 +471,7 @@ const ShopView = () => {
                 <></>
               ) : (
                 <Link
-                  href={`/dashboard/bids/apply/${bid.id}`}
+                  href={`/dashboard/bids/apply/${encryptURLData(bid.id.toString())}`}
                   className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                 >
                   Apply Bid
@@ -483,13 +484,13 @@ const ShopView = () => {
             {["ADMIN", "MANAGER", "ACCOUNTANT"].includes(user?.role!) && (
               <>
                 <Link
-                  href={`/dashboard/bids/userbidinfo/${bid?.id}`}
+                  href={`/dashboard/bids/userbidinfo/${encryptURLData(bid?.id.toString() ?? "0")}`}
                   className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                 >
                   View Bid Details
                 </Link>
                 <Link
-                  href={`/dashboard/bids/biderslist/${bid?.id}`}
+                  href={`/dashboard/bids/biderslist/${encryptURLData(bid?.id.toString() ?? "0")}`}
                   className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                 >
                   Running Bid History
@@ -654,7 +655,7 @@ const ShopView = () => {
                     Rent History
                   </Link>
                   <Link
-                    href={`/dashboard/shops/details/${rentdata?.id}/collectrent`}
+                    href={`/dashboard/shops/details/${encryptURLData(rentdata?.id.toString() ?? "0")}/collectrent`}
                     className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                   >
                     Collect Rent
@@ -663,7 +664,7 @@ const ShopView = () => {
               )}
               {user?.role! === "USER" && (
                 <Link
-                  href={`/dashboard/userrent/details/${rentdata?.id}`}
+                  href={`/dashboard/userrent/details/${encryptURLData(rentdata?.id.toString() ?? "0")}`}
                   className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                 >
                   Pay Rent
@@ -737,7 +738,7 @@ const ShopView = () => {
             <AlertDialogCancel>Close</AlertDialogCancel>
             <Link
               className="bg-black py-2  text-white rounded-lg px-4"
-              href={`/dashboard/shops/details/${rentdata?.id}/settlerent`}
+              href={`/dashboard/shops/details/${encryptURLData(rentdata?.id.toString() ?? "0")}/settlerent`}
             >
               Settle Rent
             </Link>

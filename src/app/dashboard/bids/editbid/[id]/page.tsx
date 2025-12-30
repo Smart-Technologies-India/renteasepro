@@ -36,6 +36,7 @@ import EditBid from "@/action/bid/editbid";
 import BackButton from "@/components/backbutton";
 import GetDateTime from "@/action/getdatetime";
 import { getAuthenticatedUserId } from "@/action/auth/getuserid";
+import { decryptURLData } from "@/utils/methods";
 
 function setTime(date: Date, timeString: string): Date {
   // Parse the time string to get hours and minutes
@@ -71,9 +72,11 @@ const UpdateBidPage = () => {
   const router = useRouter();
   const param = useParams();
 
-  const id: number = parseInt(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
+  const encid: string = decryptURLData(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
+    router
   );
+  const id: number = parseInt(encid);
 
   const [userid, setUserid] = useState<number>(0);
   const [isLoading, setLoading] = useState<boolean>(true);

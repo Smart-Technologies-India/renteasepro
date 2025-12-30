@@ -11,6 +11,7 @@ import { ChangeEvent, useEffect, useRef, useState } from "react";
 
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { encryptURLData } from "@/utils/methods";
 
 import {
   Popover,
@@ -276,7 +277,7 @@ const UserBidHistoryView = () => {
                   <Button
                     onClick={() => {
                       return router.push(
-                        `/dashboard/bidrecept/${bid_data.user.id}/${bid_data.bid.id}`
+                        `/dashboard/bidrecept/${encryptURLData(bid_data.user.id.toString())}/${encryptURLData(bid_data.bid.id.toString())}`
                       );
                     }}
                     className="cursor-pointer text-sm font-normal px-3 py-1 h-8"

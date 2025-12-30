@@ -773,6 +773,8 @@ app.prepare().then(() => {
     postRes(request, response);
   });
 
+
+
   // server.post("/getuser", async function (request, response) {
   //   const prisma = new PrismaClient();
   //   const allusers = await prisma.user.findMany({
@@ -787,7 +789,7 @@ app.prepare().then(() => {
 
   server.listen(port, (err) => {
     if (err) {
-      console.error('Failed to start server:', err);
+      console.error("Failed to start server:", err);
       throw err;
     }
     console.log(`------------> Ready on http://localhost:${port}`);

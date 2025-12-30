@@ -14,6 +14,7 @@ import {
 import { formateDate } from "@/utils/methods";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { encryptURLData } from "@/utils/methods";
 
 const ShopBidHistoryView = () => {
   const [isLoading, setLoading] = useState<boolean>(true);
@@ -79,7 +80,7 @@ const ShopBidHistoryView = () => {
                   <TableCell>{bid.status}</TableCell>
                   <TableCell className="text-right">
                     <Link
-                      href={`/dashboard/shops/details/${bid.shop.id}`}
+                      href={`/dashboard/shops/details/${encryptURLData(bid.shop.id.toString())}`}
                       className="bg-green-500 hover:bg-green-500 py-1 px-4 rounded-md text-white"
                     >
                       View

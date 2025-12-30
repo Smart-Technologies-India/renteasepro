@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formateDate } from "@/utils/methods";
+import { formateDate, decryptURLData, encryptURLData } from "@/utils/methods";
 import { daily_rent, daily_rent_transact, user } from "@prisma/client";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -20,9 +20,11 @@ import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 const ShopBidHistoryView = () => {
   const router = useRouter();
   const param = useParams();
-  const id: number = parseInt(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
+  const encid: string = decryptURLData(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
+    router
   );
+  const id: number = parseInt(encid);
 
   const [userid, setUserid] = useState<number>(0);
   const [isLoading, setLoading] = useState<boolean>(true);
@@ -173,7 +175,7 @@ const ShopBidHistoryView = () => {
                       <button
                         onClick={() => {
                           router.push(
-                            `/dashboard/dailyshops/viewrent/${rentdata.id}/${rentdata.user.id}`
+                            `/dashboard/dailyshops/viewrent/${encryptURLData(rentdata.id.toString())}/${encryptURLData(rentdata.user.id.toString())}`
                           );
                         }}
                         className="cursor-pointer bg-blue-500 text-sm px-2 py-1 rounded-md text-white text-nowrap"

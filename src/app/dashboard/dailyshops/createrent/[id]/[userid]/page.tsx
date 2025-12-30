@@ -32,18 +32,24 @@ import GetUser from "@/action/user/getuser";
 import BackButton from "@/components/backbutton";
 import GetDailyRentDescription from "@/action/dailyrentdescription/getdailyrentdescription";
 import { getAuthenticatedUserId } from "@/action/auth/getuserid";
+import { decryptURLData } from "@/utils/methods";
 const { RangePicker } = DatePicker;
 
 const CreateRentPage = () => {
+  const router = useRouter();
   const param = useParams();
 
-  const unitid: number = parseInt(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
+  const encunitid: string = decryptURLData(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
+    router
   );
-  const userid: number = parseInt(
-    Array.isArray(param.userid) ? param.userid[0] : param.userid ?? "0"
+  const unitid: number = parseInt(encunitid);
+  const encuserid: string = decryptURLData(
+    Array.isArray(param.userid) ? param.userid[0] : param.userid ?? "0",
+    router
   );
-  const router = useRouter();
+  const existinguserid: number = parseInt(encuserid);
+
   const [createuserid, setCreateduserid] = useState<number>(0);
 
   const [isCreating, setIsCreating] = useState<boolean>(false);
@@ -99,7 +105,7 @@ const CreateRentPage = () => {
         return;
       }
 
-      const userresponse = await GetUser({ id: createuserid });
+      const userresponse = await GetUser({ id: existinguserid });
       if (userresponse.status) {
         setUser(userresponse.data!);
       }
@@ -151,7 +157,7 @@ const CreateRentPage = () => {
 
   const create = () => {
     const result = safeParse(CreateDailyRentSchema, {
-      userId: userid,
+      userId: existinguserid,
       unitId: unitid,
       event_amount: (
         datecount() * parseInt(dailyRentDescription?.event_amount || "0")
@@ -203,7 +209,7 @@ const CreateRentPage = () => {
   const submit = async () => {
     setIsCreating(true);
     const result = safeParse(CreateDailyRentSchema, {
-      userId: userid,
+      userId: existinguserid,
       unitId: unitid,
       event_amount: (
         datecount() * parseInt(dailyRentDescription?.event_amount || "0")
@@ -250,7 +256,7 @@ const CreateRentPage = () => {
       }
       const createrent = await CreateDailyRent({
         shopId: unitid,
-        userId: userid,
+        userId: existinguserid,
         createdById: createuserid,
         event_from_date: startDate!.toLocaleString(),
         event_to_date: endDate!.toLocaleString(),

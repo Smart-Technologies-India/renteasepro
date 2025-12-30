@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { property } from "@prisma/client";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { encryptURLData } from "@/utils/methods";
 
 const Properties = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -172,7 +173,7 @@ interface CardDetailsProps {
 const CardDetails = (props: CardDetailsProps) => {
   return (
     <Link
-      href={`/dashboard/properties/details/${props.id}`}
+      href={`/dashboard/properties/details/${encryptURLData(props.id.toString())}`}
       className="rounded-md my-4 bg-white w-full p-2 py-3 lg:p-4  flex gap-2 lg:gap-4 items-center hover:shadow-md hover:-translate-y-1 transition-all duration-500 cursor-pointer"
     >
       {props.icon}

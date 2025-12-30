@@ -1,6 +1,6 @@
 "use client";
 
-import { capitalcase } from "@/utils/methods";
+import { capitalcase, encryptURLData } from "@/utils/methods";
 import { ShopStatus, shop, user } from "@prisma/client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -227,7 +227,7 @@ const PropertiesDeatils = (props: PropertiesDeatilsProps) => {
     }
   };
   return (
-    <Link href={`/dashboard/shops/details/${props.id}`}>
+    <Link href={`/dashboard/shops/details/${encryptURLData(props.id.toString())}`}>
       <div
         className={`border rounded-md grid place-items-center p-2 min-w-24 `}
       >

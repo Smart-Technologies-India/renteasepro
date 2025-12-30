@@ -10,7 +10,7 @@ import {
 import { useEffect, useState } from "react";
 import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 import { daily_property, daily_rent, daily_shop, user } from "@prisma/client";
-import { formateDate } from "@/utils/methods";
+import { formateDate, encryptURLData } from "@/utils/methods";
 import { useRouter } from "next/navigation";
 import IsProfileCompleted from "@/action/user/isprofilecompleted";
 import GetUserBookingHistory from "@/action/dailyrent/getuserbookinghistory";
@@ -128,7 +128,7 @@ const UserBookingPage = () => {
                   </TableCell>
                   <TableCell>
                     <Link
-                      href={`/dashboard/dailyshops/viewrent/${val.id}/${val.userId}`}
+                      href={`/dashboard/dailyshops/viewrent/${encryptURLData(val.id.toString())}/${encryptURLData(val.userId.toString())}`}
                       className="bg-blue-500 text-white rounded-md text-sm px-4 grid place-items-center h-8  hover:bg-blue-600"
                     >
                       View

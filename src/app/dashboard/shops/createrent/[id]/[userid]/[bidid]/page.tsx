@@ -19,7 +19,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { safeParse } from "valibot";
 import { format } from "date-fns";
-import { handleNumberChange } from "@/utils/methods";
+import { encryptURLData, handleNumberChange } from "@/utils/methods";
 import { default as MulSelect } from "react-select";
 import GetUser from "@/action/user/getuser";
 import GetBidTran from "@/action/bid_transact/getbidtransact";
@@ -137,7 +137,7 @@ const CreateRentPage = () => {
         return toast.error(createrent.message);
       toast.success("Shop rent created successfully");
 
-      router.push(`/dashboard/shops/collectrent/${createrent.data.id}`);
+      router.push(`/dashboard/shops/collectrent/${encryptURLData(createrent.data.id.toString())}`);
 
       router.back();
     } else {

@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { formatDateTime, formateDate } from "@/utils/methods";
+import { formatDateTime, formateDate, decryptURLData, encryptURLData } from "@/utils/methods";
 import { ExemptFor, exempt, user } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { useParams, useRouter } from "next/navigation";
@@ -33,9 +33,11 @@ const getExemptfor = (value: ExemptFor): string => {
 const BidDetailsView = () => {
   const router = useRouter();
   const param = useParams();
-  const id: number = parseInt(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
+  const encid: string = decryptURLData(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
+    router
   );
+  const id: number = parseInt(encid);
   const [isLoading, setLoading] = useState<boolean>(true);
   const [bid, setBid] = useState<any>();
 
@@ -106,7 +108,7 @@ const BidDetailsView = () => {
               <Button
                 className="bg-black h-auto"
                 onClick={() =>
-                  router.push(`/dashboard/bids/biderslist/${bid?.id}`)
+                  router.push(`/dashboard/bids/biderslist/${encryptURLData(bid?.id?.toString() ?? "0")}`)
                 }
               >
                 View All Bidders

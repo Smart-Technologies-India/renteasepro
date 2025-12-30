@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 import { toast } from "react-toastify";
+import { encryptURLData } from "@/utils/methods";
 
 const Properties = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -199,7 +200,7 @@ interface CardDetailsProps {
 const CardDetails = (props: CardDetailsProps) => {
   return (
     <Link
-      href={`/dashboard/userdailybooking/details/${props.id}`}
+      href={`/dashboard/userdailybooking/details/${encryptURLData(props.id.toString())}`}
       className="rounded-md my-4 bg-white w-full p-2 py-3 lg:p-4  flex gap-2 lg:gap-4 items-center hover:shadow-md hover:-translate-y-1 transition-all duration-500 cursor-pointer"
     >
       {props.icon}

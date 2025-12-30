@@ -3,18 +3,21 @@
 import GetProperty from "@/action/property/getproperty";
 import GetShopsByProperty from "@/action/shop/getshopfromproperty";
 import { LucideArrowBigLeft, LucideArrowBigRight } from "@/components/icons";
-import { capitalcase, removeDuplicates } from "@/utils/methods";
+import { capitalcase, removeDuplicates, decryptURLData, encryptURLData } from "@/utils/methods";
 import { ShopStatus, property, shop } from "@prisma/client";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const RentPropertiesView = () => {
+  const router = useRouter();
   const param = useParams();
 
-  const id: number = parseInt(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
+  const encid: string = decryptURLData(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
+    router
   );
+  const id: number = parseInt(encid);
 
   const [isLoading, setIsLoading] = useState(true);
   const [shops, setShops] = useState<shop[]>([]);
@@ -221,7 +224,7 @@ const PropertiesDeatils = (props: PropertiesDeatilsProps) => {
     }
   };
   return (
-    <Link href={`/dashboard/shops/details/${props.id}`} target="_blank">
+    <Link href={`/dashboard/shops/details/${encryptURLData(props.id.toString())}`} target="_blank">
       <div
         className={`border rounded-md grid place-items-center p-2 min-w-24 `}
       >

@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/table";
 
 import { useEffect, useState } from "react";
-import { decryptURLData, formateDate } from "@/utils/methods";
+import { decryptURLData, formateDate, encryptURLData } from "@/utils/methods";
 import GetFromRent from "@/action/rent_transact/getfromrent";
 import BackButton from "@/components/backbutton";
 import { useParams, useRouter } from "next/navigation";
@@ -104,7 +104,7 @@ const UserRentHistoryView = () => {
                     <Button
                       onClick={() => {
                         router.push(
-                          `/dashboard/rentrecept/${rent_data.user.id}/${rent_data.rentId}/${rent_data.transactionid}`
+                          `/dashboard/rentrecept/${encryptURLData(rent_data.user.id.toString())}/${encryptURLData(rent_data.rentId.toString())}/${encryptURLData(rent_data.transactionid)}`
                         );
                       }}
                       className="cursor-pointer"

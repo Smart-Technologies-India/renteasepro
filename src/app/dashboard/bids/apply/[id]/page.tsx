@@ -21,6 +21,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { customAlphabet } from "nanoid";
 import GetUser from "@/action/user/getuser";
+import { decryptURLData } from "@/utils/methods";
 
 const getExemptfor = (value: ExemptFor): string => {
   switch (value) {
@@ -38,13 +39,14 @@ const getExemptfor = (value: ExemptFor): string => {
 };
 
 const ApplyForBidView = () => {
-  const param = useParams();
-  const id: number = parseInt(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
-  );
-  const [isPaying, setIsPaying] = useState<boolean>(false);
-
   const router = useRouter();
+  const param = useParams();
+  const encid: string = decryptURLData(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
+    router
+  );
+  const id: number = parseInt(encid);
+  const [isPaying, setIsPaying] = useState<boolean>(false);
   const [isLoading, setLoading] = useState<boolean>(true);
   const [bid, setBid] = useState<any>();
   const [userid, setUserid] = useState<number>(0);

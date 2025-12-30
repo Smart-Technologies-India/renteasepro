@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { formatDateTime, formateDate } from "@/utils/methods";
+import { formatDateTime, formateDate, decryptURLData, encryptURLData } from "@/utils/methods";
 import {
   BidStatus,
   ExemptFor,
@@ -47,15 +47,17 @@ const getExemptfor = (value: ExemptFor): string => {
 };
 
 const UserBidInfoView = () => {
+  const router = useRouter();
   const param = useParams();
 
-  const id: number = parseInt(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
+  const encid: string = decryptURLData(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
+    router
   );
+  const id: number = parseInt(encid);
   const [isBox, setIsBox] = useState<boolean>(false);
 
   const [userid, setUserid] = useState<number>(0);
-  const router = useRouter();
   const [user, setUser] = useState<user>();
 
   const [isLoading, setLoading] = useState<boolean>(true);
@@ -180,7 +182,7 @@ const UserBidInfoView = () => {
                   <button
                     className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                     onClick={() =>
-                      router.push(`/dashboard/bids/bidreport/${bid.id}`)
+                      router.push(`/dashboard/bids/bidreport/${encryptURLData(bid.id.toString())}`)
                     }
                   >
                     Print Report
@@ -215,7 +217,7 @@ const UserBidInfoView = () => {
                     <button
                       className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                       onClick={() =>
-                        router.push(`/dashboard/bids/editbid/${bid.id}`)
+                        router.push(`/dashboard/bids/editbid/${encryptURLData(bid.id.toString())}`)
                       }
                     >
                       Edit Bid
@@ -229,7 +231,7 @@ const UserBidInfoView = () => {
               <button
                 className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                 onClick={() =>
-                  router.push(`/dashboard/bids/biderslist/${bid?.id}`)
+                  router.push(`/dashboard/bids/biderslist/${encryptURLData(bid?.id?.toString() ?? "0")}`)
                 }
               >
                 View All Bidders

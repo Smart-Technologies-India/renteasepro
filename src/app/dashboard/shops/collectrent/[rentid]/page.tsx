@@ -4,7 +4,7 @@ import GetRent from "@/action/rent/getrent";
 import BackButton from "@/components/backbutton";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
-import { formateDate } from "@/utils/methods";
+import { formateDate, decryptURLData } from "@/utils/methods";
 import { rent_transact } from "@prisma/client";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -28,12 +28,16 @@ import { Input } from "@/components/ui/input";
 import GetUserFirstRent from "@/action/rent_transact/getuserfirstrent";
 
 const CollectRent = () => {
+  const router = useRouter();
   const params = useParams<{ rentid: string }>();
-  const rentid: number = parseInt(params.rentid);
+  const encrentid: string = decryptURLData(
+    params.rentid ?? "0",
+    router
+  );
+  const rentid: number = parseInt(encrentid);
 
   //   const [field, setField] = useState<number[]>([]);
   const [check, setCheck] = useState<boolean>(false);
-  const router = useRouter();
 
   const [isPaying, setPaying] = useState<boolean>(false);
 

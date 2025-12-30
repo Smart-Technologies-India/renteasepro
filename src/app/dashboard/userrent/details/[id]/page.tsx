@@ -5,7 +5,7 @@ import BackButton from "@/components/backbutton";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
-import { formateDate } from "@/utils/methods";
+import { formateDate, decryptURLData } from "@/utils/methods";
 import { rent_transact } from "@prisma/client";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -17,9 +17,11 @@ const UserRentDetailsView = () => {
   const [field, setField] = useState<number[]>([]);
   const router = useRouter();
   const param = useParams();
-  const id: number = parseInt(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
+  const encid: string = decryptURLData(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
+    router
   );
+  const id: number = parseInt(encid);
 
   const [isPaying, setPaying] = useState<boolean>(false);
 

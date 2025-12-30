@@ -16,11 +16,13 @@ import GetDailyShop from "@/action/dailyshop/getdailyshop";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CreateDailyRentSchema } from "@/schema/createdailyrent";
 import CreateDailyRent from "@/action/dailyrent/createdailyrent";
+import { encryptURLData } from "@/utils/methods";
 
 import { DatePicker } from "antd";
 import GetDailyRent from "@/action/dailyrent/getdailyrent";
 import dayjs, { Dayjs } from "dayjs";
 import { getAuthenticatedUserId } from "@/action/auth/getuserid";
+import { decryptURLData } from "@/utils/methods";
 
 const { RangePicker } = DatePicker;
 
@@ -28,9 +30,11 @@ const CreateRentPage = () => {
   const router = useRouter();
   const param = useParams();
 
-  const id: number = parseInt(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
+  const encid: string = decryptURLData(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
+    router
   );
+  const id: number = parseInt(encid);
 
   const [createduserid, setCreateduserid] = useState<number>(0);
 
@@ -175,7 +179,7 @@ const CreateRentPage = () => {
 
       toast.success("Unit booking request created successfully");
       // router.back();
-      router.push(`/dashboard/dailyshops/collectrent/${createrent.data.id}`);
+      router.push(`/dashboard/dailyshops/collectrent/${encryptURLData(createrent.data.id.toString())}`);
     } else {
       let errorMessage = "";
       if (result.issues[0].input) {

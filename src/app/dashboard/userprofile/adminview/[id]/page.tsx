@@ -6,14 +6,18 @@ import { IcBaselineAccountCircle } from "@/components/icons";
 import { Separator } from "@/components/ui/separator";
 import { UserDocType, user } from "@prisma/client";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { decryptURLData } from "@/utils/methods";
 
 const UserAdminView = () => {
+  const router = useRouter();
   const param = useParams();
-  const userid: number = parseInt(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
+  const encid: string = decryptURLData(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
+    router
   );
+  const userid: number = parseInt(encid);
 
   const [isLoading, setLoading] = useState<boolean>(true);
 

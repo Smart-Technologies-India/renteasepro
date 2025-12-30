@@ -1,7 +1,12 @@
 "use client";
 
 import GetProperty from "@/action/property/getproperty";
-import { capitalcase, removeDuplicates } from "@/utils/methods";
+import {
+  capitalcase,
+  removeDuplicates,
+  decryptURLData,
+  encryptURLData,
+} from "@/utils/methods";
 import { ShopStatus, property, shop, user } from "@prisma/client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -17,13 +22,15 @@ const BidPropertiesView = () => {
   const router = useRouter();
   const param = useParams();
 
-  const id: number = parseInt(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
+  const encid: string = decryptURLData(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
+    router
   );
+  const id: number = parseInt(encid);
 
   const [isLoading, setIsLoading] = useState(true);
   const [shops, setShops] = useState<shop[]>([]);
-
+ 
   const [userid, setUserid] = useState<number>(0);
 
   const [property, setProperty] = useState<property>();
@@ -272,8 +279,11 @@ const PropertiesDeatils = (props: PropertiesDeatilsProps) => {
         return "border-green-500 bg-gradient-to-r from-green-400 to-green-500";
     }
   };
+
   return (
-    <Link href={`/dashboard/shops/details/${props.id}`}>
+    <Link
+      href={`/dashboard/shops/details/${encryptURLData(props.id.toString())}`}
+    >
       <div
         className={`border rounded-md grid place-items-center p-2 min-w-24 `}
       >

@@ -4,18 +4,21 @@ import GetDailyProperty from "@/action/daily_property/getdailyproperty";
 import GetDailyShopFromProperty from "@/action/daily_property/getshopsfromproperty";
 import BackButton from "@/components/backbutton";
 import { LucideArrowBigLeft, LucideArrowBigRight } from "@/components/icons";
-import { capitalcase, removeDuplicates } from "@/utils/methods";
+import { capitalcase, removeDuplicates, decryptURLData, encryptURLData } from "@/utils/methods";
 import { ShopStatus, daily_property, daily_shop } from "@prisma/client";
 import { Modal } from "antd";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const PropertiesView = () => {
+  const router = useRouter();
   const param = useParams();
-  const id: number = parseInt(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
+  const encid: string = decryptURLData(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
+    router
   );
+  const id: number = parseInt(encid);
 
   const [isLoading, setIsLoading] = useState(true);
   const [shops, setShops] = useState<daily_shop[]>([]);
@@ -208,7 +211,7 @@ const PropertiesView = () => {
 
             {/* {shops.length < property?.total_shops! && (
               <Link
-                href={`/dashboard/dailyshops/add/${props.id}`}
+                href={`/dashboard/dailyshops/add/${encryptURLData(props.id.toString())}`}
                 className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
               >
                 Add Units
@@ -349,7 +352,7 @@ const PropertiesDeatils = (props: PropertiesDeatilsProps) => {
     }
   };
   return (
-    <Link href={`/dashboard/dailyshops/details/${props.id}`} target="_blank">
+    <Link href={`/dashboard/dailyshops/details/${encryptURLData(props.id.toString())}`} target="_blank">
       <div
         className={`border rounded-md grid place-items-center p-2 min-w-24 `}
       >

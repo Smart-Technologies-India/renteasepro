@@ -30,13 +30,16 @@ import { InvoiceSchema } from "@/schema/createinvoice";
 import GetInvoice from "@/action/invoice/getinvoice";
 import UpdateAcount from "@/action/invoice/updateinvoice";
 import { getAuthenticatedUserId } from "@/action/auth/getuserid";
+import { decryptURLData } from "@/utils/methods";
 
 const EditInvoice = () => {
   const router = useRouter();
   const param = useParams();
-  const id: number = parseInt(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
+  const encid: string = decryptURLData(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
+    router
   );
+  const id: number = parseInt(encid);
 
   const [createuserid, setCreateuserid] = useState<number>(0);
 

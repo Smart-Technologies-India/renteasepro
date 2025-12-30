@@ -26,7 +26,7 @@ import { TimePicker } from "antd";
 import axios from "axios";
 import GetShop from "@/action/shop/getshop";
 import Link from "next/link";
-import { longtext } from "@/utils/methods";
+import { longtext, decryptURLData } from "@/utils/methods";
 import UploadFile from "@/action/file_upload/uploadfile";
 import AddFileBid from "@/action/bid/addbidfile";
 import BackButton from "@/components/backbutton";
@@ -63,16 +63,18 @@ function setTime(date: Date, timeString: string): Date | void {
 }
 
 const CreateBidPage = () => {
+  const router = useRouter();
   const param = useParams();
-  const shopid: number = parseInt(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
+  const encid: string = decryptURLData(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
+    router
   );
+  const shopid: number = parseInt(encid);
 
   const [userid, setUserid] = useState<number>(0);
 
   const [isCreating, setIsCreating] = useState<boolean>(false);
 
-  const router = useRouter();
   const [isLoading, setLoading] = useState<boolean>(true);
 
   const [startDate, setStartDate] = useState<Date>();

@@ -23,14 +23,18 @@ import { Input } from "@/components/ui/input";
 import GetDailyRentById from "@/action/dailyrent/getdailyrentbyid";
 import PayDailyRent from "@/action/dailyrent/paydailyrent";
 import { getAuthenticatedUserId } from "@/action/auth/getuserid";
+import { decryptURLData } from "@/utils/methods";
 
 const CollectRent = () => {
   const [userid, setUserid] = useState<number>(0);
 
-  const params = useParams<{ rentid: string }>();
-  const rentid: number = parseInt(params.rentid);
-
   const router = useRouter();
+  const params = useParams<{ rentid: string }>();
+  const encrentid: string = decryptURLData(
+    params.rentid ?? "0",
+    router
+  );
+  const rentid: number = parseInt(encrentid);
 
   const [isPaying, setPaying] = useState<boolean>(false);
 

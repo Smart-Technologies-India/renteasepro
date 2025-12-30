@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/table";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 
-import { formateDate } from "@/utils/methods";
+import { formateDate, encryptURLData } from "@/utils/methods";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -280,7 +280,7 @@ const UserRentHistoryView = () => {
                     <Button
                       onClick={() => {
                         router.push(
-                          `/dashboard/dailyrentrecept/${rent_data.user.id}/${rent_data.daily_rent.id}/${rent_data.id}`
+                          `/dashboard/dailyrentrecept/${encryptURLData(rent_data.user.id.toString())}/${encryptURLData(rent_data.daily_rent.id.toString())}/${encryptURLData(rent_data.id.toString())}`
                         );
                       }}
                       className="cursor-pointer text-sm font-normal px-3 py-1 h-8"

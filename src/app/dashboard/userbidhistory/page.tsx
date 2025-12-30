@@ -11,7 +11,7 @@ import {
 import { useEffect, useState } from "react";
 import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 import { BidTransact } from "@prisma/client";
-import { capitalcase } from "@/utils/methods";
+import { capitalcase, encryptURLData } from "@/utils/methods";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -212,7 +212,7 @@ const UserBidHistoryPage = () => {
                         <DropdownMenuItem
                           onClick={() => {
                             router.push(
-                              `/dashboard/shops/details/${bid_tans.shop.id}`
+                              `/dashboard/shops/details/${encryptURLData(bid_tans.shop.id.toString())}`
                             );
                           }}
                           className="cursor-pointer"

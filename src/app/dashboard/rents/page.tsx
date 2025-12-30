@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { property } from "@prisma/client";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { encryptURLData } from "@/utils/methods";
 
 const RentRunning = () => {
 
@@ -173,7 +174,7 @@ interface CardDetailsProps {
 const CardDetails = (props: CardDetailsProps) => {
   return (
     <Link
-      href={`/dashboard/rents/property/${props.id}`}
+      href={`/dashboard/rents/property/${encryptURLData(props.id.toString())}`}
       className="rounded-md my-4 bg-white w-full p-4 flex flex-col lg:flex-row gap-2 lg:gap-4 items-start lg:items-center  hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-pointer"
     >
       <div className="hidden lg:block">{props.icon}</div>

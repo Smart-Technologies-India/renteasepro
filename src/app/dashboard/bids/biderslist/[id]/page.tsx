@@ -42,13 +42,16 @@ import {
 } from "@/components/ui/alert-dialog";
 import { usePagination } from "@/hooks/usepagination";
 import Pagination from "@/components/pagination";
+import { decryptURLData, encryptURLData } from "@/utils/methods";
 
 const BidHistoryView = () => {
   const router = useRouter();
   const param = useParams();
-  const id: number = parseInt(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
+  const encid: string = decryptURLData(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
+    router
   );
+  const id: number = parseInt(encid);
   const [isLoading, setIsLoading] = useState(true);
 
   const category: string[] = ["All", "Pending", "Accepted", "Rejected"];
@@ -175,7 +178,7 @@ const BidHistoryView = () => {
     if (response.status) {
       toast.success(response.message);
       router.push(
-        `/dashboard/shops/createrent/${response.data?.shopId}/${response.data?.userId}/${response.data?.id}`
+        `/dashboard/shops/createrent/${encryptURLData(response.data?.shopId.toString() ?? "0")}/${encryptURLData(response.data?.userId.toString() ?? "0")}/${encryptURLData(response.data?.id.toString() ?? "0")}`
       );
     } else {
       toast.error(response.message);
@@ -339,7 +342,9 @@ const BidHistoryView = () => {
                             <DropdownMenuItem
                               onClick={() => {
                                 router.push(
-                                  `/dashboard/userprofile/viewprofile/${bid_tans.user.id}/${bid_tans.id}`
+                                  `/dashboard/userprofile/viewprofile/${encryptURLData(
+                                    bid_tans.user.id.toString()
+                                  )}/${encryptURLData(bid_tans.id.toString())}`
                                 );
                               }}
                               className="cursor-pointer"
@@ -350,7 +355,11 @@ const BidHistoryView = () => {
                             <DropdownMenuItem
                               onClick={() => {
                                 return router.push(
-                                  `/dashboard/bidrecept/${bid_tans.user.id}/${bid_tans.bid.id}`
+                                  `/dashboard/bidrecept/${encryptURLData(
+                                    bid_tans.user.id.toString()
+                                  )}/${encryptURLData(
+                                    bid_tans.bid.id.toString()
+                                  )}`
                                 );
                               }}
                               className="cursor-pointer"

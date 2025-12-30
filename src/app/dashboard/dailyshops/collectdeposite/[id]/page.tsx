@@ -23,16 +23,18 @@ import GetDailyRentById from "@/action/dailyrent/getdailyrentbyid";
 import GetDailyTransactionById from "@/action/dailyrentrecept/getdailytransactionbyid";
 import PayDeposit from "@/action/dailyrent/paydeposit";
 import { getAuthenticatedUserId } from "@/action/auth/getuserid";
+import { decryptURLData } from "@/utils/methods";
 
 const CollectDeposite = () => {
   const [createuserid, setCreateUserid] = useState<number>(0);
 
-  const param = useParams();
-  const id: number = parseInt(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
-  );
-
   const router = useRouter();
+  const param = useParams();
+  const encid: string = decryptURLData(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
+    router
+  );
+  const id: number = parseInt(encid);
 
   const [isPaying, setPaying] = useState<boolean>(false);
 

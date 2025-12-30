@@ -133,14 +133,14 @@ const UserRentPage = () => {
                 </TableCell>
                 <TableCell className="flex">
                   <Link
-                    href={`/dashboard/userrent/details/${rent_data.id}`}
+                    href={`/dashboard/userrent/details/${encryptURLData(rent_data.id.toString())}`}
                     className="bg-green-500 hover:bg-green-500 py-2 px-4 rounded-md text-white text-sm font-medium cursor-pointer"
                   >
                     View
                   </Link>
                   <div className="w-4"></div>
                   <Link
-                    href={`/dashboard/userrent/history/${encryptURLData(rent_data.id)}`}
+                    href={`/dashboard/userrent/history/${encryptURLData(rent_data.id.toString())}`}
                     className="bg-green-500 hover:bg-green-500 py-2 px-4 rounded-md text-white text-sm font-medium cursor-pointer"
                   >
                     History

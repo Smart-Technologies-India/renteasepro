@@ -15,20 +15,22 @@ import { useEffect, useState } from "react";
 import numberWithIndianFormat, {
   capitalcase,
   formateDate,
+  decryptURLData,
 } from "@/utils/methods";
 import GetInvoice from "@/action/invoice/getinvoice";
 import { Button } from "@/components/ui/button";
 import { useParams, useRouter } from "next/navigation";
 
 const ViewPdf = () => {
+  const router = useRouter();
   const param = useParams();
-  const id: number = parseInt(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
+  const encid: string = decryptURLData(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
+    router
   );
+  const id: number = parseInt(encid);
   const toWords = new ToWords();
   const [account, setAccount] = useState<any>();
-
-  const router = useRouter();
 
   useEffect(() => {
     const init = async () => {

@@ -33,18 +33,23 @@ import GetRefundRequest2 from "@/action/refund/getrefundrequest2";
 import CancelRefundRequest from "@/action/refund/cancelrefundrequest";
 import DepartmentRequest from "@/action/refund/departmentcancelequest";
 import { getAuthenticatedUserId } from "@/action/auth/getuserid";
+import { decryptURLData, encryptURLData } from "@/utils/methods";
 
 const CreateRentPage = () => {
   const router = useRouter();
   const [currentUserid, setCurrentUserid] = useState<number>(0);
 
   const param = useParams();
-  const rentid: number = parseInt(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
+  const encrentid: string = decryptURLData(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
+    router
   );
-  const userid: number = parseInt(
-    Array.isArray(param.userid) ? param.userid[0] : param.userid ?? "0"
+  const rentid: number = parseInt(encrentid);
+  const encuserid: string = decryptURLData(
+    Array.isArray(param.userid) ? param.userid[0] : param.userid ?? "0",
+    router
   );
+  const userid: number = parseInt(encuserid);
 
   const [isLoading, setLoading] = useState<boolean>(true);
   const [shopData, setShopData] = useState<any>();
@@ -527,7 +532,7 @@ const CreateRentPage = () => {
               <button
                 onClick={() => {
                   router.push(
-                    `/dashboard/dailyrentrecept/${rentData?.daily_shop.daily_rent_transact[0].userId}/${rentid}/${rentData?.daily_shop.daily_rent_transact[0]?.id}`
+                    `/dashboard/dailyrentrecept/${encryptURLData(rentData?.daily_shop.daily_rent_transact[0].userId.toString() ?? "0")}/${encryptURLData(rentid.toString())}/${encryptURLData(rentData?.daily_shop.daily_rent_transact[0]?.id.toString() ?? "0")}`
                   );
                 }}
                 className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
@@ -541,7 +546,7 @@ const CreateRentPage = () => {
               <button
                 onClick={() => {
                   router.push(
-                    `/dashboard/dailyrentrecept/${rentData?.daily_shop.daily_rent_transact[1].userId}/${rentid}/${rentData?.daily_shop.daily_rent_transact[1]?.id}/deposit`
+                    `/dashboard/dailyrentrecept/${encryptURLData(rentData?.daily_shop.daily_rent_transact[1].userId.toString() ?? "0")}/${encryptURLData(rentid.toString())}/${encryptURLData(rentData?.daily_shop.daily_rent_transact[1]?.id.toString() ?? "0")}/deposit`
                   );
                 }}
                 className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"

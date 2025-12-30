@@ -21,16 +21,19 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { safeParse } from "valibot";
 import { getAuthenticatedUserId } from "@/action/auth/getuserid";
+import { decryptURLData } from "@/utils/methods";
 
 const AddShopPage = () => {
+  const router = useRouter();
   const param = useParams();
-  const id: number = parseInt(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
+  const encid: string = decryptURLData(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
+    router
   );
+  const id: number = parseInt(encid);
 
   const [userid, setUserid] = useState<number>(0);
 
-  const router = useRouter();
   const [isLoading, setLoading] = useState<boolean>(true);
 
   const [isCreating, setIsCreating] = useState<boolean>(false);

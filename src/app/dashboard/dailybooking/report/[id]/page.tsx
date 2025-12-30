@@ -1,6 +1,6 @@
 "use client";
 
-import { formateDate } from "@/utils/methods";
+import { formateDate, decryptURLData } from "@/utils/methods";
 import { ToWords } from "to-words";
 import { eachDayOfInterval } from "date-fns";
 
@@ -36,14 +36,16 @@ interface ReportDataType {
 }
 
 const ViewPdf = () => {
+  const router = useRouter();
   const param = useParams();
-  const id: number = parseInt(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
+  const encid: string = decryptURLData(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
+    router
   );
+  const id: number = parseInt(encid);
   const [isloading, setIsloading] = useState(false);
 
   const toWords = new ToWords();
-  const router = useRouter();
 
   const [reportdata, setReportData] = useState<
     Array<

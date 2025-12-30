@@ -15,7 +15,7 @@ import { IcBaselineCalendarMonth } from "@/components/icons";
 import { useParams, useRouter } from "next/navigation";
 import { user } from "@prisma/client";
 import GetShop from "@/action/shop/getshop";
-import { handleNumberChange } from "@/utils/methods";
+import { handleNumberChange, encryptURLData } from "@/utils/methods";
 import { default as MulSelect } from "react-select";
 import GetNormalUser from "@/action/user/getnormalusers";
 import { safeParse } from "valibot";
@@ -23,14 +23,18 @@ import { CreateRentSchema } from "@/schema/createrent";
 import { toast } from "react-toastify";
 import CreateRent from "@/action/rent/createrent";
 import { getAuthenticatedUserId } from "@/action/auth/getuserid";
+import { decryptURLData } from "@/utils/methods";
 
 const CreateRentPage = () => {
   const router = useRouter();
   const param = useParams();
   const [createduserid, setCreateUserid] = useState<number>(0);
-  const shopid: number = parseInt(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
+  const encid: string = decryptURLData(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
+    router
   );
+  const id: number = parseInt(encid);
+  const shopid: number = id;
 
   const [isCreating, setIsCreating] = useState<boolean>(false);
 
@@ -118,7 +122,7 @@ const CreateRentPage = () => {
         return toast.error(createrent.message);
 
       toast.success("Shop rent created successfully");
-      router.push(`/dashboard/shops/collectrent/${createrent.data.id}`);
+      router.push(`/dashboard/shops/collectrent/${encryptURLData(createrent.data.id.toString())}`);
     } else {
       let errorMessage = "";
       if (result.issues[0].input) {

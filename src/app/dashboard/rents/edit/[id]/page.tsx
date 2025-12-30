@@ -14,7 +14,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { IcBaselineCalendarMonth } from "@/components/icons";
 import { useParams, useRouter } from "next/navigation";
 import { user } from "@prisma/client";
-import { handleNumberChange, longtext } from "@/utils/methods";
+import { handleNumberChange, longtext, decryptURLData } from "@/utils/methods";
 import { default as MulSelect } from "react-select";
 import GetRent from "@/action/rent/getrent";
 import GetNormalUser from "@/action/user/getnormalusers";
@@ -28,14 +28,15 @@ import EditRent from "@/action/rent/editrent";
 import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 
 const EditRentPage = () => {
+  const router = useRouter();
   const param = useParams();
 
-  const id: number = parseInt(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
+  const encid: string = decryptURLData(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
+    router
   );
+  const id: number = parseInt(encid);
   const [currentuserid, setCurrentUserid] = useState<number>(0);
-
-  const router = useRouter();
 
   const [isLoading, setLoading] = useState<boolean>(true);
 

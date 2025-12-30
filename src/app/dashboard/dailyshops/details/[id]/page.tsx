@@ -39,15 +39,18 @@ import { Swiper as SwiperType } from "swiper";
 import SwiperInstance from "swiper";
 import { Fa6SolidAngleLeft, Fa6SolidAngleRight } from "@/components/icons";
 import { toast } from "react-toastify";
+import { decryptURLData, encryptURLData } from "@/utils/methods";
 
 const ShopView = () => {
   const [userid, setUserid] = useState<number>(0);
   const router = useRouter();
 
   const param = useParams();
-  const id: number = parseInt(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
+  const encid: string = decryptURLData(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
+    router
   );
+  const id: number = parseInt(encid);
 
   interface ItemsType {
     name: string;
@@ -153,7 +156,7 @@ const ShopView = () => {
               <>
                 <button
                   onClick={() => {
-                    router.push(`/dashboard/dailyshops/createrent/${id}`);
+                    router.push(`/dashboard/dailyshops/createrent/${encryptURLData(id.toString())}`);
                   }}
                   className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                 >
@@ -167,7 +170,7 @@ const ShopView = () => {
                 <button
                   onClick={() => {
                     router.push(
-                      `/dashboard/dailyshops/createrent/${id}/${userid}`
+                      `/dashboard/dailyshops/createrent/${encryptURLData(id.toString())}/${encryptURLData(userid.toString())}`
                     );
                   }}
                   className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
@@ -225,7 +228,7 @@ const ShopView = () => {
                 <button
                   onClick={() => {
                     router.push(
-                      `/dashboard/dailyshops/bookinghistory/${id}`
+                      `/dashboard/dailyshops/bookinghistory/${encryptURLData(id.toString())}`
                     );
                   }}
                   className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"

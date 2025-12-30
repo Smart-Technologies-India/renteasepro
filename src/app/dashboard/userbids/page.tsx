@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 import { toast } from "react-toastify";
+import { encryptURLData } from "@/utils/methods";
 
 const UserBidsRunning = () => {
   const [userid, setUserid] = useState<number>(0);
@@ -109,7 +110,7 @@ interface CardDetailsProps {
 const CardDetails = (props: CardDetailsProps) => {
   return (
     <Link
-      href={`/dashboard/userbids/property/${props.id}`}
+      href={`/dashboard/userbids/property/${encryptURLData(props.id.toString())}`}
       className="rounded-md my-4 bg-white w-full p-4 flex gap-1 lg:gap-4 items-center hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-pointer"
     >
       <div className="hidden lg:block">{props.icon}</div>
