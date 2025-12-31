@@ -19,7 +19,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { safeParse } from "valibot";
 import { format } from "date-fns";
-import { encryptURLData, handleNumberChange } from "@/utils/methods";
+import { encryptURLData, handleNumberChange, decryptURLData } from "@/utils/methods";
 import { default as MulSelect } from "react-select";
 import GetUser from "@/action/user/getuser";
 import GetBidTran from "@/action/bid_transact/getbidtransact";
@@ -27,16 +27,24 @@ import GetBidTran from "@/action/bid_transact/getbidtransact";
 const CreateRentPage = () => {
   const router = useRouter();
   const param = useParams();
-  const shopid: number = parseInt(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
+  
+  const shopidenc: string = decryptURLData(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
+    router
   );
+  const shopid: number = parseInt(shopidenc);
 
-  const userid : number = parseInt(
-    Array.isArray(param.userid) ? param.userid[0] : param.userid ?? "0"
+  const useridenc: string = decryptURLData(
+    Array.isArray(param.userid) ? param.userid[0] : param.userid ?? "0",
+    router
   );
-  const bidid : number = parseInt(
-    Array.isArray(param.bidid) ? param.bidid[0] : param.bidid ?? "0"
+  const userid: number = parseInt(useridenc);
+
+  const bididenc: string = decryptURLData(
+    Array.isArray(param.bidid) ? param.bidid[0] : param.bidid ?? "0",
+    router
   );
+  const bidid: number = parseInt(bididenc);
 
   const [currentuserid, setCurrentUserid] = useState<number>(0);
   const [isCreating, setIsCreating] = useState<boolean>(false);
@@ -118,8 +126,8 @@ const CreateRentPage = () => {
         userId: parseInt(userid.toString() ?? "0"),
         createdById: currentuserid,
         rent_amount: parseInt(amount ?? "0"),
-        rent_start_date: startDate!.toLocaleString(),
-        rent_end_date: endDate!.toLocaleString(),
+        rent_start_date: startDate!.toISOString(),
+        rent_end_date: endDate!.toISOString(),
         due_date: duedate,
         chargeone: chargeone.current?.value
           ? parseInt(chargeone.current?.value)

@@ -26,7 +26,7 @@ import Pagination from "@/components/pagination";
 import Link from "next/link";
 import AllAccount from "@/action/account/getallaccont";
 import AllAccountCategorys from "@/action/account/getallaccountcategory";
-import { capitalcase, removeDuplicates } from "@/utils/methods";
+import { capitalcase, encryptURLData, removeDuplicates } from "@/utils/methods";
 import {
   Popover,
   PopoverContent,
@@ -336,7 +336,7 @@ const CreateAccountPage = () => {
                       <Button
                         onClick={() => {
                           router.push(
-                            `/dashboard/miscreceipt/pdffile/${accoutn_rec.id}`
+                            `/dashboard/miscreceipt/pdffile/${encryptURLData(accoutn_rec.id.toString())}`
                           );
                         }}
                         className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm flex items-center gap-2  font-medium py-2"
@@ -346,7 +346,7 @@ const CreateAccountPage = () => {
                       <Button
                         onClick={() => {
                           router.push(
-                            `/dashboard/miscreceipt/edit/${accoutn_rec.id}`
+                            `/dashboard/miscreceipt/edit/${encryptURLData(accoutn_rec.id.toString())}`
                           );
                         }}
                         className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm flex items-center gap-2  font-medium py-2"

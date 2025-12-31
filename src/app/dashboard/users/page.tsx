@@ -62,7 +62,7 @@ import { useRouter } from "next/navigation";
 import { usePagination } from "@/hooks/usepagination";
 import Pagination from "@/components/pagination";
 import CreateUserMobile from "@/action/user/createusermobile";
-import { handleNumberChange } from "@/utils/methods";
+import { encryptURLData, handleNumberChange } from "@/utils/methods";
 
 const CreateUserPage = () => {
   const initdata = async () => {};
@@ -278,7 +278,9 @@ const CreateUserPage = () => {
                             <DropdownMenuItem
                               onClick={() => {
                                 router.push(
-                                  `/dashboard/userprofile/adminview/${bid_tans.id}`
+                                  `/dashboard/userprofile/adminview/${encryptURLData(
+                                    bid_tans.id.toString()
+                                  )}`
                                 );
                               }}
                               className="cursor-pointer"

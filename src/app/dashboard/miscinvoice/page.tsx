@@ -24,7 +24,7 @@ import { usePagination } from "@/hooks/usepagination";
 import Pagination from "@/components/pagination";
 import Link from "next/link";
 import AllAccountCategorys from "@/action/account/getallaccountcategory";
-import { capitalcase, removeDuplicates } from "@/utils/methods";
+import { capitalcase, encryptURLData, removeDuplicates } from "@/utils/methods";
 import AllInvoice from "@/action/invoice/getallinvoice";
 import { misc_invoice } from "@prisma/client";
 import { DateRange } from "react-day-picker";
@@ -334,7 +334,7 @@ const CreateAccountPage = () => {
                       <Button
                         onClick={() => {
                           router.push(
-                            `/dashboard/miscinvoice/pdffile/${accoutn_rec.id}`
+                            `/dashboard/miscinvoice/pdffile/${encryptURLData(accoutn_rec.id.toString())}`
                           );
                         }}
                         className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm flex items-center gap-2  font-medium py-2"
@@ -344,7 +344,7 @@ const CreateAccountPage = () => {
                       <Button
                         onClick={() => {
                           router.push(
-                            `/dashboard/miscinvoice/edit/${accoutn_rec.id}`
+                            `/dashboard/miscinvoice/edit/${encryptURLData(accoutn_rec.id.toString())}`
                           );
                         }}
                         className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm flex items-center gap-2  font-medium py-2"

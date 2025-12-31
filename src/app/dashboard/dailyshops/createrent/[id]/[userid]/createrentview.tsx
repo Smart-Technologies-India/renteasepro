@@ -183,6 +183,8 @@ const CreateRentPage = (props: CreateRentProps) => {
         setOpen2(true);
       } else if (shopData.id == 13) {
         setOpen3(true);
+      } else if ([14, 15, 16, 17].includes(shopData.id)) {
+        setOpen5(true);
       } else {
         setOpen4(true);
       }
@@ -250,8 +252,8 @@ const CreateRentPage = (props: CreateRentProps) => {
         shopId: props.unitid,
         userId: props.userid,
         createdById: createuserid,
-        event_from_date: startDate!.toLocaleString(),
-        event_to_date: endDate!.toLocaleString(),
+        event_from_date: startDate!.toISOString(),
+        event_to_date: endDate!.toISOString(),
         event_amount: (
           datecount() * parseInt(dailyRentDescription?.event_amount || "0")
         ).toString(),
@@ -268,10 +270,10 @@ const CreateRentPage = (props: CreateRentProps) => {
         ).toString(),
         event_reason: purpose,
         ...(prepration && {
-          prep_day: subDays(startDate!, 1).toLocaleString(),
+          prep_day: subDays(startDate!, 1).toISOString(),
         }), // Day before startDate
         ...(handover && {
-          handover_day: addDays(endDate!, 1).toLocaleString(),
+          handover_day: addDays(endDate!, 1).toISOString(),
         }),
         status: "FAILED",
         company_name: company_name.current?.value,
@@ -452,6 +454,7 @@ const CreateRentPage = (props: CreateRentProps) => {
   const [open2, setOpen2] = useState<boolean>(false);
   const [open3, setOpen3] = useState<boolean>(false);
   const [open4, setOpen4] = useState<boolean>(false);
+  const [open5, setOpen5] = useState<boolean>(false);
 
   if (isLoading)
     return (
@@ -1342,6 +1345,148 @@ const CreateRentPage = (props: CreateRentProps) => {
         </p>
         <p className="text-sm text-gray-800 font-normal my-2">
           18. Violation or lapses found in any of the above conditions by the
+          applicant, the competent authority has the right to take necessary
+          action or by imposing the penalty as assigned thereof.
+        </p>
+
+        <div>
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded-md mt-4"
+            onClick={submit}
+          >
+            Accept & Submit
+          </button>
+        </div>
+      </Modal>
+      <Modal
+        title="Terms & Condition"
+        centered
+        open={open5}
+        onCancel={() => setOpen5(false)}
+        footer={null}
+        width={800}
+        className="my-10 h-[600px] overflow-y-scroll"
+      >
+        <p className="text-sm  font-normal my-2 text-gray-800">
+          1. The permission of videography / Photography shall be granted only
+          on the given date while utilizing the allotted space at Damanganga
+          Riverfront, Silvassa, DNH.
+        </p>
+
+        <p className="text-sm  font-normal my-2  text-rose-500">
+          2. The applicant has to pay deposit amount (Refundable) in the form of
+          Demand Draft in the favour Dadra and Nagar Haveli Planning &
+          Development Authority as Security Deposit before your function / event
+          date physically in the office of DNHPDA, Silvassa and failing to do so
+          shall be understood that the said booking is cancelled. The Security
+          Deposit shall be refundable if the allotted space is found in neat and
+          tidy condition by the competent authority.
+        </p>
+        <p className="text-sm text-gray-800 font-normal my-2">
+          3. The entire premises shall be available from 7:00 AM to 10:00 PM
+          only.
+        </p>
+        <p className="text-sm text-gray-800 font-normal my-2">
+          4. The applicant shall obey the timing orders and failing to do so,
+          shall lead to forfeiture of the deposit submitted by the applicant.
+        </p>
+        <p className="text-sm text-gray-800 font-normal my-2">
+          5. The applicant shall be responsible for maintaining cleanliness and
+          hygiene during and after completion of function at the allotted space
+          area and all used premises. If the same is not maintained and
+          cleanness is not observed by the component authority, a penalty shall
+          be levied (as decided by competent authority) and the security deposit
+          submitted to the department shall be forfeited without any further
+          explanation.
+        </p>
+        <p className="text-sm text-gray-800 font-normal my-2">
+          6. The applicant shall ensure that they shall maintain the floor and
+          premises of the allotted space, clean by avoiding littering of food
+          materials over the floors, by sufficient provision of waste bins etc.
+        </p>
+        <p className="text-sm text-gray-800 font-normal my-2">
+          7. The applicant shall not stick any adhesive based posters in the
+          allotted space and entire premises
+        </p>
+        <p className="text-sm text-gray-800 font-normal my-2">
+          8. Applicant shall not occupy and hinder the common areas such as
+          entry / exit points, corridors / passage, common road and foot paths
+          etc. If the applicant does so, a penalty (as decided by competent
+          authority) shall be levied and the security deposit submitted to the
+          department shall be forfeited without any further explanation.
+        </p>
+        <p className="text-sm text-gray-800 font-normal my-2">
+          9. Smoking, drinking of alcohol, non-vegetarian food, chewing of
+          tobacco is strictly prohibited in the entire premises and if found, a
+          penalty (as decided by competent authority) shall be levied and also
+          the security deposit submitted to the department shall be forfeited
+          without any further explanation.
+        </p>
+        <p className="text-sm text-gray-800 font-normal my-2">
+          10. If the applicant has to change their booking date / allotted date,
+          25% shifting charges shall be applied.
+        </p>
+        <p className="text-sm text-gray-800 font-normal my-2">
+          11. If the applicant has to cancel their booking date / allotted date,
+          50% cancellation charges shall be applied and the remaining amount
+          shall be transferred to the applicant by the department.
+        </p>
+        <p className="text-sm text-rose-500 font-normal my-2">
+          12. If the applicant has to cancel their booking date / allotted date
+          before 1 week of their function / event date, in that case 100%
+          cancellation charge shall be applied.
+        </p>
+        <p className="text-sm text-gray-800 font-normal my-2">
+          13. The applicant shall manage all the parking arrangements of their
+          guests by their own and shall not park the vehicles at service roads /
+          main road. The applicant must not tamper with any of the car park
+          systems, including access control, ventilation, fire protection,
+          surveillance and communications in the parking area.
+        </p>
+        <p className="text-sm text-rose-500 font-normal my-2">
+          14. The DNHPDA reserves the right to cancel the allotment of space at
+          Damanganga Riverfront, Silvassa in case of any government functions
+          without assigning any reason thereof.
+        </p>
+        <p className="text-sm text-gray-800 font-normal my-2">
+          15. The existing lighting arrangements such as walkway lightings, High
+          Mast lightings in the Riverfront will be allowed to be utilized by the
+          applicant.
+        </p>
+        <p className="text-sm text-gray-800 font-normal my-2">
+          16. Any additional arrangements such as Pandals, Stage decorations,
+          lighting connections for Pandals and sound systems etc. shall be the
+          responsibility of the applicant concerned.
+        </p>
+        <p className="text-sm text-gray-800 font-normal my-2">
+          17. The applicant shall not be permitted to enter any motor vehicle in
+          the walkway premises of the Riverfront.
+        </p>
+        <p className="text-sm text-gray-800 font-normal my-2">
+          18.The applicant shall take into consideration that none of the
+          components installed in the Riverfront shall be damaged in the
+          allotted space.
+        </p>
+        <p className="text-sm text-gray-800 font-normal my-2">
+          19.The applicant provide sufficient dustbin and must ensure that no
+          garbage or waste is thrown or dumped in river & entire riverfront
+          premises.
+        </p>
+        <p className="text-sm text-gray-800 font-normal my-2">
+          20. Any incidents involving drowning or accidental entry into the
+          river by any person during the event shall be the sole responsibility
+          of the applicant. The DNHPDA shall not be held liable for any such
+          incidents arising from negligence, lack of supervision, or
+          mismanagement by the applicant.
+        </p>
+        <p className="text-sm text-gray-800 font-normal my-2">
+          21.The applicant shall arrange and maintain all necessary
+          fire-resistant equipment and fire-safety measures at their own cost
+          during the event. This includes fire extinguishers, fire blankets, and
+          any other safety tools required as per safety norms.
+        </p>
+        <p className="text-sm text-gray-800 font-normal my-2">
+          22. Violation or lapses found in any of the above conditions by the
           applicant, the competent authority has the right to take necessary
           action or by imposing the penalty as assigned thereof.
         </p>

@@ -188,6 +188,7 @@ const fromBase64Url = (str: string): string =>
   str.replace(/-/g, "+").replace(/_/g, "/") + "==".slice(str.length % 4 || 4);
 
 export const encryptURLData = (data: string): string => {
+  if (!data) return "";
   const encryptedData = CryptoJS.AES.encrypt(data, secretKey).toString();
   return toBase64Url(encryptedData);
 };

@@ -1074,11 +1074,13 @@ const ViewPdf = () => {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setTimeout(() => {
-      setIsClient(true);
-      updateInstance(Quixote);
-    }, 3000);
-  }, [Quixote]);
+    if (account) {
+      setTimeout(() => {
+        setIsClient(true);
+        updateInstance(Quixote);
+      }, 1000);
+    }
+  }, [account]);
 
   const [instance, updateInstance] = usePDF({ document: Quixote });
 

@@ -208,8 +208,8 @@ const CreateRentPage = () => {
         event_amount: (
           datecount() * parseInt(dailyRentDescription?.event_amount || "0")
         ).toString(),
-        event_from_date: startDate!.toLocaleString(),
-        event_to_date: endDate!.toLocaleString(),
+        event_from_date: startDate!.toISOString(),
+        event_to_date: endDate!.toISOString(),
         prep_day_amount: prepration
           ? parseInt(dailyRentDescription?.prep_day_amount || "0").toFixed(0)
           : "0",
@@ -223,10 +223,10 @@ const CreateRentPage = () => {
         ).toString(),
         event_reason: purpose,
         ...(prepration && {
-          prep_day: subDays(startDate!, 1).toLocaleString(),
+          prep_day: subDays(startDate!, 1).toISOString(),
         }), // Day before startDate
         ...(handover && {
-          handover_day: addDays(endDate!, 1).toLocaleString(),
+          handover_day: addDays(endDate!, 1).toISOString(),
         }),
         status: "UPCOMING",
       });

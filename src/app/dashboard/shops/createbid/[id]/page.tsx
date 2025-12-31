@@ -59,23 +59,26 @@ function setTime(date: Date, timeString: string): Date | void {
   // Set the new time on the new date object
   newDate.setHours(newHours);
   newDate.setMinutes(minutes);
-  newDate.setSeconds(0); 
-  newDate.setMilliseconds(0); 
+  newDate.setSeconds(0);
+  newDate.setMilliseconds(0);
 
   return newDate;
 }
 
 const CreateBidPage = () => {
+  const router = useRouter();
   const param = useParams();
-  const shopid: number = parseInt(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0"
+  const shopidenc: string = decryptURLData(
+    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
+    router
   );
+
+  const shopid = parseInt(shopidenc);
 
   const [userid, setUserid] = useState<number>(0);
 
   const [isCreating, setIsCreating] = useState<boolean>(false);
 
-  const router = useRouter();
   const [isLoading, setLoading] = useState<boolean>(true);
 
   const [startDate, setStartDate] = useState<Date>();
@@ -410,11 +413,15 @@ const CreateBidPage = () => {
       const formData = new FormData();
       formData.append("file", fileUploader!);
 
-      const uploadfile = await axios.post(process.env.UPLOAD_LINK ?? "", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const uploadfile = await axios.post(
+        process.env.UPLOAD_LINK ?? "",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       if (uploadfile.status != 200) {
         toast.error("File upload failed");

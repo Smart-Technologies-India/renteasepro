@@ -595,11 +595,13 @@ const ViewPdf = () => {
   // }, []);
 
   useEffect(() => {
-    setTimeout(() => {
-      setIsClient(true);
-      updateInstance(Quixote);
-    }, 3000);
-  }, [Quixote]);
+    if (bid && bidderList) {
+      setTimeout(() => {
+        setIsClient(true);
+        updateInstance(Quixote);
+      }, 1000);
+    }
+  }, [bid, bidderList, winnder]);
 
   // const getfile = async () => {
   //   const file: NodeJS.ReadableStream = await renderToFile(

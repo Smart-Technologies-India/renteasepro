@@ -13,7 +13,13 @@ import GetShop from "@/action/shop/getshop";
 import GetUser from "@/action/user/getuser";
 import BackButton from "@/components/backbutton";
 
-import { capitalcase, encryptURLData, formatDateTime, formateDate, decryptURLData } from "@/utils/methods";
+import {
+  capitalcase,
+  encryptURLData,
+  formatDateTime,
+  formateDate,
+  decryptURLData,
+} from "@/utils/methods";
 import {
   BidStatus,
   RentTransactStatus,
@@ -282,7 +288,9 @@ const ShopView = () => {
                             }
 
                             router.push(
-                              `/dashboard/shops/createbid/${encryptURLData(id.toString())}`
+                              `/dashboard/shops/createbid/${encryptURLData(
+                                id.toString()
+                              )}`
                             );
                           }}
                           className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
@@ -294,7 +302,9 @@ const ShopView = () => {
                       <>
                         {bid && (
                           <Link
-                            href={`/dashboard/shops/shopbidhistory/${encryptURLData(id.toString())}`}
+                            href={`/dashboard/shops/shopbidhistory/${encryptURLData(
+                              id.toString()
+                            )}`}
                             className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                           >
                             Bid History
@@ -304,7 +314,9 @@ const ShopView = () => {
                           <button
                             onClick={() => {
                               return router.push(
-                                `/dashboard/rents/edit/${encryptURLData(rentdata?.id.toString() ?? "0")}`
+                                `/dashboard/rents/edit/${encryptURLData(
+                                  rentdata?.id.toString() ?? "0"
+                                )}`
                               );
                             }}
                             className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
@@ -327,7 +339,9 @@ const ShopView = () => {
                               }
 
                               router.push(
-                                `/dashboard/shops/createbid/${encryptURLData(id.toString())}`
+                                `/dashboard/shops/createbid/${encryptURLData(
+                                  id.toString()
+                                )}`
                               );
                             }}
                             className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
@@ -351,7 +365,11 @@ const ShopView = () => {
                           return;
                         }
 
-                        router.push(`/dashboard/shops/createbid/${encryptURLData(id.toString())}`);
+                        router.push(
+                          `/dashboard/shops/createbid/${encryptURLData(
+                            id.toString()
+                          )}`
+                        );
                       }}
                       className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                     >
@@ -372,7 +390,11 @@ const ShopView = () => {
                         return;
                       }
 
-                      router.push(`/dashboard/shops/createrent/${encryptURLData(id.toString())}`);
+                      router.push(
+                        `/dashboard/shops/createrent/${encryptURLData(
+                          id.toString()
+                        )}`
+                      );
                     }}
                     className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                   >
@@ -381,7 +403,9 @@ const ShopView = () => {
                 ) : new Date(rentdata?.rent_end_date ?? "") < new Date() ? (
                   <>
                     <Link
-                      href={`/dashboard/shops/createrent/${encryptURLData(id.toString())}`}
+                      href={`/dashboard/shops/createrent/${encryptURLData(
+                        id.toString()
+                      )}`}
                       className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                     >
                       Add Rent
@@ -462,7 +486,9 @@ const ShopView = () => {
             ) : user?.role === "USER" ? (
               bid.is_auction == true ? (
                 <Link
-                  href={`/dashboard/bids/apply/${encryptURLData(bid.id.toString())}`}
+                  href={`/dashboard/bids/apply/${encryptURLData(
+                    bid.id.toString()
+                  )}`}
                   className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                 >
                   Apply Bid
@@ -471,7 +497,9 @@ const ShopView = () => {
                 <></>
               ) : (
                 <Link
-                  href={`/dashboard/bids/apply/${encryptURLData(bid.id.toString())}`}
+                  href={`/dashboard/bids/apply/${encryptURLData(
+                    bid.id.toString()
+                  )}`}
                   className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                 >
                   Apply Bid
@@ -484,13 +512,17 @@ const ShopView = () => {
             {["ADMIN", "MANAGER", "ACCOUNTANT"].includes(user?.role!) && (
               <>
                 <Link
-                  href={`/dashboard/bids/userbidinfo/${encryptURLData(bid?.id.toString() ?? "0")}`}
+                  href={`/dashboard/bids/userbidinfo/${encryptURLData(
+                    bid?.id.toString() ?? "0"
+                  )}`}
                   className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                 >
                   View Bid Details
                 </Link>
                 <Link
-                  href={`/dashboard/bids/biderslist/${encryptURLData(bid?.id.toString() ?? "0")}`}
+                  href={`/dashboard/bids/biderslist/${encryptURLData(
+                    bid?.id.toString() ?? "0"
+                  )}`}
                   className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                 >
                   Running Bid History
@@ -598,8 +630,8 @@ const ShopView = () => {
               <p className="text-xl  font-semibold">Tenant Details</p>
               <div className="grow"></div>
 
-              {/* <p>{new Date(rentdata?.rent_end_date ?? "").toLocaleString()}</p>
-              <p>{new Date().toLocaleString()}</p> */}
+              {/* <p>{new Date(rentdata?.rent_end_date ?? "").toISOString()}</p>
+              <p>{new Date().toISOString()}</p> */}
               {["ADMIN", "MANAGER", "ACCOUNTANT"].includes(user?.role!) && (
                 <>
                   {new Date(rentdata?.rent_end_date ?? "") < new Date() ? (
@@ -649,13 +681,17 @@ const ShopView = () => {
               {["ADMIN", "MANAGER", "ACCOUNTANT"].includes(user?.role!) && (
                 <>
                   <Link
-                    href={`/dashboard/userrent/history/${encryptURLData(rentdata?.id)}`}
+                    href={`/dashboard/userrent/history/${encryptURLData(
+                      rentdata?.id.toString() ?? "0"
+                    )}`}
                     className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                   >
                     Rent History
                   </Link>
                   <Link
-                    href={`/dashboard/shops/details/${encryptURLData(rentdata?.id.toString() ?? "0")}/collectrent`}
+                    href={`/dashboard/shops/details/${encryptURLData(
+                      rentdata?.id.toString() ?? "0"
+                    )}/collectrent`}
                     className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                   >
                     Collect Rent
@@ -664,7 +700,9 @@ const ShopView = () => {
               )}
               {user?.role! === "USER" && (
                 <Link
-                  href={`/dashboard/userrent/details/${encryptURLData(rentdata?.id.toString() ?? "0")}`}
+                  href={`/dashboard/userrent/details/${encryptURLData(
+                    rentdata?.id.toString() ?? "0"
+                  )}`}
                   className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                 >
                   Pay Rent
@@ -738,7 +776,9 @@ const ShopView = () => {
             <AlertDialogCancel>Close</AlertDialogCancel>
             <Link
               className="bg-black py-2  text-white rounded-lg px-4"
-              href={`/dashboard/shops/details/${encryptURLData(rentdata?.id.toString() ?? "0")}/settlerent`}
+              href={`/dashboard/shops/details/${encryptURLData(
+                rentdata?.id.toString() ?? "0"
+              )}/settlerent`}
             >
               Settle Rent
             </Link>

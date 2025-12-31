@@ -103,8 +103,8 @@ const CreateRentPage = () => {
         userId: userid,
         createdById: createduserid,
         rent_amount: parseInt(amount ?? "0"),
-        rent_start_date: startDate!.toLocaleString(),
-        rent_end_date: endDate!.toLocaleString(),
+        rent_start_date: startDate!.toISOString(),
+        rent_end_date: endDate!.toISOString(),
         due_date: duedate,
         chargeone: chargeone.current?.value
           ? parseInt(chargeone.current?.value)
