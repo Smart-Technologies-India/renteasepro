@@ -1,12 +1,1095 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "mysql"
+}
+
+model user {
+  id                            Int                      @id @default(autoincrement())
+  username                      String?
+  password                      String?
+  firstName                     String?
+  lastName                      String?
+  contactone                    String?                  @unique
+  contacttwo                    String?
+  email                         String?                  @unique
+  aadhar                        String?                  @unique
+  pan                           String?                  @unique
+  address                       String?                  @db.MediumText
+  city                          String?
+  bankName                      String?
+  bankAccountNumber             String?
+  ifscCode                      String?
+  role                          Role                     @default(NONE)
+  status                        Status                   @default(ACTIVE)
+  createdAt                     DateTime                 @default(now())
+  updatedAt                     DateTime                 @updatedAt
+  deletedAt                     DateTime?
+  otp                           String?
+  acount_category_create        account_category[]       @relation("account_category_createdBy_userId")
+  acount_category_delete        account_category[]       @relation("account_category_deletedBy_userId")
+  acount_category_update        account_category[]       @relation("account_category_updatedBy_userId")
+  account_receipt_create        account_receipt[]        @relation("account_receipt_createdBy_userId")
+  account_receipt_delete        account_receipt[]        @relation("account_receipt_deletedBy_userId")
+  account_receipt_update        account_receipt[]        @relation("account_receipt_updatedBy_userId")
+  bid_create                    bid[]                    @relation("bid_createdBy_userId")
+  bid_delete                    bid[]                    @relation("bid_deletedBy_userId")
+  bid_update                    bid[]                    @relation("bid_updatedBy_userId")
+  bid_payment_create            bid_payment[]            @relation("bid_payment_createdBy_userId")
+  bid_payment_delete            bid_payment[]            @relation("bid_payment_deletedBy_userId")
+  bid_payment_update            bid_payment[]            @relation("bid_payment_updatedBy_userId")
+  bid_payment                   bid_payment[]
+  bid_transact_create           bid_transact[]           @relation("bid_transact_createdBy_userId")
+  bid_transact_delete           bid_transact[]           @relation("bid_transact_deletedBy_userId")
+  bid_transact_update           bid_transact[]           @relation("bid_transact_updatedBy_userId")
+  bid_transact                  bid_transact[]
+  corrigendum_create            corrigendum[]            @relation("corrigendum_createdBy_userId")
+  corrigendum_delete            corrigendum[]            @relation("corrigendum_deletedBy_userId")
+  corrigendum_update            corrigendum[]            @relation("corrigendum_updatedBy_userId")
+  daily_property_create         daily_property[]         @relation("daily_property_createdBy_userId")
+  daily_property_delete         daily_property[]         @relation("daily_property_deletedBy_userId")
+  daily_property_update         daily_property[]         @relation("daily_property_updatedBy_userId")
+  daily_rent_approvedBy_userId  daily_rent[]             @relation("daily_rent_approvedBy_userId")
+  daily_rent_canceldBy_userId   daily_rent[]             @relation("daily_rent_canceldBy_userId")
+  daily_rent_create             daily_rent[]             @relation("daily_rent_createdBy_userId")
+  daily_rent_delete             daily_rent[]             @relation("daily_rent_deletedBy_userId")
+  daily_rent_update             daily_rent[]             @relation("daily_rent_updatedBy_userId")
+  daily_rent                    daily_rent[]
+  daily_rent_description_create daily_rent_description[] @relation("daily_rent_description_createdBy_userId")
+  daily_rent_description_delete daily_rent_description[] @relation("daily_rent_description_deletedBy_userId")
+  daily_rent_description_update daily_rent_description[] @relation("daily_rent_description_updatedBy_userId")
+  daily_rent_photo_create       daily_rent_photo[]       @relation("daily_rent_photo_createdBy_userId")
+  daily_rent_photo_delete       daily_rent_photo[]       @relation("daily_rent_photo_deletedBy_userId")
+  daily_rent_photo_update       daily_rent_photo[]       @relation("daily_rent_photo_updatedBy_userId")
+  daily_rent_transact_create    daily_rent_transact[]    @relation("daily_rent_transact_createdBy_userId")
+  daily_rent_transact_delete    daily_rent_transact[]    @relation("daily_rent_transact_deletedBy_userId")
+  daily_rent_transact_update    daily_rent_transact[]    @relation("daily_rent_transact_updatedBy_userId")
+  daily_rent_transact           daily_rent_transact[]
+  daily_shop_create             daily_shop[]             @relation("daily_shop_createdBy_userId")
+  daily_shop_delete             daily_shop[]             @relation("daily_shop_deletedBy_userId")
+  daily_shop_update             daily_shop[]             @relation("daily_shop_updatedBy_userId")
+  demand_node_create            demand_node[]            @relation("demand_node_createdBy_userId")
+  demand_node_delete            demand_node[]            @relation("demand_node_deletedBy_userId")
+  demand_node_update            demand_node[]            @relation("demand_node_updatedBy_userId")
+  demand_node                   demand_node[]
+  exempt_create                 exempt[]                 @relation("exempt_createdBy_userId")
+  exempt_delete                 exempt[]                 @relation("exempt_deletedBy_userId")
+  exempt_update                 exempt[]                 @relation("exempt_updatedBy_userId")
+  file_upload_create            file_upload[]            @relation("upload_createdBy_userId")
+  file_upload_delete            file_upload[]            @relation("upload_deletedBy_userId")
+  file_upload_update            file_upload[]            @relation("upload_updatedBy_userId")
+  file_upload                   file_upload[]
+  misc_invoice_create           misc_invoice[]           @relation("misc_invoice_createdBy_userId")
+  misc_invoice_delete           misc_invoice[]           @relation("misc_invoice_deletedBy_userId")
+  misc_invoice_update           misc_invoice[]           @relation("misc_invoice_updatedBy_userId")
+  organization_create           organization[]           @relation("organization_createdBy_userId")
+  organization_delete           organization[]           @relation("organization_deletedBy_userId")
+  organization_update           organization[]           @relation("organization_updatedBy_userId")
+  property_create               property[]               @relation("property_createdBy_userId")
+  property_delete               property[]               @relation("property_deletedBy_userId")
+  property_update               property[]               @relation("property_updatedBy_userId")
+  refund_amount_create          refund_amount[]          @relation("refund_amount_createdBy_userId")
+  refund_amount_delete          refund_amount[]          @relation("refund_amount_deletedBy_userId")
+  refund_amount_update          refund_amount[]          @relation("refund_amount_updatedBy_userId")
+  refund_amount                 refund_amount[]
+  rent_create                   rent[]                   @relation("rent_createdBy_userId")
+  rent_delete                   rent[]                   @relation("rent_deletedBy_userId")
+  rent_update                   rent[]                   @relation("rent_updatedBy_userId")
+  rent                          rent[]
+  rent_sms                      rent_sms[]
+  rent_transact_create          rent_transact[]          @relation("rent_transact_createdBy_userId")
+  rent_transact_delete          rent_transact[]          @relation("rent_transact_deletedBy_userId")
+  rent_transact_update          rent_transact[]          @relation("rent_transact_updatedBy_userId")
+  rent_transact                 rent_transact[]
+  rentclose_create              rentclose[]              @relation("rentclose_createdBy_userId")
+  rentclose_delete              rentclose[]              @relation("rentclose_deletedBy_userId")
+  rentclose_update              rentclose[]              @relation("rentclose_updatedBy_userId")
+  rentclose                     rentclose[]
+  shop_create                   shop[]                   @relation("shop_createdBy_userId")
+  shop_delete                   shop[]                   @relation("shop_deletedBy_userId")
+  shop_update                   shop[]                   @relation("shop_updatedBy_userId")
+  shop_category_create          shop_category[]          @relation("shop_category_createdBy_userId")
+  shop_category_delete          shop_category[]          @relation("shop_category_deletedBy_userId")
+  shop_category_update          shop_category[]          @relation("shop_category_updatedBy_userId")
+  user_category_create          user_category[]          @relation("user_category_createdBy_userId")
+  user_category_delete          user_category[]          @relation("user_category_deletedBy_userId")
+  user_category_update          user_category[]          @relation("user_category_updatedBy_userId")
+  user_doc_upload_create        user_doc_upload[]        @relation("user_doc_upload_createdBy_userId")
+  user_doc_upload_delete        user_doc_upload[]        @relation("user_doc_upload_deletedBy_userId")
+  user_doc_upload_update        user_doc_upload[]        @relation("user_doc_upload_updatedBy_userId")
+  user_doc_upload               user_doc_upload[]
+}
+
+model shop_category {
+  id          Int          @id @default(autoincrement())
+  name        String
+  description String?
+  image       String?
+  remarks     String?
+  status      Status       @default(ACTIVE)
+  createdAt   DateTime     @default(now())
+  createdById Int
+  updatedAt   DateTime     @updatedAt
+  updatedById Int?
+  deletedAt   DateTime?
+  deletedById Int?
+  daily_shop  daily_shop[]
+  shop        shop[]
+  createdBy   user         @relation("shop_category_createdBy_userId", fields: [createdById], references: [id])
+  deletedBy   user?        @relation("shop_category_deletedBy_userId", fields: [deletedById], references: [id])
+  updatedBy   user?        @relation("shop_category_updatedBy_userId", fields: [updatedById], references: [id])
+
+  @@index([createdById], map: "shop_category_createdById_fkey")
+  @@index([deletedById], map: "shop_category_deletedById_fkey")
+  @@index([updatedById], map: "shop_category_updatedById_fkey")
+}
+
+model user_category {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  image       String?
+  remarks     String?
+  status      Status    @default(ACTIVE)
+  createdAt   DateTime  @default(now())
+  createdById Int
+  updatedAt   DateTime  @updatedAt
+  updatedById Int?
+  deletedAt   DateTime?
+  deletedById Int?
+  createdBy   user      @relation("user_category_createdBy_userId", fields: [createdById], references: [id])
+  deletedBy   user?     @relation("user_category_deletedBy_userId", fields: [deletedById], references: [id])
+  updatedBy   user?     @relation("user_category_updatedBy_userId", fields: [updatedById], references: [id])
+
+  @@index([createdById], map: "user_category_createdById_fkey")
+  @@index([deletedById], map: "user_category_deletedById_fkey")
+  @@index([updatedById], map: "user_category_updatedById_fkey")
+}
+
+model property {
+  id             Int           @id @default(autoincrement())
+  name           String
+  address        String
+  locality       String
+  pincode        String
+  city           String
+  contact_number String
+  contact_person String
+  total_shops    Int
+  total_floors   Int
+  latitude       Float
+  longitude      Float
+  description    String?
+  image          String?
+  remarks        String?
+  priority       Int
+  status         Status        @default(ACTIVE)
+  createdAt      DateTime      @default(now())
+  createdById    Int
+  updatedAt      DateTime      @updatedAt
+  updatedById    Int?
+  deletedAt      DateTime?
+  deletedById    Int?
+  file_upload    file_upload[]
+  createdBy      user          @relation("property_createdBy_userId", fields: [createdById], references: [id])
+  deletedBy      user?         @relation("property_deletedBy_userId", fields: [deletedById], references: [id])
+  updatedBy      user?         @relation("property_updatedBy_userId", fields: [updatedById], references: [id])
+  shop           shop[]
+
+  @@index([createdById], map: "property_createdById_fkey")
+  @@index([deletedById], map: "property_deletedById_fkey")
+  @@index([updatedById], map: "property_updatedById_fkey")
+}
+
+model shop {
+  id             Int             @id @default(autoincrement())
+  shopCategoryId Int
+  propertyId     Int
+  floor          Floors          @default(GROUND)
+  shopNumber     String
+  shopSize       String
+  meterno        String?
+  description    String?
+  image          String?
+  remarks        String?
+  status         ShopStatus      @default(VACANT)
+  createdAt      DateTime        @default(now())
+  createdById    Int
+  updatedAt      DateTime        @updatedAt
+  updatedById    Int?
+  deletedAt      DateTime?
+  deletedById    Int?
+  bid            bid[]
+  bid_payment    bid_payment[]
+  bid_transact   bid_transact[]
+  demand_node    demand_node[]
+  exempt         exempt[]
+  file_upload    file_upload[]
+  rent           rent[]
+  rent_transact  rent_transact[]
+  rentclose      rentclose[]
+  createdBy      user            @relation("shop_createdBy_userId", fields: [createdById], references: [id])
+  deletedBy      user?           @relation("shop_deletedBy_userId", fields: [deletedById], references: [id])
+  property       property        @relation(fields: [propertyId], references: [id])
+  shop_category  shop_category   @relation(fields: [shopCategoryId], references: [id])
+  updatedBy      user?           @relation("shop_updatedBy_userId", fields: [updatedById], references: [id])
+
+  @@unique([propertyId, shopNumber])
+  @@index([createdById], map: "shop_createdById_fkey")
+  @@index([deletedById], map: "shop_deletedById_fkey")
+  @@index([shopCategoryId], map: "shop_shopCategoryId_fkey")
+  @@index([updatedById], map: "shop_updatedById_fkey")
+}
+
+model bid {
+  id                   Int            @id @default(autoincrement())
+  shopId               Int
+  title                String
+  description          String?        @db.MediumText
+  instruction          String?        @db.MediumText
+  min_bid_amount       Int            @db.MediumInt
+  bidincrementamount   PercentageType @default(PERCENTAGE)
+  min_bid_increment    Int            @db.MediumInt
+  fees                 PercentageType @default(PERCENTAGE)
+  fees_amount          Int            @db.MediumInt
+  fees_refundable      RefundType     @default(NONREFUNDABLE)
+  emd                  PercentageType @default(PERCENTAGE)
+  emd_amount           Int            @db.MediumInt
+  emd_refundable       RefundType     @default(REFUNDABLE)
+  bg                   PercentageType @default(PERCENTAGE)
+  bg_amount            Int            @db.MediumInt
+  bg_refundable        RefundType     @default(REFUNDABLE)
+  docone               String?
+  doconedescription    String?        @db.MediumText
+  doctwo               String?
+  doctwodescription    String?        @db.MediumText
+  docthree             String?
+  docthreedescription  String?        @db.MediumText
+  bidstartdate         DateTime
+  bidenddate           DateTime
+  biddeclarationdate   DateTime
+  t_and_c_file_number  String?        @db.MediumText
+  t_and_c_description  String?        @db.MediumText
+  t_and_c_upload       String?        @db.MediumText
+  remarks              String?        @db.MediumText
+  status               Status         @default(ACTIVE)
+  createdAt            DateTime       @default(now())
+  createdById          Int
+  updatedAt            DateTime       @updatedAt
+  updatedById          Int?
+  deletedAt            DateTime?
+  deletedById          Int?
+  is_differently_abled Boolean        @default(false)
+  is_exemption         Boolean        @default(false)
+  is_msme              Boolean        @default(false)
+  is_reserved          Boolean        @default(false)
+  is_woman             Boolean        @default(false)
+  is_auction           Boolean        @default(false)
+  is_open              Boolean        @default(false)
+  is_sc_st             Boolean        @default(false)
+  is_tribal            Boolean        @default(false)
+  bid_status           BidStatus      @default(DRAFT)
+  additional_doc       Boolean        @default(false)
+  createdBy            user           @relation("bid_createdBy_userId", fields: [createdById], references: [id])
+  deletedBy            user?          @relation("bid_deletedBy_userId", fields: [deletedById], references: [id])
+  shop                 shop           @relation(fields: [shopId], references: [id])
+  updatedBy            user?          @relation("bid_updatedBy_userId", fields: [updatedById], references: [id])
+  bid_payment          bid_payment[]
+  bid_transact         bid_transact[]
+  corrigendum          corrigendum[]
+  exempt               exempt[]
+  file_upload          file_upload[]
+
+  @@index([createdById], map: "bid_createdById_fkey")
+  @@index([deletedById], map: "bid_deletedById_fkey")
+  @@index([shopId], map: "bid_shopId_fkey")
+  @@index([updatedById], map: "bid_updatedById_fkey")
+}
+
+model rent {
+  id                  Int             @id @default(autoincrement())
+  shopId              Int
+  userId              Int
+  rent_amount         Int             @db.MediumInt
+  rent_start_date     DateTime
+  rent_end_date       DateTime
+  due_date            Int
+  rent_agreement_file String?         @db.MediumText
+  chargeone           Int?            @db.MediumInt
+  chargetwo           Int?            @db.MediumInt
+  chargethree         Int?            @db.MediumInt
+  remarks             String?         @db.MediumText
+  status              RentStatus      @default(RUNNING)
+  createdAt           DateTime        @default(now())
+  createdById         Int
+  updatedAt           DateTime        @updatedAt
+  updatedById         Int?
+  deletedAt           DateTime?
+  deletedById         Int?
+  corrigendum         corrigendum[]
+  file_upload         file_upload[]
+  createdBy           user            @relation("rent_createdBy_userId", fields: [createdById], references: [id])
+  deletedBy           user?           @relation("rent_deletedBy_userId", fields: [deletedById], references: [id])
+  shop                shop            @relation(fields: [shopId], references: [id])
+  updatedBy           user?           @relation("rent_updatedBy_userId", fields: [updatedById], references: [id])
+  user                user            @relation(fields: [userId], references: [id])
+  rent_sms            rent_sms[]
+  rent_transact       rent_transact[]
+  rentclose           rentclose[]
+
+  @@index([createdById], map: "rent_createdById_fkey")
+  @@index([deletedById], map: "rent_deletedById_fkey")
+  @@index([shopId], map: "rent_shopId_fkey")
+  @@index([updatedById], map: "rent_updatedById_fkey")
+  @@index([userId], map: "rent_userId_fkey")
+}
+
+model organization {
+  id             Int       @id @default(autoincrement())
+  name           String
+  address        String?
+  gst_no         String?
+  gst_file       String?
+  pan_no         String?
+  pan_file       String?
+  msmeno         String?
+  msme_file      String?
+  contact_person String?
+  contact_number String?
+  status         Status    @default(ACTIVE)
+  createdAt      DateTime  @default(now())
+  createdById    Int
+  updatedAt      DateTime  @updatedAt
+  updatedById    Int?
+  deletedAt      DateTime?
+  deletedById    Int?
+  createdBy      user      @relation("organization_createdBy_userId", fields: [createdById], references: [id])
+  deletedBy      user?     @relation("organization_deletedBy_userId", fields: [deletedById], references: [id])
+  updatedBy      user?     @relation("organization_updatedBy_userId", fields: [updatedById], references: [id])
+
+  @@index([createdById], map: "organization_createdById_fkey")
+  @@index([deletedById], map: "organization_deletedById_fkey")
+  @@index([updatedById], map: "organization_updatedById_fkey")
+}
+
+model bid_transact {
+  id               Int           @id @default(autoincrement())
+  bidId            Int
+  userId           Int
+  shopId           Int
+  amount           Int           @db.MediumInt
+  iswinningbid     Boolean?
+  bidrejected      Boolean?
+  rejectedreason   String?       @db.MediumText
+  isexempt         Boolean?
+  exemptcategory   String?       @db.MediumText
+  exemptdocurl     String?       @db.MediumText
+  biddocstatus     Boolean?
+  transaction_date DateTime      @default(now())
+  remarks          String?       @db.MediumText
+  status           BidTransact   @default(PENDING)
+  createdAt        DateTime      @default(now())
+  createdById      Int
+  updatedAt        DateTime      @updatedAt
+  updatedById      Int?
+  deletedAt        DateTime?
+  deletedById      Int?
+  biddocreason     String?       @db.MediumText
+  userremarks      String?       @db.MediumText
+  bid              bid           @relation(fields: [bidId], references: [id])
+  createdBy        user          @relation("bid_transact_createdBy_userId", fields: [createdById], references: [id])
+  deletedBy        user?         @relation("bid_transact_deletedBy_userId", fields: [deletedById], references: [id])
+  shop             shop          @relation(fields: [shopId], references: [id])
+  updatedBy        user?         @relation("bid_transact_updatedBy_userId", fields: [updatedById], references: [id])
+  user             user          @relation(fields: [userId], references: [id])
+  file_upload      file_upload[]
+
+  @@index([bidId], map: "bid_transact_bidId_fkey")
+  @@index([createdById], map: "bid_transact_createdById_fkey")
+  @@index([deletedById], map: "bid_transact_deletedById_fkey")
+  @@index([shopId], map: "bid_transact_shopId_fkey")
+  @@index([updatedById], map: "bid_transact_updatedById_fkey")
+  @@index([userId], map: "bid_transact_userId_fkey")
+}
+
+model exempt {
+  id                     Int             @id @default(autoincrement())
+  shopId                 Int
+  bidId                  Int
+  is_fees_exempt_allowed Boolean         @default(false)
+  fees_for               ExemptFor?
+  fees                   PercentageType? @default(PERCENTAGE)
+  feesamount             Int?            @db.MediumInt
+  is_bg_exempt_allowed   Boolean         @default(false)
+  bg_for                 ExemptFor?
+  bg                     PercentageType? @default(PERCENTAGE)
+  bgamount               Int?            @db.MediumInt
+  is_emd_exempt_allowed  Boolean         @default(false)
+  emd_for                ExemptFor?
+  emd                    PercentageType? @default(PERCENTAGE)
+  emdamount              Int?            @db.MediumInt
+  description            String?
+  image                  String?
+  remarks                String?
+  status                 Status          @default(ACTIVE)
+  createdAt              DateTime        @default(now())
+  createdById            Int
+  updatedAt              DateTime        @updatedAt
+  updatedById            Int?
+  deletedAt              DateTime?
+  deletedById            Int?
+  corrigendum            corrigendum[]
+  bid                    bid             @relation(fields: [bidId], references: [id])
+  createdBy              user            @relation("exempt_createdBy_userId", fields: [createdById], references: [id])
+  deletedBy              user?           @relation("exempt_deletedBy_userId", fields: [deletedById], references: [id])
+  shop                   shop            @relation(fields: [shopId], references: [id])
+  updatedBy              user?           @relation("exempt_updatedBy_userId", fields: [updatedById], references: [id])
+
+  @@index([bidId], map: "exempt_bidId_fkey")
+  @@index([createdById], map: "exempt_createdById_fkey")
+  @@index([deletedById], map: "exempt_deletedById_fkey")
+  @@index([shopId], map: "exempt_shopId_fkey")
+  @@index([updatedById], map: "exempt_updatedById_fkey")
+}
+
+model rent_transact {
+  id               Int                @id @default(autoincrement())
+  rentId           Int
+  userId           Int
+  shopId           Int
+  amount           Int                @db.MediumInt
+  transaction_date DateTime           @default(now())
+  paymentmode      String?
+  transactionid    String?
+  bankname         String?
+  remarks          String?            @db.MediumText
+  status           RentTransactStatus @default(INACTIVE)
+  createdAt        DateTime           @default(now())
+  createdById      Int
+  updatedAt        DateTime           @updatedAt
+  updatedById      Int?
+  deletedAt        DateTime?
+  deletedById      Int?
+  formonth         DateTime
+  trackid          String?
+  reconcilation    DateTime?
+  gstinvoice       Int?               @db.MediumInt
+  orderid          String?
+  rent_sms         rent_sms[]
+  createdBy        user               @relation("rent_transact_createdBy_userId", fields: [createdById], references: [id])
+  deletedBy        user?              @relation("rent_transact_deletedBy_userId", fields: [deletedById], references: [id])
+  rent             rent               @relation(fields: [rentId], references: [id])
+  shop             shop               @relation(fields: [shopId], references: [id])
+  updatedBy        user?              @relation("rent_transact_updatedBy_userId", fields: [updatedById], references: [id])
+  user             user               @relation(fields: [userId], references: [id])
+
+  @@index([createdById], map: "rent_transact_createdById_fkey")
+  @@index([deletedById], map: "rent_transact_deletedById_fkey")
+  @@index([rentId], map: "rent_transact_rentId_fkey")
+  @@index([shopId], map: "rent_transact_shopId_fkey")
+  @@index([updatedById], map: "rent_transact_updatedById_fkey")
+  @@index([userId], map: "rent_transact_userId_fkey")
+}
+
+model bid_payment {
+  id               Int            @id @default(autoincrement())
+  bidId            Int
+  userId           Int
+  shopId           Int
+  paymenttype      BidPaymentType @default(FEES)
+  amount           Int            @db.MediumInt
+  gateway_charge   String?
+  transaction_date DateTime       @default(now())
+  paymentmode      String?
+  transactionid    String?
+  bankname         String?
+  remarks          String?        @db.MediumText
+  status           Status         @default(ACTIVE)
+  createdAt        DateTime       @default(now())
+  createdById      Int
+  updatedAt        DateTime       @updatedAt
+  updatedById      Int?
+  deletedAt        DateTime?
+  deletedById      Int?
+  trackid          String?
+  orderid          String?
+  bid              bid            @relation(fields: [bidId], references: [id])
+  createdBy        user           @relation("bid_payment_createdBy_userId", fields: [createdById], references: [id])
+  deletedBy        user?          @relation("bid_payment_deletedBy_userId", fields: [deletedById], references: [id])
+  shop             shop           @relation(fields: [shopId], references: [id])
+  updatedBy        user?          @relation("bid_payment_updatedBy_userId", fields: [updatedById], references: [id])
+  user             user           @relation(fields: [userId], references: [id])
+
+  @@index([bidId], map: "bid_payment_bidId_fkey")
+  @@index([createdById], map: "bid_payment_createdById_fkey")
+  @@index([deletedById], map: "bid_payment_deletedById_fkey")
+  @@index([shopId], map: "bid_payment_shopId_fkey")
+  @@index([updatedById], map: "bid_payment_updatedById_fkey")
+  @@index([userId], map: "bid_payment_userId_fkey")
+}
+
+model file_upload {
+  id            Int           @id @default(autoincrement())
+  userId        Int?
+  bidId         Int?
+  shopId        Int?
+  propertyId    Int?
+  rentId        Int?
+  bidTransactId Int?
+  name          String
+  description   String?
+  path          String
+  status        Status        @default(ACTIVE)
+  createdAt     DateTime      @default(now())
+  createdById   Int
+  updatedAt     DateTime      @updatedAt
+  updatedById   Int?
+  deletedAt     DateTime?
+  deletedById   Int?
+  bid           bid?          @relation(fields: [bidId], references: [id])
+  bidtransact   bid_transact? @relation(fields: [bidTransactId], references: [id])
+  createdBy     user          @relation("upload_createdBy_userId", fields: [createdById], references: [id])
+  deletedBy     user?         @relation("upload_deletedBy_userId", fields: [deletedById], references: [id])
+  propery       property?     @relation(fields: [propertyId], references: [id])
+  rent          rent?         @relation(fields: [rentId], references: [id])
+  shop          shop?         @relation(fields: [shopId], references: [id])
+  updatedBy     user?         @relation("upload_updatedBy_userId", fields: [updatedById], references: [id])
+  user          user?         @relation(fields: [userId], references: [id])
+
+  @@index([bidId], map: "file_upload_bidId_fkey")
+  @@index([bidTransactId], map: "file_upload_bidTransactId_fkey")
+  @@index([createdById], map: "file_upload_createdById_fkey")
+  @@index([deletedById], map: "file_upload_deletedById_fkey")
+  @@index([propertyId], map: "file_upload_propertyId_fkey")
+  @@index([rentId], map: "file_upload_rentId_fkey")
+  @@index([shopId], map: "file_upload_shopId_fkey")
+  @@index([updatedById], map: "file_upload_updatedById_fkey")
+  @@index([userId], map: "file_upload_userId_fkey")
+}
+
+model corrigendum {
+  id          Int       @id @default(autoincrement())
+  bidId       Int?
+  rentId      Int?
+  exemptId    Int?
+  name        String
+  description String?
+  path        String
+  status      Status    @default(ACTIVE)
+  createdAt   DateTime  @default(now())
+  createdById Int
+  updatedAt   DateTime  @updatedAt
+  updatedById Int?
+  deletedAt   DateTime?
+  deletedById Int?
+  bid         bid?      @relation(fields: [bidId], references: [id])
+  createdBy   user      @relation("corrigendum_createdBy_userId", fields: [createdById], references: [id])
+  deletedBy   user?     @relation("corrigendum_deletedBy_userId", fields: [deletedById], references: [id])
+  exempt      exempt?   @relation(fields: [exemptId], references: [id])
+  rent        rent?     @relation(fields: [rentId], references: [id])
+  updatedBy   user?     @relation("corrigendum_updatedBy_userId", fields: [updatedById], references: [id])
+
+  @@index([bidId], map: "corrigendum_bidId_fkey")
+  @@index([createdById], map: "corrigendum_createdById_fkey")
+  @@index([deletedById], map: "corrigendum_deletedById_fkey")
+  @@index([exemptId], map: "corrigendum_exemptId_fkey")
+  @@index([rentId], map: "corrigendum_rentId_fkey")
+  @@index([updatedById], map: "corrigendum_updatedById_fkey")
+}
+
+model demand_node {
+  id                        Int                 @id @default(autoincrement())
+  shopId                    Int
+  userId                    Int
+  demand_note_number        String?
+  demand_note_date          DateTime?
+  security_deposit_amount   Int?
+  security_deposit_form     SecurityDepositForm @default(CASH)
+  time_period               Int?
+  security_deposit_validity DateTime?
+  panelty_amount            Int?
+  advance_rent_months       Int?
+  stemp_paper_value         Int?
+  description               String?
+  remarks                   String?
+  status                    Status              @default(INACTIVE)
+  createdAt                 DateTime            @default(now())
+  createdById               Int
+  updatedAt                 DateTime            @updatedAt
+  updatedById               Int?
+  deletedAt                 DateTime?
+  deletedById               Int?
+  createdBy                 user                @relation("demand_node_createdBy_userId", fields: [createdById], references: [id])
+  deletedBy                 user?               @relation("demand_node_deletedBy_userId", fields: [deletedById], references: [id])
+  shop                      shop                @relation(fields: [shopId], references: [id])
+  updatedBy                 user?               @relation("demand_node_updatedBy_userId", fields: [updatedById], references: [id])
+  user                      user                @relation(fields: [userId], references: [id])
+
+  @@index([createdById], map: "demand_node_createdById_fkey")
+  @@index([deletedById], map: "demand_node_deletedById_fkey")
+  @@index([shopId], map: "demand_node_shopId_fkey")
+  @@index([updatedById], map: "demand_node_updatedById_fkey")
+  @@index([userId], map: "demand_node_userId_fkey")
+}
+
+model user_doc_upload {
+  id          Int         @id @default(autoincrement())
+  userId      Int?
+  doc_type    UserDocType @default(AADHAR)
+  name        String
+  description String?
+  path        String
+  status      Status      @default(ACTIVE)
+  createdAt   DateTime    @default(now())
+  createdById Int
+  updatedAt   DateTime    @updatedAt
+  updatedById Int?
+  deletedAt   DateTime?
+  deletedById Int?
+  createdBy   user        @relation("user_doc_upload_createdBy_userId", fields: [createdById], references: [id])
+  deletedBy   user?       @relation("user_doc_upload_deletedBy_userId", fields: [deletedById], references: [id])
+  updatedBy   user?       @relation("user_doc_upload_updatedBy_userId", fields: [updatedById], references: [id])
+  user        user?       @relation(fields: [userId], references: [id])
+
+  @@index([createdById], map: "user_doc_upload_createdById_fkey")
+  @@index([deletedById], map: "user_doc_upload_deletedById_fkey")
+  @@index([updatedById], map: "user_doc_upload_updatedById_fkey")
+  @@index([userId], map: "user_doc_upload_userId_fkey")
+}
+
+model rent_sms {
+  id             Int           @id @default(autoincrement())
+  userId         Int
+  rentId         Int
+  rentTransactId Int
+  due            SMSStatus     @default(ACTIVE)
+  late           SMSStatus     @default(ACTIVE)
+  monthcross     SMSStatus     @default(ACTIVE)
+  status         Status        @default(ACTIVE)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  deletedAt      DateTime?
+  rent           rent          @relation(fields: [rentId], references: [id])
+  rent_transact  rent_transact @relation(fields: [rentTransactId], references: [id])
+  user           user          @relation(fields: [userId], references: [id])
+
+  @@index([rentId], map: "rent_sms_rentId_fkey")
+  @@index([rentTransactId], map: "rent_sms_rentTransactId_fkey")
+  @@index([userId], map: "rent_sms_userId_fkey")
+}
+
+model account_category {
+  id                    Int               @id @default(autoincrement())
+  name                  String
+  description           String?
+  remarks               String?
+  status                Status            @default(ACTIVE)
+  createdAt             DateTime          @default(now())
+  createdById           Int
+  updatedAt             DateTime          @updatedAt
+  updatedById           Int?
+  deletedAt             DateTime?
+  deletedById           Int?
+  createdBy             user              @relation("account_category_createdBy_userId", fields: [createdById], references: [id])
+  deletedBy             user?             @relation("account_category_deletedBy_userId", fields: [deletedById], references: [id])
+  updatedBy             user?             @relation("account_category_updatedBy_userId", fields: [updatedById], references: [id])
+  account_receipt_one   account_receipt[] @relation("account_category_one")
+  account_receipt_three account_receipt[] @relation("account_category_three")
+  account_receipt_two   account_receipt[] @relation("account_category_two")
+  misc_invoice_one      misc_invoice[]    @relation("misc_invoice_one")
+  misc_invoice_three    misc_invoice[]    @relation("misc_invoice_three")
+  misc_invoice_two      misc_invoice[]    @relation("misc_invoice_two")
+
+  @@index([createdById], map: "account_category_createdById_fkey")
+  @@index([deletedById], map: "account_category_deletedById_fkey")
+  @@index([updatedById], map: "account_category_updatedById_fkey")
+}
+
+model account_receipt {
+  id                     Int                @id @default(autoincrement())
+  customername           String
+  customercontact        String?
+  amount                 String
+  transaction_date       DateTime           @default(now())
+  paymentmode            AccountPaymentMode @default(NEFT)
+  transactionid          String?
+  bankname               String?
+  remarks                String?            @db.MediumText
+  status                 Status             @default(ACTIVE)
+  createdAt              DateTime           @default(now())
+  createdById            Int
+  updatedAt              DateTime           @updatedAt
+  updatedById            Int?
+  deletedAt              DateTime?
+  deletedById            Int?
+  accountCategoryOneId   Int
+  accountCategoryThreeId Int?
+  accountCategoryTwoId   Int?
+  amount_three           String?
+  amount_two             String?
+  account_category_one   account_category   @relation("account_category_one", fields: [accountCategoryOneId], references: [id])
+  account_category_three account_category?  @relation("account_category_three", fields: [accountCategoryThreeId], references: [id])
+  account_category_two   account_category?  @relation("account_category_two", fields: [accountCategoryTwoId], references: [id])
+  createdBy              user               @relation("account_receipt_createdBy_userId", fields: [createdById], references: [id])
+  deletedBy              user?              @relation("account_receipt_deletedBy_userId", fields: [deletedById], references: [id])
+  updatedBy              user?              @relation("account_receipt_updatedBy_userId", fields: [updatedById], references: [id])
+
+  @@index([accountCategoryOneId], map: "account_receipt_accountCategoryOneId_fkey")
+  @@index([accountCategoryThreeId], map: "account_receipt_accountCategoryThreeId_fkey")
+  @@index([accountCategoryTwoId], map: "account_receipt_accountCategoryTwoId_fkey")
+  @@index([createdById], map: "account_receipt_createdById_fkey")
+  @@index([deletedById], map: "account_receipt_deletedById_fkey")
+  @@index([updatedById], map: "account_receipt_updatedById_fkey")
+}
+
+model misc_invoice {
+  id                     Int                @id @default(autoincrement())
+  customername           String
+  customercontact        String?
+  customeraddress        String?
+  customergst            String?
+  customerplaceofsupply  String?
+  accountCategoryOneId   Int
+  accountCategoryTwoId   Int?
+  accountCategoryThreeId Int?
+  remark_cat_one         String?            @db.MediumText
+  remark_cat_two         String?            @db.MediumText
+  remark_cat_three       String?            @db.MediumText
+  hsn                    String?
+  cgst                   String?
+  ugst                   String?
+  igst                   String?
+  cgst_percent           String?
+  amount                 String?
+  amount_two             String?
+  amount_three           String?
+  transaction_date       DateTime           @default(now())
+  paymentmode            AccountPaymentMode @default(NEFT)
+  transactionid          String?
+  bankname               String?
+  remarks                String?            @db.MediumText
+  status                 Status             @default(ACTIVE)
+  createdAt              DateTime           @default(now())
+  createdById            Int
+  updatedAt              DateTime           @updatedAt
+  updatedById            Int?
+  deletedAt              DateTime?
+  deletedById            Int?
+  gstinvoice             Int?               @db.MediumInt
+  account_category_one   account_category   @relation("misc_invoice_one", fields: [accountCategoryOneId], references: [id])
+  account_category_three account_category?  @relation("misc_invoice_three", fields: [accountCategoryThreeId], references: [id])
+  account_category_two   account_category?  @relation("misc_invoice_two", fields: [accountCategoryTwoId], references: [id])
+  createdBy              user               @relation("misc_invoice_createdBy_userId", fields: [createdById], references: [id])
+  deletedBy              user?              @relation("misc_invoice_deletedBy_userId", fields: [deletedById], references: [id])
+  updatedBy              user?              @relation("misc_invoice_updatedBy_userId", fields: [updatedById], references: [id])
+
+  @@index([accountCategoryOneId], map: "misc_invoice_accountCategoryOneId_fkey")
+  @@index([accountCategoryThreeId], map: "misc_invoice_accountCategoryThreeId_fkey")
+  @@index([accountCategoryTwoId], map: "misc_invoice_accountCategoryTwoId_fkey")
+  @@index([createdById], map: "misc_invoice_createdById_fkey")
+  @@index([deletedById], map: "misc_invoice_deletedById_fkey")
+  @@index([updatedById], map: "misc_invoice_updatedById_fkey")
+}
+
+model gstinvoice {
+  id        Int      @id @default(autoincrement())
+  number    Int      @db.MediumInt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model rentclose {
+  id               Int                @id @default(autoincrement())
+  fd_amount        Int
+  letoff_amount    Int
+  offline_amount   Int
+  rentId           Int
+  userId           Int
+  shopId           Int
+  transaction_date DateTime           @default(now())
+  paymentmode      String?
+  transactionid    String?
+  bankname         String?
+  remarks          String?            @db.MediumText
+  status           RentTransactStatus @default(INACTIVE)
+  createdAt        DateTime           @default(now())
+  createdById      Int
+  updatedAt        DateTime           @updatedAt
+  updatedById      Int?
+  deletedAt        DateTime?
+  deletedById      Int?
+  createdBy        user               @relation("rentclose_createdBy_userId", fields: [createdById], references: [id])
+  deletedBy        user?              @relation("rentclose_deletedBy_userId", fields: [deletedById], references: [id])
+  rent             rent               @relation(fields: [rentId], references: [id])
+  shop             shop               @relation(fields: [shopId], references: [id])
+  updatedBy        user?              @relation("rentclose_updatedBy_userId", fields: [updatedById], references: [id])
+  user             user               @relation(fields: [userId], references: [id])
+
+  @@index([createdById], map: "rentclose_createdById_fkey")
+  @@index([deletedById], map: "rentclose_deletedById_fkey")
+  @@index([rentId], map: "rentclose_rentId_fkey")
+  @@index([shopId], map: "rentclose_shopId_fkey")
+  @@index([updatedById], map: "rentclose_updatedById_fkey")
+  @@index([userId], map: "rentclose_userId_fkey")
+}
+
+model daily_property {
+  id             Int          @id @default(autoincrement())
+  name           String
+  address        String
+  locality       String
+  pincode        String
+  city           String
+  contact_number String
+  contact_person String
+  total_shops    Int
+  latitude       Float
+  longitude      Float
+  description    String?
+  image          String?
+  remarks        String?
+  priority       Int
+  status         Status       @default(ACTIVE)
+  createdAt      DateTime     @default(now())
+  createdById    Int
+  updatedAt      DateTime     @updatedAt
+  updatedById    Int?
+  deletedAt      DateTime?
+  deletedById    Int?
+  createdBy      user         @relation("daily_property_createdBy_userId", fields: [createdById], references: [id])
+  deletedBy      user?        @relation("daily_property_deletedBy_userId", fields: [deletedById], references: [id])
+  updatedBy      user?        @relation("daily_property_updatedBy_userId", fields: [updatedById], references: [id])
+  shop           daily_shop[]
+
+  @@index([createdById], map: "daily_property_createdById_fkey")
+  @@index([deletedById], map: "daily_property_deletedById_fkey")
+  @@index([updatedById], map: "daily_property_updatedById_fkey")
+}
+
+model daily_shop {
+  id                     Int                      @id @default(autoincrement())
+  shopCategoryId         Int
+  propertyId             Int
+  name                   String
+  capacity               Int
+  rate_per_day           String
+  rate_prep_day          String
+  rate_handover_day      String
+  deposit_per_day        String
+  description            String?
+  remarks                String?
+  status                 ShopStatus               @default(VACANT)
+  createdAt              DateTime                 @default(now())
+  createdById            Int
+  updatedAt              DateTime                 @updatedAt
+  updatedById            Int?
+  deletedAt              DateTime?
+  deletedById            Int?
+  daily_rent             daily_rent[]
+  daily_rent_description daily_rent_description[]
+  daily_rent_photo       daily_rent_photo[]
+  daily_rent_transact    daily_rent_transact[]
+  createdBy              user                     @relation("daily_shop_createdBy_userId", fields: [createdById], references: [id])
+  deletedBy              user?                    @relation("daily_shop_deletedBy_userId", fields: [deletedById], references: [id])
+  property               daily_property           @relation(fields: [propertyId], references: [id])
+  shop_category          shop_category            @relation(fields: [shopCategoryId], references: [id])
+  updatedBy              user?                    @relation("daily_shop_updatedBy_userId", fields: [updatedById], references: [id])
+  refund_amount          refund_amount[]
+
+  @@index([createdById], map: "daily_shop_createdById_fkey")
+  @@index([deletedById], map: "daily_shop_deletedById_fkey")
+  @@index([propertyId], map: "daily_shop_propertyId_fkey")
+  @@index([shopCategoryId], map: "daily_shop_shopCategoryId_fkey")
+  @@index([updatedById], map: "daily_shop_updatedById_fkey")
+}
+
+model daily_rent {
+  id                  Int                   @id @default(autoincrement())
+  shopId              Int
+  userId              Int
+  event_amount        String
+  prep_day_amount     String?
+  handover_day_amount String?
+  deposit_amount      String
+  event_from_date     DateTime
+  event_to_date       DateTime
+  prep_day            DateTime?
+  handover_day        DateTime?
+  is_date_change      Boolean               @default(false)
+  date_change_charge  String?
+  old_from_date       DateTime?
+  old_to_date         DateTime?
+  is_cancel           Boolean               @default(false)
+  canceldById         Int?
+  is_deparment_cancel Boolean               @default(false)
+  cancel_charge       String?
+  penalty_charge      String?
+  penalty_reason      String?
+  event_reason        String
+  is_approved         Boolean               @default(false)
+  approvedById        Int?
+  approved_date       DateTime?
+  gst_no              String?
+  company_name        String?
+  remarks             String?               @db.MediumText
+  status              DailyRentStatus       @default(DEPOSITDUE)
+  createdAt           DateTime              @default(now())
+  createdById         Int
+  updatedAt           DateTime              @updatedAt
+  updatedById         Int?
+  deletedAt           DateTime?
+  deletedById         Int?
+  approved_by         user?                 @relation("daily_rent_approvedBy_userId", fields: [approvedById], references: [id])
+  canceld_by          user?                 @relation("daily_rent_canceldBy_userId", fields: [canceldById], references: [id])
+  createdBy           user                  @relation("daily_rent_createdBy_userId", fields: [createdById], references: [id])
+  deletedBy           user?                 @relation("daily_rent_deletedBy_userId", fields: [deletedById], references: [id])
+  daily_shop          daily_shop            @relation(fields: [shopId], references: [id])
+  updatedBy           user?                 @relation("daily_rent_updatedBy_userId", fields: [updatedById], references: [id])
+  user                user                  @relation(fields: [userId], references: [id])
+  rent_transact       daily_rent_transact[]
+  refund_amount       refund_amount[]
+
+  @@index([approvedById], map: "daily_rent_approvedById_fkey")
+  @@index([canceldById], map: "daily_rent_canceldById_fkey")
+  @@index([createdById], map: "daily_rent_createdById_fkey")
+  @@index([deletedById], map: "daily_rent_deletedById_fkey")
+  @@index([shopId], map: "daily_rent_shopId_fkey")
+  @@index([updatedById], map: "daily_rent_updatedById_fkey")
+  @@index([userId], map: "daily_rent_userId_fkey")
+}
+
+model daily_rent_transact {
+  id               Int                @id @default(autoincrement())
+  gstinvoice       Int?               @db.MediumInt
+  rentId           Int
+  userId           Int
+  shopId           Int
+  amount           String
+  transaction_date DateTime           @default(now())
+  paymentmode      String?
+  transactionid    String?
+  bankname         String?
+  trackid          String?
+  reconcilation    DateTime?
+  remarks          String?            @db.MediumText
+  orderid          String?
+  status           RentTransactStatus @default(INACTIVE)
+  createdAt        DateTime           @default(now())
+  createdById      Int
+  updatedAt        DateTime           @updatedAt
+  updatedById      Int?
+  deletedAt        DateTime?
+  deletedById      Int?
+  createdBy        user               @relation("daily_rent_transact_createdBy_userId", fields: [createdById], references: [id])
+  deletedBy        user?              @relation("daily_rent_transact_deletedBy_userId", fields: [deletedById], references: [id])
+  daily_rent       daily_rent         @relation(fields: [rentId], references: [id])
+  daily_shop       daily_shop         @relation(fields: [shopId], references: [id])
+  updatedBy        user?              @relation("daily_rent_transact_updatedBy_userId", fields: [updatedById], references: [id])
+  user             user               @relation(fields: [userId], references: [id])
+
+  @@index([createdById], map: "daily_rent_transact_createdById_fkey")
+  @@index([deletedById], map: "daily_rent_transact_deletedById_fkey")
+  @@index([rentId], map: "daily_rent_transact_rentId_fkey")
+  @@index([shopId], map: "daily_rent_transact_shopId_fkey")
+  @@index([updatedById], map: "daily_rent_transact_updatedById_fkey")
+  @@index([userId], map: "daily_rent_transact_userId_fkey")
+}
+
+model refund_amount {
+  id                   Int                @id @default(autoincrement())
+  gstinvoice           Int?               @db.MediumInt
+  rentId               Int
+  userId               Int
+  shopId               Int
+  refund_type          RefundAmountType   @default(DEPOSITREFUND)
+  actual_refund_amount String
+  refunded_amount      String?
+  transaction_date     DateTime?          @default(now())
+  paymentmode          String?
+  transactionid        String?
+  bankname             String?
+  trackid              String?
+  reconcilation        DateTime?
+  photo1               String?
+  photo2               String?
+  photo3               String?
+  photo4               String?
+  photo5               String?
+  remarks              String?            @db.MediumText
+  orderid              String?
+  officer_remark       String?
+  status               RentTransactStatus @default(INACTIVE)
+  createdAt            DateTime           @default(now())
+  createdById          Int
+  updatedAt            DateTime           @updatedAt
+  updatedById          Int?
+  deletedAt            DateTime?
+  deletedById          Int?
+  createdBy            user               @relation("refund_amount_createdBy_userId", fields: [createdById], references: [id])
+  deletedBy            user?              @relation("refund_amount_deletedBy_userId", fields: [deletedById], references: [id])
+  daily_rent           daily_rent         @relation(fields: [rentId], references: [id])
+  daily_shop           daily_shop         @relation(fields: [shopId], references: [id])
+  updatedBy            user?              @relation("refund_amount_updatedBy_userId", fields: [updatedById], references: [id])
+  user                 user               @relation(fields: [userId], references: [id])
+
+  @@index([createdById], map: "refund_amount_createdById_fkey")
+  @@index([deletedById], map: "refund_amount_deletedById_fkey")
+  @@index([rentId], map: "refund_amount_rentId_fkey")
+  @@index([shopId], map: "refund_amount_shopId_fkey")
+  @@index([updatedById], map: "refund_amount_updatedById_fkey")
+  @@index([userId], map: "refund_amount_userId_fkey")
+}
+
+model daily_rent_photo {
+  id          Int        @id @default(autoincrement())
+  shopId      Int
+  name        String?
+  path        String
+  status      Status     @default(ACTIVE)
+  createdAt   DateTime   @default(now())
+  createdById Int
+  updatedAt   DateTime   @updatedAt
+  updatedById Int?
+  deletedAt   DateTime?
+  deletedById Int?
+  createdBy   user       @relation("daily_rent_photo_createdBy_userId", fields: [createdById], references: [id])
+  deletedBy   user?      @relation("daily_rent_photo_deletedBy_userId", fields: [deletedById], references: [id])
+  daily_shop  daily_shop @relation(fields: [shopId], references: [id])
+  updatedBy   user?      @relation("daily_rent_photo_updatedBy_userId", fields: [updatedById], references: [id])
+
+  @@index([createdById], map: "daily_rent_photo_createdById_fkey")
+  @@index([deletedById], map: "daily_rent_photo_deletedById_fkey")
+  @@index([shopId], map: "daily_rent_photo_shopId_fkey")
+  @@index([updatedById], map: "daily_rent_photo_updatedById_fkey")
+}
+
+model daily_rent_description {
+  id                  Int        @id @default(autoincrement())
+  shopId              Int
+  event_amount        String
+  prep_day_amount     String?
+  handover_day_amount String?
+  deposit_amount      String
+  purpose             String
+  capacity            String?
+  status              Status     @default(ACTIVE)
+  createdAt           DateTime   @default(now())
+  createdById         Int
+  updatedAt           DateTime   @updatedAt
+  updatedById         Int?
+  deletedAt           DateTime?
+  deletedById         Int?
+  createdBy           user       @relation("daily_rent_description_createdBy_userId", fields: [createdById], references: [id])
+  deletedBy           user?      @relation("daily_rent_description_deletedBy_userId", fields: [deletedById], references: [id])
+  daily_shop          daily_shop @relation(fields: [shopId], references: [id])
+  updatedBy           user?      @relation("daily_rent_description_updatedBy_userId", fields: [updatedById], references: [id])
+
+  @@index([createdById], map: "daily_rent_description_createdById_fkey")
+  @@index([deletedById], map: "daily_rent_description_deletedById_fkey")
+  @@index([shopId], map: "daily_rent_description_shopId_fkey")
+  @@index([updatedById], map: "daily_rent_description_updatedById_fkey")
 }
 
 enum Status {
@@ -160,1019 +1243,8 @@ enum AccountPaymentMode {
   OTHER
 }
 
-enum GstInvoice {
-  RENT
-  RECEIPT
-  INVOICE
-  BID
-}
-
-model user {
-  id                Int       @id @default(autoincrement())
-  username          String?
-  password          String?
-  firstName         String?
-  lastName          String?
-  contactone        String?   @unique
-  contacttwo        String?
-  email             String?   @unique
-  otp               String?
-  aadhar            String?   @unique
-  pan               String?   @unique
-  address           String?   @db.MediumText
-  city              String?
-  bankName          String?
-  bankAccountNumber String?
-  ifscCode          String?
-  role              Role      @default(NONE)
-  status            Status    @default(ACTIVE)
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  deletedAt         DateTime?
-
-  // shop category
-  shop_category_create shop_category[] @relation("shop_category_createdBy_userId")
-  shop_category_update shop_category[] @relation("shop_category_updatedBy_userId")
-  shop_category_delete shop_category[] @relation("shop_category_deletedBy_userId")
-
-  // user category
-  user_category_create user_category[] @relation("user_category_createdBy_userId")
-  user_category_update user_category[] @relation("user_category_updatedBy_userId")
-  user_category_delete user_category[] @relation("user_category_deletedBy_userId")
-
-  // property
-  property_create property[] @relation("property_createdBy_userId")
-  property_update property[] @relation("property_updatedBy_userId")
-  property_delete property[] @relation("property_deletedBy_userId")
-
-  // shop
-  shop_create shop[] @relation("shop_createdBy_userId")
-  shop_update shop[] @relation("shop_updatedBy_userId")
-  shop_delete shop[] @relation("shop_deletedBy_userId")
-
-  // bid
-  bid_create bid[] @relation("bid_createdBy_userId")
-  bid_update bid[] @relation("bid_updatedBy_userId")
-  bid_delete bid[] @relation("bid_deletedBy_userId")
-
-  // rent
-  rent        rent[]
-  rent_create rent[] @relation("rent_createdBy_userId")
-  rent_update rent[] @relation("rent_updatedBy_userId")
-  rent_delete rent[] @relation("rent_deletedBy_userId")
-
-  // organization
-  organization_create organization[] @relation("organization_createdBy_userId")
-  organization_update organization[] @relation("organization_updatedBy_userId")
-  organization_delete organization[] @relation("organization_deletedBy_userId")
-
-  // bid transaction
-  bid_transact_create bid_transact[] @relation("bid_transact_createdBy_userId")
-  bid_transact_update bid_transact[] @relation("bid_transact_updatedBy_userId")
-  bid_transact_delete bid_transact[] @relation("bid_transact_deletedBy_userId")
-  bid_transact        bid_transact[]
-
-  // exempt
-  exempt_create exempt[] @relation("exempt_createdBy_userId")
-  exempt_update exempt[] @relation("exempt_updatedBy_userId")
-  exempt_delete exempt[] @relation("exempt_deletedBy_userId")
-
-  // rent transaction
-  rent_transact_create rent_transact[] @relation("rent_transact_createdBy_userId")
-  rent_transact_update rent_transact[] @relation("rent_transact_updatedBy_userId")
-  rent_transact_delete rent_transact[] @relation("rent_transact_deletedBy_userId")
-  rent_transact        rent_transact[]
-
-  // file upload
-  file_upload_create file_upload[] @relation("upload_createdBy_userId")
-  file_upload_update file_upload[] @relation("upload_updatedBy_userId")
-  file_upload_delete file_upload[] @relation("upload_deletedBy_userId")
-  file_upload        file_upload[]
-
-  // bid payment
-  bid_payment_create bid_payment[] @relation("bid_payment_createdBy_userId")
-  bid_payment_update bid_payment[] @relation("bid_payment_updatedBy_userId")
-  bid_payment_delete bid_payment[] @relation("bid_payment_deletedBy_userId")
-  bid_payment        bid_payment[]
-
-  // corrigendum
-  corrigendum_create corrigendum[] @relation("corrigendum_createdBy_userId")
-  corrigendum_update corrigendum[] @relation("corrigendum_updatedBy_userId")
-  corrigendum_delete corrigendum[] @relation("corrigendum_deletedBy_userId")
-
-  // demand node
-  demand_node_create demand_node[] @relation("demand_node_createdBy_userId")
-  demand_node_update demand_node[] @relation("demand_node_updatedBy_userId")
-  demand_node_delete demand_node[] @relation("demand_node_deletedBy_userId")
-  demand_node        demand_node[]
-
-  // user doc upload
-  user_doc_upload_create user_doc_upload[] @relation("user_doc_upload_createdBy_userId")
-  user_doc_upload_update user_doc_upload[] @relation("user_doc_upload_updatedBy_userId")
-  user_doc_upload_delete user_doc_upload[] @relation("user_doc_upload_deletedBy_userId")
-  user_doc_upload        user_doc_upload[]
-  rent_sms               rent_sms[]
-
-  // acount category
-  acount_category_create account_category[] @relation("account_category_createdBy_userId")
-  acount_category_update account_category[] @relation("account_category_updatedBy_userId")
-  acount_category_delete account_category[] @relation("account_category_deletedBy_userId")
-
-  // account receipt
-  account_receipt_create account_receipt[] @relation("account_receipt_createdBy_userId")
-  account_receipt_update account_receipt[] @relation("account_receipt_updatedBy_userId")
-  account_receipt_delete account_receipt[] @relation("account_receipt_deletedBy_userId")
-
-  // misc invoice
-  misc_invoice_create misc_invoice[] @relation("misc_invoice_createdBy_userId")
-  misc_invoice_update misc_invoice[] @relation("misc_invoice_updatedBy_userId")
-  misc_invoice_delete misc_invoice[] @relation("misc_invoice_deletedBy_userId")
-
-  // misc invoice
-  rentclose_create rentclose[] @relation("rentclose_createdBy_userId")
-  rentclose_update rentclose[] @relation("rentclose_updatedBy_userId")
-  rentclose_delete rentclose[] @relation("rentclose_deletedBy_userId")
-  rentclose        rentclose[]
-
-  // daily property
-  daily_property_create daily_property[] @relation("daily_property_createdBy_userId")
-  daily_property_update daily_property[] @relation("daily_property_updatedBy_userId")
-  daily_property_delete daily_property[] @relation("daily_property_deletedBy_userId")
-
-  // daily shop
-  daily_shop_create daily_shop[] @relation("daily_shop_createdBy_userId")
-  daily_shop_update daily_shop[] @relation("daily_shop_updatedBy_userId")
-  daily_shop_delete daily_shop[] @relation("daily_shop_deletedBy_userId")
-
-  daily_rent_create daily_rent[] @relation("daily_rent_createdBy_userId")
-  daily_rent_update daily_rent[] @relation("daily_rent_updatedBy_userId")
-  daily_rent_delete daily_rent[] @relation("daily_rent_deletedBy_userId")
-  daily_rent        daily_rent[] @relation()
-
-  daily_rent_transact_create   daily_rent_transact[] @relation("daily_rent_transact_createdBy_userId")
-  daily_rent_transact_update   daily_rent_transact[] @relation("daily_rent_transact_updatedBy_userId")
-  daily_rent_transact_delete   daily_rent_transact[] @relation("daily_rent_transact_deletedBy_userId")
-  daily_rent_transact          daily_rent_transact[]
-  daily_rent_approvedBy_userId daily_rent[]          @relation("daily_rent_approvedBy_userId")
-  daily_rent_canceldBy_userId  daily_rent[]          @relation("daily_rent_canceldBy_userId")
-
-  refund_amount_create refund_amount[] @relation("refund_amount_createdBy_userId")
-  refund_amount_update refund_amount[] @relation("refund_amount_updatedBy_userId")
-  refund_amount_delete refund_amount[] @relation("refund_amount_deletedBy_userId")
-  refund_amount        refund_amount[]
-
-  daily_rent_photo_create daily_rent_photo[] @relation("daily_rent_photo_createdBy_userId")
-  daily_rent_photo_update daily_rent_photo[] @relation("daily_rent_photo_updatedBy_userId")
-  daily_rent_photo_delete daily_rent_photo[] @relation("daily_rent_photo_deletedBy_userId")
-
-  daily_rent_description_create daily_rent_description[] @relation("daily_rent_description_createdBy_userId")
-  daily_rent_description_update daily_rent_description[] @relation("daily_rent_description_updatedBy_userId")
-  daily_rent_description_delete daily_rent_description[] @relation("daily_rent_description_deletedBy_userId")
-}
-
-model shop_category {
-  id          Int          @id @default(autoincrement())
-  name        String
-  description String?
-  image       String?
-  remarks     String?
-  status      Status       @default(ACTIVE)
-  createdAt   DateTime     @default(now())
-  createdBy   user         @relation("shop_category_createdBy_userId", fields: [createdById], references: [id])
-  createdById Int
-  updatedAt   DateTime     @updatedAt
-  updatedBy   user?        @relation("shop_category_updatedBy_userId", fields: [updatedById], references: [id])
-  updatedById Int?
-  deletedAt   DateTime?
-  deletedBy   user?        @relation("shop_category_deletedBy_userId", fields: [deletedById], references: [id])
-  deletedById Int?
-  shop        shop[]
-  daily_shop  daily_shop[]
-}
-
-model user_category {
-  id          Int       @id @default(autoincrement())
-  name        String
-  description String?
-  image       String?
-  remarks     String?
-  status      Status    @default(ACTIVE)
-  createdAt   DateTime  @default(now())
-  createdBy   user      @relation("user_category_createdBy_userId", fields: [createdById], references: [id])
-  createdById Int
-  updatedAt   DateTime  @updatedAt
-  updatedBy   user?     @relation("user_category_updatedBy_userId", fields: [updatedById], references: [id])
-  updatedById Int?
-  deletedAt   DateTime?
-  deletedBy   user?     @relation("user_category_deletedBy_userId", fields: [deletedById], references: [id])
-  deletedById Int?
-}
-
-model property {
-  id             Int           @id @default(autoincrement())
-  name           String
-  address        String
-  locality       String
-  pincode        String
-  city           String
-  contact_number String
-  contact_person String
-  total_shops    Int
-  total_floors   Int
-  latitude       Float
-  longitude      Float
-  description    String?
-  image          String?
-  remarks        String?
-  priority       Int
-  status         Status        @default(ACTIVE)
-  createdAt      DateTime      @default(now())
-  createdBy      user          @relation("property_createdBy_userId", fields: [createdById], references: [id])
-  createdById    Int
-  updatedAt      DateTime      @updatedAt
-  updatedBy      user?         @relation("property_updatedBy_userId", fields: [updatedById], references: [id])
-  updatedById    Int?
-  deletedAt      DateTime?
-  deletedBy      user?         @relation("property_deletedBy_userId", fields: [deletedById], references: [id])
-  deletedById    Int?
-  shop           shop[]
-  file_upload    file_upload[]
-}
-
-model shop {
-  id             Int             @id @default(autoincrement())
-  shop_category  shop_category   @relation(fields: [shopCategoryId], references: [id])
-  shopCategoryId Int
-  property       property        @relation(fields: [propertyId], references: [id])
-  propertyId     Int
-  floor          Floors          @default(GROUND)
-  shopNumber     String
-  shopSize       String
-  meterno        String?
-  description    String?
-  image          String?
-  remarks        String?
-  status         ShopStatus      @default(VACANT)
-  createdAt      DateTime        @default(now())
-  createdBy      user            @relation("shop_createdBy_userId", fields: [createdById], references: [id])
-  createdById    Int
-  updatedAt      DateTime        @updatedAt
-  updatedBy      user?           @relation("shop_updatedBy_userId", fields: [updatedById], references: [id])
-  updatedById    Int?
-  deletedAt      DateTime?
-  deletedBy      user?           @relation("shop_deletedBy_userId", fields: [deletedById], references: [id])
-  deletedById    Int?
-  bid            bid[]
-  rent           rent[]
-  bid_transact   bid_transact[]
-  exempt         exempt[]
-  file_upload    file_upload[]
-  rent_transact  rent_transact[]
-  bid_payment    bid_payment[]
-  demand_node    demand_node[]
-  rentclose      rentclose[]
-
-  @@unique([propertyId, shopNumber])
-}
-
-model bid {
-  id                   Int            @id @default(autoincrement())
-  shop                 shop           @relation(fields: [shopId], references: [id])
-  shopId               Int
-  title                String
-  description          String?        @db.MediumText
-  instruction          String?        @db.MediumText
-  min_bid_amount       Int            @db.MediumInt
-  bidincrementamount   PercentageType @default(PERCENTAGE)
-  min_bid_increment    Int            @db.MediumInt
-  fees                 PercentageType @default(PERCENTAGE)
-  fees_amount          Int            @db.MediumInt
-  fees_refundable      RefundType     @default(NONREFUNDABLE)
-  emd                  PercentageType @default(PERCENTAGE)
-  emd_amount           Int            @db.MediumInt
-  emd_refundable       RefundType     @default(REFUNDABLE)
-  bg                   PercentageType @default(PERCENTAGE)
-  bg_amount            Int            @db.MediumInt
-  bg_refundable        RefundType     @default(REFUNDABLE)
-  docone               String?
-  doconedescription    String?        @db.MediumText
-  doctwo               String?
-  doctwodescription    String?        @db.MediumText
-  docthree             String?
-  docthreedescription  String?        @db.MediumText
-  bidstartdate         DateTime
-  bidenddate           DateTime
-  biddeclarationdate   DateTime
-  t_and_c_file_number  String?        @db.MediumText
-  t_and_c_description  String?        @db.MediumText
-  t_and_c_upload       String?        @db.MediumText
-  is_woman             Boolean        @default(false)
-  is_reserved          Boolean        @default(false)
-  is_differently_abled Boolean        @default(false)
-  is_msme              Boolean        @default(false)
-  is_exemption         Boolean        @default(false)
-  is_open              Boolean        @default(false)
-  is_auction           Boolean        @default(false) // if true then it is auction else it is tender
-  is_tribal            Boolean        @default(false)
-  is_sc_st             Boolean        @default(false)
-  remarks              String?        @db.MediumText
-  status               Status         @default(ACTIVE)
-  additional_doc       Boolean        @default(false)
-  bid_status           BidStatus      @default(DRAFT)
-  createdAt            DateTime       @default(now())
-  createdBy            user           @relation("bid_createdBy_userId", fields: [createdById], references: [id])
-  createdById          Int
-  updatedAt            DateTime       @updatedAt
-  updatedBy            user?          @relation("bid_updatedBy_userId", fields: [updatedById], references: [id])
-  updatedById          Int?
-  deletedAt            DateTime?
-  deletedBy            user?          @relation("bid_deletedBy_userId", fields: [deletedById], references: [id])
-  deletedById          Int?
-  bid_transact         bid_transact[]
-  exempt               exempt[]
-  file_upload          file_upload[]
-  bid_payment          bid_payment[]
-  corrigendum          corrigendum[]
-}
-
-model rent {
-  id                  Int             @id @default(autoincrement())
-  shop                shop            @relation(fields: [shopId], references: [id])
-  shopId              Int
-  user                user            @relation(fields: [userId], references: [id])
-  userId              Int
-  rent_amount         Int             @db.MediumInt
-  rent_start_date     DateTime
-  rent_end_date       DateTime
-  due_date            Int
-  rent_agreement_file String?         @db.MediumText
-  chargeone           Int?            @db.MediumInt
-  chargetwo           Int?            @db.MediumInt
-  chargethree         Int?            @db.MediumInt
-  remarks             String?         @db.MediumText
-  status              RentStatus      @default(RUNNING)
-  createdAt           DateTime        @default(now())
-  createdBy           user            @relation("rent_createdBy_userId", fields: [createdById], references: [id])
-  createdById         Int
-  updatedAt           DateTime        @updatedAt
-  updatedBy           user?           @relation("rent_updatedBy_userId", fields: [updatedById], references: [id])
-  updatedById         Int?
-  deletedAt           DateTime?
-  deletedBy           user?           @relation("rent_deletedBy_userId", fields: [deletedById], references: [id])
-  deletedById         Int?
-  rent_transact       rent_transact[]
-  file_upload         file_upload[]
-  corrigendum         corrigendum[]
-  rent_sms            rent_sms[]
-  rentclose           rentclose[]
-}
-
-model organization {
-  id             Int       @id @default(autoincrement())
-  name           String
-  address        String?
-  gst_no         String?
-  gst_file       String?
-  pan_no         String?
-  pan_file       String?
-  msmeno         String?
-  msme_file      String?
-  contact_person String?
-  contact_number String?
-  status         Status    @default(ACTIVE)
-  createdAt      DateTime  @default(now())
-  createdBy      user      @relation("organization_createdBy_userId", fields: [createdById], references: [id])
-  createdById    Int
-  updatedAt      DateTime  @updatedAt
-  updatedBy      user?     @relation("organization_updatedBy_userId", fields: [updatedById], references: [id])
-  updatedById    Int?
-  deletedAt      DateTime?
-  deletedBy      user?     @relation("organization_deletedBy_userId", fields: [deletedById], references: [id])
-  deletedById    Int?
-}
-
-model bid_transact {
-  id               Int           @id @default(autoincrement())
-  bid              bid           @relation(fields: [bidId], references: [id])
-  bidId            Int
-  user             user          @relation(fields: [userId], references: [id])
-  userId           Int
-  shop             shop          @relation(fields: [shopId], references: [id])
-  shopId           Int
-  amount           Int           @db.MediumInt
-  iswinningbid     Boolean?
-  bidrejected      Boolean?
-  rejectedreason   String?       @db.MediumText
-  isexempt         Boolean?
-  exemptcategory   String?       @db.MediumText
-  exemptdocurl     String?       @db.MediumText
-  biddocstatus     Boolean?
-  biddocreason     String?       @db.MediumText
-  transaction_date DateTime      @default(now())
-  remarks          String?       @db.MediumText
-  userremarks      String?       @db.MediumText
-  status           BidTransact   @default(PENDING)
-  createdAt        DateTime      @default(now())
-  createdBy        user          @relation("bid_transact_createdBy_userId", fields: [createdById], references: [id])
-  createdById      Int
-  updatedAt        DateTime      @updatedAt
-  updatedBy        user?         @relation("bid_transact_updatedBy_userId", fields: [updatedById], references: [id])
-  updatedById      Int?
-  deletedAt        DateTime?
-  deletedBy        user?         @relation("bid_transact_deletedBy_userId", fields: [deletedById], references: [id])
-  deletedById      Int?
-  file_upload      file_upload[]
-}
-
-model exempt {
-  id                     Int             @id @default(autoincrement())
-  shop                   shop            @relation(fields: [shopId], references: [id])
-  shopId                 Int
-  bid                    bid             @relation(fields: [bidId], references: [id])
-  bidId                  Int
-  is_fees_exempt_allowed Boolean         @default(false)
-  fees_for               ExemptFor?
-  fees                   PercentageType? @default(PERCENTAGE)
-  feesamount             Int?            @db.MediumInt
-  is_bg_exempt_allowed   Boolean         @default(false)
-  bg_for                 ExemptFor?
-  bg                     PercentageType? @default(PERCENTAGE)
-  bgamount               Int?            @db.MediumInt
-  is_emd_exempt_allowed  Boolean         @default(false)
-  emd_for                ExemptFor?
-  emd                    PercentageType? @default(PERCENTAGE)
-  emdamount              Int?            @db.MediumInt
-  description            String?
-  image                  String?
-  remarks                String?
-  status                 Status          @default(ACTIVE)
-  createdAt              DateTime        @default(now())
-  createdBy              user            @relation("exempt_createdBy_userId", fields: [createdById], references: [id])
-  createdById            Int
-  updatedAt              DateTime        @updatedAt
-  updatedBy              user?           @relation("exempt_updatedBy_userId", fields: [updatedById], references: [id])
-  updatedById            Int?
-  deletedAt              DateTime?
-  deletedBy              user?           @relation("exempt_deletedBy_userId", fields: [deletedById], references: [id])
-  deletedById            Int?
-  corrigendum            corrigendum[]
-}
-
-model rent_transact {
-  id               Int                @id @default(autoincrement())
-  gstinvoice       Int?               @db.MediumInt
-  rent             rent               @relation(fields: [rentId], references: [id])
-  rentId           Int
-  user             user               @relation(fields: [userId], references: [id])
-  userId           Int
-  shop             shop               @relation(fields: [shopId], references: [id])
-  shopId           Int
-  formonth         DateTime
-  amount           Int                @db.MediumInt
-  transaction_date DateTime           @default(now())
-  paymentmode      String?
-  transactionid    String?
-  bankname         String?
-  trackid          String?
-  reconcilation    DateTime?
-  remarks          String?            @db.MediumText
-  orderid          String?
-  status           RentTransactStatus @default(INACTIVE)
-  createdAt        DateTime           @default(now())
-  createdBy        user               @relation("rent_transact_createdBy_userId", fields: [createdById], references: [id])
-  createdById      Int
-  updatedAt        DateTime           @updatedAt
-  updatedBy        user?              @relation("rent_transact_updatedBy_userId", fields: [updatedById], references: [id])
-  updatedById      Int?
-  deletedAt        DateTime?
-  deletedBy        user?              @relation("rent_transact_deletedBy_userId", fields: [deletedById], references: [id])
-  deletedById      Int?
-  rent_sms         rent_sms[]
-}
-
-model bid_payment {
-  id               Int            @id @default(autoincrement())
-  bid              bid            @relation(fields: [bidId], references: [id])
-  bidId            Int
-  user             user           @relation(fields: [userId], references: [id])
-  userId           Int
-  shop             shop           @relation(fields: [shopId], references: [id])
-  shopId           Int
-  paymenttype      BidPaymentType @default(FEES)
-  amount           Int            @db.MediumInt
-  gateway_charge   String?
-  transaction_date DateTime       @default(now())
-  paymentmode      String?
-  transactionid    String?
-  trackid          String?
-  bankname         String?
-  remarks          String?        @db.MediumText
-  orderid          String?
-  status           Status         @default(ACTIVE)
-  createdAt        DateTime       @default(now())
-  createdBy        user           @relation("bid_payment_createdBy_userId", fields: [createdById], references: [id])
-  createdById      Int
-  updatedAt        DateTime       @updatedAt
-  updatedBy        user?          @relation("bid_payment_updatedBy_userId", fields: [updatedById], references: [id])
-  updatedById      Int?
-  deletedAt        DateTime?
-  deletedBy        user?          @relation("bid_payment_deletedBy_userId", fields: [deletedById], references: [id])
-  deletedById      Int?
-}
-
-model file_upload {
-  id            Int           @id @default(autoincrement())
-  user          user?         @relation(fields: [userId], references: [id])
-  userId        Int?
-  bid           bid?          @relation(fields: [bidId], references: [id])
-  bidId         Int?
-  shop          shop?         @relation(fields: [shopId], references: [id])
-  shopId        Int?
-  propery       property?     @relation(fields: [propertyId], references: [id])
-  propertyId    Int?
-  rent          rent?         @relation(fields: [rentId], references: [id])
-  rentId        Int?
-  bidtransact   bid_transact? @relation(fields: [bidTransactId], references: [id])
-  bidTransactId Int?
-  name          String
-  description   String?
-  path          String
-  status        Status        @default(ACTIVE)
-  createdAt     DateTime      @default(now())
-  createdBy     user          @relation("upload_createdBy_userId", fields: [createdById], references: [id])
-  createdById   Int
-  updatedAt     DateTime      @updatedAt
-  updatedBy     user?         @relation("upload_updatedBy_userId", fields: [updatedById], references: [id])
-  updatedById   Int?
-  deletedAt     DateTime?
-  deletedBy     user?         @relation("upload_deletedBy_userId", fields: [deletedById], references: [id])
-  deletedById   Int?
-}
-
-model corrigendum {
-  id          Int       @id @default(autoincrement())
-  bid         bid?      @relation(fields: [bidId], references: [id])
-  bidId       Int?
-  rent        rent?     @relation(fields: [rentId], references: [id])
-  rentId      Int?
-  exempt      exempt?   @relation(fields: [exemptId], references: [id])
-  exemptId    Int?
-  name        String
-  description String?
-  path        String
-  status      Status    @default(ACTIVE)
-  createdAt   DateTime  @default(now())
-  createdBy   user      @relation("corrigendum_createdBy_userId", fields: [createdById], references: [id])
-  createdById Int
-  updatedAt   DateTime  @updatedAt
-  updatedBy   user?     @relation("corrigendum_updatedBy_userId", fields: [updatedById], references: [id])
-  updatedById Int?
-  deletedAt   DateTime?
-  deletedBy   user?     @relation("corrigendum_deletedBy_userId", fields: [deletedById], references: [id])
-  deletedById Int?
-}
-
-model demand_node {
-  id                        Int                 @id @default(autoincrement())
-  shop                      shop                @relation(fields: [shopId], references: [id])
-  shopId                    Int
-  user                      user                @relation(fields: [userId], references: [id])
-  userId                    Int
-  demand_note_number        String?
-  demand_note_date          DateTime?
-  security_deposit_amount   Int?
-  security_deposit_form     SecurityDepositForm @default(CASH)
-  time_period               Int?
-  security_deposit_validity DateTime?
-  panelty_amount            Int?
-  advance_rent_months       Int?
-  stemp_paper_value         Int?
-  description               String?
-  remarks                   String?
-  status                    Status              @default(INACTIVE)
-  createdAt                 DateTime            @default(now())
-  createdBy                 user                @relation("demand_node_createdBy_userId", fields: [createdById], references: [id])
-  createdById               Int
-  updatedAt                 DateTime            @updatedAt
-  updatedBy                 user?               @relation("demand_node_updatedBy_userId", fields: [updatedById], references: [id])
-  updatedById               Int?
-  deletedAt                 DateTime?
-  deletedBy                 user?               @relation("demand_node_deletedBy_userId", fields: [deletedById], references: [id])
-  deletedById               Int?
-}
-
-model user_doc_upload {
-  id          Int         @id @default(autoincrement())
-  user        user?       @relation(fields: [userId], references: [id])
-  userId      Int?
-  doc_type    UserDocType @default(AADHAR)
-  name        String
-  description String?
-  path        String
-  status      Status      @default(ACTIVE)
-  createdAt   DateTime    @default(now())
-  createdBy   user        @relation("user_doc_upload_createdBy_userId", fields: [createdById], references: [id])
-  createdById Int
-  updatedAt   DateTime    @updatedAt
-  updatedBy   user?       @relation("user_doc_upload_updatedBy_userId", fields: [updatedById], references: [id])
-  updatedById Int?
-  deletedAt   DateTime?
-  deletedBy   user?       @relation("user_doc_upload_deletedBy_userId", fields: [deletedById], references: [id])
-  deletedById Int?
-}
-
-model rent_sms {
-  id             Int           @id @default(autoincrement())
-  user           user          @relation(fields: [userId], references: [id])
-  userId         Int
-  rent           rent          @relation(fields: [rentId], references: [id])
-  rentId         Int
-  rent_transact  rent_transact @relation(fields: [rentTransactId], references: [id])
-  rentTransactId Int
-  due            SMSStatus     @default(ACTIVE)
-  late           SMSStatus     @default(ACTIVE)
-  monthcross     SMSStatus     @default(ACTIVE)
-  status         Status        @default(ACTIVE)
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  deletedAt      DateTime?
-}
-
-model account_category {
-  id                    Int               @id @default(autoincrement())
-  name                  String
-  description           String?
-  remarks               String?
-  status                Status            @default(ACTIVE)
-  createdAt             DateTime          @default(now())
-  createdBy             user              @relation("account_category_createdBy_userId", fields: [createdById], references: [id])
-  createdById           Int
-  updatedAt             DateTime          @updatedAt
-  updatedBy             user?             @relation("account_category_updatedBy_userId", fields: [updatedById], references: [id])
-  updatedById           Int?
-  deletedAt             DateTime?
-  deletedBy             user?             @relation("account_category_deletedBy_userId", fields: [deletedById], references: [id])
-  deletedById           Int?
-  account_receipt_one   account_receipt[] @relation("account_category_one")
-  account_receipt_two   account_receipt[] @relation("account_category_two")
-  account_receipt_three account_receipt[] @relation("account_category_three")
-
-  // misc invoice
-  misc_invoice_one   misc_invoice[] @relation("misc_invoice_one")
-  misc_invoice_two   misc_invoice[] @relation("misc_invoice_two")
-  misc_invoice_three misc_invoice[] @relation("misc_invoice_three")
-}
-
-model account_receipt {
-  id                     Int                @id @default(autoincrement())
-  customername           String
-  customercontact        String?
-  account_category_one   account_category   @relation("account_category_one", fields: [accountCategoryOneId], references: [id])
-  accountCategoryOneId   Int
-  account_category_two   account_category?  @relation("account_category_two", fields: [accountCategoryTwoId], references: [id])
-  accountCategoryTwoId   Int?
-  account_category_three account_category?  @relation("account_category_three", fields: [accountCategoryThreeId], references: [id])
-  accountCategoryThreeId Int?
-  amount                 String
-  amount_two             String?
-  amount_three           String?
-  transaction_date       DateTime           @default(now())
-  paymentmode            AccountPaymentMode @default(NEFT)
-  transactionid          String?
-  bankname               String?
-  remarks                String?            @db.MediumText
-  status                 Status             @default(ACTIVE)
-  createdAt              DateTime           @default(now())
-  createdBy              user               @relation("account_receipt_createdBy_userId", fields: [createdById], references: [id])
-  createdById            Int
-  updatedAt              DateTime           @updatedAt
-  updatedBy              user?              @relation("account_receipt_updatedBy_userId", fields: [updatedById], references: [id])
-  updatedById            Int?
-  deletedAt              DateTime?
-  deletedBy              user?              @relation("account_receipt_deletedBy_userId", fields: [deletedById], references: [id])
-  deletedById            Int?
-}
-
-model misc_invoice {
-  id                     Int                @id @default(autoincrement())
-  gstinvoice             Int?               @db.MediumInt
-  customername           String
-  customercontact        String?
-  customeraddress        String?
-  customergst            String?
-  customerplaceofsupply  String?
-  account_category_one   account_category   @relation("misc_invoice_one", fields: [accountCategoryOneId], references: [id])
-  accountCategoryOneId   Int
-  account_category_two   account_category?  @relation("misc_invoice_two", fields: [accountCategoryTwoId], references: [id])
-  accountCategoryTwoId   Int?
-  account_category_three account_category?  @relation("misc_invoice_three", fields: [accountCategoryThreeId], references: [id])
-  accountCategoryThreeId Int?
-  remark_cat_one         String?            @db.MediumText
-  remark_cat_two         String?            @db.MediumText
-  remark_cat_three       String?            @db.MediumText
-  hsn                    String?
-  cgst                   String?
-  ugst                   String?
-  igst                   String?
-  cgst_percent           String?
-  amount                 String?
-  amount_two             String?
-  amount_three           String?
-  transaction_date       DateTime           @default(now())
-  paymentmode            AccountPaymentMode @default(NEFT)
-  transactionid          String?
-  bankname               String?
-  remarks                String?            @db.MediumText
-  status                 Status             @default(ACTIVE)
-  createdAt              DateTime           @default(now())
-  createdBy              user               @relation("misc_invoice_createdBy_userId", fields: [createdById], references: [id])
-  createdById            Int
-  updatedAt              DateTime           @updatedAt
-  updatedBy              user?              @relation("misc_invoice_updatedBy_userId", fields: [updatedById], references: [id])
-  updatedById            Int?
-  deletedAt              DateTime?
-  deletedBy              user?              @relation("misc_invoice_deletedBy_userId", fields: [deletedById], references: [id])
-  deletedById            Int?
-}
-
-model gstinvoice {
-  id        Int      @id @default(autoincrement())
-  number    Int      @db.MediumInt
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model rentclose {
-  id               Int                @id @default(autoincrement())
-  fd_amount        Int
-  letoff_amount    Int
-  offline_amount   Int
-  rent             rent               @relation(fields: [rentId], references: [id])
-  rentId           Int
-  user             user               @relation(fields: [userId], references: [id])
-  userId           Int
-  shop             shop               @relation(fields: [shopId], references: [id])
-  shopId           Int
-  transaction_date DateTime           @default(now())
-  paymentmode      String?
-  transactionid    String?
-  bankname         String?
-  remarks          String?            @db.MediumText
-  status           RentTransactStatus @default(INACTIVE)
-  createdAt        DateTime           @default(now())
-  createdBy        user               @relation("rentclose_createdBy_userId", fields: [createdById], references: [id])
-  createdById      Int
-  updatedAt        DateTime           @updatedAt
-  updatedBy        user?              @relation("rentclose_updatedBy_userId", fields: [updatedById], references: [id])
-  updatedById      Int?
-  deletedAt        DateTime?
-  deletedBy        user?              @relation("rentclose_deletedBy_userId", fields: [deletedById], references: [id])
-  deletedById      Int?
-}
-
-model daily_property {
-  id             Int          @id @default(autoincrement())
-  name           String
-  address        String
-  locality       String
-  pincode        String
-  city           String
-  contact_number String
-  contact_person String
-  total_shops    Int
-  latitude       Float
-  longitude      Float
-  description    String?
-  image          String?
-  remarks        String?
-  priority       Int
-  status         Status       @default(ACTIVE)
-  createdAt      DateTime     @default(now())
-  createdBy      user         @relation("daily_property_createdBy_userId", fields: [createdById], references: [id])
-  createdById    Int
-  updatedAt      DateTime     @updatedAt
-  updatedBy      user?        @relation("daily_property_updatedBy_userId", fields: [updatedById], references: [id])
-  updatedById    Int?
-  deletedAt      DateTime?
-  deletedBy      user?        @relation("daily_property_deletedBy_userId", fields: [deletedById], references: [id])
-  deletedById    Int?
-  shop           daily_shop[]
-}
-
-model daily_shop {
-  id                     Int                      @id @default(autoincrement())
-  shop_category          shop_category            @relation(fields: [shopCategoryId], references: [id])
-  shopCategoryId         Int
-  property               daily_property           @relation(fields: [propertyId], references: [id])
-  propertyId             Int
-  name                   String
-  capacity               Int
-  rate_per_day           String
-  rate_prep_day          String
-  rate_handover_day      String
-  deposit_per_day        String
-  description            String?
-  remarks                String?
-  status                 ShopStatus               @default(VACANT)
-  createdAt              DateTime                 @default(now())
-  createdBy              user                     @relation("daily_shop_createdBy_userId", fields: [createdById], references: [id])
-  createdById            Int
-  updatedAt              DateTime                 @updatedAt
-  updatedBy              user?                    @relation("daily_shop_updatedBy_userId", fields: [updatedById], references: [id])
-  updatedById            Int?
-  deletedAt              DateTime?
-  deletedBy              user?                    @relation("daily_shop_deletedBy_userId", fields: [deletedById], references: [id])
-  deletedById            Int?
-  daily_rent             daily_rent[]
-  // bid            bid[]
-  // bid_transact   bid_transact[]
-  // exempt         exempt[]
-  // file_upload    file_upload[]
-  // rent_transact  rent_transact[]
-  // bid_payment    bid_payment[]
-  // demand_node    demand_node[]
-  // rentclose      rentclose[]
-  daily_rent_transact    daily_rent_transact[]
-  refund_amount          refund_amount[]
-  daily_rent_photo       daily_rent_photo[]
-  daily_rent_description daily_rent_description[]
-}
-
-model daily_rent {
-  id                  Int                   @id @default(autoincrement())
-  daily_shop          daily_shop            @relation(fields: [shopId], references: [id])
-  shopId              Int
-  user                user                  @relation(fields: [userId], references: [id])
-  userId              Int
-  event_amount        String
-  prep_day_amount     String?
-  handover_day_amount String?
-  deposit_amount      String
-  event_from_date     DateTime
-  event_to_date       DateTime
-  prep_day            DateTime?
-  handover_day        DateTime?
-  is_date_change      Boolean               @default(false)
-  date_change_charge  String?
-  old_from_date       DateTime?
-  old_to_date         DateTime?
-  is_cancel           Boolean               @default(false)
-  canceld_by          user?                 @relation("daily_rent_canceldBy_userId", fields: [canceldById], references: [id])
-  canceldById         Int?
-  is_deparment_cancel Boolean               @default(false)
-  cancel_charge       String?
-  penalty_charge      String?
-  penalty_reason      String?
-  event_reason        String
-  is_approved         Boolean               @default(false)
-  approved_by         user?                 @relation("daily_rent_approvedBy_userId", fields: [approvedById], references: [id])
-  approvedById        Int?
-  approved_date       DateTime?
-  gst_no              String?
-  company_name        String?
-  remarks             String?               @db.MediumText
-  status              DailyRentStatus       @default(DEPOSITDUE)
-  createdAt           DateTime              @default(now())
-  createdBy           user                  @relation("daily_rent_createdBy_userId", fields: [createdById], references: [id])
-  createdById         Int
-  updatedAt           DateTime              @updatedAt
-  updatedBy           user?                 @relation("daily_rent_updatedBy_userId", fields: [updatedById], references: [id])
-  updatedById         Int?
-  deletedAt           DateTime?
-  deletedBy           user?                 @relation("daily_rent_deletedBy_userId", fields: [deletedById], references: [id])
-  deletedById         Int?
-  rent_transact       daily_rent_transact[]
-  refund_amount       refund_amount[]
-}
-
-model daily_rent_transact {
-  id               Int                @id @default(autoincrement())
-  gstinvoice       Int?               @db.MediumInt
-  daily_rent       daily_rent         @relation(fields: [rentId], references: [id])
-  rentId           Int
-  user             user               @relation(fields: [userId], references: [id])
-  userId           Int
-  daily_shop       daily_shop         @relation(fields: [shopId], references: [id])
-  shopId           Int
-  amount           String
-  transaction_date DateTime           @default(now())
-  paymentmode      String?
-  transactionid    String?
-  bankname         String?
-  trackid          String?
-  reconcilation    DateTime?
-  remarks          String?            @db.MediumText
-  orderid          String?
-  status           RentTransactStatus @default(INACTIVE)
-  createdAt        DateTime           @default(now())
-  createdBy        user               @relation("daily_rent_transact_createdBy_userId", fields: [createdById], references: [id])
-  createdById      Int
-  updatedAt        DateTime           @updatedAt
-  updatedBy        user?              @relation("daily_rent_transact_updatedBy_userId", fields: [updatedById], references: [id])
-  updatedById      Int?
-  deletedAt        DateTime?
-  deletedBy        user?              @relation("daily_rent_transact_deletedBy_userId", fields: [deletedById], references: [id])
-  deletedById      Int?
-}
-
 enum RefundAmountType {
   DEPOSITREFUND
   CANCELREFUND
   DEPTREFUND
-}
-
-model refund_amount {
-  id                   Int                @id @default(autoincrement())
-  gstinvoice           Int?               @db.MediumInt
-  daily_rent           daily_rent         @relation(fields: [rentId], references: [id])
-  rentId               Int
-  user                 user               @relation(fields: [userId], references: [id])
-  userId               Int
-  daily_shop           daily_shop         @relation(fields: [shopId], references: [id])
-  shopId               Int
-  refund_type          RefundAmountType   @default(DEPOSITREFUND)
-  actual_refund_amount String
-  refunded_amount      String?
-  transaction_date     DateTime?          @default(now())
-  paymentmode          String?
-  transactionid        String?
-  bankname             String?
-  trackid              String?
-  reconcilation        DateTime?
-  photo1               String?
-  photo2               String?
-  photo3               String?
-  photo4               String?
-  photo5               String?
-  remarks              String?            @db.MediumText
-  orderid              String?
-  officer_remark       String?
-  status               RentTransactStatus @default(INACTIVE)
-  createdAt            DateTime           @default(now())
-  createdBy            user               @relation("refund_amount_createdBy_userId", fields: [createdById], references: [id])
-  createdById          Int
-  updatedAt            DateTime           @updatedAt
-  updatedBy            user?              @relation("refund_amount_updatedBy_userId", fields: [updatedById], references: [id])
-  updatedById          Int?
-  deletedAt            DateTime?
-  deletedBy            user?              @relation("refund_amount_deletedBy_userId", fields: [deletedById], references: [id])
-  deletedById          Int?
-}
-
-model daily_rent_photo {
-  id          Int        @id @default(autoincrement())
-  daily_shop  daily_shop @relation(fields: [shopId], references: [id])
-  shopId      Int
-  name        String?
-  path        String
-  status      Status     @default(ACTIVE)
-  createdAt   DateTime   @default(now())
-  createdBy   user       @relation("daily_rent_photo_createdBy_userId", fields: [createdById], references: [id])
-  createdById Int
-  updatedAt   DateTime   @updatedAt
-  updatedBy   user?      @relation("daily_rent_photo_updatedBy_userId", fields: [updatedById], references: [id])
-  updatedById Int?
-  deletedAt   DateTime?
-  deletedBy   user?      @relation("daily_rent_photo_deletedBy_userId", fields: [deletedById], references: [id])
-  deletedById Int?
-}
-
-// model daily_rent_price {
-//   id           Int         @id @default(autoincrement())
-//   reason       String
-//   price        String
-//   status       Status      @default(ACTIVE)
-//   createdAt    DateTime    @default(now())
-//   createdBy    user        @relation("daily_rent_price_createdBy_userId", fields: [createdById], references: [id])
-//   createdById  Int
-//   updatedAt    DateTime    @updatedAt
-//   updatedBy    user?       @relation("daily_rent_price_updatedBy_userId", fields: [updatedById], references: [id])
-//   updatedById  Int?
-//   deletedAt    DateTime?
-//   deletedBy    user?       @relation("daily_rent_price_deletedBy_userId", fields: [deletedById], references: [id])
-//   deletedById  Int?
-//   daily_rent   daily_rent? @relation(fields: [daily_rentId], references: [id])
-//   daily_rentId Int?
-// }
-
-model daily_rent_description {
-  id                  Int        @id @default(autoincrement())
-  daily_shop          daily_shop @relation(fields: [shopId], references: [id])
-  shopId              Int
-  event_amount        String
-  prep_day_amount     String?
-  handover_day_amount String?
-  deposit_amount      String
-  purpose             String
-  capacity            String?
-  status              Status     @default(ACTIVE)
-  createdAt           DateTime   @default(now())
-  createdBy           user       @relation("daily_rent_description_createdBy_userId", fields: [createdById], references: [id])
-  createdById         Int
-  updatedAt           DateTime   @updatedAt
-  updatedBy           user?      @relation("daily_rent_description_updatedBy_userId", fields: [updatedById], references: [id])
-  updatedById         Int?
-  deletedAt           DateTime?
-  deletedBy           user?      @relation("daily_rent_description_deletedBy_userId", fields: [deletedById], references: [id])
-  deletedById         Int?
 }
