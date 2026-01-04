@@ -40,12 +40,8 @@ const CreateRent = async (
     const data_to_update: any = {
       shopId: payload.shopId,
       rent_amount: payload.rent_amount,
-      rent_start_date: new Date(
-        payload.rent_start_date.toString().split(",")[0] + "Z"
-      ),
-      rent_end_date: new Date(
-        payload.rent_end_date.toString().split(",")[0] + "Z"
-      ),
+      rent_start_date: new Date(payload.rent_start_date + "T00:00:00.000Z"),
+      rent_end_date: new Date(payload.rent_end_date + "T00:00:00.000Z"),
       due_date: payload.due_date,
       userId: payload.userId,
       createdById: payload.createdById,
@@ -95,12 +91,8 @@ const CreateRent = async (
           },
         });
         const rentmonth = await createRentTransaction({
-          start_date: new Date(
-            payload.rent_start_date.toString().split(",")[0] + "Z"
-          ),
-          end_date: new Date(
-            payload.rent_end_date.toString().split(",")[0] + "Z"
-          ),
+          start_date: new Date(payload.rent_start_date + "T00:00:00.000Z"),
+          end_date: new Date(payload.rent_end_date + "T00:00:00.000Z"),
           due_date: payload.due_date,
           // rent_amount: payload.rent_amount,
           rent_id: rent.id,
@@ -170,12 +162,8 @@ const CreateRent = async (
         },
       });
       const rentmonth = await createRentTransaction({
-        start_date: new Date(
-          payload.rent_start_date.toString().split(",")[0] + "Z"
-        ),
-        end_date: new Date(
-          payload.rent_end_date.toString().split(",")[0] + "Z"
-        ),
+        start_date: new Date(payload.rent_start_date + "T00:00:00.000Z"),
+        end_date: new Date(payload.rent_end_date + "T00:00:00.000Z"),
         due_date: payload.due_date,
         amount_month: payload.monthamount,
         rent_id: rent.id,

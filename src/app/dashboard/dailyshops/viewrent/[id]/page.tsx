@@ -159,14 +159,14 @@ const CreateRentPage = () => {
         userId: userid,
         createdById: createduserid,
         event_amount: (datecount() * shopData?.rate_per_day).toString(),
-        event_from_date: startDate!.toISOString(),
-        event_to_date: endDate!.toISOString(),
+        event_from_date: format(startDate!, "yyyy-MM-dd"),
+        event_to_date: format(endDate!, "yyyy-MM-dd"),
         prep_day_amount: prepration ? shopData?.rate_prep_day : "0",
         handover_day_amount: handover ? shopData?.rate_handover_day : "0",
         deposit_amount: (shopData?.deposit_per_day).toString(),
         event_reason: purpose,
-        ...(prepration && { prep_day: subDays(startDate!, 1).toISOString() }), // Day before startDate
-        ...(handover && { handover_day: addDays(endDate!, 1).toISOString() }),
+        ...(prepration && { prep_day: format(subDays(startDate!, 1), "yyyy-MM-dd") }), // Day before startDate
+        ...(handover && { handover_day: format(addDays(endDate!, 1), "yyyy-MM-dd") }),
         // is_approved: true,
         // approvedById: createuserid,
         status: "DEPOSITDUE",

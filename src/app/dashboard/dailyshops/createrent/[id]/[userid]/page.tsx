@@ -260,8 +260,8 @@ const CreateRentPage = () => {
         shopId: unitid,
         userId: existinguserid,
         createdById: createuserid,
-        event_from_date: startDate!.toISOString(),
-        event_to_date: endDate!.toISOString(),
+        event_from_date: format(startDate!, "yyyy-MM-dd"),
+        event_to_date: format(endDate!, "yyyy-MM-dd"),
         event_amount: (
           datecount() * parseInt(dailyRentDescription?.event_amount || "0")
         ).toString(),
@@ -278,10 +278,10 @@ const CreateRentPage = () => {
         ).toString(),
         event_reason: purpose,
         ...(prepration && {
-          prep_day: subDays(startDate!, 1).toISOString(),
+          prep_day: format(subDays(startDate!, 1), "yyyy-MM-dd"),
         }), // Day before startDate
         ...(handover && {
-          handover_day: addDays(endDate!, 1).toISOString(),
+          handover_day: format(addDays(endDate!, 1), "yyyy-MM-dd"),
         }),
         status: "FAILED",
         company_name: company_name.current?.value,

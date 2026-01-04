@@ -43,18 +43,18 @@ const CreateDailyRent = async (
     // create all date array of payload
     let new_date: Date[] = [];
     if (payload.prep_day) {
-      new_date.push(toUTCDate(payload.prep_day));
+      new_date.push(new Date(payload.prep_day + "T00:00:00.000Z"));
     }
     if (payload.handover_day) {
-      new_date.push(toUTCDate(payload.handover_day));
+      new_date.push(new Date(payload.handover_day + "T00:00:00.000Z"));
     }
 
     // add event_from_date to event_to_date in new_date array
-    let start_date = new Date(payload.event_from_date);
-    let end_date = new Date(payload.event_to_date);
+    let start_date = new Date(payload.event_from_date + "T00:00:00.000Z");
+    let end_date = new Date(payload.event_to_date + "T00:00:00.000Z");
 
     while (start_date <= end_date) {
-      new_date.push(toUTCDate(start_date.toISOString()));
+      new_date.push(new Date(start_date));
       start_date.setDate(start_date.getDate() + 1);
     }
 
@@ -129,8 +129,8 @@ const CreateDailyRent = async (
       prep_day_amount: payload.prep_day_amount,
       deposit_amount: payload.deposit_amount,
       handover_day_amount: payload.handover_day_amount,
-      event_from_date: toUTCDate(payload.event_from_date),
-      event_to_date: toUTCDate(payload.event_to_date),
+      event_from_date: new Date(payload.event_from_date + "T00:00:00.000Z"),
+      event_to_date: new Date(payload.event_to_date + "T00:00:00.000Z"),
       event_reason: payload.event_reason,
       userId: payload.userId,
       createdById: payload.createdById,
@@ -139,11 +139,11 @@ const CreateDailyRent = async (
     };
 
     if (payload.prep_day) {
-      data_to_update["prep_day"] = toUTCDate(payload.prep_day);
+      data_to_update["prep_day"] = new Date(payload.prep_day + "T00:00:00.000Z");
     }
 
     if (payload.handover_day) {
-      data_to_update["handover_day"] = toUTCDate(payload.handover_day);
+      data_to_update["handover_day"] = new Date(payload.handover_day + "T00:00:00.000Z");
     }
 
     if (payload.is_approved) {
