@@ -14,7 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { usePagination } from "@/hooks/usepagination";
-import { formateDate } from "@/utils/methods";
+import { encryptURLData, formateDate } from "@/utils/methods";
 import {
   daily_property,
   daily_rent,
@@ -147,7 +147,9 @@ const AllBookingHistory = () => {
                       <button
                         onClick={() => {
                           router.push(
-                            `/dashboard/dailyshops/viewrent/${rentdata.id}/${rentdata.user.id}`
+                            `/dashboard/dailyshops/viewrent/${encryptURLData(
+                              rentdata.id.toString()
+                            )}/${encryptURLData(rentdata.user.id.toString())}`
                           );
                           // router.push(
                           //   `/dashboard/dailyrentrecept/${rentdata.user.id}/${rentdata.id}/${rentdata.rent_transact[0].id}`
