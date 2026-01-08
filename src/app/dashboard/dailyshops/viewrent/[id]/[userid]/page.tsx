@@ -76,12 +76,6 @@ const CreateRentPage = () => {
   const [refundRequest2, setRefundRequest2] = useState<refund_amount[]>([]);
   const init = async () => {
     setLoading(true);
-    const authResponse = await getAuthenticatedUserId();
-    if (!authResponse.status) {
-      toast.error(authResponse.message);
-      return router.push("/login");
-    }
-    setCurrentUserid(authResponse.data);
 
     const dailyrentresponse = await GetDailyRentById({
       id: rentid,
@@ -126,7 +120,7 @@ const CreateRentPage = () => {
         setUser(userresponse.data!);
       }
 
-      const currentUserResponse = await GetUser({ id: authResponse.data });
+      const currentUserResponse = await GetUser({ id: currentUserid });
       if (currentUserResponse.status) {
         setCurrentUser(currentUserResponse.data!);
       }
@@ -145,6 +139,12 @@ const CreateRentPage = () => {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
+      const authResponse = await getAuthenticatedUserId();
+      if (!authResponse.status) {
+        toast.error(authResponse.message);
+        return router.push("/login");
+      }
+      setCurrentUserid(authResponse.data);
 
       const dailyrentresponse = await GetDailyRentById({
         id: rentid,
@@ -153,11 +153,13 @@ const CreateRentPage = () => {
       if (dailyrentresponse.status && dailyrentresponse.data) {
         setRentData(dailyrentresponse.data);
 
+
         const refund_requestresponse2 = await GetRefundRequest2({
           userId: userid,
           rentId: dailyrentresponse.data.id,
           shopId: dailyrentresponse.data.shopId,
         });
+
 
         if (refund_requestresponse2.status && refund_requestresponse2.data) {
           setRefundRequest2(refund_requestresponse2.data);
@@ -184,12 +186,12 @@ const CreateRentPage = () => {
           setCencalRequest(cencal_requestresponse.data);
         }
 
-        const userresponse = await GetUser({ id: currentUserid });
+        const userresponse = await GetUser({ id: authResponse.data });
         if (userresponse.status) {
           setUser(userresponse.data!);
         }
 
-        const currentUserResponse = await GetUser({ id: currentUserid });
+        const currentUserResponse = await GetUser({ id: authResponse.data });
         if (currentUserResponse.status) {
           setCurrentUser(currentUserResponse.data!);
         }
@@ -647,7 +649,10 @@ const CreateRentPage = () => {
               <button
                 onClick={() => {
                   router.push(
-                    `/dashboard/dailyshops/collectdeposite/${rentData?.daily_shop.daily_rent_transact[1]?.id}`
+                    `/dashboard/dailyshops/collectdeposite/${encryptURLData(
+                      rentData?.daily_shop.daily_rent_transact[1]?.id.toString() ??
+                        "0"
+                    )}`
                   );
                   // const nanoid = customAlphabet("1234567890abcdef", 10);
                   // const uniqueid = nanoid();
@@ -818,7 +823,7 @@ const CreateRentPage = () => {
               <div className="grow"></div>
               <p>{rentData?.deposit_amount}</p>
             </div>
-            <div className="w-full h-[1px] bg-gray-500"></div>
+            <div className="w-full h-px bg-gray-500"></div>
             <div className="flex w-full">
               <p>Total</p>
               <div className="grow"></div>
@@ -839,7 +844,7 @@ const CreateRentPage = () => {
         onCancel={() => setOpen1(false)}
         footer={null}
         width={800}
-        className="my-10 h-[600px] overflow-y-scroll"
+        className="my-10 h-150 overflow-y-scroll"
       >
         <p className="text-sm  font-normal my-2 text-gray-800">
           1. The permission of videography / Photography shall be granted only
@@ -954,7 +959,7 @@ const CreateRentPage = () => {
         onCancel={() => setOpen2(false)}
         footer={null}
         width={800}
-        className="my-10 h-[600px] overflow-y-scroll"
+        className="my-10 h-150 overflow-y-scroll"
       >
         <p className="text-sm  font-normal my-2 text-gray-800">
           1. The permission of videography / Photography shall be granted only
@@ -1081,7 +1086,7 @@ const CreateRentPage = () => {
         onCancel={() => setOpen3(false)}
         footer={null}
         width={800}
-        className="my-10 h-[600px] overflow-y-scroll"
+        className="my-10 h-150 overflow-y-scroll"
       >
         <p className="text-sm  font-normal my-2 text-gray-800">
           1. The permission of videography / Photography shall be granted only
@@ -1200,7 +1205,7 @@ const CreateRentPage = () => {
         onCancel={() => setOpen4(false)}
         footer={null}
         width={800}
-        className="my-10 h-[600px] overflow-y-scroll"
+        className="my-10 h-150 overflow-y-scroll"
       >
         <p className="text-sm  font-normal my-2 text-gray-800">
           1. The permission of videography / Photography shall be granted only
@@ -1316,7 +1321,7 @@ const CreateRentPage = () => {
         onCancel={() => setOpen5(false)}
         footer={null}
         width={800}
-        className="my-10 h-[600px] overflow-y-scroll"
+        className="my-10 h-150 overflow-y-scroll"
       >
         <p className="text-sm  font-normal my-2 text-gray-800">
           1. The permission of videography / Photography shall be granted only
