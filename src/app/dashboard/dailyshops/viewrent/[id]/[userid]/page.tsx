@@ -186,7 +186,7 @@ const CreateRentPage = () => {
           setCencalRequest(cencal_requestresponse.data);
         }
 
-        const userresponse = await GetUser({ id: authResponse.data });
+        const userresponse = await GetUser({ id: userid });
         if (userresponse.status) {
           setUser(userresponse.data!);
         }
