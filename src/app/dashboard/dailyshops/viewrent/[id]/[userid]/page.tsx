@@ -40,13 +40,13 @@ const CreateRentPage = () => {
 
   const param = useParams();
   const encrentid: string = decryptURLData(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
-    router
+    Array.isArray(param.id) ? param.id[0] : (param.id ?? "0"),
+    router,
   );
   const rentid: number = parseInt(encrentid);
   const encuserid: string = decryptURLData(
-    Array.isArray(param.userid) ? param.userid[0] : param.userid ?? "0",
-    router
+    Array.isArray(param.userid) ? param.userid[0] : (param.userid ?? "0"),
+    router,
   );
   const userid: number = parseInt(encuserid);
 
@@ -66,11 +66,11 @@ const CreateRentPage = () => {
   const [user, setUser] = useState<user | null>(null);
   const [currentUser, setCurrentUser] = useState<user | null>(null);
   const [refundRequest, setRefundRequest] = useState<refund_amount | null>(
-    null
+    null,
   );
 
   const [cencalRequest, setCencalRequest] = useState<refund_amount | null>(
-    null
+    null,
   );
 
   const [refundRequest2, setRefundRequest2] = useState<refund_amount[]>([]);
@@ -153,13 +153,11 @@ const CreateRentPage = () => {
       if (dailyrentresponse.status && dailyrentresponse.data) {
         setRentData(dailyrentresponse.data);
 
-
         const refund_requestresponse2 = await GetRefundRequest2({
           userId: userid,
           rentId: dailyrentresponse.data.id,
           shopId: dailyrentresponse.data.shopId,
         });
-
 
         if (refund_requestresponse2.status && refund_requestresponse2.data) {
           setRefundRequest2(refund_requestresponse2.data);
@@ -273,7 +271,7 @@ const CreateRentPage = () => {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
 
     if (uploadfile.status != 200) {
@@ -290,7 +288,7 @@ const CreateRentPage = () => {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
     if (uploadfile2.status != 200) {
       return toast.error("File upload failed");
@@ -304,7 +302,7 @@ const CreateRentPage = () => {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
     if (uploadfile3.status != 200) {
       return toast.error("File upload failed");
@@ -474,7 +472,7 @@ const CreateRentPage = () => {
             {currentUser?.role == "USER" && (
               <>
                 {rentData?.daily_shop.daily_rent_transact.filter(
-                  (val: daily_rent_transact) => val.status == "PAID"
+                  (val: daily_rent_transact) => val.status == "PAID",
                 ).length == 2 && refundRequest2.length == 0 ? (
                   <button
                     onClick={() => {
@@ -486,7 +484,7 @@ const CreateRentPage = () => {
                   </button>
                 ) : null}
                 {rentData?.daily_shop.daily_rent_transact.filter(
-                  (val: daily_rent_transact) => val.status == "PAID"
+                  (val: daily_rent_transact) => val.status == "PAID",
                 ).length == 2 &&
                 cencalRequest == null &&
                 refundRequest2.length == 0 ? (
@@ -501,7 +499,7 @@ const CreateRentPage = () => {
                 ) : null}
 
                 {rentData?.daily_shop.daily_rent_transact.filter(
-                  (val: daily_rent_transact) => val.status == "PAID"
+                  (val: daily_rent_transact) => val.status == "PAID",
                 ).length == 2 &&
                 refundRequest == null &&
                 (() => {
@@ -529,18 +527,18 @@ const CreateRentPage = () => {
               </>
             )}
             {rentData?.daily_shop.daily_rent_transact.filter(
-              (val: daily_rent_transact) => val.status == "PAID"
+              (val: daily_rent_transact) => val.status == "PAID",
             ).length != 0 && (
               <button
                 onClick={() => {
                   router.push(
                     `/dashboard/dailyrentrecept/${encryptURLData(
                       rentData?.daily_shop.daily_rent_transact[0].userId.toString() ??
-                        "0"
+                        "0",
                     )}/${encryptURLData(rentid.toString())}/${encryptURLData(
                       rentData?.daily_shop.daily_rent_transact[0]?.id.toString() ??
-                        "0"
-                    )}`
+                        "0",
+                    )}`,
                   );
                 }}
                 className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
@@ -549,18 +547,18 @@ const CreateRentPage = () => {
               </button>
             )}
             {rentData?.daily_shop.daily_rent_transact.filter(
-              (val: daily_rent_transact) => val.status == "PAID"
+              (val: daily_rent_transact) => val.status == "PAID",
             ).length == 2 && (
               <button
                 onClick={() => {
                   router.push(
                     `/dashboard/dailyrentrecept/${encryptURLData(
                       rentData?.daily_shop.daily_rent_transact[1].userId.toString() ??
-                        "0"
+                        "0",
                     )}/${encryptURLData(rentid.toString())}/${encryptURLData(
                       rentData?.daily_shop.daily_rent_transact[1]?.id.toString() ??
-                        "0"
-                    )}/deposit`
+                        "0",
+                    )}/deposit`,
                   );
                 }}
                 className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
@@ -644,15 +642,15 @@ const CreateRentPage = () => {
 
             {["ACCOUNTANT", "MANAGER"].includes(currentUser?.role!) &&
             rentData?.daily_shop.daily_rent_transact.filter(
-              (val: daily_rent_transact) => val.status == "PAID"
+              (val: daily_rent_transact) => val.status == "PAID",
             ).length == 1 ? (
               <button
                 onClick={() => {
                   router.push(
                     `/dashboard/dailyshops/collectdeposite/${encryptURLData(
                       rentData?.daily_shop.daily_rent_transact[1]?.id.toString() ??
-                        "0"
-                    )}`
+                        "0",
+                    )}`,
                   );
                   // const nanoid = customAlphabet("1234567890abcdef", 10);
                   // const uniqueid = nanoid();
@@ -1910,10 +1908,10 @@ const CreateRentPage = () => {
             {(
               (parseFloat(rentData?.event_amount!) +
                 parseFloat(
-                  rentData?.handover_day ? rentData.handover_day_amount! : "0"
+                  rentData?.handover_day ? rentData.handover_day_amount! : "0",
                 ) +
                 parseFloat(
-                  rentData?.prep_day ? rentData.prep_day_amount! : "0"
+                  rentData?.prep_day ? rentData.prep_day_amount! : "0",
                 )) *
               0.25
             ).toFixed(2)}
@@ -1923,8 +1921,12 @@ const CreateRentPage = () => {
           <div className="grow"></div>
           <Button
             onClick={() => {
+              if (!rentData?.shopId || !rentData?.id) {
+                toast.error("Invalid rent data", { theme: "light" });
+                return;
+              }
               router.push(
-                `/dashboard/dailyshops/dailyrentdatechange/${rentData?.shopId}/${rentid}`
+                `/dashboard/dailyshops/dailyrentdatechange/${encryptURLData(rentData?.shopId!.toString())}/${encryptURLData(rentid.toString())}`,
               );
             }}
             className="bg-blue-500 hover:bg-blue-600 text-white"
@@ -1962,10 +1964,10 @@ const CreateRentPage = () => {
             {(
               (parseFloat(rentData?.event_amount!) +
                 parseFloat(
-                  rentData?.handover_day ? rentData.handover_day_amount! : "0"
+                  rentData?.handover_day ? rentData.handover_day_amount! : "0",
                 ) +
                 parseFloat(
-                  rentData?.prep_day ? rentData.prep_day_amount! : "0"
+                  rentData?.prep_day ? rentData.prep_day_amount! : "0",
                 )) *
               (() => {
                 const currentDate = new Date();
@@ -1993,22 +1995,22 @@ const CreateRentPage = () => {
                       parseFloat(
                         rentData?.handover_day
                           ? rentData.handover_day_amount!
-                          : "0"
+                          : "0",
                       ) +
                       parseFloat(
-                        rentData?.prep_day ? rentData.prep_day_amount! : "0"
+                        rentData?.prep_day ? rentData.prep_day_amount! : "0",
                       )) *
                     (() => {
                       const currentDate = new Date();
                       const eventFromDate = new Date(
-                        rentData?.event_from_date!
+                        rentData?.event_from_date!,
                       );
                       return eventFromDate.getTime() - currentDate.getTime() >
                         7 * 24 * 60 * 60 * 1000
                         ? 0.5
                         : 1;
                     })()
-                  ).toFixed(2)
+                  ).toFixed(2),
                 ),
                 refund_type: "CANCELREFUND",
               });
