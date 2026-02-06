@@ -4,7 +4,6 @@ import { errorToString } from "@/utils/methods";
 import { ApiResponseType } from "@/models/response";
 import prisma from "../../../prisma/database";
 import {
-  daily_rent,
   daily_rent_transact,
   DailyRentStatus,
 } from "@prisma/client";
@@ -160,7 +159,10 @@ const CreateDateChangeDailyRent = async (
       data_to_update["gst_no"] = payload.gst_no;
     }
 
-    const rent_data = await prisma.daily_rent.create({
+    const rent_data = await prisma.daily_rent.update({
+      where: {
+        id: payload.rentid,
+      },
       data: data_to_update,
     });
 
@@ -168,7 +170,7 @@ const CreateDateChangeDailyRent = async (
       return {
         status: false,
         data: null,
-        message: "Unable to create daily rent. Please try again.",
+        message: "Unable to update daily rent. Please try again.",
         functionname: "CreateDateChangeDailyRent",
       };
     }

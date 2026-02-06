@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { useParams, useRouter } from "next/navigation";
 import GetDailyRentRecept from "@/action/dailyrentrecept/getdailyrentrecept";
 import GetDailyRentById from "@/action/dailyrent/getdailyrentbyid";
+import GetDailyRentDateChangeRecept from "@/action/dailyrentrecept/getdailyrentdatecgabgerecept";
 
 const ViewPdf = () => {
   const [isloading, setIsloading] = useState(false);
@@ -34,28 +35,39 @@ const ViewPdf = () => {
   const router = useRouter();
   const param = useParams();
   const encuserid: string = decryptURLData(
-    Array.isArray(param.userid) ? param.userid[0] : param.userid ?? "0",
-    router
+    Array.isArray(param.userid) ? param.userid[0] : (param.userid ?? "0"),
+    router,
   );
   const userid: number = parseInt(encuserid);
 
   const encrentid: string = decryptURLData(
-    Array.isArray(param.rentid) ? param.rentid[0] : param.rentid ?? "0",
-    router
+    Array.isArray(param.rentid) ? param.rentid[0] : (param.rentid ?? "0"),
+    router,
   );
   const rentid: number = parseInt(encrentid);
 
   const transactionid: string = decryptURLData(
     Array.isArray(param.transactionid)
       ? param.transactionid[0]
-      : param.transactionid ?? "0",
-    router
+      : (param.transactionid ?? "0"),
+    router,
   );
 
   const [rent, setRent] = useState<
     | (daily_rent & { daily_shop: daily_shop & { property: daily_property } })
     | null
   >(null);
+
+  const [dateChangeRent, setDateChangeRent] = useState<
+    Array<
+      daily_rent_transact & {
+        user: user;
+        daily_rent: daily_rent;
+        daily_shop: daily_shop & { property: daily_property };
+      }
+    >
+  >([]);
+
   const [user, setUser] = useState<user>();
   const [history, setHistory] = useState<
     Array<
@@ -88,11 +100,29 @@ const ViewPdf = () => {
         transactionid: transactionid,
       });
 
-      if (historyresponse.status && historyresponse.data) {
+      if (
+        historyresponse.status &&
+        historyresponse.data &&
+        historyresponse.data.length > 0
+      ) {
         setHistory(historyresponse.data);
 
         if (historyresponse.data![0].gstinvoice) {
           setInvoiceNumber(historyresponse.data![0].gstinvoice!.toString());
+        }
+
+        const rentDateChangeResponse = await GetDailyRentDateChangeRecept({
+          rentid: rentid,
+          userid: userid,
+          transactionid: transactionid,
+        });
+
+        if (
+          rentDateChangeResponse.status &&
+          rentDateChangeResponse.data &&
+          rentDateChangeResponse.data.length > 0
+        ) {
+          setDateChangeRent(rentDateChangeResponse.data);
         }
       }
       setIsloading(false);
@@ -543,7 +573,12 @@ const ViewPdf = () => {
           </Text>
           <Text style={styles.rbottom2}>997212</Text>
           <Text style={styles.rbottom}>
-            {((parseInt(rent?.event_amount ?? "0") / 118) * 100).toFixed(2)}
+            {dateChangeRent.length != 0
+              ? (
+                  (parseInt(dateChangeRent[0]?.amount ?? "0") / 118) *
+                  100
+                ).toFixed(2)
+              : ((parseInt(rent?.event_amount ?? "0") / 118) * 100).toFixed(2)}
             {/* {(
               history
                 .flatMap((arr: any) => arr.amount)
@@ -565,7 +600,11 @@ const ViewPdf = () => {
           </Text>
           <Text style={styles.rbottom2}>997212</Text>
           <Text style={styles.rbottom}>
-            {((parseInt(rent?.prep_day_amount ?? "0") / 118) * 100).toFixed(2)}
+            {dateChangeRent.length != 0
+              ? 0
+              : ((parseInt(rent?.prep_day_amount ?? "0") / 118) * 100).toFixed(
+                  2,
+                )}
           </Text>
         </View>
         <View style={styles.myflex}>
@@ -580,9 +619,12 @@ const ViewPdf = () => {
           <Text style={styles.rbottom2}>997212</Text>
 
           <Text style={styles.rbottom}>
-            {((parseInt(rent?.handover_day_amount ?? "0") / 118) * 100).toFixed(
-              2
-            )}
+            {dateChangeRent.length != 0
+              ? 0
+              : (
+                  (parseInt(rent?.handover_day_amount ?? "0") / 118) *
+                  100
+                ).toFixed(2)}
           </Text>
         </View>
         <View style={styles.myflex}>
@@ -614,11 +656,16 @@ const ViewPdf = () => {
               fontFamily: "Oswald",
             }}
           >
-            {(
-              (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-              (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-              (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100
-            ).toFixed(2)}
+            {dateChangeRent.length != 0
+              ? (
+                  (parseInt(dateChangeRent[0]?.amount ?? "0") / 118) *
+                  100
+                ).toFixed(2)
+              : (
+                  (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                  (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                  (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100
+                ).toFixed(2)}
           </Text>
         </View>
         <View style={styles.myflex}>
@@ -638,12 +685,18 @@ const ViewPdf = () => {
           </Text>
           <Text style={styles.rbottom2}></Text>
           <Text style={styles.rbottom}>
-            {(
-              ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-                (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-                (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
-              0.09
-            ).toFixed(2)}
+            {dateChangeRent.length != 0
+              ? (
+                  (parseInt(dateChangeRent[0]?.amount ?? "0") / 118) *
+                  100 *
+                  0.09
+                ).toFixed(2)
+              : (
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+                  0.09
+                ).toFixed(2)}
           </Text>
         </View>
 
@@ -664,12 +717,18 @@ const ViewPdf = () => {
           </Text>
           <Text style={styles.rbottom2}></Text>
           <Text style={styles.rbottom}>
-            {(
-              ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-                (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-                (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
-              0.09
-            ).toFixed(2)}
+            {dateChangeRent.length != 0
+              ? (
+                  (parseInt(dateChangeRent[0]?.amount ?? "0") / 118) *
+                  100 *
+                  0.09
+                ).toFixed(2)
+              : (
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+                  0.09
+                ).toFixed(2)}
           </Text>
         </View>
 
@@ -702,19 +761,29 @@ const ViewPdf = () => {
               fontFamily: "Oswald",
             }}
           >
-            {(
-              (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-              (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-              (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100 +
-              ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-                (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-                (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
-                0.09 +
-              ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-                (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-                (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
-                0.09
-            ).toFixed(2)}
+            {dateChangeRent.length != 0
+              ? (
+                  (parseInt(dateChangeRent[0]?.amount ?? "0") / 118) * 100 +
+                  (parseInt(dateChangeRent[0]?.amount ?? "0") / 118) *
+                    100 *
+                    0.09 +
+                  (parseInt(dateChangeRent[0]?.amount ?? "0") / 118) *
+                    100 *
+                    0.09
+                ).toFixed(2)
+              : (
+                  (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                  (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                  (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100 +
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+                    0.09 +
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+                    0.09
+                ).toFixed(2)}
           </Text>
         </View>
         <Text
@@ -734,24 +803,38 @@ const ViewPdf = () => {
           {"Indian Rupees " +
             capitalcase(
               toWords.convert(
-                parseFloat(
-                  (
-                    (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-                    (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-                    (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100 +
-                    ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-                      (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-                      (parseInt(rent?.handover_day_amount ?? "0") / 118) *
-                        100) *
-                      0.09 +
-                    ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-                      (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-                      (parseInt(rent?.handover_day_amount ?? "0") / 118) *
-                        100) *
-                      0.09
-                  ).toFixed(2)
-                )
-              )
+                dateChangeRent.length != 0
+                  ? parseFloat(
+                      (
+                        (parseInt(dateChangeRent[0]?.amount ?? "0") / 118) *
+                          100 +
+                        (parseInt(dateChangeRent[0]?.amount ?? "0") / 118) *
+                          100 *
+                          0.09 +
+                        (parseInt(dateChangeRent[0]?.amount ?? "0") / 118) *
+                          100 *
+                          0.09
+                      ).toFixed(2),
+                    )
+                  : parseFloat(
+                      (
+                        (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                        (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                        (parseInt(rent?.handover_day_amount ?? "0") / 118) *
+                          100 +
+                        ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                          (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                          (parseInt(rent?.handover_day_amount ?? "0") / 118) *
+                            100) *
+                          0.09 +
+                        ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                          (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                          (parseInt(rent?.handover_day_amount ?? "0") / 118) *
+                            100) *
+                          0.09
+                      ).toFixed(2),
+                    ),
+              ),
             ) +
             " Only"}
         </Text>
@@ -874,38 +957,61 @@ const ViewPdf = () => {
             997212
           </Text>
           <Text style={styles.ltop2}>
-            {(
-              (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-              (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-              (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100
-            ).toFixed(2)}
+            {dateChangeRent.length != 0
+              ? ((parseInt(dateChangeRent[0]?.amount ?? "0") / 118) * 100).toFixed(
+                  2,
+                )
+              : (
+                  (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                  (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                  (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100
+                ).toFixed(2)}
           </Text>
           <Text style={styles.ltop2}>9%</Text>
           <Text style={styles.ltop2}>
-            {(
-              ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-                (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-                (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
-              0.09
-            ).toFixed(2)}
+            {dateChangeRent.length != 0
+              ? (
+                  (parseInt(dateChangeRent[0]?.amount ?? "0") / 118) *
+                  100 *
+                  0.09
+                ).toFixed(2)
+              : (
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+                  0.09
+                ).toFixed(2)}
           </Text>
           <Text style={styles.ltop2}>9%</Text>
           <Text style={styles.ltop2}>
-            {(
-              ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-                (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-                (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
-              0.09
-            ).toFixed(2)}
+            {dateChangeRent.length != 0
+              ? (
+                  (parseInt(dateChangeRent[0]?.amount ?? "0") / 118) *
+                  100 *
+                  0.09
+                ).toFixed(2)
+              : (
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+                  0.09
+                ).toFixed(2)}
           </Text>
           <Text style={styles.ltop2}>
-            {(
-              ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-                (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-                (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
-              0.09 *
-              2
-            ).toFixed(2)}
+            {dateChangeRent.length != 0
+              ? (
+                  (parseInt(dateChangeRent[0]?.amount ?? "0") / 118) *
+                  100 *
+                  0.09 *
+                  2
+                ).toFixed(2)
+              : (
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+                  0.09 *
+                  2
+                ).toFixed(2)}
           </Text>
         </View>
         <View style={styles.myflex}>
@@ -925,38 +1031,61 @@ const ViewPdf = () => {
             Total
           </Text>
           <Text style={styles.ltop2}>
-            {(
-              (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-              (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-              (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100
-            ).toFixed(2)}
+            {dateChangeRent.length != 0
+              ? ((parseInt(dateChangeRent[0]?.amount ?? "0") / 118) * 100).toFixed(
+                  2,
+                )
+              : (
+                  (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                  (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                  (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100
+                ).toFixed(2)}
           </Text>
           <Text style={styles.ltop2}>9%</Text>
           <Text style={styles.ltop2}>
-            {(
-              ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-                (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-                (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
-              0.09
-            ).toFixed(2)}
+            {dateChangeRent.length != 0
+              ? (
+                  (parseInt(dateChangeRent[0]?.amount ?? "0") / 118) *
+                  100 *
+                  0.09
+                ).toFixed(2)
+              : (
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+                  0.09
+                ).toFixed(2)}
           </Text>
           <Text style={styles.ltop2}>9%</Text>
           <Text style={styles.ltop2}>
-            {(
-              ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-                (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-                (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
-              0.09
-            ).toFixed(2)}
+            {dateChangeRent.length != 0
+              ? (
+                  (parseInt(dateChangeRent[0]?.amount ?? "0") / 118) *
+                  100 *
+                  0.09
+                ).toFixed(2)
+              : (
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+                  0.09
+                ).toFixed(2)}
           </Text>
           <Text style={styles.ltop2}>
-            {(
-              ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-                (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-                (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
-              0.09 *
-              2
-            ).toFixed(2)}
+            {dateChangeRent.length != 0
+              ? (
+                  (parseInt(dateChangeRent[0]?.amount ?? "0") / 118) *
+                  100 *
+                  0.09 *
+                  2
+                ).toFixed(2)
+              : (
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+                  0.09 *
+                  2
+                ).toFixed(2)}
           </Text>
         </View>
         <Text
@@ -976,17 +1105,26 @@ const ViewPdf = () => {
           {"Indian Rupees " +
             capitalcase(
               toWords.convert(
-                parseInt(
-                  (
-                    ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-                      (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-                      (parseInt(rent?.handover_day_amount ?? "0") / 118) *
-                        100) *
-                    0.09 *
-                    2
-                  ).toFixed(2)
-                )
-              )
+                dateChangeRent.length != 0
+                  ? parseInt(
+                      (
+                        (parseInt(dateChangeRent[0]?.amount ?? "0") / 118) *
+                        100 *
+                        0.09 *
+                        2
+                      ).toFixed(2),
+                    )
+                  : parseInt(
+                      (
+                        ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                          (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                          (parseInt(rent?.handover_day_amount ?? "0") / 118) *
+                            100) *
+                        0.09 *
+                        2
+                      ).toFixed(2),
+                    ),
+              ),
             ) +
             " Only"}
         </Text>
@@ -1006,40 +1144,64 @@ const ViewPdf = () => {
           >
             Received with thanks from {user?.firstName} {user?.lastName}{" "}
             {user?.contactone && `[${user?.contactone}]`} a sum of Rs.{" "}
-            {(
-              (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-              (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-              (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100 +
-              ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-                (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-                (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
-                0.09 +
-              ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-                (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-                (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
-                0.09
-            ).toFixed(2)}
+            {dateChangeRent.length != 0
+              ? (
+                  (parseInt(dateChangeRent[0]?.amount ?? "0") / 118) * 100 +
+                  (parseInt(dateChangeRent[0]?.amount ?? "0") / 118) *
+                    100 *
+                    0.09 +
+                  (parseInt(dateChangeRent[0]?.amount ?? "0") / 118) *
+                    100 *
+                    0.09
+                ).toFixed(2)
+              : (
+                  (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                  (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                  (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100 +
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+                    0.09 +
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                    (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+                    0.09
+                ).toFixed(2)}
             (
             {capitalcase(
               toWords.convert(
-                parseFloat(
-                  (
-                    (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-                    (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-                    (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100 +
-                    ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-                      (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-                      (parseInt(rent?.handover_day_amount ?? "0") / 118) *
-                        100) *
-                      0.09 +
-                    ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-                      (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-                      (parseInt(rent?.handover_day_amount ?? "0") / 118) *
-                        100) *
-                      0.09
-                  ).toFixed(2)
-                )
-              )
+                dateChangeRent.length != 0
+                  ? parseFloat(
+                      (
+                        (parseInt(dateChangeRent[0]?.amount ?? "0") / 118) *
+                          100 +
+                        (parseInt(dateChangeRent[0]?.amount ?? "0") / 118) *
+                          100 *
+                          0.09 +
+                        (parseInt(dateChangeRent[0]?.amount ?? "0") / 118) *
+                          100 *
+                          0.09
+                      ).toFixed(2),
+                    )
+                  : parseFloat(
+                      (
+                        (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                        (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                        (parseInt(rent?.handover_day_amount ?? "0") / 118) *
+                          100 +
+                        ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                          (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                          (parseInt(rent?.handover_day_amount ?? "0") / 118) *
+                            100) *
+                          0.09 +
+                        ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                          (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                          (parseInt(rent?.handover_day_amount ?? "0") / 118) *
+                            100) *
+                          0.09
+                      ).toFixed(2),
+                    ),
+              ),
             ) + " Only"}
             )
           </Text>
@@ -2161,19 +2323,29 @@ const ViewPdf = () => {
                   textAlign: "center",
                 }}
               >
-                {(
-                  (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-                  (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-                  (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100 +
-                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-                    (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-                    (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
-                    0.09 +
-                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
-                    (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
-                    (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
-                    0.09
-                ).toFixed(2)}
+                {dateChangeRent.length != 0
+                  ? (
+                      (parseInt(dateChangeRent[0]?.amount ?? "0") / 118) * 100 +
+                      (parseInt(dateChangeRent[0]?.amount ?? "0") / 118) *
+                        100 *
+                        0.09 +
+                      (parseInt(dateChangeRent[0]?.amount ?? "0") / 118) *
+                        100 *
+                        0.09
+                    ).toFixed(2)
+                  : (
+                      (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                      (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                      (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100 +
+                      ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                        (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                        (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+                        0.09 +
+                      ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
+                        (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
+                        (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
+                        0.09
+                    ).toFixed(2)}
                 /-
               </Text>
             </View>
@@ -2271,7 +2443,7 @@ const ViewPdf = () => {
         updateInstance(Quixote);
       }, 1000);
     }
-  }, [history, rent, user]);
+  }, [history, rent, user, dateChangeRent]);
 
   // const getfile = async () => {
   //   const file: NodeJS.ReadableStream = await renderToFile(

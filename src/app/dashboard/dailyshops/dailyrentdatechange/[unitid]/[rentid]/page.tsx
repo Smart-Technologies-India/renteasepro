@@ -119,7 +119,7 @@ const CreateDateChangePage = () => {
         setRentdata(rent_response.data);
       }
 
-      const userresponse = await GetUser({ id: createuserid });
+      const userresponse = await GetUser({ id: authResponse.data });
       if (userresponse.status) {
         setUser(userresponse.data!);
       }

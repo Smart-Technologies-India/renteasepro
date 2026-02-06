@@ -86,13 +86,13 @@ const UserRentHistoryView = () => {
                 .toString()
                 .toLowerCase()
                 .includes(
-                  searchRef.current?.value.toString().toLowerCase() ?? ""
+                  searchRef.current?.value.toString().toLowerCase() ?? "",
                 ) ||
               (account.user.lastName !== null ? account.user.lastName : "")
                 .toString()
                 .toLowerCase()
                 .includes(
-                  searchRef.current?.value.toString().toLowerCase() ?? ""
+                  searchRef.current?.value.toString().toLowerCase() ?? "",
                 ) ||
               (account.user.firstName + " " + account.user.lastName !== null
                 ? account.user.firstName + " " + account.user.lastName
@@ -101,7 +101,7 @@ const UserRentHistoryView = () => {
                 .toString()
                 .toLowerCase()
                 .includes(
-                  searchRef.current?.value.toString().toLowerCase() ?? ""
+                  searchRef.current?.value.toString().toLowerCase() ?? "",
                 ) ||
               (account.daily_shop.property.name !== null
                 ? account.daily_shop.property.name
@@ -110,21 +110,21 @@ const UserRentHistoryView = () => {
                 .toString()
                 .toLowerCase()
                 .includes(
-                  searchRef.current?.value.toString().toLowerCase() ?? ""
+                  searchRef.current?.value.toString().toLowerCase() ?? "",
                 ) ||
               (account.daily_shop.name !== null ? account.daily_shop.name : "")
                 .toString()
                 .toLowerCase()
                 .includes(
-                  searchRef.current?.value.toString().toLowerCase() ?? ""
+                  searchRef.current?.value.toString().toLowerCase() ?? "",
                 ) ||
               (account.amount !== null ? account.amount : "")
                 .toString()
                 .toLowerCase()
                 .includes(
-                  searchRef.current?.value.toString().toLowerCase() ?? ""
-                )
-          )
+                  searchRef.current?.value.toString().toLowerCase() ?? "",
+                ),
+          ),
         );
       } else {
         setIsSearch(false);
@@ -280,7 +280,7 @@ const UserRentHistoryView = () => {
                     <Button
                       onClick={() => {
                         router.push(
-                          `/dashboard/dailyrentrecept/${encryptURLData(rent_data.user.id.toString())}/${encryptURLData(rent_data.daily_rent.id.toString())}/${encryptURLData(rent_data.id.toString())}`
+                          `/dashboard/dailyrentrecept/${encryptURLData(rent_data.user.id.toString())}/${encryptURLData(rent_data.daily_rent.id.toString())}/${encryptURLData(rent_data.id.toString())}`,
                         );
                       }}
                       className="cursor-pointer text-sm font-normal px-3 py-1 h-8"
@@ -294,8 +294,11 @@ const UserRentHistoryView = () => {
                 <TableCell>
                   <button
                     onClick={() => {
+                      console.log(rent_data);
                       router.push(
-                        `/dashboard/dailyshops/viewrent/${rent_data.daily_rent.id}/${rent_data.user.id}`
+                        `/dashboard/dailyshops/viewrent/${encryptURLData(
+                          rent_data.daily_rent.id.toString(),
+                        )}/${encryptURLData(rent_data.user.id.toString())}`,
                       );
                     }}
                     className="cursor-pointer bg-blue-500 text-sm px-2 py-1 rounded-md text-white text-nowrap"

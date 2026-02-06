@@ -8,7 +8,6 @@ import {
   daily_rent,
   daily_rent_transact,
   daily_shop,
-  rent_transact,
   user,
 } from "@prisma/client";
 
@@ -19,7 +18,7 @@ interface GetDailyRentReceptPayload {
 }
 
 const GetDailyRentRecept = async (
-  payload: GetDailyRentReceptPayload
+  payload: GetDailyRentReceptPayload,
 ): Promise<
   ApiResponseType<Array<
     daily_rent_transact & {
