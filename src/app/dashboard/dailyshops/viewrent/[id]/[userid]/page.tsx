@@ -566,6 +566,26 @@ const CreateRentPage = () => {
                 Deposit Receipt
               </button>
             )}
+            {rentData?.daily_shop.daily_rent_transact.filter(
+              (val: daily_rent_transact) => val.status == "PAID",
+            ).length == 3 && (
+              <button
+                onClick={() => {
+                  router.push(
+                    `/dashboard/dailyrentrecept/${encryptURLData(
+                      rentData?.daily_shop.daily_rent_transact[2].userId.toString() ??
+                        "0",
+                    )}/${encryptURLData(rentid.toString())}/${encryptURLData(
+                      rentData?.daily_shop.daily_rent_transact[2]?.id.toString() ??
+                        "0",
+                    )}`,
+                  );
+                }}
+                className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+              >
+                Date Change Receipt
+              </button>
+            )}
             {rentData?.daily_shop.id == 4 ? (
               <>
                 <button
