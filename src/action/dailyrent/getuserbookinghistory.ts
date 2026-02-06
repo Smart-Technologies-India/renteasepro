@@ -30,6 +30,8 @@ const GetUserBookingHistory = async (
     const booking_response = await prisma.daily_rent.findMany({
       where: {
         userId: payload.userid,
+        deletedAt: null,
+        deletedBy: null,
       },
       include: {
         user: true,
