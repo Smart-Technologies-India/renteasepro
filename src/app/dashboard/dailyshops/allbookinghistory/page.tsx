@@ -5,6 +5,7 @@ import GetAllDailyRent from "@/action/dailyrent/getalldailyrent";
 import BackButton from "@/components/backbutton";
 import { FluentMdl2Home } from "@/components/icons";
 import Pagination from "@/components/pagination";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -21,6 +22,7 @@ import {
   daily_rent_transact,
   daily_shop,
   user,
+  DailyRentStatus,
 } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -31,6 +33,7 @@ const AllBookingHistory = () => {
   const router = useRouter();
 
   const [isLoading, setLoading] = useState<boolean>(true);
+  const [isFetching, setFetching] = useState<boolean>(false);
   const [dailyrent, setDailyRent] = useState<
     Array<
       daily_rent & {
@@ -40,6 +43,21 @@ const AllBookingHistory = () => {
       }
     >
   >([]);
+
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<string>("ALL");
+
+  const statusOptions = [
+    "ALL",
+    "DEPOSITDUE",
+    "UPCOMING",
+    "REFUNDDUE",
+    "COMPLETED",
+    "CANCELLED",
+    "USERCANCELLED",
+    "FAILED",
+    "NONE",
+  ];
 
   useEffect(() => {
     const init = async () => {
@@ -51,18 +69,42 @@ const AllBookingHistory = () => {
       }
       setUserid(authResponse.data);
 
-      const dailyrent_response = await GetAllDailyRent({});
-
-      if (dailyrent_response.status) {
-        setDailyRent(dailyrent_response.data ?? []);
-      }
-
       setLoading(false);
     };
     init();
   }, []);
 
+  useEffect(() => {
+    const loadRent = async () => {
+      if (!userid) return;
+      setFetching(true);
+
+      const dailyrent_response = await GetAllDailyRent({
+        search: searchTerm.trim() ? searchTerm.trim() : undefined,
+        status:
+          statusFilter !== "ALL"
+            ? (statusFilter as DailyRentStatus)
+            : undefined,
+      });
+
+      if (dailyrent_response.status) {
+        setDailyRent(dailyrent_response.data ?? []);
+      }
+      else{
+        setDailyRent([]);
+      }
+
+      setFetching(false);
+    };
+
+    loadRent();
+  }, [userid, searchTerm, statusFilter]);
+
   const pagination = usePagination(dailyrent);
+
+  useEffect(() => {
+    pagination.changeActivePage(1);
+  }, [searchTerm, statusFilter]);
 
   if (isLoading)
     return (
@@ -79,7 +121,30 @@ const AllBookingHistory = () => {
           <FluentMdl2Home className="text-xl" />
           <p className="text-xl text-gray-600">Unit Booking History</p>
           <div className="grow"></div>
+          <div className="flex items-center gap-2">
+            <Input
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search by name"
+              className="h-9 w-48"
+            />
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="h-9 rounded-md border border-gray-300 bg-white px-2 text-sm"
+            >
+              {statusOptions.map((status) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
+
+        {isFetching && (
+          <p className="text-sm text-gray-500 mt-2">Loading results...</p>
+        )}
 
         {pagination.paginatedItems.length == 0 ? (
           <p className="text-sm mt-4 mb-2">No Rent History found.</p>
@@ -145,6 +210,7 @@ const AllBookingHistory = () => {
 
                     <TableCell className="text-right p-2">
                       <button
+                        type="button"
                         onClick={() => {
                           router.push(
                             `/dashboard/dailyshops/viewrent/${encryptURLData(

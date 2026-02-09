@@ -3,10 +3,7 @@
 import { errorToString } from "@/utils/methods";
 import { ApiResponseType } from "@/models/response";
 import prisma from "../../../prisma/database";
-import {
-  daily_rent_transact,
-  DailyRentStatus,
-} from "@prisma/client";
+import { daily_rent_transact, DailyRentStatus } from "@prisma/client";
 
 interface CreateDateChangeDailyRentPayload {
   rentid: number;
@@ -27,17 +24,20 @@ interface CreateDateChangeDailyRentPayload {
   status: DailyRentStatus;
   company_name?: string;
   gst_no?: string;
+  old_from_date: string;
+  old_to_date: string;
+  date_change_charge: string;
 }
 
 function toUTCDate(dateStr: string) {
   const date = new Date(dateStr);
   return new Date(
-    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
   );
 }
 
 const CreateDateChangeDailyRent = async (
-  payload: CreateDateChangeDailyRentPayload
+  payload: CreateDateChangeDailyRentPayload,
 ): Promise<ApiResponseType<daily_rent_transact | null>> => {
   try {
     // create all date array of payload
@@ -123,20 +123,7 @@ const CreateDateChangeDailyRent = async (
     //   }
     // }
 
-    const data_to_update: any = {
-      shopId: payload.shopId,
-      event_amount: payload.event_amount,
-      prep_day_amount: payload.prep_day_amount,
-      deposit_amount: payload.deposit_amount,
-      handover_day_amount: payload.handover_day_amount,
-      event_from_date: toUTCDate(payload.event_from_date),
-      event_to_date: toUTCDate(payload.event_to_date),
-      event_reason: payload.event_reason,
-      userId: payload.userId,
-      createdById: payload.createdById,
-
-      status: payload.status,
-    };
+    const data_to_update: any = {};
 
     if (payload.prep_day) {
       data_to_update["prep_day"] = toUTCDate(payload.prep_day);
@@ -163,7 +150,24 @@ const CreateDateChangeDailyRent = async (
       where: {
         id: payload.rentid,
       },
-      data: data_to_update,
+      data: {
+        is_date_change: true,
+        shopId: payload.shopId,
+        date_change_charge: payload.date_change_charge,
+        event_amount: payload.event_amount,
+        prep_day_amount: payload.prep_day_amount,
+        deposit_amount: payload.deposit_amount,
+        handover_day_amount: payload.handover_day_amount,
+        event_from_date: toUTCDate(payload.event_from_date),
+        event_to_date: toUTCDate(payload.event_to_date),
+        event_reason: payload.event_reason,
+        userId: payload.userId,
+        createdById: payload.createdById,
+        status: payload.status,
+        old_from_date: toUTCDate(payload.old_from_date),
+        old_to_date: toUTCDate(payload.old_to_date),
+        ...data_to_update,
+      },
     });
 
     if (!rent_data) {

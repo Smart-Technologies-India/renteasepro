@@ -3,6 +3,7 @@
 import { errorToString } from "@/utils/methods";
 import { ApiResponseType } from "@/models/response";
 import {
+  DailyRentStatus,
   daily_property,
   daily_rent,
   daily_rent_transact,
@@ -11,10 +12,13 @@ import {
 } from "@prisma/client";
 import prisma from "../../../prisma/database";
 
-interface GetAllDailyRentPayload {}
+interface GetAllDailyRentPayload {
+  search?: string;
+  status?: DailyRentStatus;
+}
 
 const GetAllDailyRent = async (
-  payload: GetAllDailyRentPayload
+  payload: GetAllDailyRentPayload,
 ): Promise<
   ApiResponseType<Array<
     daily_rent & {
@@ -25,14 +29,40 @@ const GetAllDailyRent = async (
   > | null>
 > => {
   try {
-    const rent_respone = await prisma.daily_rent.findMany({
-      where: {
-        deletedAt: null,
-        deletedBy: null,
-        status: {
-          not: "NONE",
-        },
+    const whereClause: any = {
+      deletedAt: null,
+      deletedBy: null,
+      status: {
+        not: "NONE",
       },
+    };
+
+    if (payload.status) {
+      whereClause.status = payload.status;
+    }
+
+    const search = payload.search?.trim();
+    if (search) {
+      whereClause.OR = [
+        {
+          user: {
+            firstName: {
+              contains: search,
+            },
+          },
+        },
+        {
+          user: {
+            lastName: {
+              contains: search,
+            },
+          },
+        },
+      ];
+    }
+
+    const rent_respone = await prisma.daily_rent.findMany({
+      where: whereClause,
       include: {
         rent_transact: true,
         user: true,

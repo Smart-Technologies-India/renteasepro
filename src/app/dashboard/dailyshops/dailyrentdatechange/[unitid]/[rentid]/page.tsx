@@ -237,6 +237,13 @@ const CreateDateChangePage = () => {
         setIsCreating(false);
         return toast.error("End date should be bigger then start date");
       }
+      const oldFromDate = rentdata?.event_from_date
+        ? format(new Date(rentdata.event_from_date), "yyyy-MM-dd")
+        : format(startDate!, "yyyy-MM-dd");
+      const oldToDate = rentdata?.event_to_date
+        ? format(new Date(rentdata.event_to_date), "yyyy-MM-dd")
+        : format(endDate!, "yyyy-MM-dd");
+
       const createrent = await CreateDateChangeDailyRent({
         rentid: rentid,
         shopId: unitid,
@@ -247,6 +254,8 @@ const CreateDateChangePage = () => {
         ).toString(),
         event_from_date: format(startDate!, "yyyy-MM-dd"),
         event_to_date: format(endDate!, "yyyy-MM-dd"),
+        old_from_date: oldFromDate,
+        old_to_date: oldToDate,
         prep_day_amount: prepration
           ? parseInt(dailyRentDescription?.prep_day_amount || "0").toFixed(0)
           : "0",
@@ -266,6 +275,8 @@ const CreateDateChangePage = () => {
         status: "FAILED",
         company_name: company_name.current?.value,
         gst_no: gst_no.current?.value,
+        date_change_charge: 
+          (calculateTotalAmount() * 0.25).toFixed(2) // 25% of total amount as date change charge,
       });
 
       if (!(createrent.status && createrent.data)) {
@@ -722,7 +733,7 @@ const CreateDateChangePage = () => {
                 ).toFixed(2)}
               </p>
             </div>
-            <div className="w-full h-[1px] bg-gray-500"></div>
+            <div className="w-full h-px bg-gray-500"></div>
             <div className="flex w-full">
               <p>Total</p>
               <div className="grow"></div>

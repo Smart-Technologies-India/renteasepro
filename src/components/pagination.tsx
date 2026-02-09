@@ -53,6 +53,7 @@ const Pagination: React.FC<PaginationProps> = (props: PaginationProps) => {
     ) {
       buttons.push(
         <button
+          type="button"
           key={i}
           onClick={() => props.changeActivePage(i)}
           className={`bg-transparent rounded border border-gray-500 hover:border-blue-500 hover:text-blue-500 text-sm text-center min-w-7 h-7 px-1 grid place-items-center ${
@@ -69,6 +70,7 @@ const Pagination: React.FC<PaginationProps> = (props: PaginationProps) => {
     if (props.activePage - maxButtonsToShow > 1) {
       buttons.unshift(
         <button
+          type="button"
           key="left-ellipsis"
           disabled
           className="bg-transparent rounded text-sm text-center min-w-7 h-7 px-1 grid place-items-center cursor-not-allowed"
@@ -81,6 +83,7 @@ const Pagination: React.FC<PaginationProps> = (props: PaginationProps) => {
     if (props.activePage + maxButtonsToShow < props.getMaxPage()) {
       buttons.push(
         <button
+          type="button"
           key="right-ellipsis"
           disabled
           className="bg-transparent rounded text-sm text-center min-w-7 h-7 px-1 grid place-items-center cursor-not-allowed"
@@ -107,12 +110,14 @@ const Pagination: React.FC<PaginationProps> = (props: PaginationProps) => {
 
         <div className="flex gap-1 items-center">
           <button
+            type="button"
             onClick={props.firstPage}
             className="bg-transparent rounded border border-gray-500 hover:border-blue-500 hover:text-blue-500 text-sm text-center min-w-7 h-7 px-1 grid place-items-center"
           >
             <MaterialSymbolsKeyboardDoubleArrowLeft></MaterialSymbolsKeyboardDoubleArrowLeft>
           </button>
           <button
+            type="button"
             onClick={props.prevPage}
             className="bg-transparent rounded border border-gray-500 hover:border-blue-500 hover:text-blue-500 text-sm text-center min-w-7 h-7 px-1 grid place-items-center"
           >
@@ -120,12 +125,14 @@ const Pagination: React.FC<PaginationProps> = (props: PaginationProps) => {
           </button>
           {renderPageButtons()}
           <button
+            type="button"
             onClick={props.nextPage}
             className="bg-transparent rounded border border-gray-500 hover:border-blue-500 hover:text-blue-500 text-sm text-center min-w-7 h-7 px-1 grid place-items-center"
           >
             <CharmChevronRight></CharmChevronRight>
           </button>
           <button
+            type="button"
             onClick={props.lastPage}
             className="bg-transparent rounded border border-gray-500 hover:border-blue-500 hover:text-blue-500 text-sm text-center min-w-7 h-7 px-1 grid place-items-center"
           >
