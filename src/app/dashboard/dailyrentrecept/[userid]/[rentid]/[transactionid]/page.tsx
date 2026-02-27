@@ -578,7 +578,7 @@ const ViewPdf = () => {
                   (parseInt(dateChangeRent[0]?.amount ?? "0") / 118) *
                   100
                 ).toFixed(2)
-              : ((parseInt(history[0]?.amount ?? "0") / 118) * 100).toFixed(2)}
+              : ((parseInt(rent?.event_amount ?? "0") / 118) * 100).toFixed(2)}
             {/* {(
               history
                 .flatMap((arr: any) => arr.amount)
@@ -662,7 +662,7 @@ const ViewPdf = () => {
                   100
                 ).toFixed(2)
               : (
-                  (parseInt(history[0]?.amount ?? "0") / 118) * 100 +
+                  (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                   (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                   (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100
                 ).toFixed(2)}
@@ -692,7 +692,7 @@ const ViewPdf = () => {
                   0.09
                 ).toFixed(2)
               : (
-                  ((parseInt(history[0]?.amount ?? "0") / 118) * 100 +
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                     (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                     (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
                   0.09
@@ -724,7 +724,7 @@ const ViewPdf = () => {
                   0.09
                 ).toFixed(2)
               : (
-                  ((parseInt(history[0]?.amount ?? "0") / 118) * 100 +
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                     (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                     (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
                   0.09
@@ -772,14 +772,14 @@ const ViewPdf = () => {
                     0.09
                 ).toFixed(2)
               : (
-                  (parseInt(history[0]?.amount ?? "0") / 118) * 100 +
+                  (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                   (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                   (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100 +
-                  ((parseInt(history[0]?.amount ?? "0") / 118) * 100 +
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                     (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                     (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
                     0.09 +
-                  ((parseInt(history[0]?.amount ?? "0") / 118) * 100 +
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                     (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                     (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
                     0.09
@@ -818,16 +818,16 @@ const ViewPdf = () => {
                     )
                   : parseFloat(
                       (
-                        (parseInt(history[0]?.amount ?? "0") / 118) * 100 +
+                        (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                         (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                         (parseInt(rent?.handover_day_amount ?? "0") / 118) *
                           100 +
-                        ((parseInt(history[0]?.amount ?? "0") / 118) * 100 +
+                        ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                           (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                           (parseInt(rent?.handover_day_amount ?? "0") / 118) *
                             100) *
                           0.09 +
-                        ((parseInt(history[0]?.amount ?? "0") / 118) * 100 +
+                        ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                           (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                           (parseInt(rent?.handover_day_amount ?? "0") / 118) *
                             100) *
@@ -962,7 +962,7 @@ const ViewPdf = () => {
                   2,
                 )
               : (
-                  (parseInt(history[0]?.amount ?? "0") / 118) * 100 +
+                  (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                   (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                   (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100
                 ).toFixed(2)}
@@ -1036,7 +1036,7 @@ const ViewPdf = () => {
                   2,
                 )
               : (
-                  (parseInt(history[0]?.amount ?? "0") / 118) * 100 +
+                  (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                   (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                   (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100
                 ).toFixed(2)}
@@ -1050,7 +1050,7 @@ const ViewPdf = () => {
                   0.09
                 ).toFixed(2)
               : (
-                  ((parseInt(history[0]?.amount ?? "0") / 118) * 100 +
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                     (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                     (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
                   0.09
@@ -1065,7 +1065,7 @@ const ViewPdf = () => {
                   0.09
                 ).toFixed(2)
               : (
-                  ((parseInt(history[0]?.amount ?? "0") / 118) * 100 +
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                     (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                     (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
                   0.09
@@ -1080,7 +1080,7 @@ const ViewPdf = () => {
                   2
                 ).toFixed(2)
               : (
-                  ((parseInt(history[0]?.amount ?? "0") / 118) * 100 +
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                     (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                     (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
                   0.09 *
@@ -1116,7 +1116,7 @@ const ViewPdf = () => {
                     )
                   : parseInt(
                       (
-                        ((parseInt(history[0]?.amount ?? "0") / 118) * 100 +
+                        ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                           (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                           (parseInt(rent?.handover_day_amount ?? "0") / 118) *
                             100) *
@@ -1155,14 +1155,14 @@ const ViewPdf = () => {
                     0.09
                 ).toFixed(2)
               : (
-                  (parseInt(history[0]?.amount ?? "0") / 118) * 100 +
+                  (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                   (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                   (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100 +
-                  ((parseInt(history[0]?.amount ?? "0") / 118) * 100 +
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                     (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                     (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
                     0.09 +
-                  ((parseInt(history[0]?.amount ?? "0") / 118) * 100 +
+                  ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                     (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                     (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
                     0.09
@@ -1185,16 +1185,16 @@ const ViewPdf = () => {
                     )
                   : parseFloat(
                       (
-                        (parseInt(history[0]?.amount ?? "0") / 118) * 100 +
+                        (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                         (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                         (parseInt(rent?.handover_day_amount ?? "0") / 118) *
                           100 +
-                        ((parseInt(history[0]?.amount ?? "0") / 118) * 100 +
+                        ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                           (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                           (parseInt(rent?.handover_day_amount ?? "0") / 118) *
                             100) *
                           0.09 +
-                        ((parseInt(history[0]?.amount ?? "0") / 118) * 100 +
+                        ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                           (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                           (parseInt(rent?.handover_day_amount ?? "0") / 118) *
                             100) *
@@ -2334,21 +2334,21 @@ const ViewPdf = () => {
                         0.09
                     ).toFixed(2)
                   : (
-                      (parseInt(history[0]?.amount ?? "0") / 118) * 100 +
+                      (parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                       (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                       (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100 +
-                      ((parseInt(history[0]?.amount ?? "0") / 118) * 100 +
+                      ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                         (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                         (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
                         0.09 +
-                      ((parseInt(history[0]?.amount ?? "0") / 118) * 100 +
+                      ((parseInt(rent?.event_amount ?? "0") / 118) * 100 +
                         (parseInt(rent?.prep_day_amount ?? "0") / 118) * 100 +
                         (parseInt(rent?.handover_day_amount ?? "0") / 118) * 100) *
                         0.09
                     ).toFixed(2)}
                 /-
               </Text>
-            </View>
+            </View> 
 
             <Text
               style={{
