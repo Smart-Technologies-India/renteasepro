@@ -179,6 +179,10 @@ const CreateDateChangeDailyRent = async (
       };
     }
 
+    const dateChangeAmount = (
+      parseFloat(payload.event_amount || "0") * 0.25
+    ).toFixed(2);
+
     const create_rent_transaction = await prisma.daily_rent_transact.create({
       data: {
         rentId: rent_data.id,
@@ -186,7 +190,7 @@ const CreateDateChangeDailyRent = async (
         createdById: payload.createdById,
         shopId: payload.shopId,
         status: "INACTIVE",
-        amount: payload.event_amount,
+        amount: dateChangeAmount,
       },
     });
 
