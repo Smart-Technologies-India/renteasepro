@@ -66,7 +66,7 @@ const UpdateRentTrasact = async (
     });
 
     if (get_due_rent.length > 0) {
-      get_due_rent.map(async (rent) => {
+      for (const rent of get_due_rent) {
         const get_rent_sms = await prisma.rent_sms.findFirst({
           where: {
             rentId: rent.rentId,
@@ -81,14 +81,7 @@ const UpdateRentTrasact = async (
             propertyName: rent.shop.property.name,
             shopCategory: rent.shop.shop_category.name,
           });
-          if (!response.status) {
-            return {
-              status: false,
-              data: null,
-              message: response.message,
-              functionname: "UpdateRentTrasact",
-            };
-          }
+          if (!response.status) continue;
 
           const update_rent_sms = await prisma.rent_sms.update({
             where: {
@@ -99,7 +92,7 @@ const UpdateRentTrasact = async (
             },
           });
         }
-      });
+      }
     }
 
     // due section end here
@@ -138,7 +131,7 @@ const UpdateRentTrasact = async (
     });
 
     if (get_late_rent.length > 0) {
-      get_late_rent.map(async (rent) => {
+      for (const rent of get_late_rent) {
         const get_rent_sms = await prisma.rent_sms.findFirst({
           where: {
             rentId: rent.rentId,
@@ -153,14 +146,7 @@ const UpdateRentTrasact = async (
             propertyName: rent.shop.property.name,
             shopCategory: rent.shop.shop_category.name,
           });
-          if (!response.status) {
-            return {
-              status: false,
-              data: null,
-              message: response.message,
-              functionname: "UpdateRentTrasact",
-            };
-          }
+          if (!response.status) continue;
 
           const update_rent_sms = await prisma.rent_sms.update({
             where: {
@@ -171,7 +157,7 @@ const UpdateRentTrasact = async (
             },
           });
         }
-      });
+      }
     }
 
     // late section end here
@@ -211,7 +197,7 @@ const UpdateRentTrasact = async (
     });
 
     if (get_monthcross_rent.length > 0) {
-      get_monthcross_rent.map(async (rent) => {
+      for (const rent of get_monthcross_rent) {
         const get_rent_sms = await prisma.rent_sms.findFirst({
           where: {
             rentId: rent.rentId,
@@ -226,14 +212,7 @@ const UpdateRentTrasact = async (
             propertyName: rent.shop.property.name,
             shopCategory: rent.shop.shop_category.name,
           });
-          if (!response.status) {
-            return {
-              status: false,
-              data: null,
-              message: response.message,
-              functionname: "UpdateRentTrasact",
-            };
-          }
+          if (!response.status) continue;
 
           const update_rent_sms = await prisma.rent_sms.update({
             where: {
@@ -244,7 +223,7 @@ const UpdateRentTrasact = async (
             },
           });
         }
-      });
+      }
     }
 
     // monthcross section end here
