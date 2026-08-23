@@ -6,6 +6,7 @@ import TotalBidders from "@/action/bid/totalbiders";
 import IsUserAppliedForBid from "@/action/bid_transact/isuserapplied";
 import GetRent from "@/action/rent/getrent";
 import GetUserRent from "@/action/rent_transact/getuserrent";
+import SendSms from "@/action/rent/sendsms";
 
 import isShopRented from "@/action/rent/isrentcreateonshop";
 import GetFromShop from "@/action/rent_transact/getfromshop";
@@ -51,13 +52,14 @@ import {
 import CloseShop from "@/action/shop/closeshop";
 import { toast } from "react-toastify";
 import { getAuthenticatedUserId } from "@/action/auth/getuserid";
+import { Button } from "antd";
 
 const ShopView = () => {
   const router = useRouter();
   const param = useParams();
   const encid: string = decryptURLData(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
-    router
+    Array.isArray(param.id) ? param.id[0] : (param.id ?? "0"),
+    router,
   );
   const id: number = parseInt(encid);
   const [userid, setUserid] = useState<number>(0);
@@ -108,7 +110,7 @@ const ShopView = () => {
           const monthStatus = value.find(
             (item) =>
               item.formonth.getFullYear() === year &&
-              item.formonth.getMonth() === i
+              item.formonth.getMonth() === i,
           );
           const isActive =
             (year === currentYear && i <= new Date().getMonth()) ||
@@ -229,7 +231,7 @@ const ShopView = () => {
 
   const closeRent = () => {
     const newrentdata = rentTransact.filter(
-      (val: rent_transact) => val.status != "DUE"
+      (val: rent_transact) => val.status != "DUE",
     );
 
     if (newrentdata.length != 0) {
@@ -252,6 +254,39 @@ const ShopView = () => {
       router.back();
     } else {
       toast.error(response.message);
+    }
+  };
+
+  const sendSMS = async () => {
+    if (!rentdata || !rentdata.user.contactone) {
+      toast.error("Tenant contact number not found.");
+      return;
+    }
+
+    try {
+      // Calculate pending rent period
+
+      const pending_amount = rentTransact.reduce(
+        (accumulator, currentValue) => accumulator + currentValue.amount,
+        0,
+      );
+      const amount = `${pending_amount} (${rentTransact.length} Month${rentTransact.length > 1 ? "s" : ""})`;
+
+      const response = await SendSms({
+        rentId: rentdata.id,
+        contact: rentdata.user.contactone,
+        shopCategoryName: shop?.shopNumber ?? "Unknown",
+        propertyName: shop?.property.name ?? "Unknown",
+        amount: amount,
+      });
+
+      if (response.status) {
+        toast.success(response.message);
+      } else {
+        toast.error(response.message);
+      }
+    } catch (error) {
+      toast.error("Failed to send SMS. Please try again.");
     }
   };
 
@@ -279,7 +314,7 @@ const ShopView = () => {
                         <button
                           onClick={() => {
                             const newrentdata = rentTransact.filter(
-                              (val: rent_transact) => val.status != "DUE"
+                              (val: rent_transact) => val.status != "DUE",
                             );
 
                             if (newrentdata.length != 0) {
@@ -289,8 +324,8 @@ const ShopView = () => {
 
                             router.push(
                               `/dashboard/shops/createbid/${encryptURLData(
-                                id.toString()
-                              )}`
+                                id.toString(),
+                              )}`,
                             );
                           }}
                           className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
@@ -303,7 +338,7 @@ const ShopView = () => {
                         {bid && (
                           <Link
                             href={`/dashboard/shops/shopbidhistory/${encryptURLData(
-                              id.toString()
+                              id.toString(),
                             )}`}
                             className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                           >
@@ -315,8 +350,8 @@ const ShopView = () => {
                             onClick={() => {
                               return router.push(
                                 `/dashboard/rents/edit/${encryptURLData(
-                                  rentdata?.id.toString() ?? "0"
-                                )}`
+                                  rentdata?.id.toString() ?? "0",
+                                )}`,
                               );
                             }}
                             className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
@@ -330,7 +365,7 @@ const ShopView = () => {
                           <button
                             onClick={() => {
                               const newrentdata = rentTransact.filter(
-                                (val: rent_transact) => val.status != "DUE"
+                                (val: rent_transact) => val.status != "DUE",
                               );
 
                               if (newrentdata.length != 0) {
@@ -340,8 +375,8 @@ const ShopView = () => {
 
                               router.push(
                                 `/dashboard/shops/createbid/${encryptURLData(
-                                  id.toString()
-                                )}`
+                                  id.toString(),
+                                )}`,
                               );
                             }}
                             className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
@@ -357,7 +392,7 @@ const ShopView = () => {
                     <button
                       onClick={() => {
                         const newrentdata = rentTransact.filter(
-                          (val: rent_transact) => val.status != "DUE"
+                          (val: rent_transact) => val.status != "DUE",
                         );
 
                         if (newrentdata.length != 0) {
@@ -367,8 +402,8 @@ const ShopView = () => {
 
                         router.push(
                           `/dashboard/shops/createbid/${encryptURLData(
-                            id.toString()
-                          )}`
+                            id.toString(),
+                          )}`,
                         );
                       }}
                       className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
@@ -382,7 +417,7 @@ const ShopView = () => {
                   <button
                     onClick={() => {
                       const newrentdata = rentTransact.filter(
-                        (val: rent_transact) => val.status != "DUE"
+                        (val: rent_transact) => val.status != "DUE",
                       );
 
                       if (newrentdata.length != 0) {
@@ -392,8 +427,8 @@ const ShopView = () => {
 
                       router.push(
                         `/dashboard/shops/createrent/${encryptURLData(
-                          id.toString()
-                        )}`
+                          id.toString(),
+                        )}`,
                       );
                     }}
                     className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
@@ -404,7 +439,7 @@ const ShopView = () => {
                   <>
                     <Link
                       href={`/dashboard/shops/createrent/${encryptURLData(
-                        id.toString()
+                        id.toString(),
                       )}`}
                       className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                     >
@@ -487,7 +522,7 @@ const ShopView = () => {
               bid.is_auction == true ? (
                 <Link
                   href={`/dashboard/bids/apply/${encryptURLData(
-                    bid.id.toString()
+                    bid.id.toString(),
                   )}`}
                   className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                 >
@@ -498,7 +533,7 @@ const ShopView = () => {
               ) : (
                 <Link
                   href={`/dashboard/bids/apply/${encryptURLData(
-                    bid.id.toString()
+                    bid.id.toString(),
                   )}`}
                   className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                 >
@@ -513,7 +548,7 @@ const ShopView = () => {
               <>
                 <Link
                   href={`/dashboard/bids/userbidinfo/${encryptURLData(
-                    bid?.id.toString() ?? "0"
+                    bid?.id.toString() ?? "0",
                   )}`}
                   className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                 >
@@ -521,7 +556,7 @@ const ShopView = () => {
                 </Link>
                 <Link
                   href={`/dashboard/bids/biderslist/${encryptURLData(
-                    bid?.id.toString() ?? "0"
+                    bid?.id.toString() ?? "0",
                   )}`}
                   className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                 >
@@ -678,11 +713,18 @@ const ShopView = () => {
             <div className="border-b border-gray-300 flex items-center pr-2 gap-2">
               <p className="text-xl p-2  font-semibold">Rent Details</p>
               <div className="grow"></div>
+
               {["ADMIN", "MANAGER", "ACCOUNTANT"].includes(user?.role!) && (
                 <>
+                  <Button
+                    onClick={sendSMS}
+                    className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
+                  >
+                    Send SMS
+                  </Button>
                   <Link
                     href={`/dashboard/userrent/history/${encryptURLData(
-                      rentdata?.id.toString() ?? "0"
+                      rentdata?.id.toString() ?? "0",
                     )}`}
                     className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                   >
@@ -690,7 +732,7 @@ const ShopView = () => {
                   </Link>
                   <Link
                     href={`/dashboard/shops/details/${encryptURLData(
-                      rentdata?.id.toString() ?? "0"
+                      rentdata?.id.toString() ?? "0",
                     )}/collectrent`}
                     className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                   >
@@ -701,7 +743,7 @@ const ShopView = () => {
               {user?.role! === "USER" && (
                 <Link
                   href={`/dashboard/userrent/details/${encryptURLData(
-                    rentdata?.id.toString() ?? "0"
+                    rentdata?.id.toString() ?? "0",
                   )}`}
                   className="text-white bg-blue-500 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-500 rounded-sm px-2 h-8 text-sm grid place-items-center"
                 >
@@ -734,7 +776,7 @@ const ShopView = () => {
                   {rentTransact.reduce(
                     (accumulator, currentValue) =>
                       accumulator + currentValue.amount,
-                    0
+                    0,
                   )}
                   - ({rentTransact.length} Months)
                 </span>
@@ -777,7 +819,7 @@ const ShopView = () => {
             <Link
               className="bg-black py-2  text-white rounded-lg px-4"
               href={`/dashboard/shops/details/${encryptURLData(
-                rentdata?.id.toString() ?? "0"
+                rentdata?.id.toString() ?? "0",
               )}/settlerent`}
             >
               Settle Rent
