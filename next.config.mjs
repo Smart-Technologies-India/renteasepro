@@ -37,6 +37,9 @@ const nextConfig = {
     YOUR_BASE_URL: process.env.YOUR_BASE_URL,
   },
   transpilePackages: ["./generated/prisma"],
+  serverActions: {
+    bodySizeLimit: "50mb",
+  },
 };
 
 export default nextConfig;

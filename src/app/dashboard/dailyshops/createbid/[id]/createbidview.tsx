@@ -414,7 +414,7 @@ const CreateBidPage = (props: CreateBidPageProps) => {
           "Content-Type": "multipart/form-data",
         },
       });
-
+ 
       if (uploadfile.status != 200) {
         toast.error("File upload failed");
         setIsCreating(false);
