@@ -690,6 +690,11 @@ const upload = multer({
 
 app.prepare().then(() => {
   const server = express();
+  
+  // Increase request size limit to 50MB for file uploads
+  server.use(express.json({ limit: "50mb" }));
+  server.use(express.urlencoded({ limit: "50mb", extended: true }));
+  
   server.use("/upload", express.static(__dirname + "/upload"));
 
   server.post("/fileupload", upload.single("file"), (req, res) => {
