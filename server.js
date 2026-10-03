@@ -693,7 +693,13 @@ app.prepare().then(() => {
   
   // Increase request size limit to 50MB for file uploads
   server.use(express.json({ limit: "50mb" }));
-  server.use(express.urlencoded({ limit: "50mb", extended: true }));
+  // Skip body parsing for payment handler routes - they need raw stream access
+  server.use((req, res, next) => {
+    if (req.path === "/ccavResponseHandler" || req.path === "/ccavRequestHandler") {
+      return next();
+    }
+    express.urlencoded({ limit: "50mb", extended: true })(req, res, next);
+  });
   
   server.use("/upload", express.static(__dirname + "/upload"));
 

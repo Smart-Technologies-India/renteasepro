@@ -2,7 +2,6 @@
 
 import LoginOtp from "@/action/user/loginotp";
 import SendOtp from "@/action/user/sendotp";
-import { handleNumberChange } from "@/utils/methods";
 import { user } from "@prisma/client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
