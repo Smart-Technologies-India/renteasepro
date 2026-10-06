@@ -3,14 +3,12 @@
 import { getCurrentUserId, requireAuth } from "@/lib/auth";
 import { ApiResponseType } from "@/models/response";
 
-/**
- * Server action to get the current authenticated user's ID
- * This replaces the insecure getCookie("id") pattern
- */
-export async function getAuthenticatedUserId(): Promise<ApiResponseType<number>> {
+export async function getAuthenticatedUserId(): Promise<
+  ApiResponseType<number>
+> {
   try {
     const userId = await getCurrentUserId();
-    
+
     if (!userId) {
       return {
         status: false,

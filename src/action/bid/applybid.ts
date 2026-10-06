@@ -24,6 +24,30 @@ const ApplyBid = async (
   payload: ApplyBidPayload
 ): Promise<ApiResponseType<bid_transact | null>> => {
   try {
+    // Validate userId is valid and user exists
+    if (!payload.userId || payload.userId <= 0) {
+      return {
+        status: false,
+        data: null,
+        message: "Invalid user ID. Please login again.",
+        functionname: "ApplyBid",
+      };
+    }
+
+    // Check if user exists in database
+    const userExists = await prisma.user.findUnique({
+      where: { id: payload.userId },
+    });
+
+    if (!userExists) {
+      return {
+        status: false,
+        data: null,
+        message: "User not found. Please login again.",
+        functionname: "ApplyBid",
+      };
+    }
+
     const bid_transactresponse = await prisma.bid_transact.create({
       data: {
         userId: payload.userId,

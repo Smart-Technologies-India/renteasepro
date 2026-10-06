@@ -1,5 +1,6 @@
 "use client";
 
+import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 import GetBid from "@/action/bid/getbid";
 import GetUser from "@/action/user/getuser";
 import BackButton from "@/components/backbutton";
@@ -9,11 +10,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { formatDateTime, formateDate, decryptURLData, encryptURLData } from "@/utils/methods";
+import {
+  formatDateTime,
+  formateDate,
+  decryptURLData,
+  encryptURLData,
+} from "@/utils/methods";
 import { ExemptFor, exempt, user } from "@prisma/client";
-import { getCookie } from "cookies-next";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "react-toastify";
 
 const getExemptfor = (value: ExemptFor): string => {
   switch (value) {
@@ -34,8 +40,8 @@ const BidDetailsView = () => {
   const router = useRouter();
   const param = useParams();
   const encid: string = decryptURLData(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
-    router
+    Array.isArray(param.id) ? param.id[0] : (param.id ?? "0"),
+    router,
   );
   const id: number = parseInt(encid);
   const [isLoading, setLoading] = useState<boolean>(true);
@@ -61,10 +67,15 @@ const BidDetailsView = () => {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
-      const userid: number = parseInt(
-        (await getCookie("id"))?.toString() ?? "0"
-      );
-      setUserid(userid);
+      const authResponse = await getAuthenticatedUserId();
+      if (!authResponse.status) {
+        toast.error(authResponse.message);
+        router.push("/login");
+        return;
+      }
+
+      const authenticatedUserId = authResponse.data;
+      setUserid(authenticatedUserId);
 
       const bidresponse = await GetBid({
         id: id,
@@ -73,7 +84,7 @@ const BidDetailsView = () => {
         setBid(bidresponse.data ?? ({} as any));
       }
 
-      const userresponse = await GetUser({ id: userid });
+      const userresponse = await GetUser({ id: authenticatedUserId });
       if (userresponse.status) {
         setUser(userresponse.data ?? ({} as user));
       }
@@ -81,7 +92,7 @@ const BidDetailsView = () => {
     };
 
     init();
-  }, [id, userid]);
+  }, [id]);
 
   if (isLoading)
     return (
@@ -108,7 +119,9 @@ const BidDetailsView = () => {
               <Button
                 className="bg-black h-auto"
                 onClick={() =>
-                  router.push(`/dashboard/bids/biderslist/${encryptURLData(bid?.id?.toString() ?? "0")}`)
+                  router.push(
+                    `/dashboard/bids/biderslist/${encryptURLData(bid?.id?.toString() ?? "0")}`,
+                  )
                 }
               >
                 View All Bidders

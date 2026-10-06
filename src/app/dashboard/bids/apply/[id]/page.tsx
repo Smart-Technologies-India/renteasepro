@@ -15,13 +15,13 @@ import {
   handleNumberChange,
 } from "@/utils/methods";
 import { ExemptFor, UserDocType, exempt } from "@prisma/client";
-import { getCookie } from "cookies-next";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { customAlphabet } from "nanoid";
 import GetUser from "@/action/user/getuser";
 import { decryptURLData } from "@/utils/methods";
+import { getAuthenticatedUserId } from "@/action/auth/getuserid";
 
 const getExemptfor = (value: ExemptFor): string => {
   switch (value) {
@@ -42,8 +42,8 @@ const ApplyForBidView = () => {
   const router = useRouter();
   const param = useParams();
   const encid: string = decryptURLData(
-    Array.isArray(param.id) ? param.id[0] : param.id ?? "0",
-    router
+    Array.isArray(param.id) ? param.id[0] : (param.id ?? "0"),
+    router,
   );
   const id: number = parseInt(encid);
   const [isPaying, setIsPaying] = useState<boolean>(false);
@@ -63,13 +63,18 @@ const ApplyForBidView = () => {
   useEffect(() => {
     const init = async () => {
       setLoading(true);
-      const userid: number = parseInt(
-        (await getCookie("id"))?.toString() ?? "0"
-      );
-      setUserid(userid);
+      const authResponse = await getAuthenticatedUserId();
+      if (!authResponse.status) {
+        toast.error(authResponse.message);
+        router.push("/login");
+        return;
+      }
+
+      const authenticatedUserId = authResponse.data;
+      setUserid(authenticatedUserId);
 
       const userresponse = await GetUser({
-        id: userid,
+        id: authenticatedUserId,
       });
 
       if (userresponse.status) {
@@ -86,7 +91,7 @@ const ApplyForBidView = () => {
 
       const isaaplied = await getFromUser({
         bidid: id,
-        userid: userid,
+        userid: authenticatedUserId,
       });
       if (isaaplied.status) {
         setIsApplied(true);
@@ -96,32 +101,32 @@ const ApplyForBidView = () => {
       // file info start from here
 
       const womenfileresponse = await getUploadFileUser({
-        userId: userid,
+        userId: authenticatedUserId,
         doc_type: UserDocType.WOMEN,
       });
 
       const categoryresponse = await getUploadFileUser({
-        userId: userid,
+        userId: authenticatedUserId,
         doc_type: UserDocType.RESERVED,
       });
 
       const abledresponse = await getUploadFileUser({
-        userId: userid,
+        userId: authenticatedUserId,
         doc_type: UserDocType.DIFFERENTLY_ABLED,
       });
 
       const msmeresponse = await getUploadFileUser({
-        userId: userid,
+        userId: authenticatedUserId,
         doc_type: UserDocType.MSME,
       });
 
       const stscresponse = await getUploadFileUser({
-        userId: userid,
+        userId: authenticatedUserId,
         doc_type: UserDocType.SC_ST,
       });
 
       const tribalresponse = await getUploadFileUser({
-        userId: userid,
+        userId: authenticatedUserId,
         doc_type: UserDocType.TRIBAL,
       });
 
@@ -146,10 +151,18 @@ const ApplyForBidView = () => {
     };
 
     init();
-  }, [id, userid]);
+  }, [id]);
 
   const create = async (issecond: boolean) => {
     setIsPaying(true);
+
+    // Validate user is logged in
+    if (!userid || userid <= 0) {
+      toast.error("Please login to place a bid");
+      setIsPaying(false);
+      return;
+    }
+
     if (
       amount.current?.value === "" ||
       amount.current?.value == undefined ||
@@ -165,7 +178,7 @@ const ApplyForBidView = () => {
         bid.min_bid_amount + bid.min_bid_increment
       ) {
         toast.error(
-          `Bid amount should be greater than minimum bid amount. Bid amount should be in multiple of Rs.${bid.min_bid_increment}`
+          `Bid amount should be greater than minimum bid amount. Bid amount should be in multiple of Rs.${bid.min_bid_increment}`,
         );
         setIsPaying(false);
         return;
@@ -177,7 +190,7 @@ const ApplyForBidView = () => {
       ) {
         setIsPaying(false);
         toast.error(
-          `Bid amount should be greater than current bid amount. Bid amount should be in multiple of Rs.${bid.min_bid_increment}`
+          `Bid amount should be greater than current bid amount. Bid amount should be in multiple of Rs.${bid.min_bid_increment}`,
         );
         return;
       }
@@ -186,7 +199,7 @@ const ApplyForBidView = () => {
     if (parseInt(amount.current?.value ?? "0") % bid.min_bid_increment != 0) {
       setIsPaying(false);
       toast.error(
-        `Bid amount should be in multiple of Rs.${bid.min_bid_increment}`
+        `Bid amount should be in multiple of Rs.${bid.min_bid_increment}`,
       );
       return;
     }
@@ -222,10 +235,10 @@ const ApplyForBidView = () => {
 
       router.push(
         `/payamount?xlmnx=${amounttopaid}&ynboy=${uniqueid}&zgvfz=${parseInt(
-          id.toString()
+          id.toString(),
         )}_${parseInt(userid.toString())}_${bid?.shopId ?? 0}_bid_${
           user.contactone
-        }&name=${name}&email=${user.email}&mobile=${user.contactone}`
+        }&name=${name}&email=${user.email}&mobile=${user.contactone}`,
       );
     } else {
       router.back();
@@ -758,18 +771,19 @@ const ApplyForBidView = () => {
                                 &#8377;
                                 {bid?.is_exemption == true
                                   ? parseInt(
-                                      bid.fees_amount.toString() ?? "0"
+                                      bid.fees_amount.toString() ?? "0",
                                     ) -
                                     parseInt(
                                       bid?.exempt[0].feesamount.toString() ??
-                                        "0"
+                                        "0",
                                     ) +
                                     parseInt(bid.emd_amount.toString() ?? "0") -
                                     parseInt(
-                                      bid?.exempt[0].emdamount.toString() ?? "0"
+                                      bid?.exempt[0].emdamount.toString() ??
+                                        "0",
                                     )
                                   : parseInt(
-                                      bid.fees_amount.toString() ?? "0"
+                                      bid.fees_amount.toString() ?? "0",
                                     ) +
                                     parseInt(bid.emd_amount.toString() ?? "0")}
                               </p>
@@ -859,18 +873,19 @@ const ApplyForBidView = () => {
                                 &#8377;
                                 {bid?.is_exemption == true
                                   ? parseInt(
-                                      bid.fees_amount.toString() ?? "0"
+                                      bid.fees_amount.toString() ?? "0",
                                     ) -
                                     parseInt(
                                       bid?.exempt[0].feesamount.toString() ??
-                                        "0"
+                                        "0",
                                     ) +
                                     parseInt(bid.emd_amount.toString() ?? "0") -
                                     parseInt(
-                                      bid?.exempt[0].emdamount.toString() ?? "0"
+                                      bid?.exempt[0].emdamount.toString() ??
+                                        "0",
                                     )
                                   : parseInt(
-                                      bid.fees_amount.toString() ?? "0"
+                                      bid.fees_amount.toString() ?? "0",
                                     ) +
                                     parseInt(bid.emd_amount.toString() ?? "0")}
                               </p>
@@ -948,18 +963,19 @@ const ApplyForBidView = () => {
                                 &#8377;
                                 {bid?.is_exemption == true
                                   ? parseInt(
-                                      bid.fees_amount.toString() ?? "0"
+                                      bid.fees_amount.toString() ?? "0",
                                     ) -
                                     parseInt(
                                       bid?.exempt[0].feesamount.toString() ??
-                                        "0"
+                                        "0",
                                     ) +
                                     parseInt(bid.emd_amount.toString() ?? "0") -
                                     parseInt(
-                                      bid?.exempt[0].emdamount.toString() ?? "0"
+                                      bid?.exempt[0].emdamount.toString() ??
+                                        "0",
                                     )
                                   : parseInt(
-                                      bid.fees_amount.toString() ?? "0"
+                                      bid.fees_amount.toString() ?? "0",
                                     ) +
                                     parseInt(bid.emd_amount.toString() ?? "0")}
                               </p>
